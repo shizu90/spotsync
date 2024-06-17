@@ -6,7 +6,9 @@ import { UserRepository } from "../ports/out/user.repository";
 import { UserAlreadyExistsError } from "./errors/user-already-exists.error";
 import { EncryptPasswordService } from "../ports/out/encrypt-password.service";
 import { UserNotFoundError } from "./errors/user-not-found.error";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class UpdateUserCredentialsService extends UpdateUserCredentialsUseCase 
 {
     constructor(

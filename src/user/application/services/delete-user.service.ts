@@ -5,7 +5,9 @@ import { UserCredentialsRepository } from "../ports/out/user-credentials.reposit
 import { UserRepository } from "../ports/out/user.repository";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAlreadyDeletedError } from "./errors/user-already-deleted.error";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class DeleteUserService extends DeleteUserUseCase 
 {
     constructor(
