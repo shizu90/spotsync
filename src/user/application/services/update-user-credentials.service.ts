@@ -9,14 +9,14 @@ import { UserNotFoundError } from "./errors/user-not-found.error";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class UpdateUserCredentialsService extends UpdateUserCredentialsUseCase 
+export class UpdateUserCredentialsService implements UpdateUserCredentialsUseCase 
 {
     constructor(
         protected userCredentialsRepository: UserCredentialsRepository,
         protected userRepository: UserRepository,
         protected encryptPasswordService: EncryptPasswordService
     ) 
-    {super();}
+    {}
 
     public async execute(command: UpdateUserCredentialsCommand): Promise<User> 
     {

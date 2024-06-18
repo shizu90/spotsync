@@ -4,12 +4,12 @@ import { UploadProfilePictureUseCase } from "../ports/in/upload-profile-picture.
 import { UserRepository } from "../ports/out/user.repository";
 
 @Injectable()
-export class UploadProfilePictureService extends UploadProfilePictureUseCase 
+export class UploadProfilePictureService implements UploadProfilePictureUseCase 
 {
     constructor(
         protected userRepository: UserRepository
     ) 
-    {super();}
+    {}
 
     public async execute(command: UploadProfilePictureCommand): Promise<string> 
     {

@@ -15,6 +15,7 @@ import { UpdateUserProfileCommand } from "src/user/application/ports/in/update-u
 import { UpdateUserCredentialsRequest } from "./requests/update-user-credentials.request";
 import { UpdateUserCredentialsCommand } from "src/user/application/ports/in/update-user-credentials.command";
 import { DeleteUserCommand } from "src/user/application/ports/in/delete-user.command";
+import { CreateUserAddressUseCase } from "src/user/application/ports/in/create-user-address.use-case";
 
 @Controller('users')
 export class UserController 
@@ -26,7 +27,8 @@ export class UserController
         protected readonly updateUserCredentialsUseCase: UpdateUserCredentialsUseCase,
         protected readonly uploadProfilePictureUseCase: UploadProfilePictureUseCase,
         protected readonly uploadBannerPictureUseCase: UploadBannerPictureUseCase,
-        protected readonly deleteUseUseCase: DeleteUserUseCase
+        protected readonly deleteUseUseCase: DeleteUserUseCase,
+        protected readonly createUserAddressUseCase: CreateUserAddressUseCase
     ) 
     {}
 
@@ -79,5 +81,35 @@ export class UserController
         return {
             'data': this.deleteUseUseCase.execute(command)
         };
+    }
+
+    @Get(':id/address')
+    public getAddresses(@Param() id: string) 
+    {
+
+    }
+
+    @Get(':id/address/:address_id')
+    public getAddress(@Param() id: string, @Param() address_id: string) 
+    {
+        
+    }
+
+    @Post(':id/address')
+    public createAddress(@Param() id: string) 
+    {
+
+    }
+
+    @Put(':id/address/:address_id')
+    public updateAddress(@Param() id: string, @Param() address_id: string) 
+    {
+
+    }
+
+    @Delete(':id/address/:address_id')
+    public deleteAddress(@Param() id: string, @Param() address_id: string) 
+    {
+
     }
 }

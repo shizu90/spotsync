@@ -8,13 +8,13 @@ import { UserAlreadyDeletedError } from "./errors/user-already-deleted.error";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class DeleteUserService extends DeleteUserUseCase 
+export class DeleteUserService implements DeleteUserUseCase 
 {
     constructor(
         protected userRepository: UserRepository,
         protected userCredentialsRepository: UserCredentialsRepository
     )
-    {super();}
+    {}
 
     public async execute(command: DeleteUserCommand): Promise<void> 
     {
