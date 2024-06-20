@@ -1,19 +1,24 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { CreateUserAddressUseCase } from "../ports/in/create-user-address.use-case";
-import { UserAddressRepository } from "../ports/out/user-address.repository";
+import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
 import { CreateUserAddressCommand } from "../ports/in/create-user-address.command";
-import { UserRepository } from "../ports/out/user.repository";
+import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAddress } from "src/user/domain/user-address.model";
 import { randomUUID } from "crypto";
+import { GeoLocatorInput, GeoLocatorOutput, GeoLocatorService, GeoLocatorServiceProvider } from "../ports/out/geo-locator.service";
 
 @Injectable()
 export class CreateUserAddressService implements CreateUserAddressUseCase 
 {
     constructor(
+        @Inject(UserAddressRepositoryProvider) 
         protected userAddressRepository: UserAddressRepository,
-        protected userRepository: UserRepository
+        @Inject(UserRepositoryProvider) 
+        protected userRepository: UserRepository,
+        @Inject(GeoLocatorServiceProvider) 
+        protected geoLocatorService: GeoLocatorService
     ) 
     {}
 
@@ -25,14 +30,23 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
             throw new UserNotFoundError(`User ${command.userId} not found.`);
         }
 
+        const coordinates: GeoLocatorOutput = this.geoLocatorService.getCoordinates(
+            new GeoLocatorInput(
+                command.area,
+                command.subArea,
+                command.locality,
+                command.countryCode
+            )
+        );
+
         const userAddress: UserAddress = UserAddress.create(
             randomUUID(),
             command.name,
             command.area,
             command.subArea,
             command.locality,
-            null,
-            null,
+            coordinates.latitude,
+            coordinates.longitude,
             command.countryCode,
             command.main,
             user

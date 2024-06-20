@@ -1,17 +1,18 @@
 import { User } from "src/user/domain/user.model";
 import { DeleteUserCommand } from "../ports/in/delete-user.command";
 import { DeleteUserUseCase } from "../ports/in/delete-user.use-case";
-import { UserCredentialsRepository } from "../ports/out/user-credentials.repository";
-import { UserRepository } from "../ports/out/user.repository";
+import { UserCredentialsRepository, UserCredentialsRepositoryProvider } from "../ports/out/user-credentials.repository";
+import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 import { UserNotFoundError } from "./errors/user-not-found.error";
-import { UserAlreadyDeletedError } from "./errors/user-already-deleted.error";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class DeleteUserService implements DeleteUserUseCase 
 {
     constructor(
+        @Inject(UserRepositoryProvider) 
         protected userRepository: UserRepository,
+        @Inject(UserCredentialsRepositoryProvider) 
         protected userCredentialsRepository: UserCredentialsRepository
     )
     {}
@@ -25,7 +26,7 @@ export class DeleteUserService implements DeleteUserUseCase
         }
 
         if(user.isDeleted()) {
-            throw new UserAlreadyDeletedError(`User ${command.id} already deleted.`);
+            throw new UserNotFoundError(`User ${command.id} not found.`);
         }
 
         user.delete();

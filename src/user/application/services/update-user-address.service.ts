@@ -1,19 +1,24 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { UpdateUserAddressUseCase } from "../ports/in/update-user-address.use-case";
-import { UserAddressRepository } from "../ports/out/user-address.repository";
-import { UserRepository } from "../ports/out/user.repository";
+import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
+import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 import { UpdateUserAddressCommand } from "../ports/in/update-user-address.command";
 import { UserAddress } from "src/user/domain/user-address.model";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAddressNotFoundError } from "./errors/user-address-not-found.error";
+import { GeoLocatorInput, GeoLocatorOutput, GeoLocatorService, GeoLocatorServiceProvider } from "../ports/out/geo-locator.service";
 
 @Injectable()
 export class UpdateUserAddressService implements UpdateUserAddressUseCase 
 {
     constructor(
+        @Inject(UserAddressRepositoryProvider) 
         protected userAddressRepository: UserAddressRepository,
-        protected userRepository: UserRepository
+        @Inject(UserRepositoryProvider) 
+        protected userRepository: UserRepository,
+        @Inject(GeoLocatorServiceProvider) 
+        protected geoLocatorService: GeoLocatorService
     )
     {}
 
@@ -46,6 +51,18 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
         if(command.subArea != null) {
             userAddress.changeSubArea(command.subArea);
         }
+
+        const coordinates: GeoLocatorOutput = this.geoLocatorService.getCoordinates(
+            new GeoLocatorInput(
+                userAddress.area(),
+                userAddress.subArea(),
+                userAddress.locality(),
+                userAddress.countryCode()
+            )
+        );
+
+        userAddress.changeLatitude(coordinates.latitude);
+        userAddress.changeLongitude(coordinates.longitude);
 
         if(command.main != null) {
             if(command.main) {

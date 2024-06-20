@@ -3,19 +3,22 @@ import { CreateUserCommand } from "../ports/in/create-user.command";
 import { CreateUserUseCase } from "../ports/in/create-user.use-case";
 import { randomUUID } from "crypto";
 import { User } from "src/user/domain/user.model";
-import { UserRepository } from "../ports/out/user.repository";
-import { UserCredentialsRepository } from "../ports/out/user-credentials.repository";
+import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
+import { UserCredentialsRepository, UserCredentialsRepositoryProvider } from "../ports/out/user-credentials.repository";
 import { UserAlreadyExistsError } from "./errors/user-already-exists.error";
-import { Injectable } from "@nestjs/common";
-import { EncryptPasswordService } from "../ports/out/encrypt-password.service";
+import { Inject, Injectable } from "@nestjs/common";
+import { EncryptPasswordService, EncryptPasswordServiceProvider } from "../ports/out/encrypt-password.service";
 import { ProfileVisibility } from "src/user/domain/profile-visibility.enum";
 
 @Injectable()
 export class CreateUserService implements CreateUserUseCase 
 {
     constructor(
+        @Inject(UserRepositoryProvider) 
         protected userRepository: UserRepository, 
+        @Inject(UserCredentialsRepositoryProvider) 
         protected userCredentialsRepository: UserCredentialsRepository,
+        @Inject(EncryptPasswordServiceProvider) 
         protected encryptPasswordService: EncryptPasswordService
     ) 
     {}

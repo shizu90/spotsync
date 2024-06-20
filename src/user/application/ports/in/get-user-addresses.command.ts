@@ -1,6 +1,6 @@
 import { Command } from "src/common/common.command";
 
-export class GetUserAddressessCommand extends Command 
+export class GetUserAddressesCommand extends Command 
 {
     constructor(
         readonly userId: string

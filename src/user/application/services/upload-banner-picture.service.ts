@@ -1,12 +1,13 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { UploadBannerPictureCommand } from "../ports/in/upload-banner-picture.command";
 import { UploadBannerPictureUseCase } from "../ports/in/upload-banner-picture.use-case";
-import { UserRepository } from "../ports/out/user.repository";
+import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 
 @Injectable()
 export class UploadBannerPictureService implements UploadBannerPictureUseCase 
 {
     constructor(
+        @Inject(UserRepositoryProvider) 
         protected userRepository: UserRepository
     ) 
     {}

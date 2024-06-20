@@ -15,6 +15,7 @@ export class UserAddress extends Model
     private _user: User;
     private _createdAt: Date;
     private _updatedAt: Date;
+    private _isDeleted: boolean;
 
     private constructor(
         id: string,
@@ -42,6 +43,7 @@ export class UserAddress extends Model
         this._user = user;
         this._createdAt = new Date();
         this._updatedAt = new Date();
+        this._isDeleted = false;
     }
 
     public static create(
@@ -121,6 +123,11 @@ export class UserAddress extends Model
         return this._user;
     }
 
+    public isDeleted() 
+    {
+        return this._isDeleted;
+    }
+
     public changeName(name: string) 
     {
         this._name = name;
@@ -166,6 +173,12 @@ export class UserAddress extends Model
     public changeMain(main: boolean) 
     {
         this._main = main;
+        this._updatedAt = new Date();
+    }
+
+    public delete() 
+    {
+        this._isDeleted = true;
         this._updatedAt = new Date();
     }
 }
