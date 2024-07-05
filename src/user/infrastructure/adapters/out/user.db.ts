@@ -1,3 +1,4 @@
+import { Inject } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserRepository } from "src/user/application/ports/out/user.repository";
 import { UserCredentials } from "src/user/domain/user-credentials.model";
@@ -5,7 +6,7 @@ import { User } from "src/user/domain/user.model";
 
 export class UserRepositoryImpl implements UserRepository 
 {
-    public constructor(protected prismaService: PrismaService) 
+    public constructor(@Inject(PrismaService) protected prismaService: PrismaService) 
     {}
 
     public async findAll(): Promise<Array<User>> 
@@ -15,6 +16,8 @@ export class UserRepositoryImpl implements UserRepository
                 credentials: true
             }
         });
+
+        if(users.length === 0) return [];
 
         return users.map((user): User => {
             return User.create(
@@ -46,6 +49,8 @@ export class UserRepositoryImpl implements UserRepository
             },
         });
 
+        if(user === null) return null;
+
         return User.create(
             user.id,
             user.profile_picture,
@@ -75,6 +80,8 @@ export class UserRepositoryImpl implements UserRepository
             }
         });
 
+        if(userCredentials === null) return null;
+
         return User.create(
             userCredentials.user.id,
             userCredentials.user.profile_picture,
@@ -103,6 +110,8 @@ export class UserRepositoryImpl implements UserRepository
                 user: true
             }
         });
+
+        if(userCredentials === null) return null;
 
         return User.create(
             userCredentials.user.id,
@@ -148,6 +157,8 @@ export class UserRepositoryImpl implements UserRepository
             }
         });
 
+        if(user === null) return null;
+
         return User.create(
             user.id,
             user.profile_picture,
@@ -183,6 +194,8 @@ export class UserRepositoryImpl implements UserRepository
             }
         });
 
+        if(user === null) return null;
+
         return User.create(
             user.id,
             user.profile_picture,
@@ -217,6 +230,8 @@ export class UserRepositoryImpl implements UserRepository
                 user: true
             }
         });
+
+        if(userCredentials === null) return null;
 
         return User.create(
             userCredentials.user.id,

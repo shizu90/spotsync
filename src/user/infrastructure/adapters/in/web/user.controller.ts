@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, NotFoundException, Param, Post, Put, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { CreateUserUseCase, CreateUserUseCaseProvider } from "src/user/application/ports/in/create-user.use-case";
 import { DeleteUserUseCase, DeleteUserUseCaseProvider } from "src/user/application/ports/in/delete-user.use-case";
 import { GetUserCommand } from "src/user/application/ports/in/get-user.command";
@@ -26,8 +26,11 @@ import { DeleteUserAddressUseCase, DeleteUserAddressUseCaseProvider } from "src/
 import { GetUserAddressesUseCase } from "src/user/application/ports/in/get-user-addresses.use-case";
 import { GetUserAddressCommand } from "src/user/application/ports/in/get-user-address.command";
 import { GetUserAddressUseCase, GetUserAddressUseCaseProvider } from "src/user/application/ports/in/get-user-address.use-case";
+import { UserErrorHandler } from "./handlers/error.handler";
+import { DeleteUserAddressCommand } from "src/user/application/ports/in/delete-user-address.command";
 
 @Controller('users')
+@UseFilters(new UserErrorHandler())
 export class UserController 
 {
     constructor(
@@ -59,107 +62,127 @@ export class UserController
     {}
 
     @Get(':id')
-    public get(@Param() id: string) 
+    public async get(@Param('id') id: string) 
     {
         const command: GetUserCommand = UserDtoMapper.getUserCommand(id);
 
+        const data = await this.getUserUseCase.execute(command);
+    
         return {
-            'data': this.getUserUseCase.execute(command)
+            'data': data
         };
     }
 
     @Post()
     @UsePipes(new ValidationPipe({transform: true}))
-    public create(@Body() request: CreateUserRequest) 
+    public async create(@Body() request: CreateUserRequest) 
     {
         const command: CreateUserCommand = UserDtoMapper.createUserCommand(request)
     
+        const data = await this.createUserUseCase.execute(command);
+
         return {
-            'data': this.createUserUseCase.execute(command)
+            'data': data
         };
     }
 
     @Put(':id')
     @UsePipes(new ValidationPipe({transform: true}))
-    public updateProfile(@Param() id: string, @Body() request: UpdateUserProfileRequest) 
+    public async updateProfile(@Param() id: string, @Body() request: UpdateUserProfileRequest) 
     {
         const command: UpdateUserProfileCommand = UserDtoMapper.updateUserProfileCommand(id, request);
 
+        const data = await this.updateUserProfileUseCase.execute(command);
+
         return {
-            'data': this.updateUserProfileUseCase.execute(command)
+            'data': data
         };
     }
 
     @Put(':id/credentials')
     @UsePipes(new ValidationPipe({transform: true}))
-    public updateCredentials(@Param() id: string, @Body() request: UpdateUserCredentialsRequest) 
+    public async updateCredentials(@Param() id: string, @Body() request: UpdateUserCredentialsRequest) 
     {
         const command: UpdateUserCredentialsCommand = UserDtoMapper.updateUserCredentialsCommand(id, request);
-        
+
+        const data = await this.updateUserCredentialsUseCase.execute(command);
+
         return {
-            'data': this.updateUserCredentialsUseCase.execute(command)
+            'data': data
         };
     }
 
     @Delete(':id')
-    public delete(@Param() id: string) 
+    public async delete(@Param() id: string) 
     {
         const command: DeleteUserCommand = UserDtoMapper.deleteUserCommand(id);
 
+        const data = await this.deleteUserUseCase.execute(command);
+
         return {
-            'data': this.deleteUserUseCase.execute(command)
+            'data': data
         };
     }
 
     @Get(':id/address')
-    public getAddresses(@Param() id: string) 
+    public async getAddresses(@Param() id: string) 
     {
         const command: GetUserAddressesCommand = UserDtoMapper.getUserAddressesCommand(id);
 
+        const data = await this.getUserAddressesUseCase.execute(command)
+
         return {
-            'data': this.getUserAddressesUseCase.execute(command)
+            'data': data
         };
     }
 
     @Get(':id/address/:address_id')
-    public getAddress(@Param() id: string, @Param() address_id: string) 
+    public async getAddress(@Param() id: string, @Param() address_id: string) 
     {
         const command: GetUserAddressCommand = UserDtoMapper.getUserAddressCommand(address_id, id);
 
+        const data = await this.getUserAddressUseCase.execute(command);
+
         return {
-            'data': this.getUserAddressUseCase.execute(command)
+            'data': data
         };
     }
 
     @Post(':id/address')
     @UsePipes(new ValidationPipe({transform: true}))
-    public createAddress(@Param() id: string, @Body() request: CreateUserAddressRequest) 
+    public async createAddress(@Param() id: string, @Body() request: CreateUserAddressRequest) 
     {
         const command: CreateUserAddressCommand = UserDtoMapper.createUserAddressCommand(id, request);
     
+        const data = await this.createUserAddressUseCase.execute(command);
+
         return {
-            'data': this.createUserAddressUseCase.execute(command)
+            'data': data
         };
     }
 
     @Put(':id/address/:addressId')
     @UsePipes(new ValidationPipe({transform: true}))
-    public updateAddress(@Param() id: string, @Param() addressId: string, @Body() request: UpdateUserAddressRequest) 
+    public async updateAddress(@Param() id: string, @Param() addressId: string, @Body() request: UpdateUserAddressRequest) 
     {
         const command: UpdateUserAddressCommand = UserDtoMapper.updateUserAddressCommand(addressId, id, request);
 
+        const data = await this.updateUserAddressUseCase.execute(command);
+
         return {
-            'data': this.updateUserAddressUseCase.execute(command)
+            'data': data
         };
     }
 
     @Delete(':id/address/:addressId')
-    public deleteAddress(@Param() id: string, @Param() addressId: string) 
+    public async deleteAddress(@Param() id: string, @Param() addressId: string) 
     {
-        const command: DeleteUserCommand = UserDtoMapper.deleteUserAddressCommand(addressId, id);
+        const command: DeleteUserAddressCommand = UserDtoMapper.deleteUserAddressCommand(addressId, id);
+
+        const data = await this.deleteUserAddressUseCase.execute(command);
 
         return {
-            'data': this.deleteUserUseCase.execute(command)
+            'data': data
         };
     }
 }
