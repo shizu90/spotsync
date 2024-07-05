@@ -21,7 +21,9 @@ export class User extends Model
         biograph: string, 
         birthDate: Date, 
         profileVisibility: string,
-        credentials: UserCredentials
+        credentials: UserCredentials,
+        createdAt?: Date,
+        updatedAt?: Date
     ) 
     {
         super();
@@ -32,8 +34,8 @@ export class User extends Model
         this._birthDate = birthDate;
         this._profileVisibility = profileVisibility;
         this._credentials = credentials;
-        this._createdAt = new Date();
-        this._updatedAt = new Date();
+        this._createdAt = createdAt ?? new Date();
+        this._updatedAt = updatedAt ?? new Date();
         this._isDeleted = false;
     }
 
@@ -44,10 +46,22 @@ export class User extends Model
         biograph: string, 
         birthDate: Date, 
         profileVisibility: string,
-        credentials: UserCredentials
+        credentials: UserCredentials,
+        createdAt?: Date,
+        updatedAt?: Date
     ): User 
     {
-        return new User(id, profilePicture, bannerPicture, biograph, birthDate, profileVisibility, credentials);
+        return new User(
+            id, 
+            profilePicture, 
+            bannerPicture, 
+            biograph, 
+            birthDate, 
+            profileVisibility, 
+            credentials,
+            createdAt,
+            updatedAt
+        );
     }
 
     public id(): string 

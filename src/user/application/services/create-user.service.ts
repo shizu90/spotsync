@@ -4,7 +4,6 @@ import { CreateUserUseCase } from "../ports/in/create-user.use-case";
 import { randomUUID } from "crypto";
 import { User } from "src/user/domain/user.model";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
-import { UserCredentialsRepository, UserCredentialsRepositoryProvider } from "../ports/out/user-credentials.repository";
 import { UserAlreadyExistsError } from "./errors/user-already-exists.error";
 import { Inject, Injectable } from "@nestjs/common";
 import { EncryptPasswordService, EncryptPasswordServiceProvider } from "../ports/out/encrypt-password.service";
@@ -15,9 +14,7 @@ export class CreateUserService implements CreateUserUseCase
 {
     constructor(
         @Inject(UserRepositoryProvider) 
-        protected userRepository: UserRepository, 
-        @Inject(UserCredentialsRepositoryProvider) 
-        protected userCredentialsRepository: UserCredentialsRepository,
+        protected userRepository: UserRepository,
         @Inject(EncryptPasswordServiceProvider) 
         protected encryptPasswordService: EncryptPasswordService
     ) 
@@ -25,25 +22,25 @@ export class CreateUserService implements CreateUserUseCase
     
     public async execute(command: CreateUserCommand): Promise<User> 
     {
-        if(this.userCredentialsRepository.findByEmail(command.email) != null) {
+        if(this.userRepository.findByEmail(command.email) != null) {
             throw new UserAlreadyExistsError(`E-mail ${command.email} already in use.`);
         }
 
-        if(this.userCredentialsRepository.findByName(command.name) != null) {
+        if(this.userRepository.findByName(command.name) != null) {
             throw new UserAlreadyExistsError(`User name ${command.name} already taken.`);
         }
 
+        const userId = randomUUID();
+
         let userCredentials: UserCredentials = UserCredentials.create(
-            randomUUID(),
+            userId,
             command.name,
             command.email,
             this.encryptPasswordService.encrypt(command.password)
         );
 
-        userCredentials = this.userCredentialsRepository.store(userCredentials);
-
         const user: User = User.create(
-            randomUUID(),
+            userId,
             null,
             null,
             null,

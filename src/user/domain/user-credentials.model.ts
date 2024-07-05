@@ -13,7 +13,9 @@ export class UserCredentials extends Model
         id: string,
         name: string,
         email: string,
-        password: string
+        password: string,
+        lastLogin?: Date,
+        lastLogout?: Date
     ) 
     {
         super();
@@ -21,6 +23,8 @@ export class UserCredentials extends Model
         this._name = name;
         this._email = email;
         this._password = password;
+        this._lastLogin = lastLogin ?? null;
+        this._lastLogout = lastLogout ?? null;
     }
 
     public static create(

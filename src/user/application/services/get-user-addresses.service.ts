@@ -21,7 +21,7 @@ export class GetUserAddressesService implements GetUserAddressesUseCase
 
     public async execute(command: GetUserAddressesCommand): Promise<Pagination<UserAddress>> 
     {
-        const user: User = this.userRepository.findById(command.userId);
+        const user: User = await this.userRepository.findById(command.userId);
 
         if(user == null) {
             throw new UserNotFoundError(`User ${command.userId} not found.`);

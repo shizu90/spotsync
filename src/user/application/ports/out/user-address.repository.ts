@@ -6,6 +6,6 @@ export const UserAddressRepositoryProvider = 'UserAddressRepository';
 
 export interface UserAddressRepository extends Repository<UserAddress, string> 
 {
-    findByUserId(userId: string): Pagination<UserAddress>;
-    findByUserIdAndMain(userId: string, main: boolean): Array<UserAddress>;
+    findByUserId(userId: string): Promise<Pagination<UserAddress>>;
+    findByUserIdAndMain(userId: string, main: boolean): Promise<Array<UserAddress>>;
 }

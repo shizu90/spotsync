@@ -24,13 +24,13 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
 
     public async execute(command: UpdateUserAddressCommand): Promise<UserAddress> 
     {
-        const user: User = this.userRepository.findById(command.userId);
+        const user: User = await this.userRepository.findById(command.userId);
 
         if(user == null) {
             throw new UserNotFoundError(`User ${command.userId} not found.`);
         }
 
-        const userAddress: UserAddress = this.userAddressRepository.findById(command.id);
+        const userAddress: UserAddress = await this.userAddressRepository.findById(command.id);
 
         if(userAddress == null || userAddress.user().id() != user.id()) {
             throw new UserAddressNotFoundError(`User address ${command.id} not found.`);
@@ -66,7 +66,7 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
 
         if(command.main != null) {
             if(command.main) {
-                const userMainAddresses: Array<UserAddress> = this.userAddressRepository.findByUserIdAndMain(command.userId, true);
+                const userMainAddresses: Array<UserAddress> = await this.userAddressRepository.findByUserIdAndMain(command.userId, true);
 
                 userMainAddresses.forEach((userAddress: UserAddress) => {
                     userAddress.changeMain(false);

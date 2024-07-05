@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { UpdateUserProfileUseCase, UpdateUserProfileUseCaseProvider } from "../ports/in/update-user-profile.use-case";
-import { UserRepository } from "../ports/out/user.repository";
+import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 import { UpdateUserProfileCommand } from "../ports/in/update-user-profile.command";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
@@ -9,14 +9,14 @@ import { UserNotFoundError } from "./errors/user-not-found.error";
 export class UpdateUserProfileService implements UpdateUserProfileUseCase 
 {
     constructor(
-        @Inject(UpdateUserProfileUseCaseProvider)
+        @Inject(UserRepositoryProvider)
         protected userRepository: UserRepository
     ) 
     {}
 
     public async execute(command: UpdateUserProfileCommand): Promise<User> 
     {
-        const user: User = this.userRepository.findById(command.id);
+        const user: User = await this.userRepository.findById(command.id);
 
         if(user == null || user.isDeleted()) {
             throw new UserNotFoundError(`User ${command.id} not found.`);

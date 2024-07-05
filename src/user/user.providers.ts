@@ -25,10 +25,12 @@ import { UploadBannerPictureUseCaseProvider } from "./application/ports/in/uploa
 import { UploadBannerPictureService } from "./application/services/upload-banner-picture.service";
 import { UserRepositoryProvider } from "./application/ports/out/user.repository";
 import { UserRepositoryImpl } from "./infrastructure/adapters/out/user.db";
-import { UserCredentialsRepositoryProvider } from "./application/ports/out/user-credentials.repository";
-import { UserCredentialsRepositoryImpl } from "./infrastructure/adapters/out/user-credentials.db";
 import { UserAddressRepositoryProvider } from "./application/ports/out/user-address.repository";
 import { UserAddressRepositoryImpl } from "./infrastructure/adapters/out/user-address.db";
+import { EncryptPasswordServiceProvider } from "./application/ports/out/encrypt-password.service";
+import { EncryptPasswordServiceImpl } from "./infrastructure/adapters/out/encrypt-password";
+import { GeoLocatorServiceProvider } from "./application/ports/out/geo-locator.service";
+import { GeoLocatorServiceImpl } from "./infrastructure/adapters/out/geo-locator";
 
 export const Providers: Provider[] = [
     {
@@ -84,50 +86,15 @@ export const Providers: Provider[] = [
         useClass: UserRepositoryImpl
     },
     {
-        provide: UserCredentialsRepositoryProvider,
-        useClass: UserCredentialsRepositoryImpl
-    },
-    {
         provide: UserAddressRepositoryProvider,
         useClass: UserAddressRepositoryImpl
     },
     {
-        provide: 'UseCases',
-        useFactory: (
-            createUserUseCase,
-            updateUserProfileUseCase,
-            updateUserCredentialsUseCase,
-            deleteUserUseCase,
-            createUserAddressUseCase,
-            updateUserAddressUseCase,
-            deleteUserAddressUseCase,
-            getUserUseCase,
-            getUserAddressesUseCase,
-            getUserAddressUseCase,
-        ) => 
-        [
-                createUserUseCase,
-                updateUserProfileUseCase,
-                updateUserCredentialsUseCase,
-                deleteUserUseCase,
-                createUserAddressUseCase,
-                updateUserAddressUseCase,
-                deleteUserAddressUseCase,
-                getUserUseCase,
-                getUserAddressesUseCase,
-                getUserAddressUseCase
-        ],
-        inject: [
-            CreateUserService,
-            UpdateUserProfileService,
-            UpdateUserCredentialsService,
-            DeleteUserService,
-            CreateUserAddressService,
-            UpdateUserAddressService,
-            DeleteUserAddressService,
-            GetUserService,
-            GetUserAddressesService,
-            GetUserAddressService,
-        ]
+        provide: EncryptPasswordServiceProvider,
+        useClass: EncryptPasswordServiceImpl
+    },
+    {
+        provide: GeoLocatorServiceProvider,
+        useClass: GeoLocatorServiceImpl
     }
 ];

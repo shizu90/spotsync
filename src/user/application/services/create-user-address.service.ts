@@ -24,7 +24,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
 
     public async execute(command: CreateUserAddressCommand): Promise<UserAddress> 
     {
-        const user: User = this.userRepository.findById(command.userId);
+        const user: User = await this.userRepository.findById(command.userId);
 
         if(user == null) {
             throw new UserNotFoundError(`User ${command.userId} not found.`);
@@ -53,7 +53,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
         );
 
         if(userAddress.main()) {
-            const mainAddresses: Array<UserAddress> = this.userAddressRepository.findByUserIdAndMain(user.id(), userAddress.main());
+            const mainAddresses: Array<UserAddress> = await this.userAddressRepository.findByUserIdAndMain(user.id(), userAddress.main());
 
             mainAddresses.forEach((userAddress: UserAddress) => {
                 userAddress.changeMain(false);

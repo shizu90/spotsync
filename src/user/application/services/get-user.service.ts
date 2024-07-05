@@ -16,7 +16,7 @@ export class GetUserService implements GetUserUseCase
 
     public async execute(command: GetUserCommand): Promise<User> 
     {
-        const user: User = this.userRepository.findById(command.id);
+        const user: User = await this.userRepository.findById(command.id);
 
         if(user == null || user.isDeleted()) {
             throw new UserNotFoundError(`User ${command.id} not found.`);

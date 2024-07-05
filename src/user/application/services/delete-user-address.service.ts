@@ -21,13 +21,13 @@ export class DeleteUserAddressService implements DeleteUserAddressUseCase
 
     public async execute(command: DeleteUserAddressCommand): Promise<void> 
     {
-        const user: User = this.userRepository.findById(command.userId);
+        const user: User = await this.userRepository.findById(command.userId);
         
         if(user == null) {
             throw new UserNotFoundError(`User ${command.userId} not found.`);
         }
 
-        const userAddress: UserAddress = this.userAddressRepository.findById(command.id);
+        const userAddress: UserAddress = await this.userAddressRepository.findById(command.id);
 
         if(userAddress == null || userAddress.isDeleted() || userAddress.user().id() != user.id()) {
             throw new UserAddressNotFoundError(`User address ${command.id} not found.`);

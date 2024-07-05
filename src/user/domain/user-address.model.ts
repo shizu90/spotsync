@@ -27,7 +27,9 @@ export class UserAddress extends Model
         longitude: number,
         countryCode: string,
         main: boolean,
-        user: User
+        user: User,
+        createdAt?: Date,
+        updatedAt?: Date
     ) 
     {
         super();
@@ -41,8 +43,8 @@ export class UserAddress extends Model
         this._countryCode = countryCode;
         this._main = main;
         this._user = user;
-        this._createdAt = new Date();
-        this._updatedAt = new Date();
+        this._createdAt = createdAt ?? new Date();
+        this._updatedAt = updatedAt ?? new Date();
         this._isDeleted = false;
     }
 
@@ -56,7 +58,9 @@ export class UserAddress extends Model
         longitude: number,
         countryCode: string,
         main: boolean,
-        user: User
+        user: User,
+        createdAt?: Date,
+        updatedAt?: Date
     ) 
     {
         return new UserAddress(
@@ -69,7 +73,9 @@ export class UserAddress extends Model
             longitude, 
             countryCode, 
             main,
-            user
+            user,
+            createdAt,
+            updatedAt
         );
     }
 
