@@ -52,6 +52,7 @@ model UserAddress {
     main                Boolean
     created_at          DateTime    @default(now())
     updated_at          DateTime    @default(now())
+    is_deleted          Boolean     @default(false)
     user_id             String
     user                User        @relation(fields: [user_id], references: [id])
 

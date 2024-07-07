@@ -23,7 +23,8 @@ export class User extends Model
         profileVisibility: string,
         credentials: UserCredentials,
         createdAt?: Date,
-        updatedAt?: Date
+        updatedAt?: Date,
+        isDeleted?: boolean
     ) 
     {
         super();
@@ -36,7 +37,7 @@ export class User extends Model
         this._credentials = credentials;
         this._createdAt = createdAt ?? new Date();
         this._updatedAt = updatedAt ?? new Date();
-        this._isDeleted = false;
+        this._isDeleted = isDeleted ?? false;
     }
 
     public static create(
@@ -48,7 +49,8 @@ export class User extends Model
         profileVisibility: string,
         credentials: UserCredentials,
         createdAt?: Date,
-        updatedAt?: Date
+        updatedAt?: Date,
+        isDeleted?: boolean
     ): User 
     {
         return new User(
@@ -60,7 +62,8 @@ export class User extends Model
             profileVisibility, 
             credentials,
             createdAt,
-            updatedAt
+            updatedAt,
+            isDeleted
         );
     }
 

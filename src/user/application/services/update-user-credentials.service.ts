@@ -6,7 +6,6 @@ import { UserAlreadyExistsError } from "./errors/user-already-exists.error";
 import { EncryptPasswordService, EncryptPasswordServiceProvider } from "../ports/out/encrypt-password.service";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { Inject, Injectable } from "@nestjs/common";
-import { UserCredentials } from "src/user/domain/user-credentials.model";
 
 @Injectable()
 export class UpdateUserCredentialsService implements UpdateUserCredentialsUseCase 

@@ -29,7 +29,8 @@ export class UserAddress extends Model
         main: boolean,
         user: User,
         createdAt?: Date,
-        updatedAt?: Date
+        updatedAt?: Date,
+        isDeleted?: boolean
     ) 
     {
         super();
@@ -45,7 +46,7 @@ export class UserAddress extends Model
         this._user = user;
         this._createdAt = createdAt ?? new Date();
         this._updatedAt = updatedAt ?? new Date();
-        this._isDeleted = false;
+        this._isDeleted = isDeleted ?? false;
     }
 
     public static create(
@@ -60,7 +61,8 @@ export class UserAddress extends Model
         main: boolean,
         user: User,
         createdAt?: Date,
-        updatedAt?: Date
+        updatedAt?: Date,
+        isDeleted?: boolean
     ) 
     {
         return new UserAddress(
@@ -75,7 +77,8 @@ export class UserAddress extends Model
             main,
             user,
             createdAt,
-            updatedAt
+            updatedAt,
+            isDeleted
         );
     }
 

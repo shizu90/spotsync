@@ -4,7 +4,6 @@ import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/o
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 import { GetUserAddressesCommand } from "../ports/in/commands/get-user-addresses.command";
 import { Pagination } from "src/common/pagination.dto";
-import { UserAddress } from "src/user/domain/user-address.model";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { GetUserAddressDto } from "../ports/out/dto/get-user-address.dto";
@@ -28,7 +27,7 @@ export class GetUserAddressesService implements GetUserAddressesUseCase
             throw new UserNotFoundError(`User ${command.userId} not found.`);
         }
 
-        const userAddresses = await this.userAddressRepository.findByUserId(user.id());
+        const userAddresses = await this.userAddressRepository.findBy({userId: user.id()});
 
         return userAddresses.map((userAddress) => {
             return new GetUserAddressDto(

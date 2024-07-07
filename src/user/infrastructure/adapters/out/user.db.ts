@@ -9,9 +9,45 @@ export class UserRepositoryImpl implements UserRepository
     public constructor(@Inject(PrismaService) protected prismaService: PrismaService) 
     {}
 
-    public async findBy(): Promise<Array<User>> 
+    public async findBy(values: Object): Promise<Array<User>> 
     {
-        return null;
+        const name = values['name'] || '';
+        const profileVisibility = values['profileVisibility'] || 'public';
+
+        const userIds = await this.prismaService.$queryRaw<{id: string}[]>`
+            SELECT id FROM users 
+            WHERE name LIKE '%${name}%' 
+            OR profile_visibility = '${profileVisibility}';
+        `;
+
+        const users = await this.prismaService.user.findMany({
+            where: {id: {in: userIds.map((row) => row.id)}},
+            include: {credentials: true}
+        });
+
+        return users.map((user) => {
+            if(user) {
+                return User.create(
+                    user.id,
+                    user.profile_picture,
+                    user.banner_picture,
+                    user.biograph,
+                    user.birth_date,
+                    user.profile_visibility,
+                    UserCredentials.create(
+                        user.id,
+                        user.credentials.name,
+                        user.credentials.email,
+                        user.credentials.password
+                    ),
+                    user.created_at,
+                    user.updated_at,
+                    user.is_deleted
+                );
+            }else {
+                return null;
+            }
+        });
     }
 
     public async findAll(): Promise<Array<User>> 
@@ -39,7 +75,8 @@ export class UserRepositoryImpl implements UserRepository
                     user.credentials.password
                 ),
                 user.created_at,
-                user.updated_at
+                user.updated_at,
+                user.is_deleted
             );
         });
     }
@@ -70,7 +107,8 @@ export class UserRepositoryImpl implements UserRepository
                 user.credentials.password
             ),
             user.created_at,
-            user.updated_at
+            user.updated_at,
+            user.is_deleted
         );
     }
 
@@ -101,7 +139,8 @@ export class UserRepositoryImpl implements UserRepository
                 userCredentials.password
             ),
             userCredentials.user.created_at,
-            userCredentials.user.updated_at
+            userCredentials.user.updated_at,
+            userCredentials.user.is_deleted
         );
     }
 
@@ -132,7 +171,8 @@ export class UserRepositoryImpl implements UserRepository
                 userCredentials.password
             ),
             userCredentials.user.created_at,
-            userCredentials.user.updated_at
+            userCredentials.user.updated_at,
+            userCredentials.user.is_deleted
         );
     }
 
@@ -178,7 +218,8 @@ export class UserRepositoryImpl implements UserRepository
                 user.credentials.password
             ),
             user.created_at,
-            user.updated_at
+            user.updated_at,
+            user.is_deleted
         );
     }
 
@@ -189,7 +230,8 @@ export class UserRepositoryImpl implements UserRepository
                 biograph: model.biograph(),
                 banner_picture: model.bannerPicture(),
                 profile_picture: model.profilePicture(),
-                birth_date: model.birthDate()
+                birth_date: model.birthDate(),
+                is_deleted: model.isDeleted()
             },
             where: {
                 id: model.id()
@@ -215,7 +257,8 @@ export class UserRepositoryImpl implements UserRepository
                 user.credentials.password
             ),
             user.created_at,
-            user.updated_at
+            user.updated_at,
+            user.is_deleted
         );
     }
 
@@ -252,7 +295,8 @@ export class UserRepositoryImpl implements UserRepository
                 userCredentials.password
             ),
             userCredentials.user.created_at,
-            userCredentials.user.updated_at
+            userCredentials.user.updated_at,
+            userCredentials.user.is_deleted
         );
     }
 

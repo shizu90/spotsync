@@ -66,7 +66,9 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
 
         if(command.main != null) {
             if(command.main) {
-                const userMainAddresses: Array<UserAddress> = await this.userAddressRepository.findByUserIdAndMain(command.userId, true);
+                const userMainAddresses: Array<UserAddress> = await this.userAddressRepository.findBy(
+                    {userId: user.id(), main: true}
+                );
 
                 userMainAddresses.forEach((userAddress: UserAddress) => {
                     userAddress.changeMain(false);

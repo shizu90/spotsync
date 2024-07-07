@@ -54,7 +54,9 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
         );
 
         if(userAddress.main()) {
-            const mainAddresses: Array<UserAddress> = await this.userAddressRepository.findByUserIdAndMain(user.id(), userAddress.main());
+            const mainAddresses: Array<UserAddress> = await this.userAddressRepository.findBy(
+                {userId: user.id(), main: true}
+            );
 
             mainAddresses.forEach((userAddress: UserAddress) => {
                 userAddress.changeMain(false);

@@ -29,7 +29,7 @@ export class DeleteUserService implements DeleteUserUseCase
             throw new UserNotFoundError(`User ${command.id} not found.`);
         }
 
-        const userAddresses = await this.userAddressRepository.findByUserId(user.id());
+        const userAddresses = await this.userAddressRepository.findBy({userId: user.id()});
 
         userAddresses.forEach((userAddress) => {
             userAddress.delete();
