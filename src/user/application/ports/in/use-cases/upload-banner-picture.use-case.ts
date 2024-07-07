@@ -1,5 +1,5 @@
 import { UseCase } from "src/common/common.use-case";
-import { UploadBannerPictureCommand } from "./upload-banner-picture.command";
+import { UploadBannerPictureCommand } from "../commands/upload-banner-picture.command";
 
 export const UploadBannerPictureUseCaseProvider = 'UploadBannerPictureUseCase';
 

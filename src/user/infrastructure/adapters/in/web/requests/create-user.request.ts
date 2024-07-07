@@ -2,22 +2,19 @@ import { IsDateString, IsEmail, IsString, Matches, MaxLength, MinLength } from "
 
 export class CreateUserRequest 
 {
-    @IsString()
-    @MinLength(3)
-    @MaxLength(255)
+    @IsString({message: "User name is invalid."})
+    @MinLength(3, {message: "User name must have at least 3 characters."})
+    @MaxLength(255, {message: "User name must have less than 255 characters."})
     public name: string;
     
-    @IsEmail()
+    @IsEmail({}, {message: "E-mail is invalid."})
     public email: string;
 
-    @IsString()
-    @MinLength(6)
-    @MaxLength(32)
+    @IsString({message: "Password is invalid."})
+    @MinLength(6, {message: "Password must have at least 6 characters."})
+    @MaxLength(32, {message: "Password must have less than 32 characters."})
     public password: string;
 
-    @IsDateString()
-    @Matches(/^\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1])$/i, {
-        message: '$property must be formatted as yyyy-mm-dd'
-    })
+    @IsDateString({}, {message: "Birth date is invalid"})
     public birthDate: Date;
 }

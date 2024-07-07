@@ -1,9 +1,10 @@
-import { ArgumentsHost, ExceptionFilter } from "@nestjs/common";
+import { ArgumentsHost, BadRequestException, ExceptionFilter, HttpException } from "@nestjs/common";
 import { Request, Response } from "express";
+import { timestamp } from "rxjs";
 
 export class UserErrorHandler implements ExceptionFilter 
 {
-    public catch(error: Error, host: ArgumentsHost) 
+    public catch(error: Error | HttpException, host: ArgumentsHost) 
     {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>()
@@ -37,8 +38,33 @@ export class UserErrorHandler implements ExceptionFilter
                     message: error.message
                 });
                 break;
+            case 'ValidationError':
+                response.status(400)
+                .json({
+                    status_code: 400,
+                    timestamp: new Date().toISOString(),
+                    path: request.url,
+                    message: error.message
+                })
+                break;
             default:
-
+                if(error instanceof BadRequestException) {
+                    response.status(400)
+                    .json({
+                        status_code: 400,
+                        timestamp: new Date().toISOString(),
+                        path: request.url,
+                        message: error.getResponse()['message']
+                    })
+                }else {
+                    response.status(500)
+                    .json({
+                        status_code: 500,
+                        timestamp: new Date().toISOString(),
+                        path: request.url,
+                        message: error.message
+                    })
+                }
                 break;
         }
     }

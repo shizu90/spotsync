@@ -1,11 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { GetUserAddressUseCase } from "../ports/in/get-user-address.use-case";
+import { GetUserAddressUseCase } from "../ports/in/use-cases/get-user-address.use-case";
 import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
-import { GetUserAddressCommand } from "../ports/in/get-user-address.command";
+import { GetUserAddressCommand } from "../ports/in/commands/get-user-address.command";
 import { UserAddress } from "src/user/domain/user-address.model";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
+import { GetUserAddressDto } from "../ports/out/dto/get-user-address.dto";
 
 @Injectable()
 export class GetUserAddressService implements GetUserAddressUseCase 
@@ -18,7 +19,7 @@ export class GetUserAddressService implements GetUserAddressUseCase
     ) 
     {}
 
-    public async execute(command: GetUserAddressCommand): Promise<UserAddress> 
+    public async execute(command: GetUserAddressCommand): Promise<GetUserAddressDto> 
     {
         const user: User = await this.userRepository.findById(command.userId);
 
@@ -32,6 +33,18 @@ export class GetUserAddressService implements GetUserAddressUseCase
             throw new UserNotFoundError(`User address ${command.id} not found.`);
         }
 
-        return userAddress;
+        return new GetUserAddressDto(
+            userAddress.id(),
+            userAddress.name(),
+            userAddress.area(),
+            userAddress.subArea(),
+            userAddress.locality(),
+            userAddress.countryCode(),
+            userAddress.latitude(),
+            userAddress.longitude(),
+            userAddress.main(),
+            userAddress.createdAt(),
+            userAddress.updatedAt()
+        );
     }
 }

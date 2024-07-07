@@ -8,6 +8,36 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
     public constructor(protected prismaService: PrismaService) 
     {}
 
+    public async findBy(values: {userId?: string, main?: boolean}): Promise<Array<UserAddress>> 
+    {
+        const where = {};
+
+        if(values.userId !== null) where['user_id'] = values.userId;
+        if(values.main !== null) where['main'] = values.main;
+
+        const userAddresses = await this.prismaService.userAddress.findMany({
+            where: where
+        });
+
+        return userAddresses.map((userAddress) => {
+            if(userAddress === undefined) return null;
+            return UserAddress.create(
+                userAddress.id,
+                userAddress.name,
+                userAddress.area,
+                userAddress.sub_area,
+                userAddress.locality,
+                userAddress.latitude.toNumber(),
+                userAddress.longitude.toNumber(),
+                userAddress.country_code,
+                userAddress.main,
+                null,
+                userAddress.created_at,
+                userAddress.updated_at
+            );
+        });
+    }
+
     public async findAll(): Promise<Array<UserAddress>> {
         return null;
     }
@@ -16,7 +46,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
         return null;
     }
 
-    public async findByUserId(userId: string): Promise<Pagination<UserAddress>> {
+    public async findByUserId(userId: string): Promise<Array<UserAddress>> {
         return null;
     }
 

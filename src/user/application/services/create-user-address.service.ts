@@ -1,13 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateUserAddressUseCase } from "../ports/in/create-user-address.use-case";
+import { CreateUserAddressUseCase } from "../ports/in/use-cases/create-user-address.use-case";
 import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
-import { CreateUserAddressCommand } from "../ports/in/create-user-address.command";
+import { CreateUserAddressCommand } from "../ports/in/commands/create-user-address.command";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAddress } from "src/user/domain/user-address.model";
 import { randomUUID } from "crypto";
 import { GeoLocatorInput, GeoLocatorOutput, GeoLocatorService, GeoLocatorServiceProvider } from "../ports/out/geo-locator.service";
+import { CreateUserAddressDto } from "../ports/out/dto/create-user-address.dto";
 
 @Injectable()
 export class CreateUserAddressService implements CreateUserAddressUseCase 
@@ -22,7 +23,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
     ) 
     {}
 
-    public async execute(command: CreateUserAddressCommand): Promise<UserAddress> 
+    public async execute(command: CreateUserAddressCommand): Promise<CreateUserAddressDto> 
     {
         const user: User = await this.userRepository.findById(command.userId);
 
@@ -61,6 +62,20 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
             });
         }
 
-        return this.userAddressRepository.store(userAddress);
+        await this.userAddressRepository.store(userAddress);
+
+        return new CreateUserAddressDto(
+            userAddress.id(),
+            userAddress.name(),
+            userAddress.area(),
+            userAddress.subArea(),
+            userAddress.locality(),
+            userAddress.countryCode(),
+            userAddress.latitude(),
+            userAddress.longitude(),
+            userAddress.main(),
+            userAddress.createdAt(),
+            userAddress.updatedAt()
+        );
     }
 }

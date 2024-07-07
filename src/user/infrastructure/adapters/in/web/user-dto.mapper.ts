@@ -1,24 +1,24 @@
-import { CreateUserCommand } from "src/user/application/ports/in/create-user.command";
+import { CreateUserCommand } from "src/user/application/ports/in/commands/create-user.command";
 import { CreateUserRequest } from "./requests/create-user.request";
 import { UpdateUserProfileRequest } from "./requests/update-user-profile.request";
-import { UpdateUserProfileCommand } from "src/user/application/ports/in/update-user-profile.command";
+import { UpdateUserProfileCommand } from "src/user/application/ports/in/commands/update-user-profile.command";
 import { UpdateUserCredentialsRequest } from "./requests/update-user-credentials.request";
-import { UpdateUserCredentialsCommand } from "src/user/application/ports/in/update-user-credentials.command";
-import { DeleteUserCommand } from "src/user/application/ports/in/delete-user.command";
-import { CreateUserAddressCommand } from "src/user/application/ports/in/create-user-address.command";
+import { UpdateUserCredentialsCommand } from "src/user/application/ports/in/commands/update-user-credentials.command";
+import { DeleteUserCommand } from "src/user/application/ports/in/commands/delete-user.command";
+import { CreateUserAddressCommand } from "src/user/application/ports/in/commands/create-user-address.command";
 import { UpdateUserAddressRequest } from "./requests/update-user-address.request";
 import { CreateUserAddressRequest } from "./requests/create-user-address.request";
-import { UpdateUserAddressCommand } from "src/user/application/ports/in/update-user-address.command";
-import { DeleteUserAddressCommand } from "src/user/application/ports/in/delete-user-address.command";
-import { GetUserCommand } from "src/user/application/ports/in/get-user.command";
-import { GetUserAddressesCommand } from "src/user/application/ports/in/get-user-addresses.command";
-import { GetUserAddressCommand } from "src/user/application/ports/in/get-user-address.command";
+import { UpdateUserAddressCommand } from "src/user/application/ports/in/commands/update-user-address.command";
+import { DeleteUserAddressCommand } from "src/user/application/ports/in/commands/delete-user-address.command";
+import { GetUserAddressesCommand } from "src/user/application/ports/in/commands/get-user-addresses.command";
+import { GetUserAddressCommand } from "src/user/application/ports/in/commands/get-user-address.command";
+import { GetUserProfileCommand } from "src/user/application/ports/in/commands/get-user-profile.command";
 
 export class UserDtoMapper 
 {
-    public static getUserCommand(id: string): GetUserCommand 
+    public static getUserProfileCommand(id: string): GetUserProfileCommand 
     {
-        return new GetUserCommand(id);
+        return new GetUserProfileCommand(id);
     }
 
     public static createUserCommand(request: CreateUserRequest): CreateUserCommand 

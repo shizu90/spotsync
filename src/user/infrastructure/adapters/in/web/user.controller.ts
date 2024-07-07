@@ -1,41 +1,41 @@
 import { Body, Controller, Delete, Get, Inject, NotFoundException, Param, Post, Put, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
-import { CreateUserUseCase, CreateUserUseCaseProvider } from "src/user/application/ports/in/create-user.use-case";
-import { DeleteUserUseCase, DeleteUserUseCaseProvider } from "src/user/application/ports/in/delete-user.use-case";
-import { GetUserCommand } from "src/user/application/ports/in/get-user.command";
-import { GetUserUseCase, GetUserUseCaseProvider } from "src/user/application/ports/in/get-user.use-case";
-import { UpdateUserCredentialsUseCase, UpdateUserCredentialsUseCaseProvider } from "src/user/application/ports/in/update-user-credentials.use-case";
-import { UpdateUserProfileUseCase, UpdateUserProfileUseCaseProvider } from "src/user/application/ports/in/update-user-profile.use-case";
-import { UploadBannerPictureUseCase, UploadBannerPictureUseCaseProvider } from "src/user/application/ports/in/upload-banner-picture.use-case";
-import { UploadProfilePictureUseCase, UploadProfilePictureUseCaseProvider } from "src/user/application/ports/in/upload-profile-picture.use-case";
+import { CreateUserUseCase, CreateUserUseCaseProvider } from "src/user/application/ports/in/use-cases/create-user.use-case";
+import { DeleteUserUseCase, DeleteUserUseCaseProvider } from "src/user/application/ports/in/use-cases/delete-user.use-case";
+import { UpdateUserCredentialsUseCase, UpdateUserCredentialsUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-credentials.use-case";
+import { UpdateUserProfileUseCase, UpdateUserProfileUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-profile.use-case";
+import { UploadBannerPictureUseCase, UploadBannerPictureUseCaseProvider } from "src/user/application/ports/in/use-cases/upload-banner-picture.use-case";
+import { UploadProfilePictureUseCase, UploadProfilePictureUseCaseProvider } from "src/user/application/ports/in/use-cases/upload-profile-picture.use-case";
 import { CreateUserRequest } from "./requests/create-user.request";
-import { CreateUserCommand } from "src/user/application/ports/in/create-user.command";
+import { CreateUserCommand } from "src/user/application/ports/in/commands/create-user.command";
 import { UserDtoMapper } from "./user-dto.mapper";
 import { UpdateUserProfileRequest } from "./requests/update-user-profile.request";
-import { UpdateUserProfileCommand } from "src/user/application/ports/in/update-user-profile.command";
+import { UpdateUserProfileCommand } from "src/user/application/ports/in/commands/update-user-profile.command";
 import { UpdateUserCredentialsRequest } from "./requests/update-user-credentials.request";
-import { UpdateUserCredentialsCommand } from "src/user/application/ports/in/update-user-credentials.command";
-import { DeleteUserCommand } from "src/user/application/ports/in/delete-user.command";
-import { CreateUserAddressUseCase, CreateUserAddressUseCaseProvider } from "src/user/application/ports/in/create-user-address.use-case";
+import { UpdateUserCredentialsCommand } from "src/user/application/ports/in/commands/update-user-credentials.command";
+import { DeleteUserCommand } from "src/user/application/ports/in/commands/delete-user.command";
+import { CreateUserAddressUseCase, CreateUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/create-user-address.use-case";
 import { CreateUserAddressRequest } from "./requests/create-user-address.request";
-import { CreateUserAddressCommand } from "src/user/application/ports/in/create-user-address.command";
+import { CreateUserAddressCommand } from "src/user/application/ports/in/commands/create-user-address.command";
 import { UpdateUserAddressRequest } from "./requests/update-user-address.request";
-import { UpdateUserAddressCommand } from "src/user/application/ports/in/update-user-address.command";
-import { UpdateUserAddressUseCase, UpdateUserAddressUseCaseProvider } from "src/user/application/ports/in/update-user-address.use-case";
-import { GetUserAddressesCommand } from "src/user/application/ports/in/get-user-addresses.command";
-import { DeleteUserAddressUseCase, DeleteUserAddressUseCaseProvider } from "src/user/application/ports/in/delete-user-address.use-case";
-import { GetUserAddressesUseCase } from "src/user/application/ports/in/get-user-addresses.use-case";
-import { GetUserAddressCommand } from "src/user/application/ports/in/get-user-address.command";
-import { GetUserAddressUseCase, GetUserAddressUseCaseProvider } from "src/user/application/ports/in/get-user-address.use-case";
+import { UpdateUserAddressCommand } from "src/user/application/ports/in/commands/update-user-address.command";
+import { UpdateUserAddressUseCase, UpdateUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-address.use-case";
+import { GetUserAddressesCommand } from "src/user/application/ports/in/commands/get-user-addresses.command";
+import { DeleteUserAddressUseCase, DeleteUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/delete-user-address.use-case";
+import { GetUserAddressesUseCase } from "src/user/application/ports/in/use-cases/get-user-addresses.use-case";
+import { GetUserAddressCommand } from "src/user/application/ports/in/commands/get-user-address.command";
+import { GetUserAddressUseCase, GetUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-address.use-case";
 import { UserErrorHandler } from "./handlers/error.handler";
-import { DeleteUserAddressCommand } from "src/user/application/ports/in/delete-user-address.command";
+import { DeleteUserAddressCommand } from "src/user/application/ports/in/commands/delete-user-address.command";
+import { GetUserProfileUseCase, GetUserProfileUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-profile.use-case";
+import { GetUserProfileCommand } from "src/user/application/ports/in/commands/get-user-profile.command";
 
 @Controller('users')
 @UseFilters(new UserErrorHandler())
 export class UserController 
 {
     constructor(
-        @Inject(GetUserUseCaseProvider) 
-        protected readonly getUserUseCase: GetUserUseCase,
+        @Inject(GetUserProfileUseCaseProvider) 
+        protected readonly getUserProfileUseCase: GetUserProfileUseCase,
         @Inject(CreateUserUseCaseProvider) 
         protected readonly createUserUseCase: CreateUserUseCase,
         @Inject(UpdateUserProfileUseCaseProvider) 
@@ -61,12 +61,12 @@ export class UserController
     ) 
     {}
 
-    @Get(':id')
+    @Get(':id/profile')
     public async get(@Param('id') id: string) 
     {
-        const command: GetUserCommand = UserDtoMapper.getUserCommand(id);
+        const command: GetUserProfileCommand = UserDtoMapper.getUserProfileCommand(id);
 
-        const data = await this.getUserUseCase.execute(command);
+        const data = await this.getUserProfileUseCase.execute(command);
     
         return {
             'data': data

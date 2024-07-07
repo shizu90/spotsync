@@ -1,5 +1,5 @@
 import { UseCase } from "src/common/common.use-case";
-import { DeleteUserAddressCommand } from "./delete-user-address.command";
+import { DeleteUserAddressCommand } from "../commands/delete-user-address.command";
 
 export const DeleteUserAddressUseCaseProvider = 'DeleteUserAddressUseCase';
 

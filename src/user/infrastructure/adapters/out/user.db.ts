@@ -9,6 +9,11 @@ export class UserRepositoryImpl implements UserRepository
     public constructor(@Inject(PrismaService) protected prismaService: PrismaService) 
     {}
 
+    public async findBy(): Promise<Array<User>> 
+    {
+        return null;
+    }
+
     public async findAll(): Promise<Array<User>> 
     {
         const users = await this.prismaService.user.findMany({

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { UploadBannerPictureCommand } from "../ports/in/upload-banner-picture.command";
-import { UploadBannerPictureUseCase } from "../ports/in/upload-banner-picture.use-case";
+import { UploadBannerPictureCommand } from "../ports/in/commands/upload-banner-picture.command";
+import { UploadBannerPictureUseCase } from "../ports/in/use-cases/upload-banner-picture.use-case";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 
 @Injectable()

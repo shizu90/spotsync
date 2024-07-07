@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { DeleteUserAddressUseCase } from "../ports/in/delete-user-address.use-case";
+import { DeleteUserAddressUseCase } from "../ports/in/use-cases/delete-user-address.use-case";
 import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
-import { DeleteUserAddressCommand } from "../ports/in/delete-user-address.command";
+import { DeleteUserAddressCommand } from "../ports/in/commands/delete-user-address.command";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAddress } from "src/user/domain/user-address.model";

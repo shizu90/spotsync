@@ -1,6 +1,6 @@
 import { UserCredentials } from "src/user/domain/user-credentials.model";
-import { CreateUserCommand } from "../ports/in/create-user.command";
-import { CreateUserUseCase } from "../ports/in/create-user.use-case";
+import { CreateUserCommand } from "../ports/in/commands/create-user.command";
+import { CreateUserUseCase } from "../ports/in/use-cases/create-user.use-case";
 import { randomUUID } from "crypto";
 import { User } from "src/user/domain/user.model";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
@@ -8,6 +8,7 @@ import { UserAlreadyExistsError } from "./errors/user-already-exists.error";
 import { Inject, Injectable } from "@nestjs/common";
 import { EncryptPasswordService, EncryptPasswordServiceProvider } from "../ports/out/encrypt-password.service";
 import { ProfileVisibility } from "src/user/domain/profile-visibility.enum";
+import { CreateUserDto } from "../ports/out/dto/create-user.dto";
 
 @Injectable()
 export class CreateUserService implements CreateUserUseCase 
@@ -20,13 +21,13 @@ export class CreateUserService implements CreateUserUseCase
     ) 
     {}
     
-    public async execute(command: CreateUserCommand): Promise<User> 
+    public async execute(command: CreateUserCommand): Promise<CreateUserDto> 
     {
-        if(this.userRepository.findByEmail(command.email) != null) {
+        if(await this.userRepository.findByEmail(command.email) != null) {
             throw new UserAlreadyExistsError(`E-mail ${command.email} already in use.`);
         }
 
-        if(this.userRepository.findByName(command.name) != null) {
+        if(await this.userRepository.findByName(command.name) != null) {
             throw new UserAlreadyExistsError(`User name ${command.name} already taken.`);
         }
 
@@ -44,11 +45,23 @@ export class CreateUserService implements CreateUserUseCase
             null,
             null,
             null,
-            null,
+            new Date(command.birthDate),
             ProfileVisibility.PUBLIC,
             userCredentials
         );
 
-        return this.userRepository.store(user);
+        await this.userRepository.store(user);
+
+        return new CreateUserDto(
+            user.id(),
+            user.biograph(),
+            user.profilePicture(),
+            user.bannerPicture(),
+            user.birthDate(),
+            user.isDeleted(),
+            user.createdAt(),
+            user.updatedAt(),
+            {name: user.credentials().name(), email: user.credentials().email()}
+        );
     }
 }

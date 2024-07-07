@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { UpdateUserAddressUseCase } from "../ports/in/update-user-address.use-case";
+import { UpdateUserAddressUseCase } from "../ports/in/use-cases/update-user-address.use-case";
 import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
-import { UpdateUserAddressCommand } from "../ports/in/update-user-address.command";
+import { UpdateUserAddressCommand } from "../ports/in/commands/update-user-address.command";
 import { UserAddress } from "src/user/domain/user-address.model";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
@@ -22,7 +22,7 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
     )
     {}
 
-    public async execute(command: UpdateUserAddressCommand): Promise<UserAddress> 
+    public async execute(command: UpdateUserAddressCommand): Promise<void> 
     {
         const user: User = await this.userRepository.findById(command.userId);
 
@@ -77,7 +77,5 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
 
             userAddress.changeMain(command.main);
         }
-
-        return this.userAddressRepository.update(userAddress);
     }
 }

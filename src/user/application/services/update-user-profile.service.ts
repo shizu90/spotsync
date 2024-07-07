@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { UpdateUserProfileUseCase, UpdateUserProfileUseCaseProvider } from "../ports/in/update-user-profile.use-case";
+import { UpdateUserProfileUseCase, UpdateUserProfileUseCaseProvider } from "../ports/in/use-cases/update-user-profile.use-case";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
-import { UpdateUserProfileCommand } from "../ports/in/update-user-profile.command";
+import { UpdateUserProfileCommand } from "../ports/in/commands/update-user-profile.command";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 
@@ -14,7 +14,7 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase
     ) 
     {}
 
-    public async execute(command: UpdateUserProfileCommand): Promise<User> 
+    public async execute(command: UpdateUserProfileCommand): Promise<void> 
     {
         const user: User = await this.userRepository.findById(command.id);
 
@@ -39,7 +39,5 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase
         }
 
         this.userRepository.update(user);
-
-        return user;
     }
 }

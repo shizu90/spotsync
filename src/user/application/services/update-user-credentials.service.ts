@@ -1,6 +1,6 @@
 import { User } from "src/user/domain/user.model";
-import { UpdateUserCredentialsCommand } from "../ports/in/update-user-credentials.command";
-import { UpdateUserCredentialsUseCase } from "../ports/in/update-user-credentials.use-case";
+import { UpdateUserCredentialsCommand } from "../ports/in/commands/update-user-credentials.command";
+import { UpdateUserCredentialsUseCase } from "../ports/in/use-cases/update-user-credentials.use-case";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 import { UserAlreadyExistsError } from "./errors/user-already-exists.error";
 import { EncryptPasswordService, EncryptPasswordServiceProvider } from "../ports/out/encrypt-password.service";
@@ -19,7 +19,7 @@ export class UpdateUserCredentialsService implements UpdateUserCredentialsUseCas
     ) 
     {}
 
-    public async execute(command: UpdateUserCredentialsCommand): Promise<User> 
+    public async execute(command: UpdateUserCredentialsCommand): Promise<void> 
     {
         const user: User = await this.userRepository.findById(command.id);
 
@@ -44,7 +44,5 @@ export class UpdateUserCredentialsService implements UpdateUserCredentialsUseCas
         }
 
         this.userRepository.updateCredentials(user.credentials());
-
-        return user;
     }
 }

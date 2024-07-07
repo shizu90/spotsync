@@ -129,6 +129,16 @@ export class UserAddress extends Model
         return this._user;
     }
 
+    public createdAt() 
+    {
+        return this._createdAt;
+    }
+
+    public updatedAt() 
+    {
+        return this._updatedAt;
+    }
+
     public isDeleted() 
     {
         return this._isDeleted;
