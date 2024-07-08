@@ -19,15 +19,15 @@ export class GetUserAddressesService implements GetUserAddressesUseCase
     ) 
     {}
 
-    public async execute(command: GetUserAddressesCommand): Promise<Pagination<GetUserAddressDto> | Array<GetUserAddressDto>> 
+    public async execute(command: GetUserAddressesCommand): Promise<Array<GetUserAddressDto>> 
     {
         const user: User = await this.userRepository.findById(command.userId);
 
-        if(user == null) {
+        if(user == null || user.isDeleted()) {
             throw new UserNotFoundError(`User ${command.userId} not found.`);
         }
 
-        const userAddresses = await this.userAddressRepository.findBy({userId: user.id()});
+        const userAddresses = await this.userAddressRepository.findBy({userId: user.id(), isDeleted: false});
 
         return userAddresses.map((userAddress) => {
             return new GetUserAddressDto(

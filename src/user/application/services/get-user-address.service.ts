@@ -23,13 +23,13 @@ export class GetUserAddressService implements GetUserAddressUseCase
     {
         const user: User = await this.userRepository.findById(command.userId);
 
-        if(user == null) {
+        if(user == null || user.isDeleted()) {
             throw new UserNotFoundError(`User ${command.userId} not found.`);
         }
 
         const userAddress: UserAddress = await this.userAddressRepository.findById(command.id);
 
-        if(userAddress == null || userAddress.user().id() != user.id()) {
+        if(userAddress == null || userAddress.user().id() != user.id() || userAddress.isDeleted()) {
             throw new UserNotFoundError(`User address ${command.id} not found.`);
         }
 

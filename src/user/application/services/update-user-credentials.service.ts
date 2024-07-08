@@ -22,23 +22,23 @@ export class UpdateUserCredentialsService implements UpdateUserCredentialsUseCas
     {
         const user: User = await this.userRepository.findById(command.id);
 
-        if(user == null) {
+        if(user == null || user.isDeleted()) {
             throw new UserNotFoundError(`User ${command.id} not found.`);
         }
 
-        if(user.credentials().email() != command.email && this.userRepository.findByEmail(command.email) != null) {
+        if(command.email && user.credentials().email() != command.email && this.userRepository.findByEmail(command.email) != null) {
             throw new UserAlreadyExistsError(`E-mail ${command.email} already in use.`);
         }
 
-        if(!(user.credentials().name() == command.name)) {
+        if(command.name && !(user.credentials().name() == command.name)) {
             user.credentials().changeName(command.name);
         }
 
-        if(!(user.credentials().email() == command.email)) {
+        if(command.email && !(user.credentials().email() == command.email)) {
             user.credentials().changeEmail(command.email);
         }
 
-        if(!this.encryptPasswordService.equals(user.credentials().password(), command.password)) {
+        if(command.password && !this.encryptPasswordService.equals(user.credentials().password(), command.password)) {
             user.credentials().changePassword(this.encryptPasswordService.encrypt(command.password));
         }
 

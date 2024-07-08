@@ -16,5 +16,5 @@ export class CreateUserRequest
     public password: string;
 
     @IsDateString({}, {message: "Birth date is invalid"})
-    public birthDate: Date;
+    public birth_date: Date;
 }

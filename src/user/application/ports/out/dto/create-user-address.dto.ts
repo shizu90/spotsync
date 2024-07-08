@@ -6,14 +6,14 @@ export class CreateUserAddressDto extends Dto
         readonly id: string,
         readonly name: string,
         readonly area: string,
-        readonly subArea: string,
+        readonly sub_area: string,
         readonly locality: string,
-        readonly countryCode: string,
+        readonly country_code: string,
         readonly latitude: number,
         readonly longitude: number,
         readonly main: boolean,
-        readonly createdAt: Date,
-        readonly updatedAt: Date
+        readonly created_at: Date,
+        readonly updated_at: Date
     ) 
     {super();}
 }

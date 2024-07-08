@@ -14,7 +14,7 @@ import { GetUserAddressesCommand } from "src/user/application/ports/in/commands/
 import { GetUserAddressCommand } from "src/user/application/ports/in/commands/get-user-address.command";
 import { GetUserProfileCommand } from "src/user/application/ports/in/commands/get-user-profile.command";
 
-export class UserDtoMapper 
+export class UserRequestMapper 
 {
     public static getUserProfileCommand(id: string): GetUserProfileCommand 
     {
@@ -23,12 +23,12 @@ export class UserDtoMapper
 
     public static createUserCommand(request: CreateUserRequest): CreateUserCommand 
     {
-        return new CreateUserCommand(request.name, request.email, request.password, request.birthDate);
+        return new CreateUserCommand(request.name, request.email, request.password, request.birth_date);
     }
 
     public static updateUserProfileCommand(id: string, request: UpdateUserProfileRequest): UpdateUserProfileCommand 
     {
-        return new UpdateUserProfileCommand(id, request.profilePicture, request.bannerPicture, request.biograph, request.birthDate);
+        return new UpdateUserProfileCommand(id, request.profile_picture, request.banner_picture, request.biograph, request.birth_date);
     }
 
     public static updateUserCredentialsCommand(id: string, request: UpdateUserCredentialsRequest): UpdateUserCredentialsCommand
@@ -53,12 +53,12 @@ export class UserDtoMapper
 
     public static createUserAddressCommand(userId: string, request: CreateUserAddressRequest): CreateUserAddressCommand 
     {
-        return new CreateUserAddressCommand(userId, request.name, request.area, request.subArea, request.locality, request.countryCode, request.main);
+        return new CreateUserAddressCommand(userId, request.name, request.area, request.sub_area, request.locality, request.country_code, request.main);
     }
 
     public static updateUserAddressCommand(addressId: string, userId: string, request: UpdateUserAddressRequest): UpdateUserAddressCommand 
     {
-        return new UpdateUserAddressCommand(addressId, userId, request.name, request.area, request.subArea, request.locality, request.countryCode, request.main);
+        return new UpdateUserAddressCommand(addressId, userId, request.name, request.area, request.sub_area, request.locality, request.country_code, request.main);
     }
 
     public static deleteUserAddressCommand(addressId: string, userId: string): DeleteUserAddressCommand 

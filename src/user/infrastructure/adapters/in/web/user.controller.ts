@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, NotFoundException, Param, Post, Put, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { CreateUserUseCase, CreateUserUseCaseProvider } from "src/user/application/ports/in/use-cases/create-user.use-case";
 import { DeleteUserUseCase, DeleteUserUseCaseProvider } from "src/user/application/ports/in/use-cases/delete-user.use-case";
 import { UpdateUserCredentialsUseCase, UpdateUserCredentialsUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-credentials.use-case";
@@ -7,7 +7,7 @@ import { UploadBannerPictureUseCase, UploadBannerPictureUseCaseProvider } from "
 import { UploadProfilePictureUseCase, UploadProfilePictureUseCaseProvider } from "src/user/application/ports/in/use-cases/upload-profile-picture.use-case";
 import { CreateUserRequest } from "./requests/create-user.request";
 import { CreateUserCommand } from "src/user/application/ports/in/commands/create-user.command";
-import { UserDtoMapper } from "./user-dto.mapper";
+import { UserRequestMapper } from "./user-request.mapper";
 import { UpdateUserProfileRequest } from "./requests/update-user-profile.request";
 import { UpdateUserProfileCommand } from "src/user/application/ports/in/commands/update-user-profile.command";
 import { UpdateUserCredentialsRequest } from "./requests/update-user-credentials.request";
@@ -21,14 +21,50 @@ import { UpdateUserAddressCommand } from "src/user/application/ports/in/commands
 import { UpdateUserAddressUseCase, UpdateUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-address.use-case";
 import { GetUserAddressesCommand } from "src/user/application/ports/in/commands/get-user-addresses.command";
 import { DeleteUserAddressUseCase, DeleteUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/delete-user-address.use-case";
-import { GetUserAddressesUseCase } from "src/user/application/ports/in/use-cases/get-user-addresses.use-case";
+import { GetUserAddressesUseCase, GetUserAddressesUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-addresses.use-case";
 import { GetUserAddressCommand } from "src/user/application/ports/in/commands/get-user-address.command";
 import { GetUserAddressUseCase, GetUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-address.use-case";
-import { UserErrorHandler } from "./handlers/error.handler";
+import { UserErrorHandler } from "./handlers/user-error.handler";
 import { DeleteUserAddressCommand } from "src/user/application/ports/in/commands/delete-user-address.command";
 import { GetUserProfileUseCase, GetUserProfileUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-profile.use-case";
 import { GetUserProfileCommand } from "src/user/application/ports/in/commands/get-user-profile.command";
+import { ApiConflictResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse } from "@nestjs/swagger";
+import { Request, Response } from "express";
+import { GetUserProfileDto } from "src/user/application/ports/out/dto/get-user-profile.dto";
+import { CreateUserDto } from "src/user/application/ports/out/dto/create-user.dto";
+import { GetUserAddressDto } from "src/user/application/ports/out/dto/get-user-address.dto";
+import { CreateUserAddressDto } from "src/user/application/ports/out/dto/create-user-address.dto";
+import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
 
+@ApiTags('Users')
+@ApiNotFoundResponse({
+    example: {
+        timestamp: new Date(),
+        path: '',
+        message: ''
+    }
+})
+@ApiConflictResponse({
+    example: {
+        timestamp: new Date(),
+        path: '',
+        message: ''
+    }
+})
+@ApiUnprocessableEntityResponse({
+    example: {
+        timestamp: new Date(),
+        path: '',
+        message: ''
+    }
+})
+@ApiUnauthorizedResponse({
+    example: {
+        timestamp: new Date(),
+        path: '',
+        message: ''
+    }
+})
 @Controller('users')
 @UseFilters(new UserErrorHandler())
 export class UserController 
@@ -48,7 +84,7 @@ export class UserController
         protected readonly uploadBannerPictureUseCase: UploadBannerPictureUseCase,
         @Inject(DeleteUserUseCaseProvider) 
         protected readonly deleteUserUseCase: DeleteUserUseCase,
-        @Inject(GetUserAddressUseCaseProvider) 
+        @Inject(GetUserAddressesUseCaseProvider) 
         protected readonly getUserAddressesUseCase: GetUserAddressesUseCase,
         @Inject(GetUserAddressUseCaseProvider) 
         protected readonly getUserAddressUseCase: GetUserAddressUseCase,
@@ -61,128 +97,299 @@ export class UserController
     ) 
     {}
 
+    @ApiOperation({summary: 'Get user by id'})
+    @ApiOkResponse({schema: {
+        example: {
+            data: new GetUserProfileDto(
+                '', 
+                '', 
+                '', 
+                new Date(), 
+                new Date(), 
+                '', 
+                '', 
+                {name: ''}, 
+                {
+                    id: '', 
+                    name: '', 
+                    area: '', 
+                    sub_area: '', 
+                    locality: '', 
+                    latitude: 0.0, 
+                    longitude: 0.0, 
+                    country_code: '', 
+                    created_at: new Date(), 
+                    updated_at: new Date()
+                }
+            )
+        }
+    }})
+    @UseGuards(AuthGuard)
     @Get(':id/profile')
-    public async get(@Param('id') id: string) 
+    public async get(@Param('id') id: string, @Req() req: Request, @Res() res: Response) 
     {
-        const command: GetUserProfileCommand = UserDtoMapper.getUserProfileCommand(id);
+        const authenticatedUserId = req['authenticated_user'];
+
+        const command: GetUserProfileCommand = UserRequestMapper.getUserProfileCommand(id);
 
         const data = await this.getUserProfileUseCase.execute(command);
     
-        return {
-            'data': data
-        };
+        res
+            .status(200)
+            .json({
+                data: data
+            });
     }
 
+    @ApiOperation({summary: 'Create user'})
+    @ApiCreatedResponse({
+        example: {
+            data: new CreateUserDto(
+                '',
+                '',
+                '',
+                '',
+                new Date(),
+                false,
+                new Date(),
+                new Date(),
+                {name: '', email: ''}
+            )
+        }
+    })
     @Post()
     @UsePipes(new ValidationPipe({transform: true}))
-    public async create(@Body() request: CreateUserRequest) 
+    public async create(@Body() body: CreateUserRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: CreateUserCommand = UserDtoMapper.createUserCommand(request)
+        const command: CreateUserCommand = UserRequestMapper.createUserCommand(body)
     
         const data = await this.createUserUseCase.execute(command);
 
-        return {
-            'data': data
-        };
+        res
+            .status(201)
+            .json({
+                data: data
+            });
     }
 
+    @ApiOperation({summary: 'Update user profile'})
+    @ApiNoContentResponse({
+        example: {
+            data: {}
+        }
+    })
+    @UseGuards(AuthGuard)
     @Put(':id')
     @UsePipes(new ValidationPipe({transform: true}))
-    public async updateProfile(@Param() id: string, @Body() request: UpdateUserProfileRequest) 
+    public async updateProfile(@Param('id') id: string, @Body() body: UpdateUserProfileRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: UpdateUserProfileCommand = UserDtoMapper.updateUserProfileCommand(id, request);
+        const authenticatedUserId = req['authenticated_user'];
 
-        const data = await this.updateUserProfileUseCase.execute(command);
+        const command: UpdateUserProfileCommand = UserRequestMapper.updateUserProfileCommand(id, body);
 
-        return {
-            'data': data
-        };
+        await this.updateUserProfileUseCase.execute(command);
+
+        res
+            .status(204)
+            .json({
+                data: {}
+            });
     }
 
+    @ApiOperation({summary: 'Update user credentials'})
+    @ApiNoContentResponse({
+        example: {
+            data: {}
+        }
+    })
+    @UseGuards(AuthGuard)
     @Put(':id/credentials')
     @UsePipes(new ValidationPipe({transform: true}))
-    public async updateCredentials(@Param() id: string, @Body() request: UpdateUserCredentialsRequest) 
+    public async updateCredentials(@Param('id') id: string, @Body() body: UpdateUserCredentialsRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: UpdateUserCredentialsCommand = UserDtoMapper.updateUserCredentialsCommand(id, request);
+        const authenticatedUserId = req['authenticated_user'];
 
-        const data = await this.updateUserCredentialsUseCase.execute(command);
+        const command: UpdateUserCredentialsCommand = UserRequestMapper.updateUserCredentialsCommand(id, body);
 
-        return {
-            'data': data
-        };
+        await this.updateUserCredentialsUseCase.execute(command);
+
+        res
+            .status(204)
+            .json({
+                data: {}
+            });
     }
 
+    @ApiOperation({summary: 'Delete user by id'})
+    @ApiNoContentResponse({
+        example: {
+            data: {}
+        }
+    })
+    @UseGuards(AuthGuard)
     @Delete(':id')
-    public async delete(@Param() id: string) 
+    public async delete(@Param('id') id: string, @Req() req: Request, @Res() res: Response) 
     {
-        const command: DeleteUserCommand = UserDtoMapper.deleteUserCommand(id);
+        const authenticatedUserId = req['authenticated_user'];
+
+        const command: DeleteUserCommand = UserRequestMapper.deleteUserCommand(id);
 
         const data = await this.deleteUserUseCase.execute(command);
 
-        return {
-            'data': data
-        };
+        res
+            .status(200)
+            .json({
+                data: data
+            });
     }
 
+    @ApiOperation({summary: 'Get user addresses'})
+    @ApiOkResponse({
+        example: {
+            data: [
+                new GetUserAddressDto(
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    0.0,
+                    0.0,
+                    true,
+                    new Date(), new Date()
+                )
+            ]
+        }
+    })
+    @UseGuards(AuthGuard)
     @Get(':id/address')
-    public async getAddresses(@Param() id: string) 
+    public async getAddresses(@Param('id') id: string, @Req() req: Request, @Res() res: Response) 
     {
-        const command: GetUserAddressesCommand = UserDtoMapper.getUserAddressesCommand(id);
+        const authenticatedUserId = req['authenticated_user'];
+
+        const command: GetUserAddressesCommand = UserRequestMapper.getUserAddressesCommand(id);
 
         const data = await this.getUserAddressesUseCase.execute(command)
 
-        return {
-            'data': data
-        };
+        res
+            .status(200)
+            .json({
+                data: data
+            });
     }
 
+    @ApiOperation({summary: 'Get user address'})
+    @ApiOkResponse({
+        example: {
+            data: new GetUserAddressDto(
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                0.0, 0.0,
+                true,
+                new Date(), new Date()
+            )
+        }
+    })
+    @UseGuards(AuthGuard)
     @Get(':id/address/:address_id')
-    public async getAddress(@Param() id: string, @Param() address_id: string) 
+    public async getAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Req() req: Request, @Res() res: Response) 
     {
-        const command: GetUserAddressCommand = UserDtoMapper.getUserAddressCommand(address_id, id);
+        const authenticatedUserId = req['authenticated_user'];
+
+        const command: GetUserAddressCommand = UserRequestMapper.getUserAddressCommand(addressId, id);
 
         const data = await this.getUserAddressUseCase.execute(command);
 
-        return {
-            'data': data
-        };
+        res
+            .status(200)
+            .json({
+                data: data
+            });
     }
 
+    @ApiOperation({summary: 'Create user address'})
+    @ApiCreatedResponse({
+        example: {
+            data: new CreateUserAddressDto(
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                0.0, 0.0,
+                true,
+                new Date(), new Date()
+            )
+        }
+    })
+    @UseGuards(AuthGuard)
     @Post(':id/address')
     @UsePipes(new ValidationPipe({transform: true}))
-    public async createAddress(@Param() id: string, @Body() request: CreateUserAddressRequest) 
+    public async createAddress(@Param('id') id: string, @Body() request: CreateUserAddressRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: CreateUserAddressCommand = UserDtoMapper.createUserAddressCommand(id, request);
+        const authenticatedUserId = req['authenticated_user'];
+
+        const command: CreateUserAddressCommand = UserRequestMapper.createUserAddressCommand(id, request);
     
         const data = await this.createUserAddressUseCase.execute(command);
 
-        return {
-            'data': data
-        };
+        res
+            .status(201)
+            .json({
+                data: data
+            });
     }
 
-    @Put(':id/address/:addressId')
+    @ApiOperation({summary: 'Update user address'})
+    @ApiNoContentResponse({
+        example: {
+            data: {}
+        }
+    })
+    @UseGuards(AuthGuard)
+    @Put(':id/address/:address_id')
     @UsePipes(new ValidationPipe({transform: true}))
-    public async updateAddress(@Param() id: string, @Param() addressId: string, @Body() request: UpdateUserAddressRequest) 
+    public async updateAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Body() body: UpdateUserAddressRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: UpdateUserAddressCommand = UserDtoMapper.updateUserAddressCommand(addressId, id, request);
+        const authenticatedUserId = req['authenticated_user'];
 
-        const data = await this.updateUserAddressUseCase.execute(command);
+        const command: UpdateUserAddressCommand = UserRequestMapper.updateUserAddressCommand(addressId, id, body);
 
-        return {
-            'data': data
-        };
+        await this.updateUserAddressUseCase.execute(command);
+
+        res
+            .status(204)
+            .json({
+                data: {}
+            });
     }
 
-    @Delete(':id/address/:addressId')
-    public async deleteAddress(@Param() id: string, @Param() addressId: string) 
+    @ApiOperation({summary: 'Delete user address'})
+    @ApiNoContentResponse({
+        example: {
+            data: {}
+        }
+    })
+    @UseGuards(AuthGuard)
+    @Delete(':id/address/:address_id')
+    public async deleteAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Req() req: Request, @Res() res: Response) 
     {
-        const command: DeleteUserAddressCommand = UserDtoMapper.deleteUserAddressCommand(addressId, id);
+        const authenticatedUserId = req['authenticated_user'];
 
-        const data = await this.deleteUserAddressUseCase.execute(command);
+        const command: DeleteUserAddressCommand = UserRequestMapper.deleteUserAddressCommand(addressId, id);
 
-        return {
-            'data': data
-        };
+        await this.deleteUserAddressUseCase.execute(command);
+
+        res
+            .status(204)
+            .json({
+                data: {}
+            });
     }
 }

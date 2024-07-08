@@ -31,10 +31,12 @@ export class UserCredentials extends Model
         id: string,
         name: string,
         email: string,
-        password: string
+        password: string,
+        lastLogin?: Date,
+        lastLogout?: Date
     ): UserCredentials 
     {
-        return new UserCredentials(id, name, email, password);
+        return new UserCredentials(id, name, email, password, lastLogin, lastLogout);
     }
 
     public id() 
@@ -57,6 +59,15 @@ export class UserCredentials extends Model
         return this._password;
     }
 
+    public lastLogin() {
+        return this._lastLogin;
+    }
+
+    public lastLogout() 
+    {
+        return this._lastLogout;
+    }
+
     public changeName(name: string) 
     {
         this._name = name;
@@ -72,11 +83,9 @@ export class UserCredentials extends Model
         this._password = password;
     }
 
-    public login(nameOrEmail: string, password: string) 
+    public login() 
     {
-        if((nameOrEmail == this._email || nameOrEmail == this._name) && password == this._password) {
-            this._lastLogin = new Date();
-        }
+        this._lastLogin = new Date();
     }
 
     public logout() 

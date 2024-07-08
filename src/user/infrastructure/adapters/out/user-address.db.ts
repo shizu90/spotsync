@@ -2,6 +2,7 @@ import { Inject } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserAddressRepository } from "src/user/application/ports/out/user-address.repository";
 import { UserAddress } from "src/user/domain/user-address.model";
+import { User } from "src/user/domain/user.model";
 
 export class UserAddressRepositoryImpl implements UserAddressRepository 
 {
@@ -10,14 +11,37 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
 
     public async findBy(values: Object): Promise<Array<UserAddress>> 
     {
-        const userId = values['userId'] || '';
-        const main = values['main'] || false;
+        const userId = values['userId'];
+        const main = values['main'];
+        const isDeleted = values['isDeleted'];
 
-        const userAddressIds = await this.prismaService.$queryRaw<{id: string}[]>`
-            SELECT id FROM user_addresses
-            WHERE userId = '${userId}' 
-            OR main = ${main}
-        `;
+        let query = `SELECT id FROM user_addresses`;
+
+        if(userId) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND user_id = '${userId}'`;
+            }else {
+                query = `${query} WHERE user_id = '${userId}'`;
+            }
+        }
+
+        if(main) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND main = ${main}`;
+            }else {
+                query = `${query} WHERE main = ${main}`;
+            }
+        }
+
+        if(isDeleted) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND is_deleted = ${isDeleted}`;
+            }else {
+                query = `${query} WHERE is_deleted = ${isDeleted}`;
+            }
+        }
+
+        const userAddressIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
         const userAddresses = await this.prismaService.userAddress.findMany({
             where: {id: {in: userAddressIds.map((row) => row.id)}}
@@ -74,10 +98,13 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
         const userAddress = await this.prismaService.userAddress.findFirst({
             where: {
                 id: id
+            },
+            include: {
+                user: true
             }
         });
 
-        if(userAddress === null) return null;
+        if(userAddress === null || userAddress === undefined) return null;
 
         return UserAddress.create(
             userAddress.id,
@@ -89,9 +116,21 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
             userAddress.longitude.toNumber(),
             userAddress.country_code,
             userAddress.main,
-            null,
+            User.create(
+                userAddress.user.id,
+                userAddress.user.profile_picture,
+                userAddress.user.banner_picture,
+                userAddress.user.biograph,
+                userAddress.user.birth_date,
+                userAddress.user.profile_visibility,
+                null,
+                userAddress.user.created_at,
+                userAddress.user.updated_at,
+                userAddress.user.is_deleted
+            ),
             userAddress.created_at,
-            userAddress.updated_at
+            userAddress.updated_at,
+            userAddress.is_deleted
         );
     }
 
@@ -113,7 +152,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
             }
         });
 
-        if(userAddress === null) return null;
+        if(userAddress === null || userAddress === undefined) return null;
 
         return UserAddress.create(
             userAddress.id,
@@ -150,6 +189,8 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
                 is_deleted: model.isDeleted()
             }
         });
+
+        if(userAddress === null || userAddress === undefined) return null;
         
         return UserAddress.create(
             userAddress.id,

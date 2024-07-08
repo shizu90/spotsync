@@ -11,14 +11,37 @@ export class UserRepositoryImpl implements UserRepository
 
     public async findBy(values: Object): Promise<Array<User>> 
     {
-        const name = values['name'] || '';
-        const profileVisibility = values['profileVisibility'] || 'public';
+        const name = values['name'];
+        const profileVisibility = values['profileVisibility'];
+        const isDeleted = values['isDeleted'];
 
-        const userIds = await this.prismaService.$queryRaw<{id: string}[]>`
-            SELECT id FROM users 
-            WHERE name LIKE '%${name}%' 
-            OR profile_visibility = '${profileVisibility}';
-        `;
+        let query = 'SELECT id FROM users';
+
+        if(name !== null) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND name LIKE '%${name}%'`;
+            }else {
+                query = `${query} WHERE name LIKE '%${name}%'`;
+            }
+        }
+
+        if(profileVisibility !== null) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND profile_visibility = '${profileVisibility}'`;
+            }else {
+                query = `${query} WHERE profile_visibility = '${profileVisibility}'`;
+            }
+        }
+
+        if(isDeleted !== null) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND is_deleted = '${isDeleted}'`;
+            }else {
+                query = `${query} WHERE is_deleted = '${isDeleted}'`;
+            }
+        }
+
+        const userIds = await this.prismaService.$queryRaw<{id: string}[]>`${query}`;
 
         const users = await this.prismaService.user.findMany({
             where: {id: {in: userIds.map((row) => row.id)}},
@@ -38,7 +61,9 @@ export class UserRepositoryImpl implements UserRepository
                         user.id,
                         user.credentials.name,
                         user.credentials.email,
-                        user.credentials.password
+                        user.credentials.password,
+                        user.credentials.last_login,
+                        user.credentials.last_logout
                     ),
                     user.created_at,
                     user.updated_at,
@@ -72,7 +97,9 @@ export class UserRepositoryImpl implements UserRepository
                     user.credentials.user_id,
                     user.credentials.name,
                     user.credentials.email,
-                    user.credentials.password
+                    user.credentials.password,
+                    user.credentials.last_login,
+                    user.credentials.last_logout
                 ),
                 user.created_at,
                 user.updated_at,
@@ -104,7 +131,9 @@ export class UserRepositoryImpl implements UserRepository
                 user.credentials.user_id,
                 user.credentials.name,
                 user.credentials.email,
-                user.credentials.password
+                user.credentials.password,
+                user.credentials.last_login,
+                user.credentials.last_logout
             ),
             user.created_at,
             user.updated_at,
@@ -136,7 +165,9 @@ export class UserRepositoryImpl implements UserRepository
                 userCredentials.user_id,
                 userCredentials.name,
                 userCredentials.email,
-                userCredentials.password
+                userCredentials.password,
+                userCredentials.last_login,
+                userCredentials.last_logout
             ),
             userCredentials.user.created_at,
             userCredentials.user.updated_at,
@@ -168,7 +199,9 @@ export class UserRepositoryImpl implements UserRepository
                 userCredentials.user_id,
                 userCredentials.name,
                 userCredentials.email,
-                userCredentials.password
+                userCredentials.password,
+                userCredentials.last_login,
+                userCredentials.last_logout
             ),
             userCredentials.user.created_at,
             userCredentials.user.updated_at,
@@ -215,7 +248,9 @@ export class UserRepositoryImpl implements UserRepository
                 user.credentials.user_id,
                 user.credentials.name,
                 user.credentials.email,
-                user.credentials.password
+                user.credentials.password,
+                user.credentials.last_login,
+                user.credentials.last_logout
             ),
             user.created_at,
             user.updated_at,
@@ -269,7 +304,9 @@ export class UserRepositoryImpl implements UserRepository
                 user_id: model.id(),
                 email: model.email(),
                 name: model.name(),
-                password: model.password()
+                password: model.password(),
+                last_login: model.lastLogin(),
+                last_logout: model.lastLogout()
             },
             where: {
                 user_id: model.id()
@@ -292,7 +329,9 @@ export class UserRepositoryImpl implements UserRepository
                 userCredentials.user_id,
                 userCredentials.name,
                 userCredentials.email,
-                userCredentials.password
+                userCredentials.password,
+                userCredentials.last_login,
+                userCredentials.last_logout
             ),
             userCredentials.user.created_at,
             userCredentials.user.updated_at,

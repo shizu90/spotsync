@@ -26,29 +26,33 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
     {
         const user: User = await this.userRepository.findById(command.userId);
 
-        if(user == null) {
+        if(user === null || user.isDeleted()) {
             throw new UserNotFoundError(`User ${command.userId} not found.`);
         }
 
         const userAddress: UserAddress = await this.userAddressRepository.findById(command.id);
 
-        if(userAddress == null || userAddress.user().id() != user.id()) {
+        if(userAddress === null || userAddress.user().id() !== user.id() || userAddress.isDeleted()) {
             throw new UserAddressNotFoundError(`User address ${command.id} not found.`);
         }
 
-        if(command.area != null) {
+        if(command.name && command.name !== userAddress.name() && command.name.length > 0) {
+            userAddress.changeName(command.name);
+        }
+
+        if(command.area && command.area !== userAddress.area() && command.area.length > 0) {
             userAddress.changeArea(command.area);
         }
 
-        if(command.countryCode != null) {
+        if(command.countryCode && command.countryCode !== userAddress.countryCode() && command.countryCode.length > 0) {
             userAddress.changeCountryCode(command.countryCode);
         }
 
-        if(command.locality != null) {
+        if(command.locality && command.locality !== userAddress.locality() && command.locality.length > 0) {
             userAddress.changeLocality(command.locality);
         }
 
-        if(command.subArea != null) {
+        if(command.subArea && command.subArea !== userAddress.subArea() && command.subArea.length > 0) {
             userAddress.changeSubArea(command.subArea);
         }
 
@@ -64,8 +68,8 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
         userAddress.changeLatitude(coordinates.latitude);
         userAddress.changeLongitude(coordinates.longitude);
 
-        if(command.main != null) {
-            if(command.main) {
+        if(command.main) {
+            if(command.main === true) {
                 const userMainAddresses: Array<UserAddress> = await this.userAddressRepository.findBy(
                     {userId: user.id(), main: true}
                 );
@@ -79,5 +83,7 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
 
             userAddress.changeMain(command.main);
         }
+
+        this.userAddressRepository.update(userAddress);
     }
 }

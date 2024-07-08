@@ -21,11 +21,7 @@ export class DeleteUserService implements DeleteUserUseCase
     {
         const user: User = await this.userRepository.findById(command.id);
 
-        if(user == null) {
-            throw new UserNotFoundError(`User ${command.id} not found.`);
-        }
-
-        if(user.isDeleted()) {
+        if(user == null || user.isDeleted()) {
             throw new UserNotFoundError(`User ${command.id} not found.`);
         }
 

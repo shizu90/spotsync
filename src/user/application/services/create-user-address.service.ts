@@ -27,7 +27,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
     {
         const user: User = await this.userRepository.findById(command.userId);
 
-        if(user == null) {
+        if(user == null || user.isDeleted()) {
             throw new UserNotFoundError(`User ${command.userId} not found.`);
         }
 

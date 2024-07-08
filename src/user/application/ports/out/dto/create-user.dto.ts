@@ -5,12 +5,12 @@ export class CreateUserDto extends Dto
     constructor(
         readonly id: string,
         readonly biograph: string,
-        readonly profilePicture: string,
-        readonly bannerPicture: string,
-        readonly birthDate: Date,
-        readonly isDeleted: boolean,
-        readonly createdAt: Date,
-        readonly updatedAt: Date,
+        readonly profile_picture: string,
+        readonly banner_picture: string,
+        readonly birth_date: Date,
+        readonly is_deleted: boolean,
+        readonly created_at: Date,
+        readonly updated_at: Date,
         readonly credentials: {name: string, email: string}
     ) 
     {super();}
