@@ -7,6 +7,7 @@ import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { FollowRepository, FollowRepositoryProvider } from "src/follower/application/ports/out/follow.repository";
+import { UserVisibility } from "src/user/domain/user-visibility.enum";
 
 @Injectable()
 export class GetUserProfileService implements GetUserProfileUseCase 
@@ -36,9 +37,18 @@ export class GetUserProfileService implements GetUserProfileUseCase
 
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
 
-        const isFollowing = (await this.followRepository.findBy({fromUserId: authenticatedUserId, toUserId: user.id()})).at(0);
+        const isFollowing = (await this.followRepository.findBy({fromUserId: authenticatedUserId, toUserId: user.id()})).length > 0 ? true : false;
 
-        const userMainAddress = (await this.userAddressRepository.findBy({userId: user.id(), main: true})).at(0);
+        let userMainAddress = (await this.userAddressRepository.findBy({userId: user.id(), main: true})).at(0);
+
+        if(authenticatedUserId !== user.id()) {
+            if(user.visibilityConfiguration().addressVisibility() === UserVisibility.PRIVATE) {
+                userMainAddress = undefined;
+            }
+            if(user.visibilityConfiguration().addressVisibility() === UserVisibility.FOLLOWERS && !isFollowing) {
+                userMainAddress = undefined;
+            }
+        }
 
         return new GetUserProfileDto(
             user.id(),
@@ -69,7 +79,7 @@ export class GetUserProfileService implements GetUserProfileUseCase
                 created_at: userMainAddress.createdAt(),
                 updated_at: userMainAddress.updatedAt()
             } : null,
-            isFollowing ? true : false
+            isFollowing
         );
     }
 }

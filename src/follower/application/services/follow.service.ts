@@ -26,6 +26,10 @@ export class FollowService implements FollowUseCase
 
     public async execute(command: FollowCommand): Promise<FollowDto> 
     {
+        if(command.fromUserId === command.toUserId) {
+            throw new AlreadyFollowingError(`To user must be a different user.`);
+        }
+
         const fromUser = await this.userRepository.findById(command.fromUserId);
 
         if(fromUser === null || fromUser === undefined || fromUser.isDeleted()) {
