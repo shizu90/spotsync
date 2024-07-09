@@ -36,14 +36,10 @@ export class JoinUserGroupService implements JoinUserGroupUseCase
     {
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
 
-        const user = await this.userRepository.findById(command.userId);
+        const user = await this.userRepository.findById(authenticatedUserId);
 
         if(user === null || user === undefined || user.isDeleted()) {
             throw new UserNotFoundError(`User not found`);
-        }
-
-        if(user.id() !== authenticatedUserId) {
-            throw new UnauthorizedAccessError(`Unauthorized access`);
         }
 
         const group = await this.userGroupRepository.findById(command.userGroupId);

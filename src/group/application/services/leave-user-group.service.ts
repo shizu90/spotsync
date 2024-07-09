@@ -24,10 +24,6 @@ export class LeaveUserGroupService implements LeaveUserGroupUseCase
     {
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
 
-        if(command.userId !== authenticatedUserId) {
-            throw new UnauthorizedAccessError(`Unauthorized access`);
-        }
-
         const group = await this.userGroupRepository.findById(command.userGroupId);
 
         if(group === null || group === undefined) {
