@@ -2,6 +2,7 @@ import { Inject } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserRepository } from "src/user/application/ports/out/user.repository";
 import { UserCredentials } from "src/user/domain/user-credentials.model";
+import { UserVisibilityConfig } from "src/user/domain/user-visibility-config.model";
 import { User } from "src/user/domain/user.model";
 
 export class UserRepositoryImpl implements UserRepository 
@@ -9,10 +10,41 @@ export class UserRepositoryImpl implements UserRepository
     public constructor(@Inject(PrismaService) protected prismaService: PrismaService) 
     {}
 
+    private mapToDomain(prisma_model: any): User | null
+    {
+        if(prisma_model === null || prisma_model === undefined) return null;
+
+        return User.create(
+            prisma_model.id,
+            prisma_model.profile_picture,
+            prisma_model.banner_picture,
+            prisma_model.biograph,
+            prisma_model.birth_date,
+            prisma_model.credentials ? UserCredentials.create(
+                prisma_model.id,
+                prisma_model.credentials.name,
+                prisma_model.credentials.email,
+                prisma_model.credentials.password,
+                prisma_model.credentials.last_login,
+                prisma_model.credentials.last_logout
+            ) : null,
+            prisma_model.visibility_configuration ? UserVisibilityConfig.create(
+                prisma_model.id,
+                prisma_model.visibility_configuration.profile_visibility,
+                prisma_model.visibility_configuration.address_visibility,
+                prisma_model.visibility_configuration.poi_folder_visibility,
+                prisma_model.visibility_configuration.visited_poi_visibility,
+                prisma_model.visibility_configuration.post_visibility
+            ) : null,
+            prisma_model.created_at,
+            prisma_model.updated_at,
+            prisma_model.is_deleted
+        );
+    }
+
     public async findBy(values: Object): Promise<Array<User>> 
     {
         const name = values['name'];
-        const profileVisibility = values['profileVisibility'];
         const isDeleted = values['isDeleted'];
 
         let query = 'SELECT id FROM users';
@@ -22,14 +54,6 @@ export class UserRepositoryImpl implements UserRepository
                 query = `${query} AND name LIKE '%${name}%'`;
             }else {
                 query = `${query} WHERE name LIKE '%${name}%'`;
-            }
-        }
-
-        if(profileVisibility !== null) {
-            if(query.includes('WHERE')) {
-                query = `${query} AND profile_visibility = '${profileVisibility}'`;
-            }else {
-                query = `${query} WHERE profile_visibility = '${profileVisibility}'`;
             }
         }
 
@@ -45,33 +69,11 @@ export class UserRepositoryImpl implements UserRepository
 
         const users = await this.prismaService.user.findMany({
             where: {id: {in: userIds.map((row) => row.id)}},
-            include: {credentials: true}
+            include: {credentials: true, visibility_configuration: true}
         });
 
         return users.map((user) => {
-            if(user) {
-                return User.create(
-                    user.id,
-                    user.profile_picture,
-                    user.banner_picture,
-                    user.biograph,
-                    user.birth_date,
-                    user.profile_visibility,
-                    UserCredentials.create(
-                        user.id,
-                        user.credentials.name,
-                        user.credentials.email,
-                        user.credentials.password,
-                        user.credentials.last_login,
-                        user.credentials.last_logout
-                    ),
-                    user.created_at,
-                    user.updated_at,
-                    user.is_deleted
-                );
-            }else {
-                return null;
-            }
+            return this.mapToDomain(user);
         });
     }
 
@@ -79,32 +81,13 @@ export class UserRepositoryImpl implements UserRepository
     {
         const users = await this.prismaService.user.findMany({
             include: {
-                credentials: true
+                credentials: true,
+                visibility_configuration: true
             }
         });
 
-        if(users.length === 0) return [];
-
         return users.map((user): User => {
-            return User.create(
-                user.id,
-                user.profile_picture,
-                user.banner_picture,
-                user.biograph,
-                user.birth_date,
-                user.profile_visibility,
-                UserCredentials.create(
-                    user.credentials.user_id,
-                    user.credentials.name,
-                    user.credentials.email,
-                    user.credentials.password,
-                    user.credentials.last_login,
-                    user.credentials.last_logout
-                ),
-                user.created_at,
-                user.updated_at,
-                user.is_deleted
-            );
+            return this.mapToDomain(user);
         });
     }
 
@@ -114,99 +97,46 @@ export class UserRepositoryImpl implements UserRepository
                 id: id
             },
             include: {
-                credentials: true
+                credentials: true,
+                visibility_configuration: true
             },
         });
 
-        if(user === null) return null;
-
-        return User.create(
-            user.id,
-            user.profile_picture,
-            user.banner_picture,
-            user.biograph,
-            user.birth_date,
-            user.profile_visibility,
-            UserCredentials.create(
-                user.credentials.user_id,
-                user.credentials.name,
-                user.credentials.email,
-                user.credentials.password,
-                user.credentials.last_login,
-                user.credentials.last_logout
-            ),
-            user.created_at,
-            user.updated_at,
-            user.is_deleted
-        );
+        return this.mapToDomain(user);
     }
 
     public async findByName(name: string): Promise<User> 
     {
-        const userCredentials = await this.prismaService.userCredentials.findFirst({
+        const user = await this.prismaService.user.findFirst({
             where: {
-                name: name
+                credentials: {
+                    name: name
+                }
             },
             include: {
-                user: true
+                credentials: true,
+                visibility_configuration: true
             }
         });
 
-        if(userCredentials === null) return null;
-
-        return User.create(
-            userCredentials.user.id,
-            userCredentials.user.profile_picture,
-            userCredentials.user.banner_picture,
-            userCredentials.user.biograph,
-            userCredentials.user.birth_date,
-            userCredentials.user.profile_visibility,
-            UserCredentials.create(
-                userCredentials.user_id,
-                userCredentials.name,
-                userCredentials.email,
-                userCredentials.password,
-                userCredentials.last_login,
-                userCredentials.last_logout
-            ),
-            userCredentials.user.created_at,
-            userCredentials.user.updated_at,
-            userCredentials.user.is_deleted
-        );
+        return this.mapToDomain(user);
     }
 
     public async findByEmail(email: string): Promise<User> 
     {
-        const userCredentials = await this.prismaService.userCredentials.findFirst({
+        const user = await this.prismaService.user.findFirst({
             where: {
-                email: email
+                credentials: {
+                    email: email
+                }
             },
             include: {
-                user: true
+                credentials: true,
+                visibility_configuration: true
             }
         });
 
-        if(userCredentials === null) return null;
-
-        return User.create(
-            userCredentials.user.id,
-            userCredentials.user.profile_picture,
-            userCredentials.user.banner_picture,
-            userCredentials.user.biograph,
-            userCredentials.user.birth_date,
-            userCredentials.user.profile_visibility,
-            UserCredentials.create(
-                userCredentials.user_id,
-                userCredentials.name,
-                userCredentials.email,
-                userCredentials.password,
-                userCredentials.last_login,
-                userCredentials.last_logout
-            ),
-            userCredentials.user.created_at,
-            userCredentials.user.updated_at,
-            userCredentials.user.is_deleted
-        );
+        return this.mapToDomain(user);
     }
 
     public async store(model: User): Promise<User> 
@@ -218,7 +148,6 @@ export class UserRepositoryImpl implements UserRepository
                 profile_picture: model.profilePicture(),
                 biograph: model.biograph(),
                 birth_date: model.birthDate(),
-                profile_visibility: model.profileVisibility(),
                 is_deleted: model.isDeleted(),
                 created_at: model.createdAt(),
                 updated_at: model.updatedAt(),
@@ -228,34 +157,24 @@ export class UserRepositoryImpl implements UserRepository
                         email: model.credentials().email(),
                         password: model.credentials().password()
                     }
+                },
+                visibility_configuration: {
+                    create: {
+                        profile_visibility: model.visibilityConfiguration().profileVisibility(),
+                        address_visibility: model.visibilityConfiguration().addressVisibility(),
+                        poi_folder_visibility: model.visibilityConfiguration().poiFolderVisibility(),
+                        visited_poi_visibility: model.visibilityConfiguration().visitedPoiVisibility(),
+                        post_visibility: model.visibilityConfiguration().postVisibility()
+                    }
                 }
             },
             include: {
-                credentials: true
+                credentials: true,
+                visibility_configuration: true
             }
         });
 
-        if(user === null) return null;
-
-        return User.create(
-            user.id,
-            user.profile_picture,
-            user.banner_picture,
-            user.biograph,
-            user.birth_date,
-            user.profile_visibility,
-            UserCredentials.create(
-                user.credentials.user_id,
-                user.credentials.name,
-                user.credentials.email,
-                user.credentials.password,
-                user.credentials.last_login,
-                user.credentials.last_logout
-            ),
-            user.created_at,
-            user.updated_at,
-            user.is_deleted
-        );
+        return this.mapToDomain(user);
     }
 
     public async update(model: User): Promise<User> 
@@ -272,71 +191,66 @@ export class UserRepositoryImpl implements UserRepository
                 id: model.id()
             },
             include: {
-                credentials: true
+                credentials: true,
+                visibility_configuration: true
             }
         });
 
-        if(user === null) return null;
-
-        return User.create(
-            user.id,
-            user.profile_picture,
-            user.banner_picture,
-            user.biograph,
-            user.birth_date,
-            user.profile_visibility,
-            UserCredentials.create(
-                user.credentials.user_id,
-                user.credentials.name,
-                user.credentials.email,
-                user.credentials.password
-            ),
-            user.created_at,
-            user.updated_at,
-            user.is_deleted
-        );
+        return this.mapToDomain(user);
     }
 
     public async updateCredentials(model: UserCredentials): Promise<User> 
     {
-        const userCredentials = await this.prismaService.userCredentials.update({
+        const user = await this.prismaService.user.update({
             data: {
-                user_id: model.id(),
-                email: model.email(),
-                name: model.name(),
-                password: model.password(),
-                last_login: model.lastLogin(),
-                last_logout: model.lastLogout()
+                credentials: {
+                    update: {
+                        where: {user_id: model.id()},
+                        data: {
+                            email: model.email(),
+                            name: model.name(),
+                            password: model.password(),
+                            last_login: model.lastLogin(),
+                            last_logout: model.lastLogout()
+                        }
+                    }
+                }
             },
             where: {
-                user_id: model.id()
+                id: model.id()
             },
             include: {
-                user: true
+                credentials: true,
+                visibility_configuration: true
             }
         });
 
-        if(userCredentials === null) return null;
+        return this.mapToDomain(user);
+    }
 
-        return User.create(
-            userCredentials.user.id,
-            userCredentials.user.profile_picture,
-            userCredentials.user.banner_picture,
-            userCredentials.user.biograph,
-            userCredentials.user.birth_date,
-            userCredentials.user.profile_visibility,
-            UserCredentials.create(
-                userCredentials.user_id,
-                userCredentials.name,
-                userCredentials.email,
-                userCredentials.password,
-                userCredentials.last_login,
-                userCredentials.last_logout
-            ),
-            userCredentials.user.created_at,
-            userCredentials.user.updated_at,
-            userCredentials.user.is_deleted
-        );
+    public async updateVisibilityConfig(userVisibilityConfig: UserVisibilityConfig): Promise<User> {
+        const user = await this.prismaService.user.update({
+            where: {id: userVisibilityConfig.id()},
+            data: {
+                visibility_configuration: {
+                    update: {
+                        data: {
+                            profile_visibility: userVisibilityConfig.profileVisibility(),
+                            address_visibility: userVisibilityConfig.addressVisibility(),
+                            poi_folder_visibility: userVisibilityConfig.poiFolderVisibility(),
+                            visited_poi_visibility: userVisibilityConfig.visitedPoiVisibility(),
+                            post_visibility: userVisibilityConfig.postVisibility()
+                        }
+                    }
+                }
+            },
+            include: {
+                credentials: true,
+                visibility_configuration: true
+            }
+        });
+
+        return this.mapToDomain(user);
     }
 
     public async delete(id: string): Promise<void> 
@@ -345,7 +259,8 @@ export class UserRepositoryImpl implements UserRepository
             where: {id: id},
             include: {
                 credentials: true,
-                addresses: true
+                addresses: true,
+                visibility_configuration: true
             }
         });
     }

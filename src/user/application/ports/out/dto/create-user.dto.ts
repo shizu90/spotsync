@@ -11,6 +11,13 @@ export class CreateUserDto extends Dto
         readonly is_deleted: boolean,
         readonly created_at: Date,
         readonly updated_at: Date,
+        readonly visibility_configuration: {
+            profile_visibility: string,
+            address_visibility: string,
+            poi_folder_visibility: string,
+            visited_poi_visibility: string,
+            post_visibility: string
+        },
         readonly credentials: {name: string, email: string}
     ) 
     {super();}

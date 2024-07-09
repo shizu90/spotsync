@@ -7,8 +7,9 @@ import { UserRepository, UserRepositoryProvider } from "../ports/out/user.reposi
 import { UserAlreadyExistsError } from "./errors/user-already-exists.error";
 import { Inject, Injectable } from "@nestjs/common";
 import { EncryptPasswordService, EncryptPasswordServiceProvider } from "../ports/out/encrypt-password.service";
-import { ProfileVisibility } from "src/user/domain/profile-visibility.enum";
 import { CreateUserDto } from "../ports/out/dto/create-user.dto";
+import { UserVisibilityConfig } from "src/user/domain/user-visibility-config.model";
+import { UserVisibility } from "src/user/domain/user-visibility.enum";
 
 @Injectable()
 export class CreateUserService implements CreateUserUseCase 
@@ -40,14 +41,23 @@ export class CreateUserService implements CreateUserUseCase
             this.encryptPasswordService.encrypt(command.password)
         );
 
+        const userVisibilityConfig: UserVisibilityConfig = UserVisibilityConfig.create(
+            userId,
+            UserVisibility.PUBLIC,
+            UserVisibility.PUBLIC,
+            UserVisibility.PUBLIC,
+            UserVisibility.PUBLIC,
+            UserVisibility.PUBLIC
+        );
+
         const user: User = User.create(
             userId,
             null,
             null,
             null,
             new Date(command.birthDate),
-            ProfileVisibility.PUBLIC,
-            userCredentials
+            userCredentials,
+            userVisibilityConfig
         );
 
         this.userRepository.store(user);
@@ -61,6 +71,13 @@ export class CreateUserService implements CreateUserUseCase
             user.isDeleted(),
             user.createdAt(),
             user.updatedAt(),
+            {
+                profile_visibility: user.visibilityConfiguration().profileVisibility(),
+                address_visibility: user.visibilityConfiguration().addressVisibility(),
+                poi_folder_visibility: user.visibilityConfiguration().poiFolderVisibility(),
+                visited_poi_visibility: user.visibilityConfiguration().visitedPoiVisibility(),
+                post_visibility: user.visibilityConfiguration().postVisibility()
+            },
             {name: user.credentials().name(), email: user.credentials().email()}
         );
     }

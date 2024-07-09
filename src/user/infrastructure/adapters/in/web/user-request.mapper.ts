@@ -13,6 +13,8 @@ import { DeleteUserAddressCommand } from "src/user/application/ports/in/commands
 import { GetUserAddressesCommand } from "src/user/application/ports/in/commands/get-user-addresses.command";
 import { GetUserAddressCommand } from "src/user/application/ports/in/commands/get-user-address.command";
 import { GetUserProfileCommand } from "src/user/application/ports/in/commands/get-user-profile.command";
+import { UpdateUserVisibilityConfigRequest } from "./requests/update-user-visibility-config.request";
+import { UpdateUserVisibilityConfigCommand } from "src/user/application/ports/in/commands/update-user-visibility-config.command";
 
 export class UserRequestMapper 
 {
@@ -28,12 +30,17 @@ export class UserRequestMapper
 
     public static updateUserProfileCommand(id: string, request: UpdateUserProfileRequest): UpdateUserProfileCommand 
     {
-        return new UpdateUserProfileCommand(id, request.profile_picture, request.banner_picture, request.biograph, request.birth_date, request.profile_visibility);
+        return new UpdateUserProfileCommand(id, request.profile_picture, request.banner_picture, request.biograph, request.birth_date);
     }
 
     public static updateUserCredentialsCommand(id: string, request: UpdateUserCredentialsRequest): UpdateUserCredentialsCommand
     {
         return new UpdateUserCredentialsCommand(id, request.name, request.email, request.password);
+    }
+
+    public static updateUserVisibilityConfigCommand(id: string, request: UpdateUserVisibilityConfigRequest): UpdateUserVisibilityConfigCommand 
+    {
+        return new UpdateUserVisibilityConfigCommand(id, request.profile_visibility, request.poi_folder_visibility, request.visited_poi_visibility, request.address_visibility, request.post_visibility);
     }
 
     public static deleteUserCommand(id: string): DeleteUserCommand 

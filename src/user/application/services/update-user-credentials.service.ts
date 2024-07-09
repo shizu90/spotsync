@@ -34,7 +34,7 @@ export class UpdateUserCredentialsService implements UpdateUserCredentialsUseCas
             throw new UnauthorizedAccessError(`Unauthorized access`);
         }
 
-        if(command.email && user.credentials().email() !== command.email && this.userRepository.findByEmail(command.email) != null) {
+        if(command.email && user.credentials().email() !== command.email && (await this.userRepository.findByEmail(command.email)) !== null) {
             throw new UserAlreadyExistsError(`E-mail ${command.email} already in use`);
         }
 

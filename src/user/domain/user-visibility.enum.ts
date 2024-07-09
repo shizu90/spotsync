@@ -1,4 +1,4 @@
-export enum ProfileVisibility 
+export enum UserVisibility 
 {
     PUBLIC = "public",
     PRIVATE = "private",

@@ -46,10 +46,6 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase
             user.changeBirthDate(command.birthDate);
         }
 
-        if(command.profileVisibility && !(command.profileVisibility === user.profileVisibility())) {
-            user.changeProfileVisibility(command.profileVisibility);
-        }
-
         this.userRepository.update(user);
     }
 }

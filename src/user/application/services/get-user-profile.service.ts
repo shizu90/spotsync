@@ -42,12 +42,18 @@ export class GetUserProfileService implements GetUserProfileUseCase
 
         return new GetUserProfileDto(
             user.id(),
-            user.profileVisibility(),
             user.biograph(),
             user.createdAt(),
             user.updatedAt(),
             user.profilePicture(),
             user.bannerPicture(),
+            {
+                profile_visibility: user.visibilityConfiguration().profileVisibility(),
+                address_visibility: user.visibilityConfiguration().addressVisibility(),
+                poi_folder_visibility: user.visibilityConfiguration().poiFolderVisibility(),
+                visited_poi_visibility: user.visibilityConfiguration().visitedPoiVisibility(),
+                post_visibility: user.visibilityConfiguration().postVisibility()
+            },
             {
                 name: user.credentials().name()
             },

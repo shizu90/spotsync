@@ -1,6 +1,6 @@
 import { Model } from "src/common/common.model";
 import { UserCredentials } from "./user-credentials.model";
-import { ProfileVisibility } from "./profile-visibility.enum";
+import { UserVisibilityConfig } from "./user-visibility-config.model";
 
 export class User extends Model 
 {
@@ -9,8 +9,8 @@ export class User extends Model
     private _bannerPicture: string;
     private _biograph: string;
     private _birthDate: Date;
-    private _profileVisibility: string;
     private _credentials: UserCredentials;
+    private _visibilityConfiguration: UserVisibilityConfig;
     private _createdAt: Date;
     private _updatedAt: Date;
     private _isDeleted: boolean;
@@ -20,9 +20,9 @@ export class User extends Model
         profilePicture: string, 
         bannerPicture: string, 
         biograph: string, 
-        birthDate: Date, 
-        profileVisibility: string,
+        birthDate: Date,
         credentials: UserCredentials,
+        visibilityConfiguration: UserVisibilityConfig,
         createdAt?: Date,
         updatedAt?: Date,
         isDeleted?: boolean
@@ -34,8 +34,8 @@ export class User extends Model
         this._bannerPicture = bannerPicture;
         this._biograph = biograph;
         this._birthDate = birthDate;
-        this._profileVisibility = profileVisibility;
         this._credentials = credentials;
+        this._visibilityConfiguration = visibilityConfiguration;
         this._createdAt = createdAt ?? new Date();
         this._updatedAt = updatedAt ?? new Date();
         this._isDeleted = isDeleted ?? false;
@@ -46,9 +46,9 @@ export class User extends Model
         profilePicture: string, 
         bannerPicture: string, 
         biograph: string, 
-        birthDate: Date, 
-        profileVisibility: string,
+        birthDate: Date,
         credentials: UserCredentials,
+        visibilityConfiguration: UserVisibilityConfig,
         createdAt?: Date,
         updatedAt?: Date,
         isDeleted?: boolean
@@ -59,9 +59,9 @@ export class User extends Model
             profilePicture, 
             bannerPicture, 
             biograph, 
-            birthDate, 
-            profileVisibility, 
+            birthDate,
             credentials,
+            visibilityConfiguration,
             createdAt,
             updatedAt,
             isDeleted
@@ -93,14 +93,14 @@ export class User extends Model
         return this._birthDate;
     }
 
-    public profileVisibility(): string 
-    {
-        return this._profileVisibility;
-    }
-
     public credentials(): UserCredentials
     {
         return this._credentials;
+    }
+
+    public visibilityConfiguration(): UserVisibilityConfig 
+    {
+        return this._visibilityConfiguration;
     }
 
     public createdAt(): Date
@@ -139,12 +139,6 @@ export class User extends Model
     public changeBirthDate(birthDate: Date): void
     {
         this._birthDate = birthDate;
-        this._updatedAt = new Date();
-    }
-
-    public changeProfileVisibility(profileVisibility: ProfileVisibility): void 
-    {
-        this._profileVisibility = profileVisibility;
         this._updatedAt = new Date();
     }
 

@@ -31,6 +31,8 @@ import { GeoLocatorServiceProvider } from "./application/ports/out/geo-locator.s
 import { GeoLocatorServiceImpl } from "./infrastructure/adapters/out/geo-locator";
 import { GetUserProfileUseCaseProvider } from "./application/ports/in/use-cases/get-user-profile.use-case";
 import { GetUserProfileService } from "./application/services/get-user-profile.service";
+import { UpdateUserVisibilityConfigUseCaseProvider } from "./application/ports/in/use-cases/update-user-visibility-config.use-case";
+import { UpdateUserVisibilityConfigService } from "./application/services/update-user-visibility-config.service";
 
 export const Providers: Provider[] = [
     {
@@ -40,6 +42,10 @@ export const Providers: Provider[] = [
     {
         provide: UpdateUserCredentialsUseCaseProvider,
         useClass: UpdateUserCredentialsService
+    },
+    {
+        provide: UpdateUserVisibilityConfigUseCaseProvider,
+        useClass: UpdateUserVisibilityConfigService
     },
     {
         provide: UpdateUserProfileUseCaseProvider,

@@ -2,12 +2,60 @@ import { Inject } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserAddressRepository } from "src/user/application/ports/out/user-address.repository";
 import { UserAddress } from "src/user/domain/user-address.model";
+import { UserCredentials } from "src/user/domain/user-credentials.model";
+import { UserVisibilityConfig } from "src/user/domain/user-visibility-config.model";
 import { User } from "src/user/domain/user.model";
 
 export class UserAddressRepositoryImpl implements UserAddressRepository 
 {
     public constructor(@Inject(PrismaService) protected prismaService: PrismaService) 
     {}
+
+    private mapToDomain(prisma_model: any): UserAddress 
+    {
+        if(prisma_model === null || prisma_model === undefined) return null;
+
+        return UserAddress.create(
+            prisma_model.id,
+            prisma_model.name,
+            prisma_model.area,
+            prisma_model.sub_area,
+            prisma_model.locality,
+            prisma_model.latitude.toNumber(),
+            prisma_model.longitude.toNumber(),
+            prisma_model.country_code,
+            prisma_model.main,
+            User.create(
+                prisma_model.user.id,
+                prisma_model.user.profile_picture,
+                prisma_model.user.banner_picture,
+                prisma_model.user.biograph,
+                prisma_model.user.birth_date,
+                UserCredentials.create(
+                    prisma_model.user.id,
+                    prisma_model.user.credentials.name,
+                    prisma_model.user.credentials.email,
+                    prisma_model.user.credentials.password,
+                    prisma_model.user.credentials.last_login,
+                    prisma_model.user.credentials.last_logout
+                ),
+                UserVisibilityConfig.create(
+                    prisma_model.user.id,
+                    prisma_model.user.visibility_configuration.profile_visibility,
+                    prisma_model.user.visibility_configuration.address_visibility,
+                    prisma_model.user.visibility_configuration.poi_folder_visibility,
+                    prisma_model.user.visibility_configuration.visited_poi_visibility,
+                    prisma_model.user.visibility_configuration.post_visibility,
+                ),
+                prisma_model.user.created_at,
+                prisma_model.user.updated_at,
+                prisma_model.is_deleted
+            ),
+            prisma_model.created_at,
+            prisma_model.updated_at,
+            prisma_model.is_deleted
+        )
+    }
 
     public async findBy(values: Object): Promise<Array<UserAddress>> 
     {
@@ -44,53 +92,29 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
         const userAddressIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
         const userAddresses = await this.prismaService.userAddress.findMany({
-            where: {id: {in: userAddressIds.map((row) => row.id)}}
+            where: {id: {in: userAddressIds.map((row) => row.id)}},
+            include: {user: {include: {credentials: true, visibility_configuration: true}}}
         });
 
         return userAddresses.map((userAddress) => {
-            if(userAddress) {
-                return UserAddress.create(
-                    userAddress.id,
-                    userAddress.name,
-                    userAddress.area,
-                    userAddress.sub_area,
-                    userAddress.locality,
-                    userAddress.latitude.toNumber(),
-                    userAddress.longitude.toNumber(),
-                    userAddress.country_code,
-                    userAddress.main,
-                    null,
-                    userAddress.created_at,
-                    userAddress.updated_at
-                );
-            }else {
-                return null;
-            }
+            return this.mapToDomain(userAddress);
         });
     }
 
     public async findAll(): Promise<Array<UserAddress>> {
-        const userAddresses = await this.prismaService.userAddress.findMany();
+        const userAddresses = await this.prismaService.userAddress.findMany({
+            include: {
+                user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                }
+            }
+        });
 
         return userAddresses.map((userAddress) => {
-            if(userAddress) {
-                return UserAddress.create(
-                    userAddress.id,
-                    userAddress.name,
-                    userAddress.area,
-                    userAddress.sub_area,
-                    userAddress.locality,
-                    userAddress.latitude.toNumber(),
-                    userAddress.longitude.toNumber(),
-                    userAddress.country_code,
-                    userAddress.main,
-                    null,
-                    userAddress.created_at,
-                    userAddress.updated_at
-                );
-            }else {
-                return null;
-            }
+            return this.mapToDomain(userAddress);
         });
     }
 
@@ -100,38 +124,11 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
                 id: id
             },
             include: {
-                user: true
+                user: {include: {credentials: true, visibility_configuration: true}}
             }
         });
 
-        if(userAddress === null || userAddress === undefined) return null;
-
-        return UserAddress.create(
-            userAddress.id,
-            userAddress.name,
-            userAddress.area,
-            userAddress.sub_area,
-            userAddress.locality,
-            userAddress.latitude.toNumber(),
-            userAddress.longitude.toNumber(),
-            userAddress.country_code,
-            userAddress.main,
-            User.create(
-                userAddress.user.id,
-                userAddress.user.profile_picture,
-                userAddress.user.banner_picture,
-                userAddress.user.biograph,
-                userAddress.user.birth_date,
-                userAddress.user.profile_visibility,
-                null,
-                userAddress.user.created_at,
-                userAddress.user.updated_at,
-                userAddress.user.is_deleted
-            ),
-            userAddress.created_at,
-            userAddress.updated_at,
-            userAddress.is_deleted
-        );
+        return this.mapToDomain(userAddress);
     }
 
     public async store(model: UserAddress): Promise<UserAddress> {
@@ -149,25 +146,13 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
                 created_at: model.createdAt(),
                 updated_at: model.updatedAt(),
                 user_id: model.user().id()
+            },
+            include: {
+                user: {include: {credentials: true, visibility_configuration: true}}
             }
         });
 
-        if(userAddress === null || userAddress === undefined) return null;
-
-        return UserAddress.create(
-            userAddress.id,
-            userAddress.name,
-            userAddress.area,
-            userAddress.sub_area,
-            userAddress.locality,
-            userAddress.latitude.toNumber(),
-            userAddress.longitude.toNumber(),
-            userAddress.country_code,
-            userAddress.main,
-            null,
-            userAddress.created_at,
-            userAddress.updated_at
-        );
+        return this.mapToDomain(userAddress);
     }
 
     public async update(model: UserAddress): Promise<UserAddress> {
@@ -187,25 +172,15 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
                 created_at: model.createdAt(),
                 updated_at: model.updatedAt(),
                 is_deleted: model.isDeleted()
+            },
+            include: {
+                user: {
+                    include: {credentials: true, visibility_configuration: true}
+                }
             }
         });
 
-        if(userAddress === null || userAddress === undefined) return null;
-        
-        return UserAddress.create(
-            userAddress.id,
-            userAddress.name,
-            userAddress.area,
-            userAddress.sub_area,
-            userAddress.locality,
-            userAddress.latitude.toNumber(),
-            userAddress.longitude.toNumber(),
-            userAddress.country_code,
-            userAddress.main,
-            null,
-            userAddress.created_at,
-            userAddress.updated_at
-        );
+        return this.mapToDomain(userAddress);
     }
 
     public async delete(id: string): Promise<void> {

@@ -3,6 +3,7 @@ import { FollowRepository } from "src/follower/application/ports/out/follow.repo
 import { Follow } from "src/follower/domain/follow.model";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserCredentials } from "src/user/domain/user-credentials.model";
+import { UserVisibilityConfig } from "src/user/domain/user-visibility-config.model";
 import { User } from "src/user/domain/user.model";
 
 export class FollowRepositoryImpl implements FollowRepository 
@@ -12,6 +13,68 @@ export class FollowRepositoryImpl implements FollowRepository
         protected prismaService: PrismaService
     ) 
     {}
+
+    private mapToDomain(prisma_model: any): Follow 
+    {
+        if(prisma_model === null || prisma_model === undefined) return null;
+
+        return Follow.create(
+            prisma_model.id,
+            User.create(
+                prisma_model.from_user.id,
+                prisma_model.from_user.profile_picture,
+                prisma_model.from_user.banner_picture,
+                prisma_model.from_user.biograph,
+                prisma_model.from_user.birth_date,
+                UserCredentials.create(
+                    prisma_model.from_user.id,
+                    prisma_model.from_user.credentials.name,
+                    prisma_model.from_user.credentials.email,
+                    prisma_model.from_user.credentials.password,
+                    prisma_model.from_user.credentials.last_login,
+                    prisma_model.from_user.credentials.last_logout
+                ),
+                UserVisibilityConfig.create(
+                    prisma_model.from_user.id,
+                    prisma_model.from_user.visibility_configuration.profile_visibility,
+                    prisma_model.from_user.visibility_configuration.address_visiblity,
+                    prisma_model.from_user.visibility_configuration.poi_folder_visibility,
+                    prisma_model.from_user.visibility_configuration.visited_poi_visibility,
+                    prisma_model.from_user.visibility_configuration.post_visibility
+                ),
+                prisma_model.from_user.created_at,
+                prisma_model.from_user.updated_at,
+                prisma_model.from_user.is_deleted
+            ),
+            User.create(
+                prisma_model.to_user.id,
+                prisma_model.to_user.profile_picture,
+                prisma_model.to_user.banner_picture,
+                prisma_model.to_user.biograph,
+                prisma_model.to_user.birth_date,
+                UserCredentials.create(
+                    prisma_model.to_user.id,
+                    prisma_model.to_user.credentials.name,
+                    prisma_model.to_user.credentials.email,
+                    prisma_model.to_user.credentials.password,
+                    prisma_model.to_user.credentials.last_login,
+                    prisma_model.to_user.credentials.last_logout
+                ),
+                UserVisibilityConfig.create(
+                    prisma_model.to_user.id,
+                    prisma_model.to_user.visibility_configuration.profile_visibility,
+                    prisma_model.to_user.visibility_configuration.address_visiblity,
+                    prisma_model.to_user.visibility_configuration.poi_folder_visibility,
+                    prisma_model.to_user.visibility_configuration.visited_poi_visibility,
+                    prisma_model.to_user.visibility_configuration.post_visibility
+                ),
+                prisma_model.to_user.created_at,
+                prisma_model.to_user.updated_at,
+                prisma_model.to_user.is_deleted
+            ),
+            prisma_model.created_at
+        );
+    }
 
     public async findBy(values: Object): Promise<Array<Follow>> {
         const fromUserId = values['fromUserId'];
@@ -44,63 +107,21 @@ export class FollowRepositoryImpl implements FollowRepository
             include: {
                 from_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 },
                 to_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 }
             }
         });
 
         return follows.map((follow) => {
-            if(follow) {
-                return Follow.create(
-                    follow.id,
-                    User.create(
-                        follow.from_user.id,
-                        follow.from_user.profile_picture,
-                        follow.from_user.banner_picture,
-                        follow.from_user.biograph,
-                        follow.from_user.birth_date,
-                        follow.from_user.profile_visibility,
-                        UserCredentials.create(
-                            follow.from_user.id,
-                            follow.from_user.credentials.name,
-                            follow.from_user.credentials.email,
-                            follow.from_user.credentials.password,
-                            follow.from_user.credentials.last_login,
-                            follow.from_user.credentials.last_logout
-                        ),
-                        follow.from_user.created_at,
-                        follow.from_user.updated_at,
-                        follow.from_user.is_deleted
-                    ),
-                    User.create(
-                        follow.to_user.id,
-                        follow.to_user.profile_picture,
-                        follow.to_user.banner_picture,
-                        follow.to_user.biograph,
-                        follow.to_user.birth_date,
-                        follow.to_user.profile_visibility,
-                        UserCredentials.create(
-                            follow.to_user.id,
-                            follow.to_user.credentials.name,
-                            follow.to_user.credentials.email,
-                            follow.to_user.credentials.password,
-                            follow.to_user.credentials.last_login,
-                            follow.to_user.credentials.last_logout
-                        ),
-                        follow.to_user.created_at,
-                        follow.to_user.updated_at,
-                        follow.to_user.is_deleted
-                    )
-                );
-            }else {
-                return null;
-            }
+            return this.mapToDomain(follow);
         });
     }
 
@@ -121,49 +142,7 @@ export class FollowRepositoryImpl implements FollowRepository
         });
 
         return follows.map((follow) => {
-            if(follow) {
-                return Follow.create(
-                    follow.id,
-                    User.create(
-                        follow.from_user.id,
-                        follow.from_user.profile_picture,
-                        follow.from_user.banner_picture,
-                        follow.from_user.biograph,
-                        follow.from_user.birth_date,
-                        follow.from_user.profile_visibility,
-                        UserCredentials.create(
-                            follow.from_user.id,
-                            follow.from_user.credentials.name,
-                            follow.from_user.credentials.email,
-                            follow.from_user.credentials.password,
-                            follow.from_user.credentials.last_login,
-                            follow.from_user.credentials.last_logout
-                        ),
-                        follow.from_user.created_at,
-                        follow.from_user.updated_at,
-                        follow.from_user.is_deleted
-                    ),
-                    User.create(
-                        follow.to_user.id,
-                        follow.to_user.profile_picture,
-                        follow.to_user.banner_picture,
-                        follow.to_user.biograph,
-                        follow.to_user.birth_date,
-                        follow.to_user.profile_visibility,
-                        UserCredentials.create(
-                            follow.to_user.id,
-                            follow.to_user.credentials.name,
-                            follow.to_user.credentials.email,
-                            follow.to_user.credentials.password,
-                            follow.to_user.credentials.last_login,
-                            follow.to_user.credentials.last_logout
-                        ),
-                        follow.to_user.created_at,
-                        follow.to_user.updated_at,
-                        follow.to_user.is_deleted
-                    )
-                );
-            }
+            return this.mapToDomain(follow);
         });
     }
 
@@ -186,49 +165,7 @@ export class FollowRepositoryImpl implements FollowRepository
             }
         })
         
-        if(follow === null || follow === undefined) return null;
-
-        return Follow.create(
-            follow.id,
-            User.create(
-                follow.from_user.id,
-                follow.from_user.profile_picture,
-                follow.from_user.banner_picture,
-                follow.from_user.biograph,
-                follow.from_user.birth_date,
-                follow.from_user.profile_visibility,
-                UserCredentials.create(
-                    follow.from_user.id,
-                    follow.from_user.credentials.name,
-                    follow.from_user.credentials.email,
-                    follow.from_user.credentials.password,
-                    follow.from_user.credentials.last_login,
-                    follow.from_user.credentials.last_logout
-                ),
-                follow.from_user.created_at,
-                follow.from_user.updated_at,
-                follow.from_user.is_deleted
-            ),
-            User.create(
-                follow.to_user.id,
-                follow.to_user.profile_picture,
-                follow.to_user.banner_picture,
-                follow.to_user.biograph,
-                follow.to_user.birth_date,
-                follow.to_user.profile_visibility,
-                UserCredentials.create(
-                    follow.to_user.id,
-                    follow.to_user.credentials.name,
-                    follow.to_user.credentials.email,
-                    follow.to_user.credentials.password,
-                    follow.to_user.credentials.last_login,
-                    follow.to_user.credentials.last_logout
-                ),
-                follow.to_user.created_at,
-                follow.to_user.updated_at,
-                follow.to_user.is_deleted
-            )
-        );
+        return this.mapToDomain(follow);
     }
 
     public async store(model: Follow): Promise<Follow> {
@@ -252,49 +189,7 @@ export class FollowRepositoryImpl implements FollowRepository
             }
         });
         
-        if(follow === null || follow === undefined) return null;
-
-        return Follow.create(
-            follow.id,
-            User.create(
-                follow.from_user.id,
-                follow.from_user.profile_picture,
-                follow.from_user.banner_picture,
-                follow.from_user.biograph,
-                follow.from_user.birth_date,
-                follow.from_user.profile_visibility,
-                UserCredentials.create(
-                    follow.from_user.id,
-                    follow.from_user.credentials.name,
-                    follow.from_user.credentials.email,
-                    follow.from_user.credentials.password,
-                    follow.from_user.credentials.last_login,
-                    follow.from_user.credentials.last_logout
-                ),
-                follow.from_user.created_at,
-                follow.from_user.updated_at,
-                follow.from_user.is_deleted
-            ),
-            User.create(
-                follow.to_user.id,
-                follow.to_user.profile_picture,
-                follow.to_user.banner_picture,
-                follow.to_user.biograph,
-                follow.to_user.birth_date,
-                follow.to_user.profile_visibility,
-                UserCredentials.create(
-                    follow.to_user.id,
-                    follow.to_user.credentials.name,
-                    follow.to_user.credentials.email,
-                    follow.to_user.credentials.password,
-                    follow.to_user.credentials.last_login,
-                    follow.to_user.credentials.last_logout
-                ),
-                follow.to_user.created_at,
-                follow.to_user.updated_at,
-                follow.to_user.is_deleted
-            )
-        );
+        return this.mapToDomain(follow);
     }
 
     public async update(model: Follow): Promise<Follow> {
@@ -318,49 +213,7 @@ export class FollowRepositoryImpl implements FollowRepository
             }
         });
         
-        if(follow === null || follow === undefined) return null;
-
-        return Follow.create(
-            follow.id,
-            User.create(
-                follow.from_user.id,
-                follow.from_user.profile_picture,
-                follow.from_user.banner_picture,
-                follow.from_user.biograph,
-                follow.from_user.birth_date,
-                follow.from_user.profile_visibility,
-                UserCredentials.create(
-                    follow.from_user.id,
-                    follow.from_user.credentials.name,
-                    follow.from_user.credentials.email,
-                    follow.from_user.credentials.password,
-                    follow.from_user.credentials.last_login,
-                    follow.from_user.credentials.last_logout
-                ),
-                follow.from_user.created_at,
-                follow.from_user.updated_at,
-                follow.from_user.is_deleted
-            ),
-            User.create(
-                follow.to_user.id,
-                follow.to_user.profile_picture,
-                follow.to_user.banner_picture,
-                follow.to_user.biograph,
-                follow.to_user.birth_date,
-                follow.to_user.profile_visibility,
-                UserCredentials.create(
-                    follow.to_user.id,
-                    follow.to_user.credentials.name,
-                    follow.to_user.credentials.email,
-                    follow.to_user.credentials.password,
-                    follow.to_user.credentials.last_login,
-                    follow.to_user.credentials.last_logout
-                ),
-                follow.to_user.created_at,
-                follow.to_user.updated_at,
-                follow.to_user.is_deleted
-            )
-        );
+        return this.mapToDomain(follow);
     }
 
     public async delete(id: string): Promise<void> {

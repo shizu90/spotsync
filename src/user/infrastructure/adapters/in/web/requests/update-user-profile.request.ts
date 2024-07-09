@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDateString, IsEnum, IsOptional, IsString, IsUrl, Matches, MaxLength, ValidateIf } from "class-validator";
-import { ProfileVisibility } from "src/user/domain/profile-visibility.enum";
+import { IsDateString, IsOptional, IsString, IsUrl, MaxLength } from "class-validator";
 
 export class UpdateUserProfileRequest 
 {
@@ -24,8 +23,4 @@ export class UpdateUserProfileRequest
     @IsDateString({}, {message: "Birth date is invalid"})
     @IsOptional()
     public birth_date?: Date;
-
-    @ApiProperty({required: false})
-    @IsEnum(ProfileVisibility)
-    public profile_visibility?: ProfileVisibility;
 }

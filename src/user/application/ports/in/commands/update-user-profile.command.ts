@@ -1,5 +1,4 @@
 import { Command } from "src/common/common.command";
-import { ProfileVisibility } from "src/user/domain/profile-visibility.enum";
 
 export class UpdateUserProfileCommand extends Command 
 {
@@ -8,8 +7,7 @@ export class UpdateUserProfileCommand extends Command
         readonly profilePicture: string,
         readonly bannerPicture: string,
         readonly biograph: string,
-        readonly birthDate: Date,
-        readonly profileVisibility: ProfileVisibility
+        readonly birthDate: Date
     ) 
     {super();}
 }
