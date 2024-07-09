@@ -23,7 +23,7 @@ export class SignOutService implements SignOutUseCase
         const user = await this.userRepository.findById(command.userId);
 
         if(user === null) {
-            throw new UserNotFoundError(`User not found.`);
+            throw new UserNotFoundError(`User not found`);
         }
 
         user.credentials().logout();

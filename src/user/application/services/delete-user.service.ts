@@ -5,6 +5,8 @@ import { UserRepository, UserRepositoryProvider } from "../ports/out/user.reposi
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { Inject, Injectable } from "@nestjs/common";
 import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
+import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
 
 @Injectable()
 export class DeleteUserService implements DeleteUserUseCase 
@@ -13,7 +15,9 @@ export class DeleteUserService implements DeleteUserUseCase
         @Inject(UserRepositoryProvider) 
         protected userRepository: UserRepository,
         @Inject(UserAddressRepositoryProvider)
-        protected userAddressRepository: UserAddressRepository
+        protected userAddressRepository: UserAddressRepository,
+        @Inject(GetAuthenticatedUserUseCaseProvider)
+        protected getAuthenticatedUser: GetAuthenticatedUserUseCase
     )
     {}
 
@@ -21,8 +25,12 @@ export class DeleteUserService implements DeleteUserUseCase
     {
         const user: User = await this.userRepository.findById(command.id);
 
-        if(user == null || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.id} not found.`);
+        if(user === null || user === undefined || user.isDeleted()) {
+            throw new UserNotFoundError(`User ${command.id} not found`);
+        }
+
+        if(user.id() !== this.getAuthenticatedUser.execute(null)) {
+            throw new UnauthorizedAccessError(`Unauthorized access`);
         }
 
         const userAddresses = await this.userAddressRepository.findBy({userId: user.id()});
@@ -34,6 +42,6 @@ export class DeleteUserService implements DeleteUserUseCase
 
         user.delete();
         
-        await this.userRepository.update(user);
+        this.userRepository.update(user);
     }
 }

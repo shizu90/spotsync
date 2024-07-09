@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { CreateUserAddressUseCase } from "../ports/in/use-cases/create-user-address.use-case";
 import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
 import { CreateUserAddressCommand } from "../ports/in/commands/create-user-address.command";
@@ -9,6 +9,8 @@ import { UserAddress } from "src/user/domain/user-address.model";
 import { randomUUID } from "crypto";
 import { GeoLocatorInput, GeoLocatorOutput, GeoLocatorService, GeoLocatorServiceProvider } from "../ports/out/geo-locator.service";
 import { CreateUserAddressDto } from "../ports/out/dto/create-user-address.dto";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 
 @Injectable()
 export class CreateUserAddressService implements CreateUserAddressUseCase 
@@ -19,7 +21,9 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
         @Inject(UserRepositoryProvider) 
         protected userRepository: UserRepository,
         @Inject(GeoLocatorServiceProvider) 
-        protected geoLocatorService: GeoLocatorService
+        protected geoLocatorService: GeoLocatorService,
+        @Inject(GetAuthenticatedUserUseCaseProvider)
+        protected getAuthenticatedUser: GetAuthenticatedUserUseCase
     ) 
     {}
 
@@ -27,8 +31,12 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
     {
         const user: User = await this.userRepository.findById(command.userId);
 
-        if(user == null || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.userId} not found.`);
+        if(user === null || user === undefined || user.isDeleted()) {
+            throw new UserNotFoundError(`User ${command.userId} not found`);
+        }
+
+        if(user.id() !== this.getAuthenticatedUser.execute(null)) {
+            throw new UnauthorizedException(`Unauthorized access`);
         }
 
         const coordinates: GeoLocatorOutput = this.geoLocatorService.getCoordinates(
@@ -64,7 +72,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
             });
         }
 
-        await this.userAddressRepository.store(userAddress);
+        this.userAddressRepository.store(userAddress);
 
         return new CreateUserAddressDto(
             userAddress.id(),

@@ -1,12 +1,14 @@
-import { Body, Controller, Inject, Post, Put, Res, UseFilters, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Post, Put, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnprocessableEntityResponse } from "@nestjs/swagger";
 import { SignInUseCase, SignInUseCaseProvider } from "src/auth/application/ports/in/use-cases/sign-in.use-case";
 import { SignOutUseCase, SignOutUseCaseProvider } from "src/auth/application/ports/in/use-cases/sign-out.use-case";
 import { SignInRequest } from "./requests/sign-in.request";
-import { Request, Response } from "express";
 import { AuthRequestMapper } from "./auth-request.mapper";
 import { SignInDto } from "src/auth/application/ports/out/dto/sign-in.dto";
 import { AuthErrorHandler } from "./handlers/auth-error.handler";
+import { AuthGuard } from "./handlers/auth.guard";
+import { Request, Response } from "express";
+import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 
 @ApiTags('Auth')
 @ApiNotFoundResponse({
@@ -31,7 +33,9 @@ export class AuthController
         @Inject(SignInUseCaseProvider)
         protected signInUseCase: SignInUseCase,
         @Inject(SignOutUseCaseProvider)
-        protected signOutUseCase: SignOutUseCase
+        protected signOutUseCase: SignOutUseCase,
+        @Inject(GetAuthenticatedUserUseCaseProvider)
+        protected getAuthenticatedUserUseCase: GetAuthenticatedUserUseCase
     ) 
     {}
 
@@ -65,7 +69,8 @@ export class AuthController
         }
     })
     @Put('logout')
-    public async logout(@Res() req: Request, @Res() res: Response) 
+    @UseGuards(AuthGuard)
+    public async logout(@Req() req: Request, @Res() res: Response) 
     {
         const authenticatedUserId = req['authenticated_user'];
 
@@ -78,5 +83,12 @@ export class AuthController
             .json({
                 data: {}
             });
+    }
+
+    @Get()
+    @UseGuards(AuthGuard)
+    public async getAuthenticated() 
+    {
+        return this.getAuthenticatedUserUseCase.execute(null);
     }
 }

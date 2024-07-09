@@ -41,7 +41,7 @@ export class UserRepositoryImpl implements UserRepository
             }
         }
 
-        const userIds = await this.prismaService.$queryRaw<{id: string}[]>`${query}`;
+        const userIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
         const users = await this.prismaService.user.findMany({
             where: {id: {in: userIds.map((row) => row.id)}},

@@ -3,18 +3,20 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { setupRedoc } from './redoc.middleware';
 
-const CURRENT_VERSION = '1.0';
-const PATH_CURRENT_VERSION = 'v1';
+declare const module: any;
+
+const current_version = '1.0';
+const path_current_version = 'v1';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix(`api/${PATH_CURRENT_VERSION}`);
+  app.setGlobalPrefix(`api/${path_current_version}`);
 
   const options = new DocumentBuilder()
     .setTitle('SpotSync API')
     .setDescription('SpotSync API documentation')
-    .setVersion(CURRENT_VERSION)
+    .setVersion(current_version)
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
@@ -23,5 +25,10 @@ async function bootstrap() {
   setupRedoc(app);
 
   await app.listen(3000);
+
+  if(module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 }
 bootstrap();

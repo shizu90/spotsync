@@ -35,11 +35,11 @@ export class SignInService implements SignInUseCase
         }
 
         if(user === null || user.isDeleted()) {
-            throw new UserNotFoundError(`User not found.`);
+            throw new UserNotFoundError(`User not found`);
         }
 
         if(!this.encryptPasswordService.equals(user.credentials().password(), command.password)) {
-            throw new UserInvalidCredentialsError(`Wrong password.`);
+            throw new UserInvalidCredentialsError(`Wrong password`);
         }
 
         user.credentials().login();

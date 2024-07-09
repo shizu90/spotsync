@@ -13,7 +13,7 @@ export class GetUserProfileDto extends Dto
         readonly credentials: {
             name: string
         },
-        readonly address: {
+        readonly address?: {
             id: string,
             name: string,
             area: string,
@@ -24,7 +24,8 @@ export class GetUserProfileDto extends Dto
             country_code: string,
             created_at: Date,
             updated_at: Date
-        } | null
+        },
+        readonly following?: boolean
     ) 
     {super();}
 }

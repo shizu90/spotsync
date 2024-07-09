@@ -28,7 +28,7 @@ import { UserErrorHandler } from "./handlers/user-error.handler";
 import { DeleteUserAddressCommand } from "src/user/application/ports/in/commands/delete-user-address.command";
 import { GetUserProfileUseCase, GetUserProfileUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-profile.use-case";
 import { GetUserProfileCommand } from "src/user/application/ports/in/commands/get-user-profile.command";
-import { ApiConflictResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse } from "@nestjs/swagger";
+import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { GetUserProfileDto } from "src/user/application/ports/out/dto/get-user-profile.dto";
 import { CreateUserDto } from "src/user/application/ports/out/dto/create-user.dto";
@@ -128,9 +128,7 @@ export class UserController
     @Get(':id/profile')
     public async get(@Param('id') id: string, @Req() req: Request, @Res() res: Response) 
     {
-        const authenticatedUserId = req['authenticated_user'];
-
-        const command: GetUserProfileCommand = UserRequestMapper.getUserProfileCommand(id);
+        const command: GetUserProfileCommand = UserRequestMapper.getUserProfileCommand(id, undefined);
 
         const data = await this.getUserProfileUseCase.execute(command);
     
@@ -157,6 +155,7 @@ export class UserController
             )
         }
     })
+    @ApiBody({type: [CreateUserRequest]})
     @Post()
     @UsePipes(new ValidationPipe({transform: true}))
     public async create(@Body() body: CreateUserRequest, @Req() req: Request, @Res() res: Response) 
@@ -183,8 +182,6 @@ export class UserController
     @UsePipes(new ValidationPipe({transform: true}))
     public async updateProfile(@Param('id') id: string, @Body() body: UpdateUserProfileRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const authenticatedUserId = req['authenticated_user'];
-
         const command: UpdateUserProfileCommand = UserRequestMapper.updateUserProfileCommand(id, body);
 
         await this.updateUserProfileUseCase.execute(command);
@@ -207,8 +204,6 @@ export class UserController
     @UsePipes(new ValidationPipe({transform: true}))
     public async updateCredentials(@Param('id') id: string, @Body() body: UpdateUserCredentialsRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const authenticatedUserId = req['authenticated_user'];
-
         const command: UpdateUserCredentialsCommand = UserRequestMapper.updateUserCredentialsCommand(id, body);
 
         await this.updateUserCredentialsUseCase.execute(command);
@@ -230,8 +225,6 @@ export class UserController
     @Delete(':id')
     public async delete(@Param('id') id: string, @Req() req: Request, @Res() res: Response) 
     {
-        const authenticatedUserId = req['authenticated_user'];
-
         const command: DeleteUserCommand = UserRequestMapper.deleteUserCommand(id);
 
         const data = await this.deleteUserUseCase.execute(command);
@@ -266,8 +259,6 @@ export class UserController
     @Get(':id/address')
     public async getAddresses(@Param('id') id: string, @Req() req: Request, @Res() res: Response) 
     {
-        const authenticatedUserId = req['authenticated_user'];
-
         const command: GetUserAddressesCommand = UserRequestMapper.getUserAddressesCommand(id);
 
         const data = await this.getUserAddressesUseCase.execute(command)
@@ -299,8 +290,6 @@ export class UserController
     @Get(':id/address/:address_id')
     public async getAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Req() req: Request, @Res() res: Response) 
     {
-        const authenticatedUserId = req['authenticated_user'];
-
         const command: GetUserAddressCommand = UserRequestMapper.getUserAddressCommand(addressId, id);
 
         const data = await this.getUserAddressUseCase.execute(command);
@@ -333,8 +322,6 @@ export class UserController
     @UsePipes(new ValidationPipe({transform: true}))
     public async createAddress(@Param('id') id: string, @Body() request: CreateUserAddressRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const authenticatedUserId = req['authenticated_user'];
-
         const command: CreateUserAddressCommand = UserRequestMapper.createUserAddressCommand(id, request);
     
         const data = await this.createUserAddressUseCase.execute(command);
@@ -357,8 +344,6 @@ export class UserController
     @UsePipes(new ValidationPipe({transform: true}))
     public async updateAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Body() body: UpdateUserAddressRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const authenticatedUserId = req['authenticated_user'];
-
         const command: UpdateUserAddressCommand = UserRequestMapper.updateUserAddressCommand(addressId, id, body);
 
         await this.updateUserAddressUseCase.execute(command);
@@ -380,8 +365,6 @@ export class UserController
     @Delete(':id/address/:address_id')
     public async deleteAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Req() req: Request, @Res() res: Response) 
     {
-        const authenticatedUserId = req['authenticated_user'];
-
         const command: DeleteUserAddressCommand = UserRequestMapper.deleteUserAddressCommand(addressId, id);
 
         await this.deleteUserAddressUseCase.execute(command);

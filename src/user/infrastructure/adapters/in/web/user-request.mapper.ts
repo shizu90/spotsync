@@ -16,9 +16,9 @@ import { GetUserProfileCommand } from "src/user/application/ports/in/commands/ge
 
 export class UserRequestMapper 
 {
-    public static getUserProfileCommand(id: string): GetUserProfileCommand 
+    public static getUserProfileCommand(id: string, name: string): GetUserProfileCommand 
     {
-        return new GetUserProfileCommand(id);
+        return new GetUserProfileCommand(id, name);
     }
 
     public static createUserCommand(request: CreateUserRequest): CreateUserCommand 

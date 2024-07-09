@@ -23,12 +23,12 @@ export class CreateUserService implements CreateUserUseCase
     
     public async execute(command: CreateUserCommand): Promise<CreateUserDto> 
     {
-        if(await this.userRepository.findByEmail(command.email) != null) {
-            throw new UserAlreadyExistsError(`E-mail ${command.email} already in use.`);
+        if(await this.userRepository.findByEmail(command.email) !== null) {
+            throw new UserAlreadyExistsError(`E-mail ${command.email} already in use`);
         }
 
-        if(await this.userRepository.findByName(command.name) != null) {
-            throw new UserAlreadyExistsError(`User name ${command.name} already taken.`);
+        if(await this.userRepository.findByName(command.name) !== null) {
+            throw new UserAlreadyExistsError(`User name ${command.name} already taken`);
         }
 
         const userId = randomUUID();
@@ -50,7 +50,7 @@ export class CreateUserService implements CreateUserUseCase
             userCredentials
         );
 
-        await this.userRepository.store(user);
+        this.userRepository.store(user);
 
         return new CreateUserDto(
             user.id(),

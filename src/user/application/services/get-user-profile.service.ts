@@ -5,6 +5,8 @@ import { GetUserProfileDto } from "../ports/out/dto/get-user-profile.dto";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
+import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
+import { FollowRepository, FollowRepositoryProvider } from "src/follower/application/ports/out/follow.repository";
 
 @Injectable()
 export class GetUserProfileService implements GetUserProfileUseCase 
@@ -13,7 +15,11 @@ export class GetUserProfileService implements GetUserProfileUseCase
         @Inject(UserRepositoryProvider)
         protected userRepository: UserRepository,
         @Inject(UserAddressRepositoryProvider)
-        protected userAddressRepository: UserAddressRepository
+        protected userAddressRepository: UserAddressRepository,
+        @Inject(GetAuthenticatedUserUseCaseProvider)
+        protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+        @Inject(FollowRepositoryProvider)
+        protected followRepository: FollowRepository
     ) 
     {}
 
@@ -24,9 +30,13 @@ export class GetUserProfileService implements GetUserProfileUseCase
             this.userRepository.findByName(command.name)
         );
 
-        if(user === null || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.id || command.name} not found.`);
+        if(user === null || user === undefined || user.isDeleted()) {
+            throw new UserNotFoundError(`User ${command.id || command.name} not found`);
         }
+
+        const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+
+        const isFollowing = (await this.followRepository.findBy({fromUserId: authenticatedUserId, toUserId: user.id()})).at(0);
 
         const userMainAddress = (await this.userAddressRepository.findBy({userId: user.id(), main: true})).at(0);
 
@@ -52,7 +62,8 @@ export class GetUserProfileService implements GetUserProfileUseCase
                 sub_area: userMainAddress.subArea(),
                 created_at: userMainAddress.createdAt(),
                 updated_at: userMainAddress.updatedAt()
-            } : null
+            } : null,
+            isFollowing ? true : false
         );
     }
 }

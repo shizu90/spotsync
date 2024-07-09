@@ -7,6 +7,8 @@ import { Pagination } from "src/common/pagination.dto";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { GetUserAddressDto } from "../ports/out/dto/get-user-address.dto";
+import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
 
 @Injectable()
 export class GetUserAddressesService implements GetUserAddressesUseCase 
@@ -15,7 +17,9 @@ export class GetUserAddressesService implements GetUserAddressesUseCase
         @Inject(UserAddressRepositoryProvider) 
         protected userAddressRepository: UserAddressRepository,
         @Inject(UserRepositoryProvider) 
-        protected userRepository: UserRepository
+        protected userRepository: UserRepository,
+        @Inject(GetAuthenticatedUserUseCaseProvider)
+        protected getAuthenticatedUser: GetAuthenticatedUserUseCase
     ) 
     {}
 
@@ -23,8 +27,12 @@ export class GetUserAddressesService implements GetUserAddressesUseCase
     {
         const user: User = await this.userRepository.findById(command.userId);
 
-        if(user == null || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.userId} not found.`);
+        if(user === null || user === undefined || user.isDeleted()) {
+            throw new UserNotFoundError(`User ${command.userId} not found`);
+        }
+
+        if(user.id() !== this.getAuthenticatedUser.execute(null)) {
+            throw new UnauthorizedAccessError(`Unauthorized access`);
         }
 
         const userAddresses = await this.userAddressRepository.findBy({userId: user.id(), isDeleted: false});

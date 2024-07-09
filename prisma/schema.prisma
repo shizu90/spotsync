@@ -26,6 +26,8 @@ model User {
     is_deleted          Boolean     @default(false)
     credentials         UserCredentials?
     addresses           UserAddress[]
+    followers           Follow[]    @relation("from_user")
+    following           Follow[]    @relation("to_user")
 
     @@map("users")
 }
@@ -59,4 +61,14 @@ model UserAddress {
     user                User        @relation(fields: [user_id], references: [id])
 
     @@map("user_addresses")
+}
+
+model Follow {
+    id                  String    @id @default(uuid())
+    from_user_id        String
+    to_user_id          String
+    from_user           User      @relation("from_user", fields: [from_user_id], references: [id])
+    to_user             User      @relation("to_user", fields: [to_user_id], references: [id])
+
+    @@map("follow")
 }

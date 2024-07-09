@@ -7,6 +7,8 @@ import { UserAddress } from "src/user/domain/user-address.model";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { GetUserAddressDto } from "../ports/out/dto/get-user-address.dto";
+import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
 
 @Injectable()
 export class GetUserAddressService implements GetUserAddressUseCase 
@@ -15,7 +17,9 @@ export class GetUserAddressService implements GetUserAddressUseCase
         @Inject(UserAddressRepositoryProvider) 
         protected userAddressRepository: UserAddressRepository,
         @Inject(UserRepositoryProvider) 
-        protected userRepository: UserRepository
+        protected userRepository: UserRepository,
+        @Inject(GetAuthenticatedUserUseCaseProvider)
+        protected getAuthenticatedUser: GetAuthenticatedUserUseCase
     ) 
     {}
 
@@ -23,14 +27,18 @@ export class GetUserAddressService implements GetUserAddressUseCase
     {
         const user: User = await this.userRepository.findById(command.userId);
 
-        if(user == null || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.userId} not found.`);
+        if(user === null || user === undefined || user.isDeleted()) {
+            throw new UserNotFoundError(`User ${command.userId} not found`);
+        }
+
+        if(user.id() !== this.getAuthenticatedUser.execute(null)) {
+            throw new UnauthorizedAccessError(`Unauthorized access`);
         }
 
         const userAddress: UserAddress = await this.userAddressRepository.findById(command.id);
 
-        if(userAddress == null || userAddress.user().id() != user.id() || userAddress.isDeleted()) {
-            throw new UserNotFoundError(`User address ${command.id} not found.`);
+        if(userAddress === null || userAddress === undefined || userAddress.user().id() != user.id() || userAddress.isDeleted()) {
+            throw new UserNotFoundError(`User address ${command.id} not found`);
         }
 
         return new GetUserAddressDto(
