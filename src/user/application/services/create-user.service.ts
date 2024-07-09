@@ -38,7 +38,7 @@ export class CreateUserService implements CreateUserUseCase
             userId,
             command.name,
             command.email,
-            this.encryptPasswordService.encrypt(command.password)
+            await this.encryptPasswordService.encrypt(command.password)
         );
 
         const userVisibilityConfig: UserVisibilityConfig = UserVisibilityConfig.create(

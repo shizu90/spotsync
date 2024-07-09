@@ -1,45 +1,58 @@
 import { Model } from "src/common/common.model";
 import { UserGroup } from "./user-group.model";
 import { User } from "src/user/domain/user.model";
-import { GroupRole } from "./group-role.model";
+import { UserGroupRole } from "./user-group-role.model";
 
-export class GroupMember extends Model 
+export class UserGroupMember extends Model 
 {
+    private _id: string;
     private _group: UserGroup;
     private _user: User;
-    private _role: GroupRole;
+    private _role: UserGroupRole;
+    private _isCreator: boolean;
     private _joinedAt: Date;
     private _leftAt: Date;
     private _left: boolean;
 
     private constructor(
+        id: string,
         group: UserGroup,
         user: User,
-        role: GroupRole,
+        role: UserGroupRole,
+        isCreator: boolean,
         joinedAt?: Date,
         leftAt?: Date,
         left?: boolean
     ) 
     {
         super();
+        this._id = id;
         this._group = group;
         this._user = user;
         this._role = role;
+        this._isCreator = isCreator;
         this._joinedAt = joinedAt ?? new Date();
         this._leftAt = leftAt ?? null;
         this._left = left ?? false;
     }
 
     public static create(
+        id: string,
         group: UserGroup,
         user: User,
-        role: GroupRole,
+        role: UserGroupRole,
+        isCreator: boolean,
         joinedAt?: Date,
         leftAt?: Date,
         left?: boolean
-    ): GroupMember
+    ): UserGroupMember
     {
-        return new GroupMember(group, user, role, joinedAt, leftAt, left);
+        return new UserGroupMember(id, group, user, role, isCreator, joinedAt, leftAt, left);
+    }
+
+    public id(): string 
+    {
+        return this._id;
     }
 
     public group(): UserGroup 
@@ -52,9 +65,14 @@ export class GroupMember extends Model
         return this._user;
     }
 
-    public role(): GroupRole 
+    public role(): UserGroupRole 
     {
         return this._role;
+    }
+
+    public isCreator(): boolean 
+    {
+        return this._isCreator;
     }
 
     public joinedAt(): Date 
@@ -78,7 +96,7 @@ export class GroupMember extends Model
         this._leftAt = new Date();
     }
 
-    public changeRole(role: GroupRole): void 
+    public changeRole(role: UserGroupRole): void 
     {
         this._role = role;
     }

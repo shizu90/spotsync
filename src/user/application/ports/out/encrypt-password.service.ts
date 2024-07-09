@@ -2,6 +2,6 @@ export const EncryptPasswordServiceProvider = 'EncryptPasswordService';
 
 export interface EncryptPasswordService 
 {
-    encrypt(str: string): string;
-    equals(encryptedStr: string, str: string): boolean;
+    encrypt(str: string): Promise<string>;
+    equals(encryptedStr: string, str: string): Promise<boolean>;
 }

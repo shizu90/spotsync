@@ -1,10 +1,11 @@
 import { Model } from "src/common/common.model";
 import { UserGroup } from "./user-group.model";
 import { User } from "src/user/domain/user.model";
-import { GroupMember } from "./group-member.model";
-import { GroupRole } from "./group-role.model";
+import { UserGroupMember } from "./user-group-member.model";
+import { UserGroupRole } from "./user-group-role.model";
+import { randomUUID } from "crypto";
 
-export class GroupMemberRequest extends Model 
+export class UserGroupMemberRequest extends Model 
 {
     private _id: string;
     private _group: UserGroup;
@@ -20,9 +21,9 @@ export class GroupMemberRequest extends Model
         this._requestedOn = requestedOn ?? new Date();
     }
 
-    public static create(id: string, group: UserGroup, user: User, requestedOn?: Date): GroupMemberRequest 
+    public static create(id: string, group: UserGroup, user: User, requestedOn?: Date): UserGroupMemberRequest 
     {
-        return new GroupMemberRequest(id, group, user, requestedOn);
+        return new UserGroupMemberRequest(id, group, user, requestedOn);
     }
 
     public id(): string 
@@ -45,8 +46,8 @@ export class GroupMemberRequest extends Model
         return this._requestedOn;
     }
 
-    public accept(role: GroupRole): GroupMember 
+    public accept(role: UserGroupRole): UserGroupMember 
     {
-        return GroupMember.create(this._group, this._user, role);
+        return UserGroupMember.create(randomUUID(), this._group, this._user, role, false);
     }
 }

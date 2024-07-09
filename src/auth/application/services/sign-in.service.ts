@@ -34,11 +34,11 @@ export class SignInService implements SignInUseCase
             user = await this.userRepository.findByEmail(command.email);
         }
 
-        if(user === null || user.isDeleted()) {
+        if(user === null || user === undefined || user.isDeleted()) {
             throw new UserNotFoundError(`User not found`);
         }
 
-        if(!this.encryptPasswordService.equals(user.credentials().password(), command.password)) {
+        if(!(await this.encryptPasswordService.equals(user.credentials().password(), command.password))) {
             throw new UserInvalidCredentialsError(`Wrong password`);
         }
 

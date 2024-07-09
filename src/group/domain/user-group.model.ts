@@ -1,6 +1,5 @@
-import { group } from "console";
-import { create } from "domain";
 import { Model } from "src/common/common.model";
+import { UserGroupVisibilityConfig } from "./user-group-visibility-config.model";
 
 export class UserGroup extends Model 
 {
@@ -9,7 +8,7 @@ export class UserGroup extends Model
     private _about: string;
     private _groupPicture: string;
     private _bannerPicture: string;
-    private _visibility: string;
+    private _visibilityConfiguration: UserGroupVisibilityConfig;
     private _createdAt: Date;
     private _updatedAt: Date;
 
@@ -19,7 +18,7 @@ export class UserGroup extends Model
         about: string,
         groupPicture: string,
         bannerPicture: string,
-        visibility: string,
+        visibilityConfiguration: UserGroupVisibilityConfig,
         createdAt?: Date,
         updatedAt?: Date
     ) 
@@ -30,7 +29,7 @@ export class UserGroup extends Model
         this._about = about;
         this._groupPicture = groupPicture;
         this._bannerPicture = bannerPicture;
-        this._visibility = visibility;
+        this._visibilityConfiguration = visibilityConfiguration;
         this._createdAt = createdAt ?? new Date();
         this._updatedAt = updatedAt ?? new Date();
     }
@@ -41,12 +40,12 @@ export class UserGroup extends Model
         about: string,
         groupPicture: string,
         bannerPicture: string,
-        visibility: string,
+        visibilityConfiguration: UserGroupVisibilityConfig,
         createdAt?: Date,
         updatedAt?: Date
     ): UserGroup
     {
-        return new UserGroup(id, name, about, groupPicture, bannerPicture, visibility, createdAt, updatedAt);
+        return new UserGroup(id, name, about, groupPicture, bannerPicture, visibilityConfiguration, createdAt, updatedAt);
     }
 
     public id(): string 
@@ -74,9 +73,9 @@ export class UserGroup extends Model
         return this._bannerPicture;
     }
 
-    public visibility(): string 
+    public visibilityConfiguration(): UserGroupVisibilityConfig 
     {
-        return this._visibility;
+        return this._visibilityConfiguration;
     }
 
     public createdAt(): Date 

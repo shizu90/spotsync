@@ -1,6 +1,6 @@
 import { Model } from "src/common/common.model";
 
-export class GroupPermission extends Model 
+export class UserGroupPermission extends Model 
 {
     private _id: string;
     private _name: string;
@@ -15,9 +15,9 @@ export class GroupPermission extends Model
         this._name = name;
     }
 
-    public static create(id: string, name: string): GroupPermission 
+    public static create(id: string, name: string): UserGroupPermission 
     {
-        return new GroupPermission(id, name);
+        return new UserGroupPermission(id, name);
     }
 
     public id(): string 

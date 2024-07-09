@@ -46,8 +46,8 @@ export class UpdateUserCredentialsService implements UpdateUserCredentialsUseCas
             user.credentials().changeEmail(command.email);
         }
 
-        if(command.password && !this.encryptPasswordService.equals(user.credentials().password(), command.password)) {
-            user.credentials().changePassword(this.encryptPasswordService.encrypt(command.password));
+        if(command.password && !(await this.encryptPasswordService.equals(user.credentials().password(), command.password))) {
+            user.credentials().changePassword(await this.encryptPasswordService.encrypt(command.password));
         }
 
         this.userRepository.updateCredentials(user.credentials());
