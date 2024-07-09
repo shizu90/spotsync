@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Inject, Post, Put, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
-import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnprocessableEntityResponse } from "@nestjs/swagger";
+import { ApiBody, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnprocessableEntityResponse } from "@nestjs/swagger";
 import { SignInUseCase, SignInUseCaseProvider } from "src/auth/application/ports/in/use-cases/sign-in.use-case";
 import { SignOutUseCase, SignOutUseCaseProvider } from "src/auth/application/ports/in/use-cases/sign-out.use-case";
 import { SignInRequest } from "./requests/sign-in.request";
@@ -47,6 +47,7 @@ export class AuthController
             )
         }
     })
+    @ApiBody({type: SignInRequest})
     @Post('login')
     @UsePipes(new ValidationPipe({transform: true}))
     public async login(@Body() request: SignInRequest, @Res() res: Response) 

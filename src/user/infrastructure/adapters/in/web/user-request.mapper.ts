@@ -28,7 +28,7 @@ export class UserRequestMapper
 
     public static updateUserProfileCommand(id: string, request: UpdateUserProfileRequest): UpdateUserProfileCommand 
     {
-        return new UpdateUserProfileCommand(id, request.profile_picture, request.banner_picture, request.biograph, request.birth_date);
+        return new UpdateUserProfileCommand(id, request.profile_picture, request.banner_picture, request.biograph, request.birth_date, request.profile_visibility);
     }
 
     public static updateUserCredentialsCommand(id: string, request: UpdateUserCredentialsRequest): UpdateUserCredentialsCommand

@@ -1,5 +1,6 @@
 import { Model } from "src/common/common.model";
 import { UserCredentials } from "./user-credentials.model";
+import { ProfileVisibility } from "./profile-visibility.enum";
 
 export class User extends Model 
 {
@@ -138,6 +139,12 @@ export class User extends Model
     public changeBirthDate(birthDate: Date): void
     {
         this._birthDate = birthDate;
+        this._updatedAt = new Date();
+    }
+
+    public changeProfileVisibility(profileVisibility: ProfileVisibility): void 
+    {
+        this._profileVisibility = profileVisibility;
         this._updatedAt = new Date();
     }
 

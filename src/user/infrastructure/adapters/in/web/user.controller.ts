@@ -177,6 +177,7 @@ export class UserController
             data: {}
         }
     })
+    @ApiBody({type: UpdateUserProfileRequest})
     @UseGuards(AuthGuard)
     @Put(':id')
     @UsePipes(new ValidationPipe({transform: true}))
@@ -199,6 +200,7 @@ export class UserController
             data: {}
         }
     })
+    @ApiBody({type: UpdateUserCredentialsRequest})
     @UseGuards(AuthGuard)
     @Put(':id/credentials')
     @UsePipes(new ValidationPipe({transform: true}))
