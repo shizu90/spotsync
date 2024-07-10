@@ -60,6 +60,7 @@ export class CreateUserGroupService implements CreateUserGroupUseCase
         );
 
         const creatorGroupMember = UserGroupMember.create(
+            randomUUID(),
             group,
             authenticatedUser,
             adminRole,

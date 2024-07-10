@@ -173,7 +173,8 @@ export class FollowRepositoryImpl implements FollowRepository
             data: {
                 id: model.id(),
                 from_user_id: model.from().id(),
-                to_user_id: model.to().id()
+                to_user_id: model.to().id(),
+                created_at: model.createdAt()
             },
             include: {
                 from_user: {

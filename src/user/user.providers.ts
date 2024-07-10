@@ -33,6 +33,8 @@ import { GetUserProfileUseCaseProvider } from "./application/ports/in/use-cases/
 import { GetUserProfileService } from "./application/services/get-user-profile.service";
 import { UpdateUserVisibilityConfigUseCaseProvider } from "./application/ports/in/use-cases/update-user-visibility-config.use-case";
 import { UpdateUserVisibilityConfigService } from "./application/services/update-user-visibility-config.service";
+import { ListUsersUseCaseProvider } from "./application/ports/in/use-cases/list-users.use-case";
+import { ListUsersService } from "./application/services/list-users.service";
 
 export const Providers: Provider[] = [
     {
@@ -66,6 +68,10 @@ export const Providers: Provider[] = [
     {
         provide: GetUserProfileUseCaseProvider,
         useClass: GetUserProfileService
+    },
+    {
+        provide: ListUsersUseCaseProvider,
+        useClass: ListUsersService
     },
     {
         provide: CreateUserAddressUseCaseProvider,

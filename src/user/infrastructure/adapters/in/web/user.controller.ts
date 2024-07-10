@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { CreateUserUseCase, CreateUserUseCaseProvider } from "src/user/application/ports/in/use-cases/create-user.use-case";
 import { DeleteUserUseCase, DeleteUserUseCaseProvider } from "src/user/application/ports/in/use-cases/delete-user.use-case";
 import { UpdateUserCredentialsUseCase, UpdateUserCredentialsUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-credentials.use-case";
@@ -22,6 +22,8 @@ import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth
 import { UpdateUserVisibilityConfigCommand } from "src/user/application/ports/in/commands/update-user-visibility-config.command";
 import { UpdateUserVisibilityConfigRequest } from "./requests/update-user-visibility-config.request";
 import { UpdateUserVisibilityConfigUseCase, UpdateUserVisibilityConfigUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-visibility-config.use-case";
+import { ListUsersUseCase, ListUsersUseCaseProvider } from "src/user/application/ports/in/use-cases/list-users.use-case";
+import { ListUsersCommand } from "src/user/application/ports/in/commands/list-users.command";
 
 @ApiTags('Users')
 @ApiNotFoundResponse({})
@@ -35,6 +37,8 @@ export class UserController
     constructor(
         @Inject(GetUserProfileUseCaseProvider) 
         protected readonly getUserProfileUseCase: GetUserProfileUseCase,
+        @Inject(ListUsersUseCaseProvider)
+        protected readonly listUsersUseCase: ListUsersUseCase,
         @Inject(CreateUserUseCaseProvider) 
         protected readonly createUserUseCase: CreateUserUseCase,
         @Inject(UpdateUserProfileUseCaseProvider) 
@@ -51,6 +55,23 @@ export class UserController
         protected readonly deleteUserUseCase: DeleteUserUseCase
     ) 
     {}
+
+    @ApiOperation({summary: 'List and search users'})
+    @ApiOkResponse({})
+    @UseGuards(AuthGuard)
+    @Get()
+    public async list(@Query() query: {name?: string, sort?: string, sortDirection?: 'asc' | 'desc', page?: number, paginate?: boolean, limit?: number}, @Req() req: Request, @Res() res: Response)  
+    {
+        const command: ListUsersCommand = UserRequestMapper.listUsersCommand(query);
+       
+        const data = await this.listUsersUseCase.execute(command);
+
+        res
+            .status(200)
+            .json({
+                data: data
+            });
+    }
 
     @ApiOperation({summary: 'Get user by id'})
     @ApiOkResponse({})

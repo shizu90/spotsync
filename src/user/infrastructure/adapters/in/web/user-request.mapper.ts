@@ -15,12 +15,18 @@ import { GetUserAddressCommand } from "src/user/application/ports/in/commands/ge
 import { GetUserProfileCommand } from "src/user/application/ports/in/commands/get-user-profile.command";
 import { UpdateUserVisibilityConfigRequest } from "./requests/update-user-visibility-config.request";
 import { UpdateUserVisibilityConfigCommand } from "src/user/application/ports/in/commands/update-user-visibility-config.command";
+import { ListUsersCommand } from "src/user/application/ports/in/commands/list-users.command";
 
 export class UserRequestMapper 
 {
     public static getUserProfileCommand(id: string, name: string): GetUserProfileCommand 
     {
         return new GetUserProfileCommand(id, name);
+    }
+
+    public static listUsersCommand(query: {name?: string, sort?: string, sortDirection?: 'asc' | 'desc', page?: number, paginate?: boolean, limit?: number}): ListUsersCommand 
+    {
+        return new ListUsersCommand(query.name, query.sort, query.sortDirection, query.page, query.paginate, query.limit);
     }
 
     public static createUserCommand(request: CreateUserRequest): CreateUserCommand 

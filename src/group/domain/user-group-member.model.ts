@@ -11,8 +11,6 @@ export class UserGroupMember extends Model
     private _role: UserGroupRole;
     private _isCreator: boolean;
     private _joinedAt: Date;
-    private _leftAt: Date;
-    private _left: boolean;
 
     private constructor(
         id: string,
@@ -32,8 +30,6 @@ export class UserGroupMember extends Model
         this._role = role;
         this._isCreator = isCreator;
         this._joinedAt = joinedAt ?? new Date();
-        this._leftAt = leftAt ?? null;
-        this._left = left ?? false;
     }
 
     public static create(
@@ -43,11 +39,9 @@ export class UserGroupMember extends Model
         role: UserGroupRole,
         isCreator: boolean,
         joinedAt?: Date,
-        leftAt?: Date,
-        left?: boolean
     ): UserGroupMember
     {
-        return new UserGroupMember(id, group, user, role, isCreator, joinedAt, leftAt, left);
+        return new UserGroupMember(id, group, user, role, isCreator, joinedAt);
     }
 
     public id(): string 
@@ -78,22 +72,6 @@ export class UserGroupMember extends Model
     public joinedAt(): Date 
     {
         return this._joinedAt;
-    }
-
-    public leftAt(): Date 
-    {
-        return this._leftAt;
-    }
-
-    public left(): boolean
-    {
-        return this._left;
-    }
-
-    public leaveGroup(): void 
-    {
-        this._left = true;
-        this._leftAt = new Date();
     }
 
     public changeRole(role: UserGroupRole): void 

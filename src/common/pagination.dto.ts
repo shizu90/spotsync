@@ -1,12 +1,8 @@
-import { Model } from "./common.model";
-
-export class Pagination<M extends Model> 
+export class Pagination<T> 
 {
     constructor(
-        readonly items: Array<M>,
-        readonly total: number,
-        readonly currentPage: number,
-        readonly lastPage: number
+        readonly items: Array<T>,
+        readonly total: number
     ) 
     {}
 }

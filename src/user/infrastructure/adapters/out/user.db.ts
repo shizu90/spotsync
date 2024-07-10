@@ -47,30 +47,71 @@ export class UserRepositoryImpl implements UserRepository
         const name = values['name'];
         const isDeleted = values['isDeleted'];
 
-        let query = 'SELECT id FROM users';
+        const sort = values['sort'] ?? 'name';
+        const sortDirection = values['sortDirection'] ?? 'asc';
+        const page = values['page'] ?? 0;
+        const paginate = values['paginate'] ?? false;
+        const limit = values['limit'] ?? 12;
 
-        if(name !== null) {
+        let query = 'SELECT users.id FROM users JOIN user_credentials ON user_credentials.user_id = users.id';
+
+        if(name) {
             if(query.includes('WHERE')) {
-                query = `${query} AND name LIKE '%${name}%'`;
+                query = `${query} AND user_credentials.name LIKE '%${name}%'`;
             }else {
-                query = `${query} WHERE name LIKE '%${name}%'`;
+                query = `${query} WHERE user_credentials.name LIKE '%${name}%'`;
             }
         }
 
-        if(isDeleted !== null) {
+        if(isDeleted) {
             if(query.includes('WHERE')) {
-                query = `${query} AND is_deleted = '${isDeleted}'`;
+                query = `${query} AND users.is_deleted = '${isDeleted}'`;
             }else {
-                query = `${query} WHERE is_deleted = '${isDeleted}'`;
+                query = `${query} WHERE users.is_deleted = '${isDeleted}'`;
             }
         }
 
         const userIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
-        const users = await this.prismaService.user.findMany({
-            where: {id: {in: userIds.map((row) => row.id)}},
-            include: {credentials: true, visibility_configuration: true}
-        });
+        let orderBy = {};
+
+        switch(sort) {
+            case 'name':
+                orderBy = {
+                    credentials: {
+                        name: sortDirection
+                    }
+                };
+                break;
+            case 'id':
+            default:
+                orderBy = {
+                    id: sortDirection
+                };
+                break;
+        }
+
+        let users = [];
+
+        if(paginate) {
+            users = await this.prismaService.user.findMany({
+                where: {
+                    id: {in: userIds.map((row) => row.id)}
+                },
+                include: {credentials: true, visibility_configuration: true},
+                orderBy: orderBy,
+                skip: page * limit,
+                take: limit
+            });
+        }else {
+            users = await this.prismaService.user.findMany({
+                where: {
+                    id: {in: userIds.map((row) => row.id)}
+                },
+                include: {credentials: true, visibility_configuration: true},
+                orderBy: orderBy
+            });
+        }
 
         return users.map((user) => {
             return this.mapToDomain(user);
