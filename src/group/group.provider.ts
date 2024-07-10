@@ -1,88 +1,88 @@
 import { Provider } from "@nestjs/common";
-import { AcceptUserGroupRequestUseCaseProvider } from "./application/ports/in/use-cases/accept-user-group-request.use-case";
-import { AcceptUserGroupRequestService } from "./application/services/accept-user-group-request.service";
-import { RefuseUserGroupRequestUseCaseProvider } from "./application/ports/in/use-cases/refuse-user-group-request.use-case";
-import { RefuseUserGroupRequestService } from "./application/services/refuse-user-group-request.service";
-import { CreateUserGroupUseCaseProvider } from "./application/ports/in/use-cases/create-user-group.use-case";
-import { CreateUserGroupService } from "./application/services/create-user-group.service";
-import { UpdateUserGroupUseCaseProvider } from "./application/ports/in/use-cases/update-user-group.use-case";
-import { UpdateUserGroupService } from "./application/services/update-user-group.service";
-import { UpdateUserGroupVisibilityUseCaseProvider } from "./application/ports/in/use-cases/update-user-group-visibility.use-case";
-import { UpdateUserGroupVisibilityService } from "./application/services/update-user-group-visibility.service";
-import { JoinUserGroupUseCaseProvider } from "./application/ports/in/use-cases/join-user-group.use-case";
-import { JoinUserGroupService } from "./application/services/join-user-group.service";
-import { LeaveUserGroupUseCaseProvider } from "./application/ports/in/use-cases/leave-user-group.use-case";
-import { LeaveUserGroupService } from "./application/services/leave-user-group.service";
-import { GetUserGroupService } from "./application/services/get-user-group.service";
-import { GetUserGroupUseCaseProvider } from "./application/ports/in/use-cases/get-user-group.use-case";
-import { DeleteUserGroupUseCaseProvider } from "./application/ports/in/use-cases/delete-user-group.use-case";
-import { DeleteUserGroupService } from "./application/services/delete-user-group.service";
-import { ListUserGroupsUseCaseProvider } from "./application/ports/in/use-cases/list-user-groups.use-case";
-import { ListUserGroupsService } from "./application/services/list-user-groups.service";
-import { RemoveUserGroupMemberUseCaseProvider } from "./application/ports/in/use-cases/remove-user-group-member.use-case";
-import { RemoveUserGroupMemberService } from "./application/services/remove-user-group-member.service";
-import { UserGroupRepositoryProvider } from "./application/ports/out/user-group.repository";
-import { UserGroupRepositoryImpl } from "./infrastructure/adapters/out/user-group.db";
-import { UserGroupRoleRepositoryImpl } from "./infrastructure/adapters/out/user-group-role.db";
-import { UserGroupMemberRepositoryImpl } from "./infrastructure/adapters/out/user-group-member.db";
-import { UserGroupRoleRepositoryProvider } from "./application/ports/out/user-group-role.repository";
-import { UserGroupMemberRepositoryProvider } from "./application/ports/out/user-group-member.repository";
+import { AcceptGroupRequestUseCaseProvider } from "./application/ports/in/use-cases/accept-group-request.use-case";
+import { RefuseGroupRequestUseCaseProvider } from "./application/ports/in/use-cases/refuse-group-request.use-case";
+import { RefuseGroupRequestService } from "./application/services/refuse-group-request.service";
+import { CreateGroupUseCaseProvider } from "./application/ports/in/use-cases/create-group.use-case";
+import { UpdateGroupUseCaseProvider } from "./application/ports/in/use-cases/update-group.use-case";
+import { UpdateGroupService } from "./application/services/update-group.service";
+import { UpdateGroupVisibilityUseCaseProvider } from "./application/ports/in/use-cases/update-group-visibility.use-case";
+import { UpdateGroupVisibilityService } from "./application/services/update-group-visibility.service";
+import { JoinGroupUseCaseProvider } from "./application/ports/in/use-cases/join-group.use-case";
+import { JoinGroupService } from "./application/services/join-group.service";
+import { LeaveGroupUseCaseProvider } from "./application/ports/in/use-cases/leave-group.use-case";
+import { LeaveGroupService } from "./application/services/leave-group.service";
+import { GetGroupService } from "./application/services/get-group.service";
+import { GetGroupUseCaseProvider } from "./application/ports/in/use-cases/get-group.use-case";
+import { DeleteGroupUseCaseProvider } from "./application/ports/in/use-cases/delete-group.use-case";
+import { DeleteGroupService } from "./application/services/delete-group.service";
+import { ListGroupsUseCaseProvider } from "./application/ports/in/use-cases/list-groups.use-case";
+import { ListGroupsService } from "./application/services/list-groups.service";
+import { RemoveGroupMemberUseCaseProvider } from "./application/ports/in/use-cases/remove-group-member.use-case";
+import { RemoveGroupMemberService } from "./application/services/remove-group-member.service";
+import { GroupRepositoryProvider } from "./application/ports/out/group.repository";
+import { GroupRepositoryImpl } from "./infrastructure/adapters/out/group.db";
+import { GroupRoleRepositoryImpl } from "./infrastructure/adapters/out/group-role.db";
+import { GroupMemberRepositoryImpl } from "./infrastructure/adapters/out/group-member.db";
+import { GroupRoleRepositoryProvider } from "./application/ports/out/group-role.repository";
+import { GroupMemberRepositoryProvider } from "./application/ports/out/group-member.repository";
+import { AcceptGroupRequestService } from "./application/services/accept-group-request.service";
+import { CreateGroupService } from "./application/services/create-group.service";
 
 export const Providers: Provider[] = [
     {
-        provide: AcceptUserGroupRequestUseCaseProvider,
-        useClass: AcceptUserGroupRequestService
+        provide: AcceptGroupRequestUseCaseProvider,
+        useClass: AcceptGroupRequestService
     },
     {
-        provide: RefuseUserGroupRequestUseCaseProvider,
-        useClass: RefuseUserGroupRequestService
+        provide: RefuseGroupRequestUseCaseProvider,
+        useClass: RefuseGroupRequestService
     },
     {
-        provide: CreateUserGroupUseCaseProvider,
-        useClass: CreateUserGroupService
+        provide: CreateGroupUseCaseProvider,
+        useClass: CreateGroupService
     },
     {
-        provide: UpdateUserGroupUseCaseProvider,
-        useClass: UpdateUserGroupService
+        provide: UpdateGroupUseCaseProvider,
+        useClass: UpdateGroupService
     },
     {
-        provide: UpdateUserGroupVisibilityUseCaseProvider,
-        useClass: UpdateUserGroupVisibilityService
+        provide: UpdateGroupVisibilityUseCaseProvider,
+        useClass: UpdateGroupVisibilityService
     },
     {
-        provide: JoinUserGroupUseCaseProvider,
-        useClass: JoinUserGroupService
+        provide: JoinGroupUseCaseProvider,
+        useClass: JoinGroupService
     },
     {
-        provide: LeaveUserGroupUseCaseProvider,
-        useClass: LeaveUserGroupService
+        provide: LeaveGroupUseCaseProvider,
+        useClass: LeaveGroupService
     },
     {
-        provide: GetUserGroupUseCaseProvider,
-        useClass: GetUserGroupService
+        provide: GetGroupUseCaseProvider,
+        useClass: GetGroupService
     },
     {
-        provide: DeleteUserGroupUseCaseProvider,
-        useClass: DeleteUserGroupService
+        provide: DeleteGroupUseCaseProvider,
+        useClass: DeleteGroupService
     },
     {
-        provide: ListUserGroupsUseCaseProvider,
-        useClass: ListUserGroupsService
+        provide: ListGroupsUseCaseProvider,
+        useClass: ListGroupsService
     },
     {
-        provide: RemoveUserGroupMemberUseCaseProvider,
-        useClass: RemoveUserGroupMemberService
+        provide: RemoveGroupMemberUseCaseProvider,
+        useClass: RemoveGroupMemberService
     },
     {
-        provide: UserGroupRepositoryProvider,
-        useClass: UserGroupRepositoryImpl
+        provide: GroupRepositoryProvider,
+        useClass: GroupRepositoryImpl
     },
     {
-        provide: UserGroupRoleRepositoryProvider,
-        useClass: UserGroupRoleRepositoryImpl
+        provide: GroupRoleRepositoryProvider,
+        useClass: GroupRoleRepositoryImpl
     },
     {
-        provide: UserGroupMemberRepositoryProvider,
-        useClass: UserGroupMemberRepositoryImpl
+        provide: GroupMemberRepositoryProvider,
+        useClass: GroupMemberRepositoryImpl
     }
 ];
