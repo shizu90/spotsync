@@ -34,20 +34,20 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase
 
         const group = await this.groupRepository.findById(command.id);
 
-        if(group === null || group === undefined) {
+        if(group === null || group === undefined || group.isDeleted()) {
             throw new GroupNotFoundError(`Group not found`);
         }
 
         const authenticatedGroupMember = (await this.groupMemberRepository.findBy({GroupId: command.id, userId: authenticatedUserId})).at(0);
 
         if(authenticatedGroupMember === null || authenticatedGroupMember === undefined) {
-            throw new UnauthorizedAccessError(`Authenticated user is not a member of the group`);
+            throw new UnauthorizedAccessError(`You are not a member of the group`);
         }
 
         const hasPermission = authenticatedGroupMember.role().permissions().map((p) => p.name()).includes('accept-requests');
 
-        if(!hasPermission) {
-            throw new UnauthorizedAccessError(`Authenticated user don't have permission to accept join request`);
+        if(!(hasPermission || authenticatedGroupMember.isCreator() || authenticatedGroupMember.role().name() === 'administrator')) {
+            throw new UnauthorizedAccessError(`You don't have permission to accept join requests`);
         }
 
         const groupMemberRequest = await this.groupMemberRepository.findRequestById(command.groupRequestId);

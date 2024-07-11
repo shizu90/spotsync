@@ -1,4 +1,4 @@
-import { Controller, Delete, Inject, Param, Post, Req, Res, UseFilters, UseGuards } from "@nestjs/common";
+import { Controller, Delete, Inject, Param, Post, Put, Req, Res, UseFilters, UseGuards } from "@nestjs/common";
 import { ApiCreatedResponse, ApiNoContentResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { FollowUseCase, FollowUseCaseProvider } from "src/follower/application/ports/in/use-cases/follow.use-case";
@@ -7,6 +7,8 @@ import { FollowRequestMapper } from "./follow-request.mapper";
 import { FollowDto } from "src/follower/application/ports/out/dto/follow.dto";
 import { FollowErrorHandler } from "./handlers/follow-error.handler";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
+import { AcceptFollowRequestUseCase, AcceptFollowRequestUseCaseProvider } from "src/follower/application/ports/in/use-cases/accept-follow-request.use-case";
+import { RefuseFollowRequestUseCaseProvider, RefusseFollowRequestUseCase } from "src/follower/application/ports/in/use-cases/refuse-follow-request.use-case";
 
 @ApiTags('Followers')
 @Controller('followers')
@@ -17,7 +19,11 @@ export class FollowController
         @Inject(FollowUseCaseProvider)
         protected followUseCase: FollowUseCase,
         @Inject(UnfollowUseCaseProvider)
-        protected unfollowUseCase: UnfollowUseCase
+        protected unfollowUseCase: UnfollowUseCase,
+        @Inject(AcceptFollowRequestUseCaseProvider)
+        protected acceptFollowRequestUseCase: AcceptFollowRequestUseCase,
+        @Inject(RefuseFollowRequestUseCaseProvider)
+        protected refuseFollowRequestUseCase: RefusseFollowRequestUseCase
     ) 
     {}
 
@@ -55,6 +61,38 @@ export class FollowController
         const command = FollowRequestMapper.unfollowCommand(fromUserId, toUserId);
 
         this.unfollowUseCase.execute(command);
+
+        res
+            .status(204)
+            .json({
+                data: {}
+            });
+    }
+
+    @ApiOperation({summary: 'Accept follow request'})
+    @Put('requests/:follow_request_id/accept')
+    @UseGuards(AuthGuard)
+    public async acceptFollowRequest(@Param('follow_request_id') followRequestId: string, @Req() req: Request, @Res() res: Response) 
+    {
+        const command = FollowRequestMapper.acceptFollowRequestCommand(followRequestId);
+
+        this.acceptFollowRequestUseCase.execute(command);
+
+        res
+            .status(204)
+            .json({
+                data: {}
+            });
+    }
+
+    @ApiOperation({summary: 'Refuse follow request'})
+    @Put('requests/:follow_request_id/refuse')
+    @UseGuards(AuthGuard)
+    public async refuseFollowRequest(@Param('follow_request_id') followRequestId: string, @Req() req: Request, @Res() res: Response) 
+    {
+        const command = FollowRequestMapper.refuseFollowRequestCommand(followRequestId);
+
+        this.refuseFollowRequestUseCase.execute(command);
 
         res
             .status(204)

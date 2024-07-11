@@ -26,14 +26,14 @@ export class LeaveGroupService implements LeaveGroupUseCase
 
         const group = await this.groupRepository.findById(command.id);
 
-        if(group === null || group === undefined) {
+        if(group === null || group === undefined || group.isDeleted()) {
             throw new GroupNotFoundError(`Group not found`);
         }
 
         const groupMember = (await this.groupRepository.findBy({groupId: group.id(), userId: authenticatedUserId})).at(0);
 
         if(groupMember === null || groupMember === undefined) {
-            throw new UnauthorizedAccessError(`Authenticated user is not a member of the group`);
+            throw new UnauthorizedAccessError(`You are not a member of the group`);
         }
 
         this.groupMemberRepository.delete(groupMember.id());

@@ -10,6 +10,8 @@ import { Follow } from "src/follower/domain/follow.model";
 import { randomUUID } from "crypto";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
+import { UserVisibility } from "src/user/domain/user-visibility.enum";
+import { FollowRequest } from "src/follower/domain/follow-request.model";
 
 @Injectable()
 export class FollowService implements FollowUseCase 
@@ -52,18 +54,36 @@ export class FollowService implements FollowUseCase
             throw new AlreadyFollowingError(`Already following user`);
         }
 
-        follow = Follow.create(
-            randomUUID(),
-            fromUser,
-            toUser
-        );
+        if(toUser.visibilityConfiguration().profileVisibility() !== UserVisibility.PUBLIC) {
+            const followRequest = FollowRequest.create(
+                randomUUID(),
+                fromUser,
+                toUser
+            );
 
-        this.followRepository.store(follow);
-
-        return new FollowDto(
-            follow.id(),
-            follow.from().id(),
-            follow.to().id()
-        );
+            return new FollowDto(
+                followRequest.id(),
+                followRequest.from().id(),
+                followRequest.to().id(),
+                null,
+                followRequest.requestedOn()
+            )
+        }else {
+            follow = Follow.create(
+                randomUUID(),
+                fromUser,
+                toUser
+            );
+    
+            this.followRepository.store(follow);
+    
+            return new FollowDto(
+                follow.id(),
+                follow.from().id(),
+                follow.to().id(),
+                follow.followedAt(),
+                follow.followedAt()
+            );
+        }
     }
 }

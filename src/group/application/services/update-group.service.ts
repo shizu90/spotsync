@@ -36,20 +36,20 @@ export class UpdateGroupService implements UpdateGroupUseCase
 
         const group = await this.groupRepository.findById(command.id);
 
-        if(group === null || group === undefined) {
+        if(group === null || group === undefined || group.isDeleted()) {
             throw new GroupNotFoundError(`Group not found`);
         }
 
-        const groupMember = (await this.groupMemberRepository.findBy({groupId: group.id(), userId: authenticatedUserId})).at(0);
+        const authenticatedGroupMember = (await this.groupMemberRepository.findBy({groupId: group.id(), userId: authenticatedUserId})).at(0);
 
-        if(groupMember === null || groupMember === undefined) {
-            throw new UnauthorizedAccessError(`User is not a member of the group`);
+        if(authenticatedGroupMember === null || authenticatedGroupMember === undefined) {
+            throw new UnauthorizedAccessError(`You are not a member of the group`);
         }
 
-        const hasPermission = groupMember.role().permissions().map((gm) => gm.name()).includes('update-settings');
+        const hasPermission = authenticatedGroupMember.role().permissions().map((gm) => gm.name()).includes('update-settings');
 
-        if(!hasPermission) {
-            throw new UnauthorizedAccessError(`User don't have permissions to update group data`);
+        if(!(hasPermission || authenticatedGroupMember.isCreator() || authenticatedGroupMember.role().name() === 'administrator')) {
+            throw new UnauthorizedAccessError(`You don't have permissions to update group settings`);
         }
 
         if(command.name) {

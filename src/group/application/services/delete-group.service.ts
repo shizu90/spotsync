@@ -26,22 +26,24 @@ export class DeleteGroupService implements DeleteGroupUseCase
 
         const group = await this.groupRepository.findById(command.id);
 
-        if(group === null || group === undefined) {
+        if(group === null || group === undefined || group.isDeleted()) {
             throw new GroupNotFoundError(`Group not found`);
         }
 
         const groupMember = (await this.groupMemberRepository.findBy({groupId: group.id(), userId: authenticatedUserId})).at(0);
 
         if(groupMember === null || groupMember === undefined) {
-            throw new UnauthorizedAccessError(`Authenticated user is not a member of the group`);
+            throw new UnauthorizedAccessError(`You are not a member of the group`);
         }
 
-        const hasPermission = groupMember.role().permissions().map((p) => p.name()).includes('administrador') || groupMember.isCreator();
+        const hasPermission = groupMember.role().permissions().map((p) => p.name()).includes('administrador');
 
-        if(!hasPermission) {
-            throw new UnauthorizedAccessError(`Authenticated user don't have permission to delete the group`);
+        if(!(hasPermission || groupMember.isCreator() || groupMember.role().name() === 'administrator')) {
+            throw new UnauthorizedAccessError(`You don't have permissions to delete the group`);
         }
 
-        this.groupRepository.delete(group.id());
+        group.delete();
+
+        this.groupRepository.update(group);
     }
 }

@@ -72,6 +72,11 @@ export class GroupRole extends Model
         return this._updatedAt;
     }
 
+    public isImmutable(): boolean 
+    {
+        return this._isImmutable;
+    }
+
     public changeName(name: string): void 
     {
         if(!this._isImmutable) {

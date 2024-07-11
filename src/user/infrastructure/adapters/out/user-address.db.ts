@@ -11,7 +11,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
     public constructor(@Inject(PrismaService) protected prismaService: PrismaService) 
     {}
 
-    private mapToDomain(prisma_model: any): UserAddress 
+    private mapUserAddressToDomain(prisma_model: any): UserAddress 
     {
         if(prisma_model === null || prisma_model === undefined) return null;
 
@@ -97,7 +97,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
         });
 
         return userAddresses.map((userAddress) => {
-            return this.mapToDomain(userAddress);
+            return this.mapUserAddressToDomain(userAddress);
         });
     }
 
@@ -114,7 +114,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
         });
 
         return userAddresses.map((userAddress) => {
-            return this.mapToDomain(userAddress);
+            return this.mapUserAddressToDomain(userAddress);
         });
     }
 
@@ -128,7 +128,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
             }
         });
 
-        return this.mapToDomain(userAddress);
+        return this.mapUserAddressToDomain(userAddress);
     }
 
     public async store(model: UserAddress): Promise<UserAddress> {
@@ -152,7 +152,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
             }
         });
 
-        return this.mapToDomain(userAddress);
+        return this.mapUserAddressToDomain(userAddress);
     }
 
     public async update(model: UserAddress): Promise<UserAddress> {
@@ -180,7 +180,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
             }
         });
 
-        return this.mapToDomain(userAddress);
+        return this.mapUserAddressToDomain(userAddress);
     }
 
     public async delete(id: string): Promise<void> {

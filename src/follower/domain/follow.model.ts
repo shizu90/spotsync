@@ -6,20 +6,20 @@ export class Follow extends Model
     private _id: string;
     private _from: User;
     private _to: User;
-    private _createdAt: Date
+    private _followedAt: Date
 
     private constructor(
         id: string,
         from: User,
         to: User,
-        createdAt?: Date
+        followedAt?: Date
     ) 
     {
         super();
         this._id = id;
         this._from = from;
         this._to = to;
-        this._createdAt = createdAt ?? new Date();
+        this._followedAt = followedAt ?? new Date();
     }
 
     public static create(
@@ -47,8 +47,8 @@ export class Follow extends Model
         return this._to;
     }
 
-    public createdAt(): Date 
+    public followedAt(): Date 
     {
-        return this._createdAt;
+        return this._followedAt;
     }
 }

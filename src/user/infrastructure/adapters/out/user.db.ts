@@ -10,7 +10,7 @@ export class UserRepositoryImpl implements UserRepository
     public constructor(@Inject(PrismaService) protected prismaService: PrismaService) 
     {}
 
-    private mapToDomain(prisma_model: any): User | null
+    private mapUserToDomain(prisma_model: any): User | null
     {
         if(prisma_model === null || prisma_model === undefined) return null;
 
@@ -45,7 +45,7 @@ export class UserRepositoryImpl implements UserRepository
     public async findBy(values: Object): Promise<Array<User>> 
     {
         const name = values['name'];
-        const isDeleted = values['isDeleted'];
+        const isDeleted = values['isDeleted'] ?? false;
 
         const sort = values['sort'] ?? 'name';
         const sortDirection = values['sortDirection'] ?? 'asc';
@@ -114,7 +114,7 @@ export class UserRepositoryImpl implements UserRepository
         }
 
         return users.map((user) => {
-            return this.mapToDomain(user);
+            return this.mapUserToDomain(user);
         });
     }
 
@@ -128,7 +128,7 @@ export class UserRepositoryImpl implements UserRepository
         });
 
         return users.map((user): User => {
-            return this.mapToDomain(user);
+            return this.mapUserToDomain(user);
         });
     }
 
@@ -143,7 +143,7 @@ export class UserRepositoryImpl implements UserRepository
             },
         });
 
-        return this.mapToDomain(user);
+        return this.mapUserToDomain(user);
     }
 
     public async findByName(name: string): Promise<User> 
@@ -160,7 +160,7 @@ export class UserRepositoryImpl implements UserRepository
             }
         });
 
-        return this.mapToDomain(user);
+        return this.mapUserToDomain(user);
     }
 
     public async findByEmail(email: string): Promise<User> 
@@ -177,7 +177,7 @@ export class UserRepositoryImpl implements UserRepository
             }
         });
 
-        return this.mapToDomain(user);
+        return this.mapUserToDomain(user);
     }
 
     public async store(model: User): Promise<User> 
@@ -215,7 +215,7 @@ export class UserRepositoryImpl implements UserRepository
             }
         });
 
-        return this.mapToDomain(user);
+        return this.mapUserToDomain(user);
     }
 
     public async update(model: User): Promise<User> 
@@ -226,7 +226,8 @@ export class UserRepositoryImpl implements UserRepository
                 banner_picture: model.bannerPicture(),
                 profile_picture: model.profilePicture(),
                 birth_date: model.birthDate(),
-                is_deleted: model.isDeleted()
+                is_deleted: model.isDeleted(),
+                updated_at: model.updatedAt()
             },
             where: {
                 id: model.id()
@@ -237,7 +238,7 @@ export class UserRepositoryImpl implements UserRepository
             }
         });
 
-        return this.mapToDomain(user);
+        return this.mapUserToDomain(user);
     }
 
     public async updateCredentials(model: UserCredentials): Promise<User> 
@@ -266,7 +267,7 @@ export class UserRepositoryImpl implements UserRepository
             }
         });
 
-        return this.mapToDomain(user);
+        return this.mapUserToDomain(user);
     }
 
     public async updateVisibilityConfig(userVisibilityConfig: UserVisibilityConfig): Promise<User> {
@@ -291,7 +292,7 @@ export class UserRepositoryImpl implements UserRepository
             }
         });
 
-        return this.mapToDomain(user);
+        return this.mapUserToDomain(user);
     }
 
     public async delete(id: string): Promise<void> 

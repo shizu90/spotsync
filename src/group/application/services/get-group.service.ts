@@ -26,7 +26,7 @@ export class GetGroupService implements GetGroupUseCase
 
         const group = await this.groupRepository.findById(command.id);
 
-        if(group === null || group === undefined) {
+        if(group === null || group === undefined || group.isDeleted()) {
             throw new GroupNotFoundError(`Group not found`);
         }
 

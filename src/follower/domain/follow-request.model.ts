@@ -10,13 +10,18 @@ export class FollowRequest extends Model
     private _to: User;
     private _requestedOn: Date;
 
-    public constructor(id: string, from: User, to: User, requestedOn?: Date) 
+    private constructor(id: string, from: User, to: User, requestedOn?: Date) 
     {
         super();
         this._id = id;
         this._from = from;
         this._to = to;
         this._requestedOn = requestedOn;
+    }
+
+    public static create(id: string, from: User, to: User, requestedOn?: Date): FollowRequest 
+    {
+        return new FollowRequest(id, from, to, requestedOn);
     }
 
     public id(): string 

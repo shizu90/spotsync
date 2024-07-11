@@ -15,19 +15,21 @@ datasource db {
 }
 
 model User {
-    id                              String                @id @default(uuid())
+    id                              String                      @id @default(uuid())
     profile_picture                 String?    
     banner_picture                  String?
     biograph                        String?
-    birth_date                      DateTime              @db.Date
-    created_at                      DateTime              @default(now())
-    updated_at                      DateTime              @default(now())
-    is_deleted                      Boolean               @default(false)
+    birth_date                      DateTime                    @db.Date
+    created_at                      DateTime                    @default(now())
+    updated_at                      DateTime                    @default(now())
+    is_deleted                      Boolean                     @default(false)
     credentials                     UserCredentials?
     visibility_configuration        UserVisibilityConfig?
     addresses                       UserAddress[]
-    followers                       Follow[]              @relation("from_user")
-    following                       Follow[]              @relation("to_user")
+    followers                       Follow[]                    @relation("from_user")
+    following                       Follow[]                    @relation("to_user")
+    from_follow_requests            FollowRequest[]             @relation("from_user")
+    to_follow_requests              FollowRequest[]             @relation("to_user")
     member_of                       GroupMember[]
     group_join_requests             GroupMemberRequest[]
 
@@ -88,6 +90,17 @@ model Follow {
     @@map("follows")
 }
 
+model FollowRequest {
+    id                              String                      @id @default(uuid())
+    from_user_id                    String
+    to_user_id                      String
+    requested_on                    DateTime                    @default(now())
+    from_user                       User                        @relation("from_user", fields: [from_user_id], references: [id])
+    to_user                         User                        @relation("to_user", fields: [to_user_id], references: [id])
+
+    @@map("follow_requests")
+}
+
 model Group {
     id                              String                      @id @default(uuid())
     name                            String
@@ -96,6 +109,7 @@ model Group {
     banner_picture                  String
     created_at                      DateTime                    @default(now())
     updated_at                      DateTime                    @default(now())
+    is_deleted                      Boolean                     @default(false)
     visibility_configuration        GroupVisibilityConfig?
     members                         GroupMember[]
     join_requests                   GroupMemberRequest[]
