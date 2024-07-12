@@ -6,6 +6,7 @@ export class ListGroupsCommand extends Command
         readonly name?: string,
         readonly groupVisibility?: string,
         readonly sort?: string,
+        readonly sortDirection?: string,
         readonly page?: number,
         readonly paginate?: boolean,
         readonly limit?: number

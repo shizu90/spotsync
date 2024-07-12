@@ -16,9 +16,9 @@ export class GroupRole extends Model
         name: string,
         hexColor: string,
         permissions: Array<GroupPermission>,
+        isImmutable?: boolean,
         createdAt?: Date,
         updatedAt?: Date,
-        isImmutable?: boolean
     ) 
     {
         super();
@@ -36,11 +36,12 @@ export class GroupRole extends Model
         name: string,
         hexColor: string,
         permissions: Array<GroupPermission>,
+        isImmutable?: boolean,
         createdAt?: Date,
-        updatedAt?: Date
+        updatedAt?: Date,
     ): GroupRole 
     {
-        return new GroupRole(id, name, hexColor, permissions, createdAt, updatedAt);
+        return new GroupRole(id, name, hexColor, permissions, isImmutable, createdAt, updatedAt);
     }
 
     public id(): string 
