@@ -1,5 +1,6 @@
 import { Model } from "src/common/common.model";
 import { GroupPermission } from "./group-permission.model";
+import { Group } from "./group.model";
 
 export class GroupRole extends Model 
 {
@@ -10,6 +11,7 @@ export class GroupRole extends Model
     private _createdAt: Date;
     private _updatedAt: Date;
     private _isImmutable: boolean;
+    private _group: Group;
 
     private constructor(
         id: string,
@@ -17,6 +19,7 @@ export class GroupRole extends Model
         hexColor: string,
         permissions: Array<GroupPermission>,
         isImmutable?: boolean,
+        group?: Group,
         createdAt?: Date,
         updatedAt?: Date,
     ) 
@@ -29,6 +32,7 @@ export class GroupRole extends Model
         this._createdAt = createdAt ?? new Date();
         this._updatedAt = updatedAt ?? new Date();
         this._isImmutable = isImmutable ?? true;
+        this._group = group;
     }
 
     public static create(
@@ -37,11 +41,12 @@ export class GroupRole extends Model
         hexColor: string,
         permissions: Array<GroupPermission>,
         isImmutable?: boolean,
+        group?: Group,
         createdAt?: Date,
         updatedAt?: Date,
     ): GroupRole 
     {
-        return new GroupRole(id, name, hexColor, permissions, isImmutable, createdAt, updatedAt);
+        return new GroupRole(id, name, hexColor, permissions, isImmutable, group, createdAt, updatedAt);
     }
 
     public id(): string 
@@ -76,6 +81,11 @@ export class GroupRole extends Model
     public isImmutable(): boolean 
     {
         return this._isImmutable;
+    }
+
+    public group(): Group 
+    {
+        return this._group;
     }
 
     public changeName(name: string): void 

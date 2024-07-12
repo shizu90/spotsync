@@ -44,23 +44,23 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
             throw new UserAddressNotFoundError(`User address ${command.id} not found`);
         }
 
-        if(command.name && command.name !== userAddress.name() && command.name.length > 0) {
+        if(command.name && command.name !== null) {
             userAddress.changeName(command.name);
         }
 
-        if(command.area && command.area !== userAddress.area() && command.area.length > 0) {
+        if(command.area && command.area !== null) {
             userAddress.changeArea(command.area);
         }
 
-        if(command.countryCode && command.countryCode !== userAddress.countryCode() && command.countryCode.length > 0) {
+        if(command.countryCode && command.countryCode !== null) {
             userAddress.changeCountryCode(command.countryCode);
         }
 
-        if(command.locality && command.locality !== userAddress.locality() && command.locality.length > 0) {
+        if(command.locality && command.locality !== null) {
             userAddress.changeLocality(command.locality);
         }
 
-        if(command.subArea && command.subArea !== userAddress.subArea() && command.subArea.length > 0) {
+        if(command.subArea && command.subArea !== null) {
             userAddress.changeSubArea(command.subArea);
         }
 
@@ -76,7 +76,7 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
         userAddress.changeLatitude(coordinates.latitude);
         userAddress.changeLongitude(coordinates.longitude);
 
-        if(command.main) {
+        if(command.main && command.main !== null) {
             if(command.main === true) {
                 const userMainAddresses: Array<UserAddress> = await this.userAddressRepository.findBy(
                     {userId: user.id(), main: true}

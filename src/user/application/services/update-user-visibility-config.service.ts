@@ -21,23 +21,23 @@ export class UpdateUserVisibilityConfigService implements UpdateUserVisibilityCo
             throw new UserNotFoundError(`User ${command.userId} not found`);
         }
 
-        if(command.profileVisibility) {
+        if(command.profileVisibility && command.profileVisibility !== null) {
             user.visibilityConfiguration().changeProfileVisibility(command.profileVisibility);
         }
 
-        if(command.addressVisibility) {
+        if(command.addressVisibility && command.addressVisibility !== null) {
             user.visibilityConfiguration().changeAddressVisibility(command.addressVisibility);
         }
 
-        if(command.poiFolderVisibility) {
+        if(command.poiFolderVisibility && command.poiFolderVisibility !== null) {
             user.visibilityConfiguration().changePoiFolderVisibility(command.poiFolderVisibility);
         }
 
-        if(command.visitedPoiVisibility) {
+        if(command.visitedPoiVisibility && command.visitedPoiVisibility !== null) {
             user.visibilityConfiguration().changeVisitedPoiVisibility(command.visitedPoiVisibility);
         }
 
-        if(command.postVisibility) {
+        if(command.postVisibility && command.postVisibility !== null) {
             user.visibilityConfiguration().changePostVisibility(command.postVisibility);
         }
 

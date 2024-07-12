@@ -27,6 +27,14 @@ import { GroupRoleRepositoryProvider } from "./application/ports/out/group-role.
 import { GroupMemberRepositoryProvider } from "./application/ports/out/group-member.repository";
 import { AcceptGroupRequestService } from "./application/services/accept-group-request.service";
 import { CreateGroupService } from "./application/services/create-group.service";
+import { CreateGroupRoleUseCaseProvider } from "./application/ports/in/use-cases/create-group-role.use-case";
+import { CreateGroupRoleService } from "./application/services/create-group-role.service";
+import { UpdateGroupRoleUseCaseProvider } from "./application/ports/in/use-cases/update-group-role.use-case";
+import { UpdateGroupRoleService } from "./application/services/update-group-role.service";
+import { RemoveGroupRoleUseCaseProvider } from "./application/ports/in/use-cases/remove-group-role.use-case";
+import { RemoveGroupRoleService } from "./application/services/remove-group-role.service";
+import { ChangeMemberRoleUseCaseProvider } from "./application/ports/in/use-cases/change-member-role.use-case";
+import { ChangeMemberRoleService } from "./application/services/change-member-role.service";
 
 export const Providers: Provider[] = [
     {
@@ -72,6 +80,22 @@ export const Providers: Provider[] = [
     {
         provide: RemoveGroupMemberUseCaseProvider,
         useClass: RemoveGroupMemberService
+    },
+    {
+        provide: CreateGroupRoleUseCaseProvider,
+        useClass: CreateGroupRoleService
+    },
+    {
+        provide: UpdateGroupRoleUseCaseProvider,
+        useClass: UpdateGroupRoleService
+    },
+    {
+        provide: ChangeMemberRoleUseCaseProvider,
+        useClass: ChangeMemberRoleService
+    },
+    {
+        provide: RemoveGroupRoleUseCaseProvider,
+        useClass: RemoveGroupRoleService
     },
     {
         provide: GroupRepositoryProvider,
