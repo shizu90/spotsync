@@ -63,6 +63,12 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
         const main = values['main'];
         const isDeleted = values['isDeleted'];
 
+        const sort = values['sort'];
+        const sortDirection = values['sortDirection'];
+        const paginate = values['paginate'] ?? false;
+        const page = values['page'] ?? 0;
+        const limit = values['limit'] ?? 12;
+
         let query = `SELECT id FROM user_addresses`;
 
         if(userId) {
@@ -91,11 +97,42 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
 
         const userAddressIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
-        const userAddresses = await this.prismaService.userAddress.findMany({
-            where: {id: {in: userAddressIds.map((row) => row.id)}},
-            include: {user: {include: {credentials: true, visibility_configuration: true}}}
-        });
+        let orderBy = {};
 
+        switch(sort) {
+            case 'name':
+                orderBy = {
+                    name: sortDirection
+                };
+
+                break;
+            case 'id':
+            default:
+                orderBy = {
+                    id: sortDirection
+                };
+
+                break;
+        }
+
+        let userAddresses = [];
+
+        if(paginate) {
+            userAddresses = await this.prismaService.userAddress.findMany({
+                where: {id: {in: userAddressIds.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {user: {include: {credentials: true, visibility_configuration: true}}},
+                skip: page * limit,
+                take: limit
+            });
+        }else {
+            userAddresses = await this.prismaService.userAddress.findMany({
+                where: {id: {in: userAddressIds.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {user: {include: {credentials: true, visibility_configuration: true}}}
+            });
+        }
+        
         return userAddresses.map((userAddress) => {
             return this.mapUserAddressToDomain(userAddress);
         });

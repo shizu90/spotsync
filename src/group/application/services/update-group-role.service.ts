@@ -53,11 +53,11 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase
             throw new GroupRoleNotFoundError(`Group role not found`);
         }
 
-        if(command.name && command.name !== null) {
+        if(command.name && command.name !== null && command.name.length > 0) {
             groupRole.changeName(command.name);
         }
 
-        if(command.hexColor && command.hexColor !== null) {
+        if(command.hexColor && command.hexColor !== null && command.hexColor.length > 0) {
             groupRole.changeHexColor(command.hexColor);
         }
 

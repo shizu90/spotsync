@@ -4,7 +4,7 @@ export class RefuseGroupRequestCommand extends Command
 {
     constructor(
         readonly id: string,
-        readonly groupRequestId: string
+        readonly groupId: string
     ) 
     {super();}
 }

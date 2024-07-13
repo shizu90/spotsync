@@ -52,15 +52,15 @@ export class UpdateGroupVisibilityService implements UpdateGroupVisibilityUseCas
             throw new UnauthorizedAccessError(`You don't have permissions to update group settings`);
         }
 
-        if(command.eventVisibility && command.eventVisibility !== null) {
+        if(command.eventVisibility && command.eventVisibility !== null && command.eventVisibility.length > 0) {
             group.visibilityConfiguration().changeEventVisibility(command.eventVisibility);
         }
 
-        if(command.postVisibility && command.postVisibility !== null) {
+        if(command.postVisibility && command.postVisibility !== null && command.postVisibility.length > 0) {
             group.visibilityConfiguration().changePostVisibility(command.postVisibility);
         }
 
-        if(command.groupVisibility && command.groupVisibility !== null) {
+        if(command.groupVisibility && command.groupVisibility !== null && command.groupVisibility.length > 0) {
             group.visibilityConfiguration().changeGroupVisibility(command.groupVisibility);
         }
 

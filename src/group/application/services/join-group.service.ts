@@ -13,7 +13,6 @@ import { GroupMemberRequest } from "src/group/domain/group-member-request.model"
 import { randomUUID } from "crypto";
 import { GroupMember } from "src/group/domain/group-member.model";
 import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
 
 @Injectable()
 export class JoinGroupService implements JoinGroupUseCase 

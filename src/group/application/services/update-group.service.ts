@@ -52,11 +52,11 @@ export class UpdateGroupService implements UpdateGroupUseCase
             throw new UnauthorizedAccessError(`You don't have permissions to update group settings`);
         }
 
-        if(command.name && command.name !== null) {
+        if(command.name && command.name !== null && command.name.length > 0) {
             group.changeName(command.name);
         }
 
-        if(command.about && command.about !== null) {
+        if(command.about && command.about !== null && command.about.length > 0) {
             group.changeAbout(command.about);
         }
 

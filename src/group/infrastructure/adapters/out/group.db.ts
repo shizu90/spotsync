@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { GroupRepository } from "src/group/application/ports/out/group.repository";
+import { GroupMember } from "src/group/domain/group-member.model";
 import { GroupVisibilityConfig } from "src/group/domain/group-visibility-config.model";
 import { Group } from "src/group/domain/group.model";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -34,7 +35,6 @@ export class GroupRepositoryImpl implements GroupRepository
             prisma_model.is_deleted
         );
     }
-
 
     public async findBy(values: Object): Promise<Array<Group>> {
         const name = values['name'];

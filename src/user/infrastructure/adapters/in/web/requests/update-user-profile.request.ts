@@ -4,16 +4,6 @@ import { IsDateString, IsOptional, IsString, IsUrl, MaxLength } from "class-vali
 export class UpdateUserProfileRequest 
 {
     @ApiProperty({required: false})
-    @IsUrl({}, {message: "Profile picture must be a URL address"})
-    @IsOptional()
-    public profile_picture?: string;
-
-    @ApiProperty({required: false})
-    @IsUrl({}, {message: "Banner picture must be a URL address"})
-    @IsOptional()
-    public banner_picture?: string;
-
-    @ApiProperty({required: false})
     @IsString({message: "Biograph is invalid"})
     @MaxLength(800, {message: "Biograph must have less than 800"})
     @IsOptional()

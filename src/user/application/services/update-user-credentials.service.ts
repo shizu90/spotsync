@@ -38,15 +38,15 @@ export class UpdateUserCredentialsService implements UpdateUserCredentialsUseCas
             throw new UserAlreadyExistsError(`E-mail ${command.email} already in use`);
         }
 
-        if(command.name && command.name !== null) {
+        if(command.name && command.name !== null && command.name.length > 0) {
             user.credentials().changeName(command.name);
         }
 
-        if(command.email && command.email !== null) {
+        if(command.email && command.email !== null && command.email.length > 0) {
             user.credentials().changeEmail(command.email);
         }
 
-        if(command.password && command.password !== null) {
+        if(command.password && command.password !== null && command.password.length > 0) {
             user.credentials().changePassword(await this.encryptPasswordService.encrypt(command.password));
         }
 

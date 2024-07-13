@@ -29,9 +29,21 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository
         );
     }
 
-    public async findBy(values: Object): Promise<Array<GroupRole>> {
+    private mapGroupPermissionToDomain(prisma_model: any): GroupPermission 
+    {
+        if(prisma_model === null || prisma_model === undefined) return null;
+
+        return GroupPermission.create(
+            prisma_model.id,
+            prisma_model.name
+        );
+    }
+
+    public async findBy(values: Object): Promise<Array<GroupRole>> 
+    {
         const name = values['name'];
         const isImmutable = values['isImmutable'];
+        const groupId = values['groupId'];
         
         const sort = values['sort'] ?? 'name';
         const sortDirection = values['sortDirection'] ?? 'asc';
@@ -54,6 +66,14 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository
                 query = `${query} AND is_immutable = ${isImmutable}`;
             }else {
                 query = `${query} WHERE is_immutable = ${isImmutable}`;
+            }
+        }
+
+        if(groupId) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND (group_id = '${groupId}' OR group_id = null)`;
+            }else {
+                query = `${query} WHERE (group_id = '${groupId}' OR group_id = null)`;
             }
         }
 
@@ -100,7 +120,8 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository
         });
     }
 
-    public async findAll(): Promise<Array<GroupRole>> {
+    public async findAll(): Promise<Array<GroupRole>> 
+    {
         const groupRoles = await this.prismaService.groupRole.findMany({
             include: {permissions: {include: {group_permission: true}}}
         });
@@ -119,7 +140,8 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository
         return this.mapGroupRoleToDomain(groupRole);
     }
 
-    public async findByName(name: string): Promise<GroupRole> {
+    public async findByName(name: string): Promise<GroupRole> 
+    {
         const groupRole = await this.prismaService.groupRole.findFirst({
             where: {name: name},
             include: {permissions: {include: {group_permission: true}}}
@@ -128,7 +150,17 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository
         return this.mapGroupRoleToDomain(groupRole);
     }
 
-    public async store(model: GroupRole): Promise<GroupRole> {
+    public async findPermissionById(id: string): Promise<GroupPermission> 
+    {
+        const groupPermission = await this.prismaService.groupPermission.findFirst({
+            where: {id: id}
+        });
+
+        return this.mapGroupPermissionToDomain(groupPermission);
+    }
+
+    public async store(model: GroupRole): Promise<GroupRole> 
+    {
         const groupRole = await this.prismaService.groupRole.create({
             data: {
                 id: model.id(),
@@ -159,7 +191,8 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository
         return this.mapGroupRoleToDomain(groupRole);
     }
 
-    public async delete(id: string): Promise<void> {
+    public async delete(id: string): Promise<void> 
+    {
         await this.prismaService.groupRole.delete({
             where: {id: id},
             include: {permissions: true}

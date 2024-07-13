@@ -5,5 +5,5 @@ import { GetUserProfileDto } from "../../out/dto/get-user-profile.dto";
 
 export const ListUsersUseCaseProvider = "ListUsersUseCase";
 
-export interface ListUsersUseCase extends UseCase<ListUsersCommand, Promise<Pagination<GetUserProfileDto>>> 
+export interface ListUsersUseCase extends UseCase<ListUsersCommand, Promise<Array<GetUserProfileDto> | Pagination<GetUserProfileDto>>> 
 {}

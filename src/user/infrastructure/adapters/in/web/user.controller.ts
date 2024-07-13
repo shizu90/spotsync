@@ -7,7 +7,7 @@ import { UploadBannerPictureUseCase, UploadBannerPictureUseCaseProvider } from "
 import { UploadProfilePictureUseCase, UploadProfilePictureUseCaseProvider } from "src/user/application/ports/in/use-cases/upload-profile-picture.use-case";
 import { CreateUserRequest } from "./requests/create-user.request";
 import { CreateUserCommand } from "src/user/application/ports/in/commands/create-user.command";
-import { UserRequestMapper } from "./user-request.mapper";
+import { UserRequestMapper } from "./mappers/user-request.mapper";
 import { UpdateUserProfileRequest } from "./requests/update-user-profile.request";
 import { UpdateUserProfileCommand } from "src/user/application/ports/in/commands/update-user-profile.command";
 import { UpdateUserCredentialsRequest } from "./requests/update-user-credentials.request";
@@ -24,12 +24,9 @@ import { UpdateUserVisibilityConfigRequest } from "./requests/update-user-visibi
 import { UpdateUserVisibilityConfigUseCase, UpdateUserVisibilityConfigUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-visibility-config.use-case";
 import { ListUsersUseCase, ListUsersUseCaseProvider } from "src/user/application/ports/in/use-cases/list-users.use-case";
 import { ListUsersCommand } from "src/user/application/ports/in/commands/list-users.command";
+import { ListUsersQueryRequest } from "./requests/list-users-query.request";
 
 @ApiTags('Users')
-@ApiNotFoundResponse({})
-@ApiConflictResponse({})
-@ApiUnprocessableEntityResponse({})
-@ApiUnauthorizedResponse({})
 @Controller('users')
 @UseFilters(new UserErrorHandler())
 export class UserController 
@@ -57,12 +54,11 @@ export class UserController
     {}
 
     @ApiOperation({summary: 'List and search users'})
-    @ApiOkResponse({})
     @UseGuards(AuthGuard)
     @Get()
-    public async list(@Query() query: {name?: string, sort?: string, sortDirection?: 'asc' | 'desc', page?: number, paginate?: boolean, limit?: number}, @Req() req: Request, @Res() res: Response)  
+    public async list(@Query() query: ListUsersQueryRequest, @Req() req: Request, @Res() res: Response)  
     {
-        const command: ListUsersCommand = UserRequestMapper.listUsersCommand(query);
+        const command = UserRequestMapper.listUsersCommand(query);
        
         const data = await this.listUsersUseCase.execute(command);
 
@@ -74,12 +70,11 @@ export class UserController
     }
 
     @ApiOperation({summary: 'Get user by id'})
-    @ApiOkResponse({})
     @UseGuards(AuthGuard)
     @Get(':id/profile')
     public async get(@Param('id') id: string, @Req() req: Request, @Res() res: Response) 
     {
-        const command: GetUserProfileCommand = UserRequestMapper.getUserProfileCommand(id, undefined);
+        const command = UserRequestMapper.getUserProfileCommand(id, undefined);
 
         const data = await this.getUserProfileUseCase.execute(command);
     
@@ -91,13 +86,11 @@ export class UserController
     }
 
     @ApiOperation({summary: 'Create user'})
-    @ApiCreatedResponse({})
-    @ApiBody({type: [CreateUserRequest]})
-    @Post()
     @UsePipes(new ValidationPipe({transform: true}))
+    @Post()
     public async create(@Body() body: CreateUserRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: CreateUserCommand = UserRequestMapper.createUserCommand(body)
+        const command = UserRequestMapper.createUserCommand(body)
     
         const data = await this.createUserUseCase.execute(command);
 
@@ -109,16 +102,14 @@ export class UserController
     }
 
     @ApiOperation({summary: 'Update user profile'})
-    @ApiNoContentResponse({})
-    @ApiBody({type: UpdateUserProfileRequest})
     @UseGuards(AuthGuard)
-    @Put(':id')
     @UsePipes(new ValidationPipe({transform: true}))
+    @Put(':id')
     public async updateProfile(@Param('id') id: string, @Body() body: UpdateUserProfileRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: UpdateUserProfileCommand = UserRequestMapper.updateUserProfileCommand(id, body);
+        const command = UserRequestMapper.updateUserProfileCommand(id, body);
 
-        await this.updateUserProfileUseCase.execute(command);
+        this.updateUserProfileUseCase.execute(command);
 
         res
             .status(204)
@@ -128,16 +119,14 @@ export class UserController
     }
 
     @ApiOperation({summary: 'Update user credentials'})
-    @ApiNoContentResponse({})
-    @ApiBody({type: UpdateUserCredentialsRequest})
     @UseGuards(AuthGuard)
-    @Put(':id/credentials')
     @UsePipes(new ValidationPipe({transform: true}))
+    @Put(':id/credentials')
     public async updateCredentials(@Param('id') id: string, @Body() body: UpdateUserCredentialsRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: UpdateUserCredentialsCommand = UserRequestMapper.updateUserCredentialsCommand(id, body);
+        const command = UserRequestMapper.updateUserCredentialsCommand(id, body);
 
-        await this.updateUserCredentialsUseCase.execute(command);
+        this.updateUserCredentialsUseCase.execute(command);
 
         res
             .status(204)
@@ -147,16 +136,14 @@ export class UserController
     }
 
     @ApiOperation({summary: 'Update user visibility configurations'})
-    @ApiNoContentResponse({})
-    @ApiBody({type: UpdateUserVisibilityConfigRequest})
     @UseGuards(AuthGuard)
-    @Put(':id/visibility-configuration')
     @UsePipes(new ValidationPipe({transform: true}))
+    @Put(':id/visibility-configuration')
     public async udpateVisibilityConfiguration(@Param('id') id: string, @Body() body: UpdateUserVisibilityConfigRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: UpdateUserVisibilityConfigCommand = UserRequestMapper.updateUserVisibilityConfigCommand(id, body);
+        const command = UserRequestMapper.updateUserVisibilityConfigCommand(id, body);
 
-        await this.updateUserVisibilityConfigUseCase.execute(command);
+        this.updateUserVisibilityConfigUseCase.execute(command);
 
         res
             .status(204)
@@ -166,19 +153,18 @@ export class UserController
     }
 
     @ApiOperation({summary: 'Delete user by id'})
-    @ApiNoContentResponse({})
     @UseGuards(AuthGuard)
     @Delete(':id')
     public async delete(@Param('id') id: string, @Req() req: Request, @Res() res: Response) 
     {
-        const command: DeleteUserCommand = UserRequestMapper.deleteUserCommand(id);
+        const command = UserRequestMapper.deleteUserCommand(id);
 
-        const data = await this.deleteUserUseCase.execute(command);
+        this.deleteUserUseCase.execute(command);
 
         res
-            .status(200)
+            .status(204)
             .json({
-                data: data
+                data: {}
             });
     }
 }

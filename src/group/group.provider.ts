@@ -35,6 +35,10 @@ import { RemoveGroupRoleUseCaseProvider } from "./application/ports/in/use-cases
 import { RemoveGroupRoleService } from "./application/services/remove-group-role.service";
 import { ChangeMemberRoleUseCaseProvider } from "./application/ports/in/use-cases/change-member-role.use-case";
 import { ChangeMemberRoleService } from "./application/services/change-member-role.service";
+import { ListGroupMembersUseCaseProvider } from "./application/ports/in/use-cases/list-group-members.use-case";
+import { ListGroupMembersService } from "./application/services/list-group-members.service";
+import { ListGroupRolesUseCaseProvider } from "./application/ports/in/use-cases/list-group-roles.use-case";
+import { ListGroupRolesService } from "./application/services/list-group-roles.service";
 
 export const Providers: Provider[] = [
     {
@@ -76,6 +80,14 @@ export const Providers: Provider[] = [
     {
         provide: ListGroupsUseCaseProvider,
         useClass: ListGroupsService
+    },
+    {
+        provide: ListGroupMembersUseCaseProvider,
+        useClass: ListGroupMembersService
+    },
+    {
+        provide: ListGroupRolesUseCaseProvider,
+        useClass: ListGroupRolesService
     },
     {
         provide: RemoveGroupMemberUseCaseProvider,

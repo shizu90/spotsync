@@ -24,7 +24,7 @@ export class RefuseGroupRequestService implements RefuseGroupRequestUseCase
     {
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
 
-        const group = await this.groupRepository.findById(command.id);
+        const group = await this.groupRepository.findById(command.groupId);
 
         if(group === null || group === undefined || group.isDeleted()) {
             throw new GroupNotFoundError(`Group not found`);
@@ -42,6 +42,6 @@ export class RefuseGroupRequestService implements RefuseGroupRequestUseCase
             throw new UnauthorizedAccessError(`You don't have permissions to accept join request`);
         }
 
-        this.groupMemberRepository.deleteRequest(command.groupRequestId);
+        this.groupMemberRepository.deleteRequest(command.id);
     }
 }

@@ -32,7 +32,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase
     {
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
 
-        const group = await this.groupRepository.findById(command.id);
+        const group = await this.groupRepository.findById(command.groupId);
 
         if(group === null || group === undefined || group.isDeleted()) {
             throw new GroupNotFoundError(`Group not found`);
@@ -50,7 +50,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase
             throw new UnauthorizedAccessError(`You don't have permission to accept join requests`);
         }
 
-        const groupMemberRequest = await this.groupMemberRepository.findRequestById(command.groupRequestId);
+        const groupMemberRequest = await this.groupMemberRepository.findRequestById(command.id);
 
         if(groupMemberRequest === null || groupMemberRequest === undefined) {
             throw new GroupRequestNotFoundError(`Group request not found`);

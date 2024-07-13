@@ -30,15 +30,7 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase
             throw new UnauthorizedAccessError(`Unauthorized access`);
         }
 
-        if(command.bannerPicture && command.bannerPicture !== null) {
-            user.changeBannerPicture(command.bannerPicture);
-        }
-
-        if(command.profilePicture && command.profilePicture !== null) {
-            user.changeProfilePicture(command.profilePicture);
-        }
-
-        if(command.biograph && command.biograph !== null) {
+        if(command.biograph && command.biograph !== null && command.biograph.length > 0) {
             user.changeBiograph(command.biograph);
         }
 

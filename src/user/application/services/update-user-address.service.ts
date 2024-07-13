@@ -44,23 +44,23 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
             throw new UserAddressNotFoundError(`User address ${command.id} not found`);
         }
 
-        if(command.name && command.name !== null) {
+        if(command.name && command.name !== null && command.name.length > 0) {
             userAddress.changeName(command.name);
         }
 
-        if(command.area && command.area !== null) {
+        if(command.area && command.area !== null && command.area.length > 0) {
             userAddress.changeArea(command.area);
         }
 
-        if(command.countryCode && command.countryCode !== null) {
+        if(command.countryCode && command.countryCode !== null && command.countryCode.length > 0) {
             userAddress.changeCountryCode(command.countryCode);
         }
 
-        if(command.locality && command.locality !== null) {
+        if(command.locality && command.locality !== null && command.locality.length > 0) {
             userAddress.changeLocality(command.locality);
         }
 
-        if(command.subArea && command.subArea !== null) {
+        if(command.subArea && command.subArea !== null && command.subArea.length > 0) {
             userAddress.changeSubArea(command.subArea);
         }
 

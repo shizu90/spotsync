@@ -23,7 +23,7 @@ export class GetUserAddressesService implements GetUserAddressesUseCase
     ) 
     {}
 
-    public async execute(command: GetUserAddressesCommand): Promise<Array<GetUserAddressDto>> 
+    public async execute(command: GetUserAddressesCommand): Promise<Array<GetUserAddressDto> | Pagination<GetUserAddressDto>> 
     {
         const user: User = await this.userRepository.findById(command.userId);
 
@@ -35,22 +35,53 @@ export class GetUserAddressesService implements GetUserAddressesUseCase
             throw new UnauthorizedAccessError(`Unauthorized access`);
         }
 
-        const userAddresses = await this.userAddressRepository.findBy({userId: user.id(), isDeleted: false});
-
-        return userAddresses.map((userAddress) => {
-            return new GetUserAddressDto(
-                userAddress.id(),
-                userAddress.name(),
-                userAddress.area(),
-                userAddress.subArea(),
-                userAddress.locality(),
-                userAddress.countryCode(),
-                userAddress.latitude(),
-                userAddress.longitude(),
-                userAddress.main(),
-                userAddress.createdAt(),
-                userAddress.updatedAt()
-            );
+        const userAddresses = await this.userAddressRepository.findBy({
+            userId: user.id(),
+            name: command.name,
+            main: command.main,
+            sort: command.sort,
+            sortDirection: command.sortDirection,
+            paginate: command.paginate,
+            page: command.page,
+            limit: command.limit,
+            isDeleted: false
         });
+
+        if(command.paginate) {
+            return new Pagination(
+                userAddresses.map((userAddress) => {
+                    return new GetUserAddressDto(
+                        userAddress.id(),
+                        userAddress.name(),
+                        userAddress.area(),
+                        userAddress.subArea(),
+                        userAddress.locality(),
+                        userAddress.countryCode(),
+                        userAddress.latitude(),
+                        userAddress.longitude(),
+                        userAddress.main(),
+                        userAddress.createdAt(),
+                        userAddress.updatedAt()
+                    );
+                }),
+                userAddresses.length
+            );
+        }else {
+            return userAddresses.map((userAddress) => {
+                return new GetUserAddressDto(
+                    userAddress.id(),
+                    userAddress.name(),
+                    userAddress.area(),
+                    userAddress.subArea(),
+                    userAddress.locality(),
+                    userAddress.countryCode(),
+                    userAddress.latitude(),
+                    userAddress.longitude(),
+                    userAddress.main(),
+                    userAddress.createdAt(),
+                    userAddress.updatedAt()
+                );
+            });
+        }
     }
 }

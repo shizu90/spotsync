@@ -1,32 +1,24 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Request, Response } from "express";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
-import { GetUserAddressesCommand } from "src/user/application/ports/in/commands/get-user-addresses.command";
-import { UserRequestMapper } from "./user-request.mapper";
+import { UserAddressRequestMapper } from "./mappers/user-address-request.mapper";
 import { ApiConflictResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse } from "@nestjs/swagger";
 import { GetUserAddressUseCase, GetUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-address.use-case";
 import { GetUserAddressesUseCase, GetUserAddressesUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-addresses.use-case";
 import { CreateUserAddressUseCase, CreateUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/create-user-address.use-case";
 import { UpdateUserAddressUseCase, UpdateUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-address.use-case";
 import { DeleteUserAddressUseCase, DeleteUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/delete-user-address.use-case";
-import { GetUserAddressCommand } from "src/user/application/ports/in/commands/get-user-address.command";
 import { CreateUserAddressRequest } from "./requests/create-user-address.request";
-import { CreateUserAddressCommand } from "src/user/application/ports/in/commands/create-user-address.command";
-import { UpdateUserAddressCommand } from "src/user/application/ports/in/commands/update-user-address.command";
 import { UpdateUserAddressRequest } from "./requests/update-user-address.request";
-import { DeleteUserAddressCommand } from "src/user/application/ports/in/commands/delete-user-address.command";
 import { UserErrorHandler } from "./handlers/user-error.handler";
+import { GetUserAddressesQueryRequest } from "./requests/get-user-addresses-query.request";
 
 @ApiTags('User addresses')
-@ApiNotFoundResponse({})
-@ApiConflictResponse({})
-@ApiUnprocessableEntityResponse({})
-@ApiUnauthorizedResponse({})
 @Controller('users')
 @UseFilters(new UserErrorHandler())
 export class UserAddressController 
 {
-    public constructor(
+    constructor(
         @Inject(GetUserAddressUseCaseProvider)
         protected getUserAddressUseCase: GetUserAddressUseCase,
         @Inject(GetUserAddressesUseCaseProvider)
@@ -41,12 +33,11 @@ export class UserAddressController
     {}
 
     @ApiOperation({summary: 'Get user addresses'})
-    @ApiOkResponse({})
-    @Get(':id/address')
     @UseGuards(AuthGuard)
-    public async getAddresses(@Param('id') id: string, @Req() req: Request, @Res() res: Response) 
+    @Get(':id/address')
+    public async getAddresses(@Param('id') id: string, @Query() query: GetUserAddressesQueryRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: GetUserAddressesCommand = UserRequestMapper.getUserAddressesCommand(id);
+        const command = UserAddressRequestMapper.getUserAddressesCommand(id, query);
 
         const data = await this.getUserAddressesUseCase.execute(command)
 
@@ -58,12 +49,11 @@ export class UserAddressController
     }
 
     @ApiOperation({summary: 'Get user address'})
-    @ApiOkResponse({})
     @UseGuards(AuthGuard)
     @Get(':id/address/:address_id')
     public async getAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Req() req: Request, @Res() res: Response) 
     {
-        const command: GetUserAddressCommand = UserRequestMapper.getUserAddressCommand(addressId, id);
+        const command = UserAddressRequestMapper.getUserAddressCommand(addressId, id);
 
         const data = await this.getUserAddressUseCase.execute(command);
 
@@ -75,13 +65,12 @@ export class UserAddressController
     }
 
     @ApiOperation({summary: 'Create user address'})
-    @ApiCreatedResponse({})
     @UseGuards(AuthGuard)
-    @Post(':id/address')
     @UsePipes(new ValidationPipe({transform: true}))
+    @Post(':id/address')
     public async createAddress(@Param('id') id: string, @Body() request: CreateUserAddressRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: CreateUserAddressCommand = UserRequestMapper.createUserAddressCommand(id, request);
+        const command = UserAddressRequestMapper.createUserAddressCommand(id, request);
     
         const data = await this.createUserAddressUseCase.execute(command);
 
@@ -93,15 +82,14 @@ export class UserAddressController
     }
 
     @ApiOperation({summary: 'Update user address'})
-    @ApiNoContentResponse({})
     @UseGuards(AuthGuard)
-    @Put(':id/address/:address_id')
     @UsePipes(new ValidationPipe({transform: true}))
+    @Put(':id/address/:address_id')
     public async updateAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Body() body: UpdateUserAddressRequest, @Req() req: Request, @Res() res: Response) 
     {
-        const command: UpdateUserAddressCommand = UserRequestMapper.updateUserAddressCommand(addressId, id, body);
+        const command = UserAddressRequestMapper.updateUserAddressCommand(addressId, id, body);
 
-        await this.updateUserAddressUseCase.execute(command);
+        this.updateUserAddressUseCase.execute(command);
 
         res
             .status(204)
@@ -111,14 +99,13 @@ export class UserAddressController
     }
 
     @ApiOperation({summary: 'Delete user address'})
-    @ApiNoContentResponse({})
     @UseGuards(AuthGuard)
     @Delete(':id/address/:address_id')
     public async deleteAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Req() req: Request, @Res() res: Response) 
     {
-        const command: DeleteUserAddressCommand = UserRequestMapper.deleteUserAddressCommand(addressId, id);
+        const command = UserAddressRequestMapper.deleteUserAddressCommand(addressId, id);
 
-        await this.deleteUserAddressUseCase.execute(command);
+        this.deleteUserAddressUseCase.execute(command);
 
         res
             .status(204)

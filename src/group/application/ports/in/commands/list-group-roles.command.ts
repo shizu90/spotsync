@@ -1,15 +1,15 @@
 import { Command } from "src/common/common.command";
 
-export class GetUserAddressesCommand extends Command 
+export class ListGroupRolesCommand extends Command 
 {
     constructor(
-        readonly userId: string,
+        readonly groupId: string,
         readonly name?: string,
-        readonly main?: boolean,
+        readonly isImmutable?: boolean,
         readonly sort?: string,
         readonly sortDirection?: string,
-        readonly paginate?: boolean,
         readonly page?: number,
+        readonly paginate?: boolean,
         readonly limit?: number
     ) 
     {super();}

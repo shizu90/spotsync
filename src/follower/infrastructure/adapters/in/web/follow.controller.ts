@@ -3,8 +3,7 @@ import { ApiCreatedResponse, ApiNoContentResponse, ApiOperation, ApiTags } from 
 import { Request, Response } from "express";
 import { FollowUseCase, FollowUseCaseProvider } from "src/follower/application/ports/in/use-cases/follow.use-case";
 import { UnfollowUseCase, UnfollowUseCaseProvider } from "src/follower/application/ports/in/use-cases/unfollow.use-case";
-import { FollowRequestMapper } from "./follow-request.mapper";
-import { FollowDto } from "src/follower/application/ports/out/dto/follow.dto";
+import { FollowRequestMapper } from "./mappers/follow-request.mapper";
 import { FollowErrorHandler } from "./handlers/follow-error.handler";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
 import { AcceptFollowRequestUseCase, AcceptFollowRequestUseCaseProvider } from "src/follower/application/ports/in/use-cases/accept-follow-request.use-case";
@@ -28,13 +27,8 @@ export class FollowController
     {}
 
     @ApiOperation({summary: 'Follow user'})
-    @ApiCreatedResponse({
-        example: {
-            data: new FollowDto('', '', '')
-        }
-    })
-    @Post(':from_id/follow/:to_id')
     @UseGuards(AuthGuard)
+    @Post(':from_id/follow/:to_id')
     public async follow(@Param('from_id') fromUserId: string, @Param('to_id') toUserId: string, @Req() req: Request, @Res() res: Response) 
     {
         const command = FollowRequestMapper.followCommand(fromUserId, toUserId);
@@ -49,13 +43,8 @@ export class FollowController
     }
 
     @ApiOperation({summary: 'Unfollow user'})
-    @ApiNoContentResponse({
-        example: {
-            data: {}
-        }
-    })
-    @Delete(':from_id/unfollow/:to_id')
     @UseGuards(AuthGuard)
+    @Delete(':from_id/unfollow/:to_id')
     public async unfollow(@Param('from_id') fromUserId: string, @Param('to_id') toUserId: string, @Req() req: Request, @Res() res: Response) 
     {
         const command = FollowRequestMapper.unfollowCommand(fromUserId, toUserId);
@@ -70,8 +59,8 @@ export class FollowController
     }
 
     @ApiOperation({summary: 'Accept follow request'})
-    @Put('requests/:follow_request_id/accept')
     @UseGuards(AuthGuard)
+    @Put('requests/:follow_request_id/accept')
     public async acceptFollowRequest(@Param('follow_request_id') followRequestId: string, @Req() req: Request, @Res() res: Response) 
     {
         const command = FollowRequestMapper.acceptFollowRequestCommand(followRequestId);
@@ -86,8 +75,8 @@ export class FollowController
     }
 
     @ApiOperation({summary: 'Refuse follow request'})
-    @Put('requests/:follow_request_id/refuse')
     @UseGuards(AuthGuard)
+    @Put('requests/:follow_request_id/refuse')
     public async refuseFollowRequest(@Param('follow_request_id') followRequestId: string, @Req() req: Request, @Res() res: Response) 
     {
         const command = FollowRequestMapper.refuseFollowRequestCommand(followRequestId);

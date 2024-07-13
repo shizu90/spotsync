@@ -7,21 +7,31 @@ export class FollowRequestMapper
 {
     public static followCommand(fromUserId: string, toUserId: string) 
     {
-        return new FollowCommand(fromUserId, toUserId);
+        return new FollowCommand(
+            fromUserId, 
+            toUserId
+        );
     }
 
     public static unfollowCommand(fromUserId: string, toUserId: string) 
     {
-        return new UnfollowCommand(fromUserId, toUserId);
+        return new UnfollowCommand(
+            fromUserId, 
+            toUserId
+        );
     }
 
     public static acceptFollowRequestCommand(followRequestId: string) 
     {
-        return new AcceptFollowRequestCommand(followRequestId);
+        return new AcceptFollowRequestCommand(
+            followRequestId
+        );
     }
 
     public static refuseFollowRequestCommand(followRequestId: string) 
     {
-        return new RefuseFollowRequestCommand(followRequestId);
+        return new RefuseFollowRequestCommand(
+            followRequestId
+        );
     }
 }

@@ -20,7 +20,7 @@ export class ListGroupsService implements ListGroupsUseCase
     ) 
     {}
 
-    public async execute(command: ListGroupsCommand): Promise<Pagination<GetGroupDto>> 
+    public async execute(command: ListGroupsCommand): Promise<Array<GetGroupDto> | Pagination<GetGroupDto>> 
     {
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
 
@@ -34,7 +34,7 @@ export class ListGroupsService implements ListGroupsUseCase
             limit: command.limit
         });
 
-        const groups = await Promise.all(res.map(async (g) => {
+        const items = await Promise.all(res.map(async (g) => {
             if(g === null || g === undefined) return null;
 
             const groupMember = (await this.groupMemberRepository.findBy({groupId: g.id(), userId: authenticatedUserId})).at(0);
@@ -67,6 +67,10 @@ export class ListGroupsService implements ListGroupsUseCase
             );
         }));
 
-        return new Pagination(groups, groups.length);
+        if(command.paginate) {
+            return new Pagination(items, items.length);
+        }else {
+            return items;
+        }
     }
 }

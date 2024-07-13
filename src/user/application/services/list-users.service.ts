@@ -24,7 +24,7 @@ export class ListUsersService implements ListUsersUseCase
     ) 
     {}
 
-    public async execute(command: ListUsersCommand): Promise<Pagination<GetUserProfileDto>> 
+    public async execute(command: ListUsersCommand): Promise<Array<GetUserProfileDto> | Pagination<GetUserProfileDto>> 
     {
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
         
@@ -85,6 +85,10 @@ export class ListUsersService implements ListUsersUseCase
             }
         }));
 
-        return new Pagination(items, items.length);
+        if(command.paginate) {
+            return new Pagination(items, items.length);
+        }else {
+            return items;
+        }
     }
 }

@@ -41,7 +41,7 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase
             throw new GroupMemberNotFoundError(`You are not a member of the group`);
         }
 
-        const hasPermission = authenticatedGroupMember.role().permissions().map((p) => p.name()).includes('update-settings');
+        const hasPermission = authenticatedGroupMember.role().permissions().map((p) => p.name()).includes('change-role');
 
         if(!(hasPermission || authenticatedGroupMember.isCreator() || authenticatedGroupMember.role().name() === 'administrator')) {
             throw new UnauthorizedAccessError(`You don't have permissions to change member role`);
