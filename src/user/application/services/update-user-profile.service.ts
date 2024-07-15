@@ -5,7 +5,7 @@ import { UpdateUserProfileCommand } from "../ports/in/commands/update-user-profi
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 
 @Injectable()
 export class UpdateUserProfileService implements UpdateUserProfileUseCase 
@@ -23,7 +23,7 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase
         const user: User = await this.userRepository.findById(command.id);
 
         if(user === null || user === undefined || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.id} not found`);
+            throw new UserNotFoundError(`User not found`);
         }
 
         if(user.id() !== this.getAuthenticatedUser.execute(null)) {

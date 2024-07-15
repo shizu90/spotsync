@@ -7,6 +7,7 @@ export const GroupMemberRepositoryProvider = "GroupMemberRepository";
 export interface GroupMemberRepository extends Repository<GroupMember, string> 
 {
     storeRequest(model: GroupMemberRequest): Promise<GroupMemberRequest>;
+    findRequestBy(values: Object): Promise<Array<GroupMemberRequest>>;
     findRequestById(id: string): Promise<GroupMemberRequest>;
     deleteRequest(id: string): Promise<void>;
 }

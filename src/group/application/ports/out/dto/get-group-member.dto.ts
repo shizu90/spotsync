@@ -4,7 +4,12 @@ export class GetGroupMemberDto extends Dto
 {
     constructor(
         readonly id: string,
-        readonly user_id: string,
+        readonly user: {
+            id: string,
+            credentials: {name: string},
+            profile_picture: string,
+            banner_picture: string
+        },
         readonly group_id: string,
         readonly role: {
             id: string,

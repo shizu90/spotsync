@@ -7,7 +7,7 @@ import { ListGroupRolesCommand } from "../ports/in/commands/list-group-roles.com
 import { Pagination } from "src/common/pagination.dto";
 import { GetGroupRoleDto } from "../ports/out/dto/get-group-role.dto";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../ports/out/group-member.repository";
 
 @Injectable()
@@ -41,12 +41,21 @@ export class ListGroupRolesService implements ListGroupRolesUseCase
             throw new UnauthorizedAccessError(`You're not a member of the group`);
         }
 
-        const groupRoles = await this.groupRoleRepository.findBy({...command});
+        const groupRoles = await this.groupRoleRepository.findBy({
+            groupId: command.groupId,
+            isImmutable: command.isImmutable,
+            name: command.name,
+            sort: command.sort,
+            sortDirection: command.sortDirection,
+            paginate: command.paginate,
+            page: command.page,
+            limit: command.limit
+        });
 
         const items = groupRoles.map((gr) => {
             return new GetGroupRoleDto(
                 gr.id(),
-                gr.group().id(),
+                gr.group() ? gr.group().id() : null,
                 gr.name(),
                 gr.isImmutable(),
                 gr.hexColor(),

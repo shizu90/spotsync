@@ -4,7 +4,7 @@ export class RemoveGroupMemberCommand extends Command
 {
     constructor(
         readonly id: string,
-        readonly userId: string
+        readonly groupId: string
     ) 
     {super();}
 }

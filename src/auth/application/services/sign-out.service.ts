@@ -3,7 +3,7 @@ import { SignOutUseCase } from "../ports/in/use-cases/sign-out.use-case";
 import { UserRepository, UserRepositoryProvider } from "src/user/application/ports/out/user.repository";
 import { SignOutCommand } from "../ports/in/commands/sign-out.command";
 import { UserNotFoundError } from "src/user/application/services/errors/user-not-found.error";
-import { UnauthorizedAccessError } from "./errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "./errors/unauthorized-access.error";
 
 @Injectable()
 export class SignOutService implements SignOutUseCase 

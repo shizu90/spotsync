@@ -50,7 +50,12 @@ export class ListGroupMembersService implements ListGroupMembersUseCase
             const items = groupMembers.map((gm) => {
                 return new GetGroupMemberDto(
                     gm.id(),
-                    gm.user().id(),
+                    {
+                        id: gm.user().id(),
+                        banner_picture: gm.user().bannerPicture(),
+                        profile_picture: gm.user().profilePicture(),
+                        credentials: {name: gm.user().credentials().name()}
+                    },
                     gm.group().id(),
                     {
                         id: gm.role().id(), 

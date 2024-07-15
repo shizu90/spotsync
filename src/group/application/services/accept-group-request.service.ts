@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { UserRepository, UserRepositoryProvider } from "src/user/application/ports/out/user.repository";
 import { GroupRequestNotFoundError } from "./errors/group-request-not-found.error";
 import { AcceptGroupRequestUseCase } from "../ports/in/use-cases/accept-group-request.use-case";
@@ -66,12 +66,17 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase
 
         return new AcceptGroupRequestDto(
             group.id(),
-            newGroupMember.user().id(),
+            {
+                id: newGroupMember.user().id(),
+                profile_picture: newGroupMember.user().profilePicture(),
+                banner_picture: newGroupMember.user().bannerPicture(),
+                credentials: {name: newGroupMember.user().credentials().name()}
+            },
             newGroupMember.joinedAt(),
             {
                 name: memberRole.name(), 
                 hex_color: memberRole.hexColor(), 
-                permissions: memberRole.permissions().map((p) => {return {name: p.name()}})
+                permissions: memberRole.permissions().map((p) => {return {id: p.id(), name: p.name()}})
             }
         );
     }

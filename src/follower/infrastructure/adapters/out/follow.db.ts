@@ -143,7 +143,7 @@ export class FollowRepositoryImpl implements FollowRepository
         const fromUserId = values['fromUserId'];
         const toUserId = values['toUserId'];
 
-        let query = 'SELECT id FROM follow';
+        let query = 'SELECT id FROM follows';
 
         if(fromUserId) {
             if(query.includes('WHERE')) {
@@ -193,12 +193,14 @@ export class FollowRepositoryImpl implements FollowRepository
             include: {
                 from_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 },
                 to_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 }
             }
@@ -217,12 +219,14 @@ export class FollowRepositoryImpl implements FollowRepository
             include: {
                 from_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 },
                 to_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 }
             }
@@ -242,12 +246,14 @@ export class FollowRepositoryImpl implements FollowRepository
             include: {
                 from_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 },
                 to_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 }
             }
@@ -266,12 +272,14 @@ export class FollowRepositoryImpl implements FollowRepository
             include: {
                 from_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 },
                 to_user: {
                     include: {
-                        credentials: true
+                        credentials: true,
+                        visibility_configuration: true
                     }
                 }
             }
@@ -292,8 +300,18 @@ export class FollowRepositoryImpl implements FollowRepository
         const followRequest = await this.prismaService.followRequest.findFirst({
             where: {id: id},
             include: {
-                from_user: true,
-                to_user: true
+                from_user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                },
+                to_user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                }
             }
         });
 
@@ -306,11 +324,22 @@ export class FollowRepositoryImpl implements FollowRepository
             data: {
                 from_user_id: model.from().id(),
                 to_user_id: model.to().id(),
-                requested_on: model.requestedOn()
+                requested_on: model.requestedOn(),
+                id: model.id()
             },
             include: {
-                from_user: true,
-                to_user: true
+                from_user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                },
+                to_user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                }
             }
         });
 

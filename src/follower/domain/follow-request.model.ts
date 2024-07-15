@@ -16,7 +16,7 @@ export class FollowRequest extends Model
         this._id = id;
         this._from = from;
         this._to = to;
-        this._requestedOn = requestedOn;
+        this._requestedOn = requestedOn ?? new Date();
     }
 
     public static create(id: string, from: User, to: User, requestedOn?: Date): FollowRequest 

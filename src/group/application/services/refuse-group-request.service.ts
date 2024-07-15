@@ -5,7 +5,7 @@ import { GroupRepository, GroupRepositoryProvider } from "../ports/out/group.rep
 import { RefuseGroupRequestCommand } from "../ports/in/commands/refuse-group-request.command";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 
 @Injectable()
 export class RefuseGroupRequestService implements RefuseGroupRequestUseCase 
@@ -30,7 +30,7 @@ export class RefuseGroupRequestService implements RefuseGroupRequestUseCase
             throw new GroupNotFoundError(`Group not found`);
         }
 
-        const authenticatedGroupMember = (await this.groupMemberRepository.findBy({groupId: command.id, userId: authenticatedUserId})).at(0);
+        const authenticatedGroupMember = (await this.groupMemberRepository.findBy({groupId: group.id(), userId: authenticatedUserId})).at(0);
 
         if(authenticatedGroupMember === null || authenticatedGroupMember === undefined) {
             throw new UnauthorizedAccessError(`You are not a member of the group`);

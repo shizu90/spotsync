@@ -13,6 +13,8 @@ import { GroupMemberRequest } from "src/group/domain/group-member-request.model"
 import { randomUUID } from "crypto";
 import { GroupMember } from "src/group/domain/group-member.model";
 import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
+import { AlreadyRequestedToJoinError } from "./errors/already-requested-to-join.error";
+import { AlreadyMemberOfGroup } from "./errors/already-member-of-group.error";
 
 @Injectable()
 export class JoinGroupService implements JoinGroupUseCase 
@@ -44,7 +46,13 @@ export class JoinGroupService implements JoinGroupUseCase
         const group = await this.groupRepository.findById(command.id);
 
         if(group.visibilityConfiguration().groupVisibility() === GroupVisibility.PRIVATE) {
-            const groupMemberRequest = GroupMemberRequest.create(
+            let groupMemberRequest = (await this.groupMemberRepository.findRequestBy({groupId: group.id(), userId: authenticatedUserId})).at(0);
+
+            if(groupMemberRequest !== null && groupMemberRequest !== undefined) {
+                throw new AlreadyRequestedToJoinError(`Already requested to join group`);
+            }
+
+            groupMemberRequest = GroupMemberRequest.create(
                 randomUUID(),
                 group,
                 user
@@ -55,12 +63,19 @@ export class JoinGroupService implements JoinGroupUseCase
             return new JoinGroupDto(
                 groupMemberRequest.id(),
                 group.id(),
-                user.id()
+                user.id(),
+                groupMemberRequest.requestedOn()
             );
         }else {
+            let groupMember = (await this.groupMemberRepository.findBy({groupId: group.id(), userId: authenticatedUserId})).at(0);
+
+            if(groupMember !== null && groupMember !== undefined) {
+                throw new AlreadyMemberOfGroup(`Already member of the group`);
+            }
+
             const memberRole = await this.groupRoleRepository.findByName('member');
             
-            const groupMember = GroupMember.create(
+            groupMember = GroupMember.create(
                 randomUUID(),
                 group,
                 user,
@@ -72,12 +87,17 @@ export class JoinGroupService implements JoinGroupUseCase
 
             return new AcceptGroupRequestDto(
                 group.id(),
-                user.id(),
+                {
+                    id: user.id(),
+                    profile_picture: user.profilePicture(),
+                    banner_picture: user.bannerPicture(),
+                    credentials: {name: user.credentials().name()}
+                },
                 groupMember.joinedAt(),
                 {
                     name: memberRole.name(), 
                     hex_color: memberRole.hexColor(), 
-                    permissions: memberRole.permissions().map((p) => {return {name: p.name()}})
+                    permissions: memberRole.permissions().map((p) => {return {id: p.id(), name: p.name()}})
                 }
             );
         }

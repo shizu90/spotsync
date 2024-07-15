@@ -1,17 +1,17 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { GetUserAddressesUseCase } from "../ports/in/use-cases/get-user-addresses.use-case";
+import { ListUserAddressesUseCase } from "../ports/in/use-cases/list-user-addresses.use-case";
 import { UserAddressRepository, UserAddressRepositoryProvider } from "../ports/out/user-address.repository";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
-import { GetUserAddressesCommand } from "../ports/in/commands/get-user-addresses.command";
+import { ListUserAddressesCommand } from "../ports/in/commands/list-user-addresses.command";
 import { Pagination } from "src/common/pagination.dto";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { GetUserAddressDto } from "../ports/out/dto/get-user-address.dto";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 
 @Injectable()
-export class GetUserAddressesService implements GetUserAddressesUseCase 
+export class ListUserAddressesService implements ListUserAddressesUseCase 
 {
     constructor(
         @Inject(UserAddressRepositoryProvider) 
@@ -23,12 +23,12 @@ export class GetUserAddressesService implements GetUserAddressesUseCase
     ) 
     {}
 
-    public async execute(command: GetUserAddressesCommand): Promise<Array<GetUserAddressDto> | Pagination<GetUserAddressDto>> 
+    public async execute(command: ListUserAddressesCommand): Promise<Array<GetUserAddressDto> | Pagination<GetUserAddressDto>> 
     {
         const user: User = await this.userRepository.findById(command.userId);
 
         if(user === null || user === undefined || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.userId} not found`);
+            throw new UserNotFoundError(`User not found`);
         }
 
         if(user.id() !== this.getAuthenticatedUser.execute(null)) {

@@ -9,7 +9,7 @@ import { UserAddress } from "src/user/domain/user-address.model";
 import { randomUUID } from "crypto";
 import { GeoLocatorInput, GeoLocatorOutput, GeoLocatorService, GeoLocatorServiceProvider } from "../ports/out/geo-locator.service";
 import { CreateUserAddressDto } from "../ports/out/dto/create-user-address.dto";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 
 @Injectable()

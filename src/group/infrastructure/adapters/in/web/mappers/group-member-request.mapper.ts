@@ -1,11 +1,14 @@
 import { ListGroupMembersCommand } from "src/group/application/ports/in/commands/list-group-members.command";
-import { ListGroupMembersQueryRequest } from "./requests/list-group-members-query.request";
+import { ListGroupMembersQueryRequest } from "../requests/list-group-members-query.request";
 import { JoinGroupCommand } from "src/group/application/ports/in/commands/join-group.command";
 import { LeaveGroupCommand } from "src/group/application/ports/in/commands/leave-group.command";
-import { ChangeMemberRoleRequest } from "./requests/change-member-role.request";
+import { ChangeMemberRoleRequest } from "../requests/change-member-role.request";
 import { ChangeMemberRoleCommand } from "src/group/application/ports/in/commands/change-member-role.command";
 import { AcceptGroupRequestCommand } from "src/group/application/ports/in/commands/accept-group-request.command";
 import { RefuseGroupRequestCommand } from "src/group/application/ports/in/commands/refuse-group-request.command";
+import { RemoveGroupMemberCommand } from "src/group/application/ports/in/commands/remove-group-member.command";
+import { ListGroupRequestsCommand } from "src/group/application/ports/in/commands/list-group-requests.command";
+import { ListGroupRequestsQueryRequest } from "../requests/list-group-requests-query.request";
 
 export class GroupMemberRequestMapper 
 {
@@ -19,6 +22,19 @@ export class GroupMemberRequestMapper
             query.sort_direction,
             query.page,
             query.paginate,
+            query.limit
+        );
+    }
+
+    public static listGroupRequestsCommand(groupId: string, query: ListGroupRequestsQueryRequest): ListGroupRequestsCommand 
+    {
+        return new ListGroupRequestsCommand(
+            groupId,
+            query.name,
+            query.sort,
+            query.sort_direction,
+            query.paginate,
+            query.page,
             query.limit
         );
     }
@@ -57,6 +73,14 @@ export class GroupMemberRequestMapper
     {
         return new RefuseGroupRequestCommand(
             requestId,
+            groupId
+        );
+    }
+
+    public static removeGroupMemberCommand(groupId: string, memberId: string) 
+    {
+        return new RemoveGroupMemberCommand(
+            memberId,
             groupId
         );
     }

@@ -3,7 +3,7 @@ import { RefusseFollowRequestUseCase } from "../ports/in/use-cases/refuse-follow
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { FollowRepository, FollowRepositoryProvider } from "../ports/out/follow.repository";
 import { RefuseFollowRequestCommand } from "../ports/in/commands/refuse-follow-request.command";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { FollowRequestNotFoundError } from "./errors/follow-request-not-found.error";
 
 @Injectable()
@@ -21,7 +21,7 @@ export class RefuseFollowRequestService implements RefusseFollowRequestUseCase
     {
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
 
-        const followRequest = await this.followRepository.findById(command.followRequestId);
+        const followRequest = await this.followRepository.findRequestById(command.followRequestId);
 
         if(followRequest === null || followRequest === undefined) {
             throw new FollowRequestNotFoundError(`Follow request not found`);

@@ -5,7 +5,7 @@ import { UnfollowCommand } from "src/follower/application/ports/in/commands/unfo
 
 export class FollowRequestMapper 
 {
-    public static followCommand(fromUserId: string, toUserId: string) 
+    public static followCommand(fromUserId: string, toUserId: string): FollowCommand
     {
         return new FollowCommand(
             fromUserId, 
@@ -13,7 +13,7 @@ export class FollowRequestMapper
         );
     }
 
-    public static unfollowCommand(fromUserId: string, toUserId: string) 
+    public static unfollowCommand(fromUserId: string, toUserId: string): UnfollowCommand
     {
         return new UnfollowCommand(
             fromUserId, 
@@ -21,14 +21,14 @@ export class FollowRequestMapper
         );
     }
 
-    public static acceptFollowRequestCommand(followRequestId: string) 
+    public static acceptFollowRequestCommand(followRequestId: string): AcceptFollowRequestCommand
     {
         return new AcceptFollowRequestCommand(
             followRequestId
         );
     }
 
-    public static refuseFollowRequestCommand(followRequestId: string) 
+    public static refuseFollowRequestCommand(followRequestId: string): RefuseFollowRequestCommand 
     {
         return new RefuseFollowRequestCommand(
             followRequestId

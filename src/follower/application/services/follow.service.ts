@@ -8,7 +8,7 @@ import { FollowRepository, FollowRepositoryProvider } from "../ports/out/follow.
 import { AlreadyFollowingError } from "./errors/already-following.error";
 import { Follow } from "src/follower/domain/follow.model";
 import { randomUUID } from "crypto";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { UserVisibility } from "src/user/domain/user-visibility.enum";
 import { FollowRequest } from "src/follower/domain/follow-request.model";
@@ -55,11 +55,14 @@ export class FollowService implements FollowUseCase
         }
 
         if(toUser.visibilityConfiguration().profileVisibility() !== UserVisibility.PUBLIC) {
+            console.log('hello')
             const followRequest = FollowRequest.create(
                 randomUUID(),
                 fromUser,
                 toUser
             );
+
+            this.followRepository.storeRequest(followRequest);
 
             return new FollowDto(
                 followRequest.id(),
@@ -67,7 +70,7 @@ export class FollowService implements FollowUseCase
                 followRequest.to().id(),
                 null,
                 followRequest.requestedOn()
-            )
+            );
         }else {
             follow = Follow.create(
                 randomUUID(),

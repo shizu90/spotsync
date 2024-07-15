@@ -1,4 +1,4 @@
-import { ArgumentsHost, BadRequestException, ExceptionFilter, HttpException } from "@nestjs/common";
+import { ArgumentsHost, BadRequestException, ExceptionFilter, HttpException, HttpStatus } from "@nestjs/common";
 import { Request, Response } from "express";
 
 export class AuthErrorHandler implements ExceptionFilter 
@@ -11,7 +11,7 @@ export class AuthErrorHandler implements ExceptionFilter
         
         switch(error.constructor.name) {
             case 'UserNotFoundError':
-                response.status(404)
+                response.status(HttpStatus.NOT_FOUND)
                 .json({
                     timestamp: new Date().toISOString(),
                     path: request.url,
@@ -19,7 +19,7 @@ export class AuthErrorHandler implements ExceptionFilter
                 });
                 break;
             case 'UnauthorizedAccessError':
-                response.status(401)
+                response.status(HttpStatus.UNAUTHORIZED)
                 .json({
                     timestamp: new Date().toISOString(),
                     path: request.url,
@@ -28,7 +28,7 @@ export class AuthErrorHandler implements ExceptionFilter
                 break;
             case 'UserInvalidCredentialsError':
             case 'ValidationError':
-                response.status(422)
+                response.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .json({
                     timestamp: new Date().toISOString(),
                     path: request.url,
@@ -37,14 +37,14 @@ export class AuthErrorHandler implements ExceptionFilter
                 break;
             default:
                 if(error instanceof BadRequestException) {
-                    response.status(400)
+                    response.status(HttpStatus.BAD_REQUEST)
                     .json({
                         timestamp: new Date().toISOString(),
                         path: request.url,
                         message: error.getResponse()['message']
                     })
                 }else {
-                    response.status(500)
+                    response.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .json({
                         timestamp: new Date().toISOString(),
                         path: request.url,

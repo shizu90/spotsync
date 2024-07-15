@@ -13,8 +13,8 @@ import { DeleteUserAddressUseCaseProvider } from "./application/ports/in/use-cas
 import { DeleteUserAddressService } from "./application/services/delete-user-address.service";
 import { GetUserAddressUseCaseProvider } from "./application/ports/in/use-cases/get-user-address.use-case";
 import { GetUserAddressService } from "./application/services/get-user-address.service";
-import { GetUserAddressesUseCaseProvider } from "./application/ports/in/use-cases/get-user-addresses.use-case";
-import { GetUserAddressesService } from "./application/services/get-user-addresses.service";
+import { ListUserAddressesUseCaseProvider } from "./application/ports/in/use-cases/list-user-addresses.use-case";
+import { ListUserAddressesService } from "./application/services/list-user-addresses.service";
 import { UpdateUserProfileUseCaseProvider } from "./application/ports/in/use-cases/update-user-profile.use-case";
 import { UpdateUserProfileService } from "./application/services/update-user-profile.service";
 import { UploadProfilePictureUseCaseProvider } from "./application/ports/in/use-cases/upload-profile-picture.use-case";
@@ -90,8 +90,8 @@ export const Providers: Provider[] = [
         useClass: GetUserAddressService
     },
     {
-        provide: GetUserAddressesUseCaseProvider,
-        useClass: GetUserAddressesService
+        provide: ListUserAddressesUseCaseProvider,
+        useClass: ListUserAddressesService
     },
     {
         provide: UserRepositoryProvider,

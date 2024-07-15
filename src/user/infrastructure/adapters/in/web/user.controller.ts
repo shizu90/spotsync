@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { CreateUserUseCase, CreateUserUseCaseProvider } from "src/user/application/ports/in/use-cases/create-user.use-case";
 import { DeleteUserUseCase, DeleteUserUseCaseProvider } from "src/user/application/ports/in/use-cases/delete-user.use-case";
 import { UpdateUserCredentialsUseCase, UpdateUserCredentialsUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-credentials.use-case";
@@ -6,24 +6,17 @@ import { UpdateUserProfileUseCase, UpdateUserProfileUseCaseProvider } from "src/
 import { UploadBannerPictureUseCase, UploadBannerPictureUseCaseProvider } from "src/user/application/ports/in/use-cases/upload-banner-picture.use-case";
 import { UploadProfilePictureUseCase, UploadProfilePictureUseCaseProvider } from "src/user/application/ports/in/use-cases/upload-profile-picture.use-case";
 import { CreateUserRequest } from "./requests/create-user.request";
-import { CreateUserCommand } from "src/user/application/ports/in/commands/create-user.command";
 import { UserRequestMapper } from "./mappers/user-request.mapper";
 import { UpdateUserProfileRequest } from "./requests/update-user-profile.request";
-import { UpdateUserProfileCommand } from "src/user/application/ports/in/commands/update-user-profile.command";
 import { UpdateUserCredentialsRequest } from "./requests/update-user-credentials.request";
-import { UpdateUserCredentialsCommand } from "src/user/application/ports/in/commands/update-user-credentials.command";
-import { DeleteUserCommand } from "src/user/application/ports/in/commands/delete-user.command";
 import { UserErrorHandler } from "./handlers/user-error.handler";
 import { GetUserProfileUseCase, GetUserProfileUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-profile.use-case";
-import { GetUserProfileCommand } from "src/user/application/ports/in/commands/get-user-profile.command";
-import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
-import { UpdateUserVisibilityConfigCommand } from "src/user/application/ports/in/commands/update-user-visibility-config.command";
 import { UpdateUserVisibilityConfigRequest } from "./requests/update-user-visibility-config.request";
 import { UpdateUserVisibilityConfigUseCase, UpdateUserVisibilityConfigUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-visibility-config.use-case";
 import { ListUsersUseCase, ListUsersUseCaseProvider } from "src/user/application/ports/in/use-cases/list-users.use-case";
-import { ListUsersCommand } from "src/user/application/ports/in/commands/list-users.command";
 import { ListUsersQueryRequest } from "./requests/list-users-query.request";
 
 @ApiTags('Users')
@@ -55,6 +48,7 @@ export class UserController
 
     @ApiOperation({summary: 'List and search users'})
     @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe({transform: true}))
     @Get()
     public async list(@Query() query: ListUsersQueryRequest, @Req() req: Request, @Res() res: Response)  
     {
@@ -63,7 +57,7 @@ export class UserController
         const data = await this.listUsersUseCase.execute(command);
 
         res
-            .status(200)
+            .status(HttpStatus.OK)
             .json({
                 data: data
             });
@@ -79,7 +73,7 @@ export class UserController
         const data = await this.getUserProfileUseCase.execute(command);
     
         res
-            .status(200)
+            .status(HttpStatus.OK)
             .json({
                 data: data
             });
@@ -95,7 +89,7 @@ export class UserController
         const data = await this.createUserUseCase.execute(command);
 
         res
-            .status(201)
+            .status(HttpStatus.CREATED)
             .json({
                 data: data
             });
@@ -112,7 +106,7 @@ export class UserController
         this.updateUserProfileUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });
@@ -129,7 +123,7 @@ export class UserController
         this.updateUserCredentialsUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });
@@ -146,7 +140,7 @@ export class UserController
         this.updateUserVisibilityConfigUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });
@@ -162,7 +156,7 @@ export class UserController
         this.deleteUserUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });

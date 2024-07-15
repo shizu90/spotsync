@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
@@ -11,14 +11,20 @@ import { RefuseGroupRequestUseCase, RefuseGroupRequestUseCaseProvider } from "sr
 import { ListGroupMembersQueryRequest } from "./requests/list-group-members-query.request";
 import { GroupMemberRequestMapper } from "./mappers/group-member-request.mapper";
 import { ChangeMemberRoleRequest } from "./requests/change-member-role.request";
+import { GroupErrorHandler } from "./handlers/group-error.handler";
+import { RemoveGroupMemberUseCase, RemoveGroupMemberUseCaseProvider } from "src/group/application/ports/in/use-cases/remove-group-member.use-case";
+import { ListGroupRequestsUseCase, ListGroupRequestsUseCaseProvider } from "src/group/application/ports/in/use-cases/list-group-requests.use-case";
 
 @ApiTags('Group members')
+@UseFilters(new GroupErrorHandler())
 @Controller('groups')
 export class GroupMemberController 
 {
     constructor(
         @Inject(ListGroupMembersUseCaseProvider)
         protected listGroupMembersUseCase: ListGroupMembersUseCase,
+        @Inject(ListGroupRequestsUseCaseProvider)
+        protected listGroupRequestsUseCase: ListGroupRequestsUseCase,
         @Inject(JoinGroupUseCaseProvider)
         protected joinGroupUseCase: JoinGroupUseCase,
         @Inject(LeaveGroupUseCaseProvider)
@@ -28,12 +34,15 @@ export class GroupMemberController
         @Inject(AcceptGroupRequestUseCaseProvider)
         protected acceptGroupRequestUseCase: AcceptGroupRequestUseCase,
         @Inject(RefuseGroupRequestUseCaseProvider)
-        protected refuseGroupRequestUseCase: RefuseGroupRequestUseCase
+        protected refuseGroupRequestUseCase: RefuseGroupRequestUseCase,
+        @Inject(RemoveGroupMemberUseCaseProvider)
+        protected removeGroupMemberUseCase: RemoveGroupMemberUseCase
     ) 
     {}
 
     @ApiOperation({summary: "List group members"})
     @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe({transform: true}))
     @Get(':id/members')
     public async list(@Param('id') groupId: string, @Query() query: ListGroupMembersQueryRequest, @Req() req: Request, @Res() res: Response) 
     {
@@ -42,7 +51,24 @@ export class GroupMemberController
         const data = await this.listGroupMembersUseCase.execute(command);
 
         res
-            .status(200)
+            .status(HttpStatus.OK)
+            .json({
+                data: data
+            });
+    }
+
+    @ApiOperation({summary: "List group join requests"})
+    @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe({transform: true}))
+    @Get(':id/join-requests')
+    public async listRequests(@Param('id') groupId: string, @Query() query: ListGroupMembersQueryRequest, @Req() req: Request, @Res() res: Response) 
+    {
+        const command = GroupMemberRequestMapper.listGroupRequestsCommand(groupId, query);
+
+        const data = await this.listGroupRequestsUseCase.execute(command);
+
+        res
+            .status(HttpStatus.OK)
             .json({
                 data: data
             });
@@ -58,7 +84,7 @@ export class GroupMemberController
         const data = await this.joinGroupUseCase.execute(command);
 
         res
-            .status(201)
+            .status(HttpStatus.CREATED)
             .json({
                 data: data
             });
@@ -71,10 +97,10 @@ export class GroupMemberController
     {
         const command = GroupMemberRequestMapper.leaveGroupCommand(groupId);
 
-        this.leaveGroupUseCase.execute(command);
+        await this.leaveGroupUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });
@@ -87,10 +113,10 @@ export class GroupMemberController
     {
         const command = GroupMemberRequestMapper.changeMemberRoleCommand(groupId, memberId, body);
 
-        this.changeMemberRoleUseCase.execute(command);
+        await this.changeMemberRoleUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });
@@ -106,7 +132,7 @@ export class GroupMemberController
         const data = await this.acceptGroupRequestUseCase.execute(command);
 
         res
-            .status(201)
+            .status(HttpStatus.CREATED)
             .json({
                 data: data
             });
@@ -119,10 +145,26 @@ export class GroupMemberController
     {
         const command = GroupMemberRequestMapper.refuseGroupRequestCommand(groupId, requestId);
 
-        this.refuseGroupRequestUseCase.execute(command);
+        await this.refuseGroupRequestUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
+            .json({
+                data: {}
+            });
+    }
+
+    @ApiOperation({summary: "Remove group member"})
+    @UseGuards(AuthGuard)
+    @Delete(':id/members/:member_id')
+    public async removeGroupMember(@Param('id') groupId: string, @Param('member_id') memberId: string, @Req() req: Request, @Res() res: Response) 
+    {
+        const command = GroupMemberRequestMapper.removeGroupMemberCommand(groupId, memberId);
+
+        await this.removeGroupMemberUseCase.execute(command);
+
+        res
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });

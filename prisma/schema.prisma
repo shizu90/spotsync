@@ -43,7 +43,7 @@ model UserCredentials {
     password                        String
     last_login                      DateTime?   
     last_logout                     DateTime?
-    user                            User                        @relation(fields: [user_id], references: [id])
+    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
     @@map("user_credentials")
 }
@@ -55,7 +55,7 @@ model UserVisibilityConfig {
     poi_folder_visibility           String
     visited_poi_visibility          String
     post_visibility                 String
-    user                            User                        @relation(fields: [user_id], references: [id])
+    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
     @@map("user_visibility_configs")
 }
@@ -74,7 +74,7 @@ model UserAddress {
     updated_at                      DateTime                    @default(now())
     is_deleted                      Boolean                     @default(false)
     user_id                         String
-    user                            User                        @relation(fields: [user_id], references: [id])
+    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
     @@map("user_addresses")
 }
@@ -84,8 +84,8 @@ model Follow {
     from_user_id                    String
     to_user_id                      String
     followed_at                     DateTime                    @default(now())
-    from_user                       User                        @relation("from_user", fields: [from_user_id], references: [id])
-    to_user                         User                        @relation("to_user", fields: [to_user_id], references: [id])
+    from_user                       User                        @relation("from_user", fields: [from_user_id], references: [id], onDelete: Cascade)
+    to_user                         User                        @relation("to_user", fields: [to_user_id], references: [id], onDelete: Cascade)
 
     @@map("follows")
 }
@@ -95,8 +95,8 @@ model FollowRequest {
     from_user_id                    String
     to_user_id                      String
     requested_on                    DateTime                    @default(now())
-    from_user                       User                        @relation("from_user", fields: [from_user_id], references: [id])
-    to_user                         User                        @relation("to_user", fields: [to_user_id], references: [id])
+    from_user                       User                        @relation("from_user", fields: [from_user_id], references: [id], onDelete: Cascade)
+    to_user                         User                        @relation("to_user", fields: [to_user_id], references: [id], onDelete: Cascade)
 
     @@map("follow_requests")
 }
@@ -104,9 +104,9 @@ model FollowRequest {
 model Group {
     id                              String                      @id @default(uuid())
     name                            String
-    about                           String
-    group_picture                   String
-    banner_picture                  String
+    about                           String?
+    group_picture                   String?
+    banner_picture                  String?
     created_at                      DateTime                    @default(now())
     updated_at                      DateTime                    @default(now())
     is_deleted                      Boolean                     @default(false)
@@ -123,7 +123,7 @@ model GroupVisibilityConfig {
     post_visibility                 String
     event_visibility                String
     group_visibility                String
-    group                           Group                       @relation(fields: [group_id], references: [id])
+    group                           Group                       @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
     @@map("group_visibility_configs")
 }
@@ -134,10 +134,10 @@ model GroupMember {
     joined_at                       DateTime                    @default(now())
     group_id                        String
     user_id                         String
-    group_role_id                   String
-    group                           Group                       @relation(fields: [group_id], references: [id])
-    user                            User                        @relation(fields: [user_id], references: [id])
-    group_role                      GroupRole                   @relation(fields: [group_role_id], references: [id])
+    group_role_id                   String?
+    group                           Group                       @relation(fields: [group_id], references: [id], onDelete: Cascade)
+    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    group_role                      GroupRole?                  @relation(fields: [group_role_id], references: [id], onDelete: SetNull)
 
     @@map("group_members")
 }
@@ -147,8 +147,8 @@ model GroupMemberRequest {
     group_id                        String
     user_id                         String
     requested_on                    DateTime                    @default(now())
-    user                            User                        @relation(fields: [user_id], references: [id])
-    group                           Group                       @relation(fields: [group_id], references: [id])
+    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    group                           Group                       @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
     @@map("group_member_requests")
 }
@@ -163,7 +163,7 @@ model GroupRole {
     group_id                        String?                     
     permissions                     GroupRolePermission[]
     group_members                   GroupMember[]
-    group                           Group?                      @relation(fields: [group_id], references: [id])
+    group                           Group?                      @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
     @@map("group_roles")
 }
@@ -171,7 +171,7 @@ model GroupRole {
 model GroupRolePermission {
     group_role_id                   String
     group_permission_id             String
-    group_role                      GroupRole               @relation(fields: [group_role_id], references: [id])
+    group_role                      GroupRole               @relation(fields: [group_role_id], references: [id], onDelete: Cascade)
     group_permission                GroupPermission         @relation(fields: [group_permission_id], references: [id])
 
     @@id(fields: [group_permission_id, group_role_id])

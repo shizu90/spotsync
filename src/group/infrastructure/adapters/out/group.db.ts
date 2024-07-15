@@ -1,6 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { GroupRepository } from "src/group/application/ports/out/group.repository";
-import { GroupMember } from "src/group/domain/group-member.model";
 import { GroupVisibilityConfig } from "src/group/domain/group-visibility-config.model";
 import { Group } from "src/group/domain/group.model";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -41,23 +40,23 @@ export class GroupRepositoryImpl implements GroupRepository
         const isDeleted = values['isDeleted'] ?? false;
         const visibility = values['visibility'];
 
-        const sort = values['sort'] ?? 'name';
-        const sortDirection = values['sortDirection'] ?? 'asc';
+        const sort = String(values['sort'] ?? 'name').toLowerCase();
+        const sortDirection = String(values['sortDirection'] ?? 'asc').toLowerCase();
         const page = values['page'] ?? 0;
         const paginate = values['paginate'] ?? false;
         const limit = values['limit'] ?? 12;
 
-        let query = 'SELECT groups.id FROM groups JOIN group_visibility_configs ON group_visibility_configs.id = groups.id';
+        let query = 'SELECT groups.id FROM groups JOIN group_visibility_configs ON group_visibility_configs.group_id = groups.id';
 
         if(name) {
             if(query.includes('WHERE')) {
-                query = `${query} AND groups.name LIKE '%${name}%'`;
+                query = `${query} AND LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
             }else {
-                query = `${query} WHERE groups.name LIKE '%${name}%'`;
+                query = `${query} WHERE LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
             }
         }
 
-        if(isDeleted) {
+        if(isDeleted !== undefined) {
             if(query.includes('WHERE')) {
                 query = `${query} AND groups.is_deleted = ${isDeleted}`;
             }else {
@@ -67,13 +66,13 @@ export class GroupRepositoryImpl implements GroupRepository
 
         if(visibility) {
             if(query.includes('WHERE')) {
-                query = `${query} AND group_visibility_configs.group_visibility = '${visibility}'`;
+                query = `${query} AND LOWER(group_visibility_configs.group_visibility) = '${visibility.toLowerCase()}'`;
             }else {
-                query = `${query} WHERE group_visibility_configs.group_visibility = '${visibility}`;
+                query = `${query} WHERE LOWER(group_visibility_configs.group_visibility) = '${visibility.toLowerCase()}'`;
             }
         }
 
-        const userIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+        const groupIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
         let orderBy = {};
 
@@ -96,7 +95,7 @@ export class GroupRepositoryImpl implements GroupRepository
         if(paginate) {
             groups = await this.prismaService.group.findMany({
                 where: {
-                    id: {in: userIds.map((row) => row.id)}
+                    id: {in: groupIds.map((row) => row.id)}
                 },
                 include: {visibility_configuration: true},
                 orderBy: orderBy,
@@ -106,7 +105,7 @@ export class GroupRepositoryImpl implements GroupRepository
         }else {
             groups = await this.prismaService.group.findMany({
                 where: {
-                    id: {in: userIds.map((row) => row.id)}
+                    id: {in: groupIds.map((row) => row.id)}
                 },
                 include: {visibility_configuration: true},
                 orderBy: orderBy
@@ -158,6 +157,9 @@ export class GroupRepositoryImpl implements GroupRepository
                 created_at: model.createdAt(),
                 updated_at: model.updatedAt(),
                 is_deleted: model.isDeleted()
+            },
+            include: {
+                visibility_configuration: true
             }
         });
 
@@ -177,6 +179,9 @@ export class GroupRepositoryImpl implements GroupRepository
             },
             where: {
                 id: model.id()
+            },
+            include: {
+                visibility_configuration: true
             }
         });
 
@@ -187,14 +192,17 @@ export class GroupRepositoryImpl implements GroupRepository
         const group = await this.prismaService.group.update({
             data: {
                 visibility_configuration: {
-                    create: {
+                    update: {
                         event_visibility: model.eventVisibility(),
                         group_visibility: model.groupVisibility(),
                         post_visibility: model.postVisibility()
                     }
                 }
             },
-            where: {id: model.id()}
+            where: {id: model.id()},
+            include: {
+                visibility_configuration: true
+            }
         });
 
         return this.mapGroupToDomain(group);

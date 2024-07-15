@@ -6,7 +6,7 @@ import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from
 import { UserRepository, UserRepositoryProvider } from "src/user/application/ports/out/user.repository";
 import { UserNotFoundError } from "src/user/application/services/errors/user-not-found.error";
 import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../ports/out/group-member.repository";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
 
 @Injectable()

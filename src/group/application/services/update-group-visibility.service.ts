@@ -6,7 +6,7 @@ import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../ports/o
 import { UpdateGroupVisibilityCommand } from "../ports/in/commands/update-group-visibility.command";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { UserNotFoundError } from "src/user/application/services/errors/user-not-found.error";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
 
 @Injectable()

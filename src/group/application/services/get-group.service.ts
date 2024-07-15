@@ -32,6 +32,8 @@ export class GetGroupService implements GetGroupUseCase
 
         const groupMember = (await this.groupMemberRepository.findBy({groupId: group.id(), userId: authenticatedUserId})).at(0);
 
+        const groupMemberRequest = (await this.groupMemberRepository.findRequestBy({groupId: group.id(), userId: authenticatedUserId})).at(0);
+
         return new GetGroupDto(
             group.id(),
             group.name(),
@@ -54,9 +56,12 @@ export class GetGroupService implements GetGroupUseCase
                 role: {
                     id: groupMember.role().id(),
                     name: groupMember.role().name(),
-                    permissions: groupMember.role().permissions().map((p) => p.name())
+                    permissions: groupMember.role().permissions().map((p) => {return {id: p.id(), name: p.name()};})
                 }
-            } : null
+            } : null,
+            groupMemberRequest !== null && groupMemberRequest !== undefined ? 
+                groupMemberRequest.requestedOn() : 
+                null
         );
     }
 }

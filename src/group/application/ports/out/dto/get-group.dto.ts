@@ -22,9 +22,10 @@ export class GetGroupDto
             role: {
                 id: string
                 name: string,
-                permissions: string[]
+                permissions: {id: string, name: string}[]
             }
-        } | null
+        } | null,
+        readonly requested_on?: Date
     ) 
     {}
 }

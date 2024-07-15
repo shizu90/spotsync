@@ -5,7 +5,7 @@ import { GroupRepository, GroupRepositoryProvider } from "../ports/out/group.rep
 import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../ports/out/group-member.repository";
 import { DeleteGroupCommand } from "../ports/in/commands/delete-group.command";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 
 @Injectable()
 export class DeleteGroupService implements DeleteGroupUseCase 
@@ -36,7 +36,7 @@ export class DeleteGroupService implements DeleteGroupUseCase
             throw new UnauthorizedAccessError(`You are not a member of the group`);
         }
 
-        const hasPermission = groupMember.role().permissions().map((p) => p.name()).includes('administrador');
+        const hasPermission = groupMember.role().permissions().map((p) => p.name()).includes('delete-group');
 
         if(!(hasPermission || groupMember.isCreator() || groupMember.role().name() === 'administrator')) {
             throw new UnauthorizedAccessError(`You don't have permissions to delete the group`);

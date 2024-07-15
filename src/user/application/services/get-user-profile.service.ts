@@ -32,7 +32,7 @@ export class GetUserProfileService implements GetUserProfileUseCase
         );
 
         if(user === null || user === undefined || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.id || command.name} not found`);
+            throw new UserNotFoundError(`User not found`);
         }
 
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);

@@ -1,4 +1,4 @@
-import { ArgumentsHost, BadRequestException, ExceptionFilter, HttpException } from "@nestjs/common";
+import { ArgumentsHost, BadRequestException, ExceptionFilter, HttpException, HttpStatus } from "@nestjs/common";
 import { Request, Response } from "express";
 
 export class FollowErrorHandler implements ExceptionFilter 
@@ -11,7 +11,7 @@ export class FollowErrorHandler implements ExceptionFilter
         
         switch(error.constructor.name) {
             case 'UserNotFoundError':
-                response.status(404)
+                response.status(HttpStatus.NOT_FOUND)
                 .json({
                     timestamp: new Date().toISOString(),
                     path: request.url,
@@ -20,7 +20,7 @@ export class FollowErrorHandler implements ExceptionFilter
                 
                 break;
             case 'UnauthorizedAccessError':
-                response.status(401)
+                response.status(HttpStatus.UNAUTHORIZED)
                 .json({
                     timestamp: new Date().toISOString(),
                     path: request.url,
@@ -29,7 +29,7 @@ export class FollowErrorHandler implements ExceptionFilter
 
                 break;
             case 'AlreadyFollowingError':
-                response.status(409)
+                response.status(HttpStatus.CONFLICT)
                 .json({
                     timestamp: new Date().toISOString(),
                     path: request.url,
@@ -38,7 +38,7 @@ export class FollowErrorHandler implements ExceptionFilter
 
                 break; 
             case 'NotFollowingError':
-                response.status(404)
+                response.status(HttpStatus.NOT_FOUND)
                 .json({
                     timestamp: new Date().toISOString(),
                     path: request.url,
@@ -47,7 +47,7 @@ export class FollowErrorHandler implements ExceptionFilter
 
                 break;
             default:
-                response.status(500)
+                response.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .json({
                     timestamp: new Date().toISOString(),
                     path: request.url,

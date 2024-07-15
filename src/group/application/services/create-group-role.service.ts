@@ -6,7 +6,7 @@ import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from
 import { CreateGroupRoleCommand } from "../ports/in/commands/create-group-role.command";
 import { CreateGroupRoleDto } from "../ports/out/dto/create-group-role.dto";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupRole } from "src/group/domain/group-role.model";
 import { randomUUID } from "crypto";
 import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
@@ -59,7 +59,9 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase
                 if(permission !== null && permission !== undefined) {
                     return permission;
                 }else return null;
-            }))
+            })),
+            false,
+            group
         );
 
         this.groupRoleRepository.store(groupRole);

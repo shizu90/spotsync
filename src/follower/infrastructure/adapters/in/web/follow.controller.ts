@@ -1,4 +1,4 @@
-import { Controller, Delete, Inject, Param, Post, Put, Req, Res, UseFilters, UseGuards } from "@nestjs/common";
+import { Controller, Delete, HttpStatus, Inject, Param, Post, Put, Req, Res, UseFilters, UseGuards } from "@nestjs/common";
 import { ApiCreatedResponse, ApiNoContentResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { FollowUseCase, FollowUseCaseProvider } from "src/follower/application/ports/in/use-cases/follow.use-case";
@@ -36,7 +36,7 @@ export class FollowController
         const data = await this.followUseCase.execute(command);
 
         res
-            .status(201)
+            .status(HttpStatus.CREATED)
             .json({
                 data: data
             });
@@ -49,10 +49,10 @@ export class FollowController
     {
         const command = FollowRequestMapper.unfollowCommand(fromUserId, toUserId);
 
-        this.unfollowUseCase.execute(command);
+        await this.unfollowUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });
@@ -65,10 +65,10 @@ export class FollowController
     {
         const command = FollowRequestMapper.acceptFollowRequestCommand(followRequestId);
 
-        this.acceptFollowRequestUseCase.execute(command);
+        await this.acceptFollowRequestUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });
@@ -81,10 +81,10 @@ export class FollowController
     {
         const command = FollowRequestMapper.refuseFollowRequestCommand(followRequestId);
 
-        this.refuseFollowRequestUseCase.execute(command);
+        await this.refuseFollowRequestUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });

@@ -6,7 +6,7 @@ import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from
 import { ChangeMemberRoleCommand } from "../ports/in/commands/change-member-role.command";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
 import { GroupMemberNotFoundError } from "./errors/group-member-not-found.error";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
 import { GroupRoleNotFoundError } from "./errors/group-role-not-found.error";
 

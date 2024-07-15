@@ -5,7 +5,7 @@ import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from
 import { RemoveGroupRoleUseCase } from "../ports/in/use-cases/remove-group-role.use-case";
 import { RemoveGroupRoleCommand } from "../ports/in/commands/remove-group-role.command";
 import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupRoleNotFoundError } from "./errors/group-role-not-found.error";
 
 @Injectable()
@@ -47,7 +47,7 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase
 
         const groupRole = await this.groupRoleRepository.findById(command.id);
 
-        if(groupRole === null || groupRole === undefined) {
+        if(groupRole === null || groupRole === undefined || (groupRole.group() !== null && groupRole.group().id() !== group.id())) {
             throw new GroupRoleNotFoundError(`Group role not found`);
         }
 

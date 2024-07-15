@@ -27,7 +27,7 @@ export class DeleteUserAddressService implements DeleteUserAddressUseCase
         const user: User = await this.userRepository.findById(command.userId);
         
         if(user === null || user === undefined || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.userId} not found`);
+            throw new UserNotFoundError(`User not found`);
         }
 
         if(user.id() !== this.getAuthenticatedUser.execute(null)) {
@@ -37,7 +37,7 @@ export class DeleteUserAddressService implements DeleteUserAddressUseCase
         const userAddress: UserAddress = await this.userAddressRepository.findById(command.id);
 
         if(userAddress === null || userAddress === undefined || userAddress.isDeleted() || userAddress.user().id() !== user.id()) {
-            throw new UserAddressNotFoundError(`User address ${command.id} not found`);
+            throw new UserAddressNotFoundError(`User address not found`);
         }
 
         userAddress.delete();

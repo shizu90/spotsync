@@ -18,7 +18,7 @@ export class UpdateUserVisibilityConfigService implements UpdateUserVisibilityCo
         const user = await this.userRepository.findById(command.userId);
 
         if(user === null || user === undefined || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.userId} not found`);
+            throw new UserNotFoundError(`User not found`);
         }
 
         if(command.profileVisibility && command.profileVisibility !== null) {

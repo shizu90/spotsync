@@ -4,10 +4,9 @@ import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../ports/o
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { UpdateGroupRoleUseCase } from "../ports/in/use-cases/update-group-role.use-case";
 import { UpdateGroupRoleCommand } from "../ports/in/commands/update-group-role.command";
-import { GroupRoleRepositoryImpl } from "src/group/infrastructure/adapters/out/group-role.db";
-import { GroupRoleRepository } from "../ports/out/group-role.repository";
+import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupRoleNotFoundError } from "./errors/group-role-not-found.error";
 
 @Injectable()
@@ -20,7 +19,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase
         protected groupMemberRepository: GroupMemberRepository,
         @Inject(GetAuthenticatedUserUseCaseProvider)
         protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
-        @Inject(GroupRoleRepositoryImpl)
+        @Inject(GroupRoleRepositoryProvider)
         protected groupRoleRepository: GroupRoleRepository
     ) 
     {}
@@ -49,7 +48,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase
 
         const groupRole = await this.groupRoleRepository.findById(command.id);
 
-        if(groupRole === null || groupRole === undefined) {
+        if(groupRole === null || groupRole === undefined || (groupRole.group() !== null && groupRole.group().id() !== group.id())) {
             throw new GroupRoleNotFoundError(`Group role not found`);
         }
 

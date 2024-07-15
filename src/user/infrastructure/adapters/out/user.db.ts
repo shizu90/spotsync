@@ -47,8 +47,8 @@ export class UserRepositoryImpl implements UserRepository
         const name = values['name'];
         const isDeleted = values['isDeleted'] ?? false;
 
-        const sort = values['sort'] ?? 'name';
-        const sortDirection = values['sortDirection'] ?? 'asc';
+        const sort = String(values['sort'] ?? 'name').toLowerCase();
+        const sortDirection = String(values['sortDirection'] ?? 'asc').toLowerCase();
         const page = values['page'] ?? 0;
         const paginate = values['paginate'] ?? false;
         const limit = values['limit'] ?? 12;
@@ -57,13 +57,13 @@ export class UserRepositoryImpl implements UserRepository
 
         if(name) {
             if(query.includes('WHERE')) {
-                query = `${query} AND user_credentials.name LIKE '%${name}%'`;
+                query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
             }else {
-                query = `${query} WHERE user_credentials.name LIKE '%${name}%'`;
+                query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
             }
         }
 
-        if(isDeleted) {
+        if(isDeleted !== undefined) {
             if(query.includes('WHERE')) {
                 query = `${query} AND users.is_deleted = '${isDeleted}'`;
             }else {

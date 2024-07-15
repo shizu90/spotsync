@@ -9,7 +9,7 @@ import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAddressNotFoundError } from "./errors/user-address-not-found.error";
 import { GeoLocatorInput, GeoLocatorOutput, GeoLocatorService, GeoLocatorServiceProvider } from "../ports/out/geo-locator.service";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 
 @Injectable()
 export class UpdateUserAddressService implements UpdateUserAddressUseCase 
@@ -31,7 +31,7 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
         const user: User = await this.userRepository.findById(command.userId);
 
         if(user === null || user === undefined || user.isDeleted()) {
-            throw new UserNotFoundError(`User ${command.userId} not found`);
+            throw new UserNotFoundError(`User not found`);
         }
 
         if(user.id() !== this.getAuthenticatedUser.execute(null)) {
@@ -41,7 +41,7 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
         const userAddress: UserAddress = await this.userAddressRepository.findById(command.id);
 
         if(userAddress === null || userAddress === undefined || userAddress.user().id() !== user.id() || userAddress.isDeleted()) {
-            throw new UserAddressNotFoundError(`User address ${command.id} not found`);
+            throw new UserAddressNotFoundError(`User address not found`);
         }
 
         if(command.name && command.name !== null && command.name.length > 0) {

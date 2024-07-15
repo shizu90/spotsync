@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
 import { CreateGroupUseCase, CreateGroupUseCaseProvider } from "src/group/application/ports/in/use-cases/create-group.use-case";
@@ -12,8 +12,11 @@ import { GetGroupUseCase, GetGroupUseCaseProvider } from "src/group/application/
 import { CreateGroupRequest } from "./requests/create-group.request";
 import { UpdateGroupRequest } from "./requests/update-group.request";
 import { UpdateGroupVisibilityRequest } from "./requests/update-group-visibility.request";
+import { GroupErrorHandler } from "./handlers/group-error.handler";
+import { ListGroupsQueryRequest } from "./requests/list-groups-query.request";
 
 @ApiTags('Groups')
+@UseFilters(new GroupErrorHandler())
 @Controller('groups')
 export class GroupController 
 {
@@ -35,15 +38,16 @@ export class GroupController
 
     @ApiOperation({summary: "List groups"})
     @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe({transform: true}))
     @Get()
-    public async list(@Query() query: {name?: string, group_visibility?: string, sort?: string, sort_direction?: string, page?: number, paginate?: boolean, limit?: number}, @Req() req: Request, @Res() res: Response) 
+    public async list(@Query() query: ListGroupsQueryRequest, @Req() req: Request, @Res() res: Response) 
     {
         const command = GroupRequestMapper.listGroupsCommand(query);
 
         const data = await this.listGroupsUseCase.execute(command);
 
         res
-            .status(200)
+            .status(HttpStatus.OK)
             .json({
                 data: data
             });
@@ -59,7 +63,7 @@ export class GroupController
         const data = await this.getGroupUseCase.execute(command);
 
         res
-            .status(200)
+            .status(HttpStatus.OK)
             .json({
                 data: data
             });
@@ -67,6 +71,7 @@ export class GroupController
 
     @ApiOperation({summary: "Create group"})
     @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe({transform: true}))
     @Post()
     public async create(@Body() request: CreateGroupRequest, @Req() req: Request, @Res() res: Response) 
     {
@@ -75,7 +80,7 @@ export class GroupController
         const data = await this.createGroupUseCase.execute(command);
 
         res
-            .status(201)
+            .status(HttpStatus.CREATED)
             .json({
                 data: data
             });
@@ -83,15 +88,16 @@ export class GroupController
 
     @ApiOperation({summary: "Update group"})
     @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe({transform: true}))
     @Put(':id')
     public async update(@Param('id') id: string, @Body() request: UpdateGroupRequest, @Req() req: Request, @Res() res: Response) 
     {
         const command = GroupRequestMapper.updateGroupCommand(id, request);
 
-        this.updateGroupUseCase.execute(command);
+        await this.updateGroupUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });
@@ -99,15 +105,16 @@ export class GroupController
 
     @ApiOperation({summary: "Update group visibility"})
     @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe({transform: true}))
     @Put(':id/visibility')
     public async updateVisibility(@Param('id') id: string, @Body() request: UpdateGroupVisibilityRequest, @Req() req: Request, @Res() res: Response) 
     {
         const command = GroupRequestMapper.updateGroupVisibilityCommand(id, request);
 
-        this.updateGroupVisibilityUseCase.execute(command);
+        await this.updateGroupVisibilityUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });
@@ -120,10 +127,10 @@ export class GroupController
     {
         const command = GroupRequestMapper.deleteGroupCommand(id);
 
-        this.deleteGroupUseCase.execute(command);
+        await this.deleteGroupUseCase.execute(command);
 
         res
-            .status(204)
+            .status(HttpStatus.NO_CONTENT)
             .json({
                 data: {}
             });

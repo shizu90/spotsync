@@ -138,20 +138,21 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
         const name = values['name'];
         const roleId = values['roleId'];
         const groupId = values['groupId'];
+        const userId = values['userId'];
 
-        const sort = values['sort'];
-        const sortDirection = values['sortDirection'] ?? 'asc';
+        const sort = String(values['sort'] ?? 'name').toLowerCase();
+        const sortDirection = String(values['sortDirection'] ?? 'asc').toLowerCase();
         const paginate = values['paginate'] ?? false;
         const page = values['page'] ?? 0;
         const limit = values['limit'] ?? 12;
 
-        let query = 'SELECT group_members.id FROM group_members JOIN users ON users.id = group_members.user_id WHERE users.is_deleted = false';
+        let query = 'SELECT group_members.id FROM group_members JOIN users ON users.id = group_members.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false';
 
         if(name) {
             if(query.includes('WHERE')) {
-                query = `${query} AND users.name = '${name}'`;
+                query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
             }else {
-                query = `${query} WHERE users.name = '${name}'`;
+                query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
             }
         }
 
@@ -171,6 +172,14 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
             }
         }
 
+        if(userId) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND group_members.user_id = '${userId}'`;
+            }else {
+                query = `${query} WHERE group_members.user_id = '${userId}'`;
+            }
+        }
+
         const groupMemberIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
         let orderBy = {};
@@ -179,7 +188,9 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
             case 'name':
                 orderBy = {
                     user: {
-                        name: sortDirection
+                        credentials: {
+                            name: sortDirection
+                        }
                     }
                 };
 
@@ -325,6 +336,104 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
         return this.mapGroupMemberToDomain(groupMember);
     }
 
+    public async findRequestBy(values: Object): Promise<Array<GroupMemberRequest>> {
+        const name = values['name'];
+        const groupId = values['groupId'];
+        const userId = values['userId'];
+
+        const sort = String(values['sort'] ?? 'name').toLowerCase();
+        const sortDirection = String(values['sortDirection'] ?? 'asc').toLowerCase();
+        const paginate = values['paginate'] ?? false;
+        const page = values['page'] ?? 0;
+        const limit = values['limit'] ?? 12;
+
+        let query = 'SELECT group_member_requests.id FROM group_member_requests JOIN users ON users.id = group_member_requests.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false';
+
+        if(name) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+            }else {
+                query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+            }
+        }
+
+        if(groupId) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND group_member_requests.group_id = '${groupId}'`;
+            }else {
+                query = `${query} WHERE group_member_requests.group_id = '${groupId}'`;
+            }
+        }
+
+        if(userId) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND group_member_requests.user_id = '${userId}'`;
+            }else {
+                query = `${query} WHERE group_member_requests.user_id = '${userId}'`;
+            }
+        }
+
+        const groupMemberRequestIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+
+        let orderBy = {};
+
+        switch(sort) {
+            case 'name':
+                orderBy = {
+                    user: {
+                        credentials: {
+                            name: sortDirection
+                        }
+                    }
+                };
+
+                break;
+            case 'id':
+            default:
+                orderBy = {
+                    id: sortDirection
+                };
+
+                break;
+        }
+
+        let groupMemberRequests = [];
+
+        if(paginate) {
+            groupMemberRequests = await this.prismaService.groupMemberRequest.findMany({
+                where: {id: {in: groupMemberRequestIds.map((row) => row.id)}},
+                orderBy: orderBy,
+                skip: limit * page,
+                take: limit,
+                include: {
+                    user: {
+                        include: {credentials: true, visibility_configuration: true}
+                    },
+                    group: {
+                        include: {visibility_configuration: true}
+                    }
+                }
+            });
+        }else {
+            groupMemberRequests = await this.prismaService.groupMemberRequest.findMany({
+                where: {id: {in: groupMemberRequestIds.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {
+                    user: {
+                        include: {credentials: true, visibility_configuration: true}
+                    },
+                    group: {
+                        include: {visibility_configuration: true}
+                    }
+                }
+            });
+        }
+
+        return groupMemberRequests.map((groupMemberRequest) => {
+            return this.mapGroupMemberRequestToDomain(groupMemberRequest);
+        });
+    }
+
     public async findRequestById(id: string): Promise<GroupMemberRequest> {
         const groupMemberRequest = await this.prismaService.groupMemberRequest.findFirst({
             where: {id: id},
@@ -347,6 +456,27 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
         return this.mapGroupMemberRequestToDomain(groupMemberRequest);
     }
 
+    public async findRequestByGroupIdAndUserId(groupId: string, userId: string): Promise<GroupMemberRequest> {
+        const groupMemberRequest = await this.prismaService.groupMemberRequest.findFirst({
+            where: {group_id: groupId, user_id: userId},
+            include: {
+                group: {
+                    include: {
+                        visibility_configuration: true
+                    }
+                },
+                user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                }
+            }
+        });
+
+        return this.mapGroupMemberRequestToDomain(groupMemberRequest);
+    }
+
     public async store(model: GroupMember): Promise<GroupMember> {
         const groupMember = await this.prismaService.groupMember.create({
             data: {
@@ -356,6 +486,28 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
                 group_role_id: model.role().id(),
                 id: model.id(),
                 joined_at: model.joinedAt()
+            },
+            include: {
+                user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                },
+                group_role: {
+                    include: {
+                        permissions: {
+                            include: {
+                                group_permission: true
+                            }
+                        }
+                    }
+                },
+                group: {
+                    include: {
+                        visibility_configuration: true
+                    }
+                }
             }
         });
 
@@ -369,6 +521,19 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
                 group_id: model.group().id(),
                 user_id: model.user().id(),
                 requested_on: model.requestedOn()
+            },
+            include: {
+                group: {
+                    include: {
+                        visibility_configuration: true
+                    }
+                },
+                user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                }
             }
         });
 
@@ -380,7 +545,29 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
             data: {
                 group_role_id: model.role().id()
             },
-            where: {id: model.id()}
+            where: {id: model.id()},
+            include: {
+                user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                },
+                group_role: {
+                    include: {
+                        permissions: {
+                            include: {
+                                group_permission: true
+                            }
+                        }
+                    }
+                },
+                group: {
+                    include: {
+                        visibility_configuration: true
+                    }
+                }
+            }
         });
 
         return this.mapGroupMemberToDomain(groupMember);

@@ -4,12 +4,12 @@ import { SignOutCommand } from "src/auth/application/ports/in/commands/sign-out.
 
 export class AuthRequestMapper 
 {
-    public static signInCommand(request: SignInRequest) 
+    public static signInCommand(request: SignInRequest): SignInCommand
     {
         return new SignInCommand(request.name, request.email, request.password);
     }
 
-    public static signOutCommand(userId: string) 
+    public static signOutCommand(userId: string): SignOutCommand
     {
         return new SignOutCommand(userId);
     }

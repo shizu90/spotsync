@@ -61,7 +61,7 @@ export class ListGroupsService implements ListGroupsUseCase
                     role: {
                         id: groupMember.role().id(),
                         name: groupMember.role().name(),
-                        permissions: groupMember.role().permissions().map((p) => p.name())
+                        permissions: groupMember.role().permissions().map((p) => {return {id: p.id(), name: p.name()};})
                     }
                 } : null
             );

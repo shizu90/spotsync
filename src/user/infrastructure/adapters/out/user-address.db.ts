@@ -61,10 +61,11 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
     {
         const userId = values['userId'];
         const main = values['main'];
-        const isDeleted = values['isDeleted'];
+        const name = values['name'];
+        const isDeleted = values['isDeleted'] ?? false;
 
-        const sort = values['sort'];
-        const sortDirection = values['sortDirection'];
+        const sort = String(values['sort'] ?? 'name').toLowerCase();
+        const sortDirection = String(values['sortDirection'] ?? 'asc').toLowerCase();
         const paginate = values['paginate'] ?? false;
         const page = values['page'] ?? 0;
         const limit = values['limit'] ?? 12;
@@ -87,7 +88,15 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
             }
         }
 
-        if(isDeleted) {
+        if(name) {
+            if(query.includes('WHERE')) {
+                query = `${query} AND LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+            }else {
+                query = `${query} WHERE LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+            }
+        }
+
+        if(isDeleted !== undefined) {
             if(query.includes('WHERE')) {
                 query = `${query} AND is_deleted = ${isDeleted}`;
             }else {

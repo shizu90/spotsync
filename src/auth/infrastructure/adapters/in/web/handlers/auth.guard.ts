@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Inject } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { env } from "process";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-acess.error";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 
 export class AuthGuard implements CanActivate 
 {
