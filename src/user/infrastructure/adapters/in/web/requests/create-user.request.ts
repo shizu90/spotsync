@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-	IsDateString,
 	IsEmail,
+	IsOptional,
 	IsString,
-	Matches,
 	MaxLength,
 	MinLength,
 } from 'class-validator';
@@ -28,9 +27,7 @@ export class CreateUserRequest {
 	public password: string;
 
 	@ApiProperty()
-	@IsDateString(
-		{ strict: false, strictSeparator: false },
-		{ message: 'Birth date is invalid' },
-	)
-	public birth_date: Date;
+	@IsString()
+	@IsOptional()
+	public phone_number: string;
 }

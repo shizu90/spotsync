@@ -23,6 +23,9 @@ export class UserRequestMapper {
 		query: ListUsersQueryRequest,
 	): ListUsersCommand {
 		return new ListUsersCommand(
+			query.first_name,
+			query.last_name,
+			query.full_name,
 			query.name,
 			query.sort,
 			query.sort_direction,
@@ -39,7 +42,7 @@ export class UserRequestMapper {
 			request.name,
 			request.email,
 			request.password,
-			request.birth_date,
+			request.phone_number,
 		);
 	}
 
@@ -49,6 +52,9 @@ export class UserRequestMapper {
 	): UpdateUserProfileCommand {
 		return new UpdateUserProfileCommand(
 			id,
+			request.first_name,
+			request.last_name,
+			request.profile_theme_color,
 			request.biograph,
 			request.birth_date,
 		);

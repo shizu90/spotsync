@@ -1,8 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-	UpdateUserProfileUseCase,
-	UpdateUserProfileUseCaseProvider,
-} from '../ports/in/use-cases/update-user-profile.use-case';
+import { UpdateUserProfileUseCase } from '../ports/in/use-cases/update-user-profile.use-case';
 import {
 	UserRepository,
 	UserRepositoryProvider,
@@ -34,6 +31,30 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase {
 
 		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
+		}
+
+		if (
+			command.firstName &&
+			command.firstName !== null &&
+			command.firstName.length > 0
+		) {
+			user.changeFirstName(command.firstName);
+		}
+
+		if (
+			command.lastName &&
+			command.lastName !== null &&
+			command.lastName.length > 0
+		) {
+			user.changeLastName(command.lastName);
+		}
+
+		if (
+			command.profileThemeColor &&
+			command.profileThemeColor !== null &&
+			command.profileThemeColor.length > 0
+		) {
+			user.changeProfileThemeColor(command.profileThemeColor);
 		}
 
 		if (

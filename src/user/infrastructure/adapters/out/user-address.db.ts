@@ -28,6 +28,9 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			prisma_model.main,
 			User.create(
 				prisma_model.user.id,
+				prisma_model.first_name,
+				prisma_model.last_name,
+				prisma_model.profile_theme_color,
 				prisma_model.user.profile_picture,
 				prisma_model.user.banner_picture,
 				prisma_model.user.biograph,
@@ -37,6 +40,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 					prisma_model.user.credentials.name,
 					prisma_model.user.credentials.email,
 					prisma_model.user.credentials.password,
+					prisma_model.user.credentials.phone_number,
 					prisma_model.user.credentials.last_login,
 					prisma_model.user.credentials.last_logout,
 				),

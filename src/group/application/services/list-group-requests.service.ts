@@ -73,9 +73,10 @@ export class ListGroupRequestsService implements ListGroupRequestsUseCase {
 				item.id(),
 				{
 					id: item.user().id(),
+					first_name: item.user().firstName(),
+					last_name: item.user().lastName(),
 					profile_picture: item.user().profilePicture(),
 					banner_picture: item.user().bannerPicture(),
-					birth_date: item.user().birthDate(),
 					credentials: { name: item.user().credentials().name() },
 				},
 				item.group().id(),

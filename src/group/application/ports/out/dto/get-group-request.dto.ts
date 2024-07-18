@@ -5,9 +5,10 @@ export class GetGroupRequestDto extends Dto {
 		readonly id: string,
 		readonly user: {
 			id: string;
+			first_name: string;
+			last_name: string;
 			profile_picture: string;
 			banner_picture: string;
-			birth_date: Date;
 			credentials: {
 				name: string;
 			};

@@ -17,6 +17,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { UserCredentials } from 'src/user/domain/user-credentials.model';
 
 @Injectable()
 export class UpdateUserCredentialsService
@@ -73,6 +74,16 @@ export class UpdateUserCredentialsService
 				await this.encryptPasswordService.encrypt(command.password),
 			);
 		}
+
+		if (
+			command.phoneNumber &&
+			command.phoneNumber !== null &&
+			command.phoneNumber.length > 0
+		) {
+			user.credentials().changePhoneNumber(command.phoneNumber);
+		}
+
+		user.changeCredentials(user.credentials());
 
 		this.userRepository.updateCredentials(user.credentials());
 	}

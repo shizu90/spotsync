@@ -17,6 +17,9 @@ export class UserRepositoryImpl implements UserRepository {
 
 		return User.create(
 			prisma_model.id,
+			prisma_model.first_name,
+			prisma_model.last_name,
+			prisma_model.profile_theme_color,
 			prisma_model.profile_picture,
 			prisma_model.banner_picture,
 			prisma_model.biograph,
@@ -27,6 +30,7 @@ export class UserRepositoryImpl implements UserRepository {
 						prisma_model.credentials.name,
 						prisma_model.credentials.email,
 						prisma_model.credentials.password,
+						prisma_model.credentials.phone_number,
 						prisma_model.credentials.last_login,
 						prisma_model.credentials.last_logout,
 					)
@@ -67,6 +71,33 @@ export class UserRepositoryImpl implements UserRepository {
 				}
 			}
 
+			if (typeof params.filters['firstName'] === 'string') {
+				const firstName = params.filters['firstName'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND LOWER(users.first_name) LIKE '%${firstName.toLowerCase()}%'`;
+				} else {
+					query = `${query} WHERE LOWER(users.first_name) LIKE '%${firstName.toLowerCase()}%'`;
+				}
+			}
+
+			if (typeof params.filters['lastName'] === 'string') {
+				const lastName = params.filters['lastName'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND LOWER(users.first_name) LIKE '%${lastName.toLowerCase()}%'`;
+				} else {
+					query = `${query} WHERE LOWER(users.first_name) LIKE '%${lastName.toLowerCase()}%'`;
+				}
+			}
+
+			if (typeof params.filters['fullName'] === 'string') {
+				const fullName = params.filters['fullName'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND LOWER((users.first_name || users.last_name)) LIKE '%${fullName.trim().toLowerCase()}%'`;
+				} else {
+					query = `${query} WHERE LOWER((users.first_name || users.last_name)) LIKE '%${fullName.trim().toLowerCase()}%'`;
+				}
+			}
+
 			if (typeof params.filters['isDeleted'] === 'boolean') {
 				const isDeleted = params.filters['isDeleted'];
 
@@ -87,6 +118,16 @@ export class UserRepositoryImpl implements UserRepository {
 		let orderBy = {};
 
 		switch (sort) {
+			case 'full_name':
+			case 'fullName':
+			case 'first_name':
+			case 'firstName':
+				orderBy = { first_name: sortDirection };
+				break;
+			case 'last_name':
+			case 'lastName':
+				orderBy = { last_name: sortDirection };
+				break;
 			case 'created_at':
 			case 'createdAt':
 				orderBy = { created_at: sortDirection };
@@ -232,6 +273,8 @@ export class UserRepositoryImpl implements UserRepository {
 		const user = await this.prismaService.user.create({
 			data: {
 				id: model.id(),
+				first_name: model.firstName(),
+				last_name: model.lastName(),
 				banner_picture: model.bannerPicture(),
 				profile_picture: model.profilePicture(),
 				biograph: model.biograph(),
@@ -278,6 +321,8 @@ export class UserRepositoryImpl implements UserRepository {
 	public async update(model: User): Promise<User> {
 		const user = await this.prismaService.user.update({
 			data: {
+				first_name: model.firstName(),
+				last_name: model.lastName(),
 				biograph: model.biograph(),
 				banner_picture: model.bannerPicture(),
 				profile_picture: model.profilePicture(),
@@ -307,6 +352,7 @@ export class UserRepositoryImpl implements UserRepository {
 							email: model.email(),
 							name: model.name(),
 							password: model.password(),
+							phone_number: model.phoneNumber(),
 							last_login: model.lastLogin(),
 							last_logout: model.lastLogout(),
 						},

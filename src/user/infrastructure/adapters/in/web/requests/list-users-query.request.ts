@@ -1,8 +1,6 @@
 import {
-	IsBoolean,
 	IsBooleanString,
 	IsEnum,
-	IsNumber,
 	IsNumberString,
 	IsOptional,
 	IsString,
@@ -13,6 +11,18 @@ export class ListUsersQueryRequest {
 	@IsOptional()
 	@IsString()
 	public name?: string;
+
+	@IsOptional()
+	@IsString()
+	public first_name?: string;
+
+	@IsOptional()
+	@IsString()
+	public last_name?: string;
+
+	@IsOptional()
+	@IsString()
+	public full_name?: string;
 
 	@IsOptional()
 	@IsString()

@@ -5,6 +5,9 @@ export class GetFollowRequestDto extends Dto {
 		readonly id: string,
 		readonly from_user: {
 			readonly id: string;
+			readonly first_name: string;
+			readonly last_name: string;
+			readonly profile_theme_color: string;
 			readonly profile_picture: string;
 			readonly banner_picture: string;
 			readonly birth_date: Date;
@@ -19,6 +22,9 @@ export class GetFollowRequestDto extends Dto {
 		},
 		readonly to_user: {
 			readonly id: string;
+			readonly first_name: string;
+			readonly last_name: string;
+			readonly profile_theme_color: string;
 			readonly profile_picture: string;
 			readonly banner_picture: string;
 			readonly birth_date: Date;

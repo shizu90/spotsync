@@ -5,7 +5,7 @@ export class CreateUserCommand extends Command {
 		readonly name: string,
 		readonly email: string,
 		readonly password: string,
-		readonly birthDate: Date,
+		readonly phoneNumber?: string,
 	) {
 		super();
 	}

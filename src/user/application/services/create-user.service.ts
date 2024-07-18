@@ -46,6 +46,7 @@ export class CreateUserService implements CreateUserUseCase {
 			command.name,
 			command.email,
 			await this.encryptPasswordService.encrypt(command.password),
+			command.phoneNumber ?? null,
 		);
 
 		const userVisibilityConfig: UserVisibilityConfig =
@@ -60,10 +61,13 @@ export class CreateUserService implements CreateUserUseCase {
 
 		const user: User = User.create(
 			userId,
+			command.name,
 			null,
 			null,
 			null,
-			new Date(command.birthDate),
+			null,
+			null,
+			null,
 			userCredentials,
 			userVisibilityConfig,
 		);
@@ -72,6 +76,9 @@ export class CreateUserService implements CreateUserUseCase {
 
 		return new CreateUserDto(
 			user.id(),
+			user.firstName(),
+			user.lastName(),
+			user.profileThemeColor(),
 			user.biograph(),
 			user.profilePicture(),
 			user.bannerPicture(),
@@ -99,6 +106,7 @@ export class CreateUserService implements CreateUserUseCase {
 			{
 				name: user.credentials().name(),
 				email: user.credentials().email(),
+				phone_number: user.credentials().phoneNumber(),
 			},
 		);
 	}

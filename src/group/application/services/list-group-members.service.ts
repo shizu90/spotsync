@@ -52,6 +52,8 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 					gm.id(),
 					{
 						id: gm.user().id(),
+						first_name: gm.user().firstName(),
+						last_name: gm.user().lastName(),
 						banner_picture: gm.user().bannerPicture(),
 						profile_picture: gm.user().profilePicture(),
 						credentials: { name: gm.user().credentials().name() },

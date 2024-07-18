@@ -1,9 +1,13 @@
 import { Model } from 'src/common/common.model';
 import { UserCredentials } from './user-credentials.model';
 import { UserVisibilityConfig } from './user-visibility-config.model';
+import { first } from 'rxjs';
 
 export class User extends Model {
 	private _id: string;
+	private _firstName: string;
+	private _lastName: string;
+	private _profileThemeColor: string;
 	private _profilePicture: string;
 	private _bannerPicture: string;
 	private _biograph: string;
@@ -16,6 +20,9 @@ export class User extends Model {
 
 	private constructor(
 		id: string,
+		firstName: string,
+		lastName: string,
+		profileThemeColor: string,
 		profilePicture: string,
 		bannerPicture: string,
 		biograph: string,
@@ -28,6 +35,9 @@ export class User extends Model {
 	) {
 		super();
 		this._id = id;
+		this._firstName = firstName;
+		this._lastName = lastName;
+		this._profileThemeColor = profileThemeColor;
 		this._profilePicture = profilePicture;
 		this._bannerPicture = bannerPicture;
 		this._biograph = biograph;
@@ -41,6 +51,9 @@ export class User extends Model {
 
 	public static create(
 		id: string,
+		firstName: string,
+		lastName: string,
+		profileThemeColor: string,
 		profilePicture: string,
 		bannerPicture: string,
 		biograph: string,
@@ -53,6 +66,9 @@ export class User extends Model {
 	): User {
 		return new User(
 			id,
+			firstName,
+			lastName,
+			profileThemeColor,
 			profilePicture,
 			bannerPicture,
 			biograph,
@@ -67,6 +83,18 @@ export class User extends Model {
 
 	public id(): string {
 		return this._id;
+	}
+
+	public firstName(): string {
+		return this._firstName;
+	}
+
+	public lastName(): string {
+		return this._lastName;
+	}
+
+	public profileThemeColor(): string {
+		return this._profileThemeColor;
 	}
 
 	public profilePicture(): string {
@@ -105,6 +133,21 @@ export class User extends Model {
 		return this._isDeleted;
 	}
 
+	public changeFirstName(firstName: string): void {
+		this._firstName = firstName;
+		this._updatedAt = new Date();
+	}
+
+	public changeLastName(lastName: string): void {
+		this._lastName = lastName;
+		this._updatedAt = new Date();
+	}
+
+	public changeProfileThemeColor(profileThemeColor: string): void {
+		this._profileThemeColor = profileThemeColor;
+		this._updatedAt = new Date();
+	}
+
 	public changeProfilePicture(profilePicture: string): void {
 		this._profilePicture = profilePicture;
 		this._updatedAt = new Date();
@@ -122,6 +165,18 @@ export class User extends Model {
 
 	public changeBirthDate(birthDate: Date): void {
 		this._birthDate = birthDate;
+		this._updatedAt = new Date();
+	}
+
+	public changeCredentials(userCredentials: UserCredentials): void {
+		this._credentials = userCredentials;
+		this._updatedAt = new Date();
+	}
+
+	public changeVisibilityConfig(
+		visibilityConfig: UserVisibilityConfig,
+	): void {
+		this._visibilityConfiguration = visibilityConfig;
 		this._updatedAt = new Date();
 	}
 

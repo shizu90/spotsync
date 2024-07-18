@@ -6,6 +6,8 @@ export class GetGroupMemberDto extends Dto {
 		readonly user: {
 			id: string;
 			credentials: { name: string };
+			first_name: string;
+			last_name: string;
 			profile_picture: string;
 			banner_picture: string;
 		},

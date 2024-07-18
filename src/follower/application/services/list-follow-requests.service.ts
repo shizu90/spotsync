@@ -122,6 +122,9 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 				i.id(),
 				{
 					id: i.from().id(),
+					first_name: i.from().firstName(),
+					last_name: i.from().lastName(),
+					profile_theme_color: i.from().profileThemeColor(),
 					profile_picture: i.from().profilePicture(),
 					banner_picture: i.from().bannerPicture(),
 					birth_date: i.from().birthDate(),
@@ -151,6 +154,9 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 				},
 				{
 					id: i.to().id(),
+					first_name: i.from().firstName(),
+					last_name: i.from().lastName(),
+					profile_theme_color: i.from().profileThemeColor(),
 					profile_picture: i.to().profilePicture(),
 					banner_picture: i.to().bannerPicture(),
 					birth_date: i.to().birthDate(),

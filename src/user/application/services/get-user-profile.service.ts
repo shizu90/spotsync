@@ -89,6 +89,9 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 
 		return new GetUserProfileDto(
 			user.id(),
+			user.firstName(),
+			user.lastName(),
+			user.profileThemeColor(),
 			user.biograph(),
 			user.createdAt(),
 			user.updatedAt(),

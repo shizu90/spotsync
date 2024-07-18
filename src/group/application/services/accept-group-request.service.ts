@@ -115,6 +115,8 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 			group.id(),
 			{
 				id: newGroupMember.user().id(),
+				first_name: newGroupMember.user().firstName(),
+				last_name: newGroupMember.user().lastName(),
 				profile_picture: newGroupMember.user().profilePicture(),
 				banner_picture: newGroupMember.user().bannerPicture(),
 				credentials: {

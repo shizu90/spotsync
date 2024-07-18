@@ -5,6 +5,7 @@ export class UserCredentials extends Model {
 	private _name: string;
 	private _email: string;
 	private _password: string;
+	private _phoneNumber: string;
 	private _lastLogin: Date;
 	private _lastLogout: Date;
 
@@ -13,6 +14,7 @@ export class UserCredentials extends Model {
 		name: string,
 		email: string,
 		password: string,
+		phoneNumber?: string,
 		lastLogin?: Date,
 		lastLogout?: Date,
 	) {
@@ -21,6 +23,7 @@ export class UserCredentials extends Model {
 		this._name = name;
 		this._email = email;
 		this._password = password;
+		this._phoneNumber = phoneNumber ?? null;
 		this._lastLogin = lastLogin ?? null;
 		this._lastLogout = lastLogout ?? null;
 	}
@@ -30,6 +33,7 @@ export class UserCredentials extends Model {
 		name: string,
 		email: string,
 		password: string,
+		phoneNumber?: string,
 		lastLogin?: Date,
 		lastLogout?: Date,
 	): UserCredentials {
@@ -38,6 +42,7 @@ export class UserCredentials extends Model {
 			name,
 			email,
 			password,
+			phoneNumber,
 			lastLogin,
 			lastLogout,
 		);
@@ -59,6 +64,10 @@ export class UserCredentials extends Model {
 		return this._password;
 	}
 
+	public phoneNumber() {
+		return this._phoneNumber;
+	}
+
 	public lastLogin() {
 		return this._lastLogin;
 	}
@@ -77,6 +86,10 @@ export class UserCredentials extends Model {
 
 	public changePassword(password: string) {
 		this._password = password;
+	}
+
+	public changePhoneNumber(phoneNumber: string) {
+		this._phoneNumber = phoneNumber;
 	}
 
 	public login() {

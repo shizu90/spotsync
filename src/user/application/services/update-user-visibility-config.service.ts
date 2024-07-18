@@ -61,6 +61,8 @@ export class UpdateUserVisibilityConfigService
 			);
 		}
 
+		user.changeVisibilityConfig(user.visibilityConfiguration());
+
 		this.userRepository.updateVisibilityConfig(
 			user.visibilityConfiguration(),
 		);

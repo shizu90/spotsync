@@ -137,6 +137,8 @@ export class JoinGroupService implements JoinGroupUseCase {
 				group.id(),
 				{
 					id: user.id(),
+					first_name: user.firstName(),
+					last_name: user.lastName(),
 					profile_picture: user.profilePicture(),
 					banner_picture: user.bannerPicture(),
 					credentials: { name: user.credentials().name() },
