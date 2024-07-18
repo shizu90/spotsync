@@ -1,117 +1,174 @@
-import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Request, Response } from "express";
-import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
-import { UserAddressRequestMapper } from "./mappers/user-address-request.mapper";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { GetUserAddressUseCase, GetUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/get-user-address.use-case";
-import { ListUserAddressesUseCase, ListUserAddressesUseCaseProvider } from "src/user/application/ports/in/use-cases/list-user-addresses.use-case";
-import { CreateUserAddressUseCase, CreateUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/create-user-address.use-case";
-import { UpdateUserAddressUseCase, UpdateUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/update-user-address.use-case";
-import { DeleteUserAddressUseCase, DeleteUserAddressUseCaseProvider } from "src/user/application/ports/in/use-cases/delete-user-address.use-case";
-import { CreateUserAddressRequest } from "./requests/create-user-address.request";
-import { UpdateUserAddressRequest } from "./requests/update-user-address.request";
-import { UserErrorHandler } from "./handlers/user-error.handler";
-import { ListUserAddressesQueryRequest } from "./requests/list-user-addresses-query.request";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseFilters,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
+import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { UserAddressRequestMapper } from './mappers/user-address-request.mapper';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  GetUserAddressUseCase,
+  GetUserAddressUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/get-user-address.use-case';
+import {
+  ListUserAddressesUseCase,
+  ListUserAddressesUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/list-user-addresses.use-case';
+import {
+  CreateUserAddressUseCase,
+  CreateUserAddressUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/create-user-address.use-case';
+import {
+  UpdateUserAddressUseCase,
+  UpdateUserAddressUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/update-user-address.use-case';
+import {
+  DeleteUserAddressUseCase,
+  DeleteUserAddressUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/delete-user-address.use-case';
+import { CreateUserAddressRequest } from './requests/create-user-address.request';
+import { UpdateUserAddressRequest } from './requests/update-user-address.request';
+import { UserErrorHandler } from './handlers/user-error.handler';
+import { ListUserAddressesQueryRequest } from './requests/list-user-addresses-query.request';
 
 @ApiTags('User addresses')
 @Controller('users')
 @UseFilters(new UserErrorHandler())
-export class UserAddressController 
-{
-    constructor(
-        @Inject(GetUserAddressUseCaseProvider)
-        protected getUserAddressUseCase: GetUserAddressUseCase,
-        @Inject(ListUserAddressesUseCaseProvider)
-        protected listUserAddressesUseCase: ListUserAddressesUseCase,
-        @Inject(CreateUserAddressUseCaseProvider)
-        protected createUserAddressUseCase: CreateUserAddressUseCase,
-        @Inject(UpdateUserAddressUseCaseProvider)
-        protected updateUserAddressUseCase: UpdateUserAddressUseCase,
-        @Inject(DeleteUserAddressUseCaseProvider)
-        protected deleteUserAddressUseCase: DeleteUserAddressUseCase
-    ) 
-    {}
+export class UserAddressController {
+  constructor(
+    @Inject(GetUserAddressUseCaseProvider)
+    protected getUserAddressUseCase: GetUserAddressUseCase,
+    @Inject(ListUserAddressesUseCaseProvider)
+    protected listUserAddressesUseCase: ListUserAddressesUseCase,
+    @Inject(CreateUserAddressUseCaseProvider)
+    protected createUserAddressUseCase: CreateUserAddressUseCase,
+    @Inject(UpdateUserAddressUseCaseProvider)
+    protected updateUserAddressUseCase: UpdateUserAddressUseCase,
+    @Inject(DeleteUserAddressUseCaseProvider)
+    protected deleteUserAddressUseCase: DeleteUserAddressUseCase,
+  ) {}
 
-    @ApiOperation({summary: 'List user addresses'})
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({transform: true}))
-    @Get(':id/addresses')
-    public async list(@Param('id') id: string, @Query() query: ListUserAddressesQueryRequest, @Req() req: Request, @Res() res: Response) 
-    {
-        const command = UserAddressRequestMapper.listUserAddressesCommand(id, query);
+  @ApiOperation({ summary: 'List user addresses' })
+  @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Get(':id/addresses')
+  public async list(
+    @Param('id') id: string,
+    @Query() query: ListUserAddressesQueryRequest,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const command = UserAddressRequestMapper.listUserAddressesCommand(
+      id,
+      query,
+    );
 
-        const data = await this.listUserAddressesUseCase.execute(command)
+    const data = await this.listUserAddressesUseCase.execute(command);
 
-        res
-            .status(HttpStatus.OK)
-            .json({
-                data: data
-            });
-    }
+    res.status(HttpStatus.OK).json({
+      data: data,
+    });
+  }
 
-    @ApiOperation({summary: 'Get user address'})
-    @UseGuards(AuthGuard)
-    @Get(':id/addresses/:address_id')
-    public async getAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Req() req: Request, @Res() res: Response) 
-    {
-        const command = UserAddressRequestMapper.getUserAddressCommand(addressId, id);
+  @ApiOperation({ summary: 'Get user address' })
+  @UseGuards(AuthGuard)
+  @Get(':id/addresses/:address_id')
+  public async getAddress(
+    @Param('id') id: string,
+    @Param('address_id') addressId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const command = UserAddressRequestMapper.getUserAddressCommand(
+      addressId,
+      id,
+    );
 
-        const data = await this.getUserAddressUseCase.execute(command);
+    const data = await this.getUserAddressUseCase.execute(command);
 
-        res
-            .status(HttpStatus.OK)
-            .json({
-                data: data
-            });
-    }
+    res.status(HttpStatus.OK).json({
+      data: data,
+    });
+  }
 
-    @ApiOperation({summary: 'Create user address'})
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({transform: true}))
-    @Post(':id/addresses')
-    public async createAddress(@Param('id') id: string, @Body() request: CreateUserAddressRequest, @Req() req: Request, @Res() res: Response) 
-    {
-        const command = UserAddressRequestMapper.createUserAddressCommand(id, request);
-    
-        const data = await this.createUserAddressUseCase.execute(command);
+  @ApiOperation({ summary: 'Create user address' })
+  @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Post(':id/addresses')
+  public async createAddress(
+    @Param('id') id: string,
+    @Body() request: CreateUserAddressRequest,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const command = UserAddressRequestMapper.createUserAddressCommand(
+      id,
+      request,
+    );
 
-        res
-            .status(HttpStatus.CREATED)
-            .json({
-                data: data
-            });
-    }
+    const data = await this.createUserAddressUseCase.execute(command);
 
-    @ApiOperation({summary: 'Update user address'})
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({transform: true}))
-    @Put(':id/addresses/:address_id')
-    public async updateAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Body() body: UpdateUserAddressRequest, @Req() req: Request, @Res() res: Response) 
-    {
-        const command = UserAddressRequestMapper.updateUserAddressCommand(addressId, id, body);
+    res.status(HttpStatus.CREATED).json({
+      data: data,
+    });
+  }
 
-        await this.updateUserAddressUseCase.execute(command);
+  @ApiOperation({ summary: 'Update user address' })
+  @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Put(':id/addresses/:address_id')
+  public async updateAddress(
+    @Param('id') id: string,
+    @Param('address_id') addressId: string,
+    @Body() body: UpdateUserAddressRequest,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const command = UserAddressRequestMapper.updateUserAddressCommand(
+      addressId,
+      id,
+      body,
+    );
 
-        res
-            .status(HttpStatus.NO_CONTENT)
-            .json({
-                data: {}
-            });
-    }
+    await this.updateUserAddressUseCase.execute(command);
 
-    @ApiOperation({summary: 'Delete user address'})
-    @UseGuards(AuthGuard)
-    @Delete(':id/addresses/:address_id')
-    public async deleteAddress(@Param('id') id: string, @Param('address_id') addressId: string, @Req() req: Request, @Res() res: Response) 
-    {
-        const command = UserAddressRequestMapper.deleteUserAddressCommand(addressId, id);
+    res.status(HttpStatus.NO_CONTENT).json({
+      data: {},
+    });
+  }
 
-        await this.deleteUserAddressUseCase.execute(command);
+  @ApiOperation({ summary: 'Delete user address' })
+  @UseGuards(AuthGuard)
+  @Delete(':id/addresses/:address_id')
+  public async deleteAddress(
+    @Param('id') id: string,
+    @Param('address_id') addressId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const command = UserAddressRequestMapper.deleteUserAddressCommand(
+      addressId,
+      id,
+    );
 
-        res
-            .status(HttpStatus.NO_CONTENT)
-            .json({
-                data: {}
-            });
-    }
+    await this.deleteUserAddressUseCase.execute(command);
+
+    res.status(HttpStatus.NO_CONTENT).json({
+      data: {},
+    });
+  }
 }

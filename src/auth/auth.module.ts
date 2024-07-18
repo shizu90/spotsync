@@ -6,17 +6,16 @@ import { Providers } from './auth.providers';
 import { AuthController } from './infrastructure/adapters/in/web/auth.controller';
 
 @Module({
-    imports: [
-        forwardRef(() => UserModule),
-        JwtModule.register({
-            global: true,
-            secret: env.JWT_SECRET,
-            signOptions: { expiresIn: '240S' }
-        })
-    ],
-    providers: [...Providers],
-    controllers: [AuthController],
-    exports: [...Providers]
+  imports: [
+    forwardRef(() => UserModule),
+    JwtModule.register({
+      global: true,
+      secret: env.JWT_SECRET,
+      signOptions: { expiresIn: '240S' },
+    }),
+  ],
+  providers: [...Providers],
+  controllers: [AuthController],
+  exports: [...Providers],
 })
-export class AuthModule 
-{}
+export class AuthModule {}

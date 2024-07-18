@@ -1,7 +1,7 @@
-import { UseCase } from "src/common/common.use-case";
-import { DeleteGroupCommand } from "../commands/delete-group.command";
+import { UseCase } from 'src/common/common.use-case';
+import { DeleteGroupCommand } from '../commands/delete-group.command';
 
-export const DeleteGroupUseCaseProvider = "DeleteGroupUseCase";
+export const DeleteGroupUseCaseProvider = 'DeleteGroupUseCase';
 
-export interface DeleteGroupUseCase extends UseCase<DeleteGroupCommand, Promise<void>> 
-{}
+export interface DeleteGroupUseCase
+  extends UseCase<DeleteGroupCommand, Promise<void>> {}

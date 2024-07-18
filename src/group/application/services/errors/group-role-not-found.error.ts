@@ -1,7 +1,5 @@
-export class GroupRoleNotFoundError extends Error 
-{
-    constructor(message: string) 
-    {
-        super(message);
-    }
+export class GroupRoleNotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
 }

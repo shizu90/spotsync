@@ -1,6 +1,6 @@
-import { UseCase } from "src/common/common.use-case";
+import { UseCase } from 'src/common/common.use-case';
 
-export const GetAuthenticatedUserUseCaseProvider = "GetAuthenticatedUserUseCase";
+export const GetAuthenticatedUserUseCaseProvider =
+  'GetAuthenticatedUserUseCase';
 
-export interface GetAuthenticatedUserUseCase extends UseCase<null, string> 
-{}
+export interface GetAuthenticatedUserUseCase extends UseCase<null, string> {}

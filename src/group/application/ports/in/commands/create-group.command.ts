@@ -1,10 +1,10 @@
-import { Command } from "src/common/common.command";
+import { Command } from 'src/common/common.command';
 
-export class CreateGroupCommand extends Command 
-{
-    constructor(
-        readonly name: string,
-        readonly about: string
-    ) 
-    {super();}
+export class CreateGroupCommand extends Command {
+  constructor(
+    readonly name: string,
+    readonly about: string,
+  ) {
+    super();
+  }
 }

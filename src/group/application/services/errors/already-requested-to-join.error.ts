@@ -1,7 +1,5 @@
-export class AlreadyRequestedToJoinError extends Error 
-{
-    constructor(message: string) 
-    {
-        super(message);
-    }
+export class AlreadyRequestedToJoinError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
 }

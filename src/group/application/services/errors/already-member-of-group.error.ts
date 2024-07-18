@@ -1,7 +1,5 @@
-export class AlreadyMemberOfGroup extends Error 
-{
-    constructor(message: string) 
-    {
-        super(message);
-    }
+export class AlreadyMemberOfGroup extends Error {
+  constructor(message: string) {
+    super(message);
+  }
 }

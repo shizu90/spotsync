@@ -1,6 +1,5 @@
-export enum UserVisibility 
-{
-    PUBLIC = "public",
-    PRIVATE = "private",
-    FOLLOWERS = "followers"
+export enum UserVisibility {
+  PUBLIC = 'public',
+  PRIVATE = 'private',
+  FOLLOWERS = 'followers',
 }

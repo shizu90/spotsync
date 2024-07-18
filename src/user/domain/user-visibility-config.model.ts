@@ -1,97 +1,92 @@
-import { Model } from "src/common/common.model";
-import { UserVisibility } from "./user-visibility.enum";
+import { Model } from 'src/common/common.model';
+import { UserVisibility } from './user-visibility.enum';
 
-export class UserVisibilityConfig extends Model 
-{
-    private _id: string;
-    private _profileVisibility: string;
-    private _addressVisibility: string;
-    private _poiFolderVisibility: string;
-    private _visitedPoiVisibility: string;
-    private _postVisibility: string;
-    
-    private constructor(
-        id: string,
-        profileVisibility: string,
-        addressVisibility: string,
-        poiFolderVisibility: string,
-        visitedPoiVisibility: string,
-        postVisibility: string
-    ) 
-    {
-        super();
-        this._id = id;
-        this._profileVisibility = profileVisibility;
-        this._addressVisibility = addressVisibility;
-        this._poiFolderVisibility = poiFolderVisibility;
-        this._visitedPoiVisibility = visitedPoiVisibility;
-        this._postVisibility = postVisibility;
-    }
+export class UserVisibilityConfig extends Model {
+  private _id: string;
+  private _profileVisibility: string;
+  private _addressVisibility: string;
+  private _poiFolderVisibility: string;
+  private _visitedPoiVisibility: string;
+  private _postVisibility: string;
 
-    public static create(
-        id: string,
-        profileVisibility: string,
-        addressVisibility: string,
-        poiFolderVisibility: string,
-        visitedPoiVisibility: string,
-        postVisibility: string
-    ): UserVisibilityConfig 
-    {
-        return new UserVisibilityConfig(id, profileVisibility, addressVisibility, poiFolderVisibility, visitedPoiVisibility, postVisibility);
-    }
+  private constructor(
+    id: string,
+    profileVisibility: string,
+    addressVisibility: string,
+    poiFolderVisibility: string,
+    visitedPoiVisibility: string,
+    postVisibility: string,
+  ) {
+    super();
+    this._id = id;
+    this._profileVisibility = profileVisibility;
+    this._addressVisibility = addressVisibility;
+    this._poiFolderVisibility = poiFolderVisibility;
+    this._visitedPoiVisibility = visitedPoiVisibility;
+    this._postVisibility = postVisibility;
+  }
 
-    public id(): string 
-    {
-        return this._id;
-    }
+  public static create(
+    id: string,
+    profileVisibility: string,
+    addressVisibility: string,
+    poiFolderVisibility: string,
+    visitedPoiVisibility: string,
+    postVisibility: string,
+  ): UserVisibilityConfig {
+    return new UserVisibilityConfig(
+      id,
+      profileVisibility,
+      addressVisibility,
+      poiFolderVisibility,
+      visitedPoiVisibility,
+      postVisibility,
+    );
+  }
 
-    public profileVisibility(): string 
-    {
-        return this._profileVisibility;
-    }
+  public id(): string {
+    return this._id;
+  }
 
-    public addressVisibility(): string 
-    {
-        return this._addressVisibility;
-    }
+  public profileVisibility(): string {
+    return this._profileVisibility;
+  }
 
-    public poiFolderVisibility(): string 
-    {
-        return this._poiFolderVisibility;
-    }
+  public addressVisibility(): string {
+    return this._addressVisibility;
+  }
 
-    public visitedPoiVisibility(): string 
-    {
-        return this._visitedPoiVisibility;
-    }
+  public poiFolderVisibility(): string {
+    return this._poiFolderVisibility;
+  }
 
-    public postVisibility(): string 
-    {
-        return this._postVisibility;
-    }
+  public visitedPoiVisibility(): string {
+    return this._visitedPoiVisibility;
+  }
 
-    public changeProfileVisibility(profileVisibility: UserVisibility): void 
-    {
-        this._profileVisibility = profileVisibility;
-    }
+  public postVisibility(): string {
+    return this._postVisibility;
+  }
 
-    public changeAddressVisibility(addressVisibility: UserVisibility): void 
-    {
-        this._addressVisibility = addressVisibility;
-    }
+  public changeProfileVisibility(profileVisibility: UserVisibility): void {
+    this._profileVisibility = profileVisibility;
+  }
 
-    public changePoiFolderVisibility(poiFolderVisibility: UserVisibility): void 
-    {
-        this._poiFolderVisibility = poiFolderVisibility;
-    }
+  public changeAddressVisibility(addressVisibility: UserVisibility): void {
+    this._addressVisibility = addressVisibility;
+  }
 
-    public changeVisitedPoiVisibility(visitedPoiVisibility: UserVisibility): void 
-    {
-        this._visitedPoiVisibility = visitedPoiVisibility;
-    }
+  public changePoiFolderVisibility(poiFolderVisibility: UserVisibility): void {
+    this._poiFolderVisibility = poiFolderVisibility;
+  }
 
-    public changePostVisibility(postVisibility: UserVisibility): void 
-    {
-        this._postVisibility = postVisibility;
-    }
+  public changeVisitedPoiVisibility(
+    visitedPoiVisibility: UserVisibility,
+  ): void {
+    this._visitedPoiVisibility = visitedPoiVisibility;
+  }
+
+  public changePostVisibility(postVisibility: UserVisibility): void {
+    this._postVisibility = postVisibility;
+  }
 }

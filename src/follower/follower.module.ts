@@ -6,9 +6,9 @@ import { FollowController } from './infrastructure/adapters/in/web/follow.contro
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-    imports: [forwardRef(() => UserModule), PrismaModule, AuthModule],
-    providers: [...Providers],
-    exports: [...Providers],
-    controllers: [FollowController]
+  imports: [forwardRef(() => UserModule), PrismaModule, AuthModule],
+  providers: [...Providers],
+  exports: [...Providers],
+  controllers: [FollowController],
 })
 export class FollowerModule {}

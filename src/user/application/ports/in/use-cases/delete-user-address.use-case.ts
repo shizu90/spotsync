@@ -1,7 +1,7 @@
-import { UseCase } from "src/common/common.use-case";
-import { DeleteUserAddressCommand } from "../commands/delete-user-address.command";
+import { UseCase } from 'src/common/common.use-case';
+import { DeleteUserAddressCommand } from '../commands/delete-user-address.command';
 
 export const DeleteUserAddressUseCaseProvider = 'DeleteUserAddressUseCase';
 
-export interface DeleteUserAddressUseCase extends UseCase<DeleteUserAddressCommand, Promise<void>> 
-{}
+export interface DeleteUserAddressUseCase
+  extends UseCase<DeleteUserAddressCommand, Promise<void>> {}
