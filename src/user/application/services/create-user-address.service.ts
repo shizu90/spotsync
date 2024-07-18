@@ -7,10 +7,9 @@ import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAddress } from "src/user/domain/user-address.model";
 import { randomUUID } from "crypto";
-import { GeoLocatorInput, GeoLocatorOutput, GeoLocatorService, GeoLocatorServiceProvider } from "../ports/out/geo-locator.service";
 import { CreateUserAddressDto } from "../ports/out/dto/create-user-address.dto";
-import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
+import { Geolocator, GeoLocatorInput, GeoLocatorOutput, GeoLocatorProvider } from "src/geolocation/geolocator";
 
 @Injectable()
 export class CreateUserAddressService implements CreateUserAddressUseCase 
@@ -20,8 +19,8 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
         protected userAddressRepository: UserAddressRepository,
         @Inject(UserRepositoryProvider) 
         protected userRepository: UserRepository,
-        @Inject(GeoLocatorServiceProvider) 
-        protected geoLocatorService: GeoLocatorService,
+        @Inject(GeoLocatorProvider) 
+        protected geoLocatorService: Geolocator,
         @Inject(GetAuthenticatedUserUseCaseProvider)
         protected getAuthenticatedUser: GetAuthenticatedUserUseCase
     ) 
@@ -39,7 +38,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase
             throw new UnauthorizedException(`Unauthorized access`);
         }
 
-        const coordinates: GeoLocatorOutput = this.geoLocatorService.getCoordinates(
+        const coordinates: GeoLocatorOutput = await this.geoLocatorService.coordinates(
             new GeoLocatorInput(
                 command.area,
                 command.subArea,

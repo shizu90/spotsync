@@ -314,6 +314,10 @@ export class FollowRepositoryImpl implements FollowRepository
             });
         }
 
+        items = items.map((i) => {
+            return this.mapFollowRequestToDomain(i);
+        });
+
         return new Pagination(items, total, page);
     }
 

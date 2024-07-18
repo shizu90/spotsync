@@ -7,9 +7,9 @@ import { UserAddress } from "src/user/domain/user-address.model";
 import { User } from "src/user/domain/user.model";
 import { UserNotFoundError } from "./errors/user-not-found.error";
 import { UserAddressNotFoundError } from "./errors/user-address-not-found.error";
-import { GeoLocatorInput, GeoLocatorOutput, GeoLocatorService, GeoLocatorServiceProvider } from "../ports/out/geo-locator.service";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
+import { Geolocator, GeoLocatorInput, GeoLocatorOutput, GeoLocatorProvider } from "src/geolocation/geolocator";
 
 @Injectable()
 export class UpdateUserAddressService implements UpdateUserAddressUseCase 
@@ -19,8 +19,8 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
         protected userAddressRepository: UserAddressRepository,
         @Inject(UserRepositoryProvider) 
         protected userRepository: UserRepository,
-        @Inject(GeoLocatorServiceProvider) 
-        protected geoLocatorService: GeoLocatorService,
+        @Inject(GeoLocatorProvider) 
+        protected geoLocatorService: Geolocator,
         @Inject(GetAuthenticatedUserUseCaseProvider)
         protected getAuthenticatedUser: GetAuthenticatedUserUseCase
     )
@@ -64,7 +64,7 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase
             userAddress.changeSubArea(command.subArea);
         }
 
-        const coordinates: GeoLocatorOutput = this.geoLocatorService.getCoordinates(
+        const coordinates: GeoLocatorOutput = await this.geoLocatorService.coordinates(
             new GeoLocatorInput(
                 userAddress.area(),
                 userAddress.subArea(),

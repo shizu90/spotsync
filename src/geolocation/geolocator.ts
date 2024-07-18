@@ -18,9 +18,9 @@ export class GeoLocatorOutput
     {}
 }
 
-export const GeoLocatorServiceProvider = 'GeoLocatorService';
+export const GeoLocatorProvider = "GeoLocator";
 
-export interface GeoLocatorService 
+export interface Geolocator 
 {
-    getCoordinates(input: GeoLocatorInput): GeoLocatorOutput;
+    coordinates(input: GeoLocatorInput): Promise<GeoLocatorOutput>;
 }

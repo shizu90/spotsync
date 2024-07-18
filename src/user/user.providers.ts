@@ -27,8 +27,6 @@ import { UserAddressRepositoryProvider } from "./application/ports/out/user-addr
 import { UserAddressRepositoryImpl } from "./infrastructure/adapters/out/user-address.db";
 import { EncryptPasswordServiceProvider } from "./application/ports/out/encrypt-password.service";
 import { EncryptPasswordServiceImpl } from "./infrastructure/adapters/out/encrypt-password";
-import { GeoLocatorServiceProvider } from "./application/ports/out/geo-locator.service";
-import { GeoLocatorServiceImpl } from "./infrastructure/adapters/out/geo-locator";
 import { GetUserProfileUseCaseProvider } from "./application/ports/in/use-cases/get-user-profile.use-case";
 import { GetUserProfileService } from "./application/services/get-user-profile.service";
 import { UpdateUserVisibilityConfigUseCaseProvider } from "./application/ports/in/use-cases/update-user-visibility-config.use-case";
@@ -104,9 +102,5 @@ export const Providers: Provider[] = [
     {
         provide: EncryptPasswordServiceProvider,
         useClass: EncryptPasswordServiceImpl
-    },
-    {
-        provide: GeoLocatorServiceProvider,
-        useClass: GeoLocatorServiceImpl
     }
 ];
