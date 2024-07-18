@@ -1,4 +1,6 @@
 import { Inject } from "@nestjs/common";
+import { PaginateParameters, Pagination } from "src/common/common.repository";
+import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserRepository } from "src/user/application/ports/out/user.repository";
 import { UserCredentials } from "src/user/domain/user-credentials.model";
@@ -42,16 +44,87 @@ export class UserRepositoryImpl implements UserRepository
         );
     }
 
-    public async findBy(values: Object): Promise<Array<User>> 
+    public async paginate(params: PaginateParameters): Promise<Pagination<User>> 
+    {
+        let query = 'SELECT users.id FROM users JOIN user_credentials ON user_credentials.user_id = users.id';
+
+        if(params.filters) {
+            if(typeof params.filters['name'] === 'string') {
+                const name = params.filters['name'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+                }else {
+                    query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+                }
+            }
+
+            if(typeof params.filters['isDeleted'] === 'boolean') {
+                const isDeleted = params.filters['isDeleted'];
+                
+                if(query.includes('WHERE')) {
+                    query = `${query} AND users.is_deleted = '${isDeleted}'`;
+                }else {
+                    query = `${query} WHERE users.is_deleted = '${isDeleted}'`;
+                }
+            }
+        }
+
+        const ids = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+
+        const sort = params.sort ?? 'name';
+        const sortDirection = params.sortDirection ?? SortDirection.ASC;
+
+        let orderBy = {};
+
+        switch(sort) {
+            case 'created_at':
+            case 'createdAt':
+                orderBy = {created_at: sortDirection};
+                break;
+            case 'updated_at':
+            case 'updatedAt':
+                orderBy = {updated_at: sortDirection};
+                break;
+            case 'name':
+            default:
+                orderBy = {credentials: {name: sortDirection}};
+                break;
+        }
+
+        let items = [];
+
+        const paginate = params.paginate ?? false;
+        const page = params.page ?? 0;
+        const limit = params.limit ?? 12;
+        const total = ids.length;
+
+        if(paginate) {
+            items = await this.prismaService.user.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {credentials: true, visibility_configuration: true},
+                skip: limit * page,
+                take: limit 
+            });
+        }else {
+            items = await this.prismaService.user.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {credentials: true, visibility_configuration: true}
+            });
+        }
+
+        items = items.map((i) => {
+            return this.mapUserToDomain(i);
+        });
+
+        return new Pagination(items, total, page);
+    }
+
+    public async findBy(values: Object): Promise<Array<User>>
     {
         const name = values['name'];
         const isDeleted = values['isDeleted'] ?? false;
-
-        const sort = String(values['sort'] ?? 'name').toLowerCase();
-        const sortDirection = String(values['sortDirection'] ?? 'asc').toLowerCase();
-        const page = values['page'] ?? 0;
-        const paginate = values['paginate'] ?? false;
-        const limit = values['limit'] ?? 12;
 
         let query = 'SELECT users.id FROM users JOIN user_credentials ON user_credentials.user_id = users.id';
 
@@ -73,45 +146,12 @@ export class UserRepositoryImpl implements UserRepository
 
         const userIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
-        let orderBy = {};
-
-        switch(sort) {
-            case 'name':
-                orderBy = {
-                    credentials: {
-                        name: sortDirection
-                    }
-                };
-                break;
-            case 'id':
-            default:
-                orderBy = {
-                    id: sortDirection
-                };
-                break;
-        }
-
-        let users = [];
-
-        if(paginate) {
-            users = await this.prismaService.user.findMany({
-                where: {
-                    id: {in: userIds.map((row) => row.id)}
-                },
-                include: {credentials: true, visibility_configuration: true},
-                orderBy: orderBy,
-                skip: page * limit,
-                take: limit
-            });
-        }else {
-            users = await this.prismaService.user.findMany({
-                where: {
-                    id: {in: userIds.map((row) => row.id)}
-                },
-                include: {credentials: true, visibility_configuration: true},
-                orderBy: orderBy
-            });
-        }
+        const users = await this.prismaService.user.findMany({
+            where: {
+                id: {in: userIds.map((row) => row.id)}
+            },
+            include: {credentials: true, visibility_configuration: true}
+        });
 
         return users.map((user) => {
             return this.mapUserToDomain(user);

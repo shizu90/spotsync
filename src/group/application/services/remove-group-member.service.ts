@@ -7,6 +7,8 @@ import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from
 import { GroupNotFoundError } from "./errors/group-not-found.error";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupMemberNotFoundError } from "./errors/group-member-not-found.error";
+import { GroupLog } from "src/group/domain/group-log.model";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class RemoveGroupMemberService implements RemoveGroupMemberUseCase 
@@ -50,5 +52,13 @@ export class RemoveGroupMemberService implements RemoveGroupMemberUseCase
         }
 
         this.groupMemberRepository.delete(groupMember.id());
+
+        const log = GroupLog.create(
+            randomUUID(), 
+            group, 
+            `${authenticatedGroupMember.user().credentials().name()} removed the member ${groupMember.user().credentials().name()}`
+        );
+
+        this.groupRepository.storeLog(log);
     }
 }

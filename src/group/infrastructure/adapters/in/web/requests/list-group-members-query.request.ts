@@ -17,7 +17,7 @@ export class ListGroupMembersQueryRequest
     
     @IsOptional()
     @IsEnum(SortDirection)
-    public sort_direction?: 'asc' | 'desc';
+    public sort_direction?: SortDirection;
     
     @IsOptional()
     @IsNumberString()

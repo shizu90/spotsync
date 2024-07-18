@@ -9,6 +9,7 @@ import { GetUserProfileCommand } from "src/user/application/ports/in/commands/ge
 import { UpdateUserVisibilityConfigRequest } from "../requests/update-user-visibility-config.request";
 import { UpdateUserVisibilityConfigCommand } from "src/user/application/ports/in/commands/update-user-visibility-config.command";
 import { ListUsersCommand } from "src/user/application/ports/in/commands/list-users.command";
+import { ListUsersQueryRequest } from "../requests/list-users-query.request";
 
 export class UserRequestMapper 
 {
@@ -20,15 +21,15 @@ export class UserRequestMapper
         );
     }
 
-    public static listUsersCommand(query: {name?: string, sort?: string, sort_direction?: 'asc' | 'desc', page?: number, paginate?: boolean, limit?: number}): ListUsersCommand 
+    public static listUsersCommand(query: ListUsersQueryRequest): ListUsersCommand 
     {
         return new ListUsersCommand(
             query.name, 
             query.sort, 
             query.sort_direction, 
-            query.page, 
-            query.paginate, 
-            query.limit
+            Number.isNaN(Number(query.page)) ? 0 : Number(query.page), 
+            Boolean(query.paginate), 
+            Number.isNaN(Number(query.limit)) ? 12 : Number(query.limit)
         );
     }
 

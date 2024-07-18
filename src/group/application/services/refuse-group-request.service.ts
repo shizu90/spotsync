@@ -6,6 +6,9 @@ import { RefuseGroupRequestCommand } from "../ports/in/commands/refuse-group-req
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
+import { GroupRequestNotFoundError } from "./errors/group-request-not-found.error";
+import { GroupLog } from "src/group/domain/group-log.model";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class RefuseGroupRequestService implements RefuseGroupRequestUseCase 
@@ -42,6 +45,20 @@ export class RefuseGroupRequestService implements RefuseGroupRequestUseCase
             throw new UnauthorizedAccessError(`You don't have permissions to accept join request`);
         }
 
+        const groupRequest = await this.groupMemberRepository.findRequestById(command.id);
+
+        if(groupRequest === null || groupRequest === undefined) {
+            throw new GroupRequestNotFoundError(`Group join request not found`);
+        }
+
         this.groupMemberRepository.deleteRequest(command.id);
+
+        const log = GroupLog.create(
+            randomUUID(), 
+            group, 
+            `${authenticatedGroupMember.user().credentials().name()} refused join request of ${groupRequest.user().credentials().name()}`
+        );
+
+        this.groupRepository.storeLog(log);
     }
 }

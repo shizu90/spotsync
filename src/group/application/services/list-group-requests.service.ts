@@ -5,9 +5,9 @@ import { GroupRepository, GroupRepositoryProvider } from "../ports/out/group.rep
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { ListGroupRequestsCommand } from "../ports/in/commands/list-group-requests.command";
 import { GetGroupRequestDto } from "../ports/out/dto/get-group-request.dto";
-import { Pagination } from "src/common/pagination.dto";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
+import { Pagination } from "src/common/common.repository";
 
 @Injectable()
 export class ListGroupRequestsService implements ListGroupRequestsUseCase 
@@ -22,7 +22,7 @@ export class ListGroupRequestsService implements ListGroupRequestsUseCase
     ) 
     {}
 
-    public async execute(command: ListGroupRequestsCommand): Promise<Array<GetGroupRequestDto> | Pagination<GetGroupRequestDto>> 
+    public async execute(command: ListGroupRequestsCommand): Promise<Pagination<GetGroupRequestDto>> 
     {
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
 
@@ -38,9 +38,11 @@ export class ListGroupRequestsService implements ListGroupRequestsUseCase
             throw new UnauthorizedAccessError(`You're not a member of the group`);
         }
 
-        const groupMemberRequests = await this.groupMemberRepository.findRequestBy({
-            name: command.name,
-            groupId: command.groupId,
+        const pagination = await this.groupMemberRepository.paginateRequest({
+            filters: {
+                name: command.name,
+                groupId: command.groupId
+            },
             sort: command.sort,
             sortDirection: command.sortDirection,
             paginate: command.paginate,
@@ -48,7 +50,7 @@ export class ListGroupRequestsService implements ListGroupRequestsUseCase
             limit: command.limit
         });
 
-        const items = groupMemberRequests.map((item) => {
+        const items = pagination.items.map((item) => {
             return new GetGroupRequestDto(
                 item.id(),
                 {
@@ -63,10 +65,6 @@ export class ListGroupRequestsService implements ListGroupRequestsUseCase
             );
         });
 
-        if(command.paginate) {
-            return new Pagination(items, items.length);
-        }else {
-            return items;
-        }
+        return new Pagination(items, pagination.total, pagination.current_page);
     }
 }

@@ -17,9 +17,9 @@ export class GroupRoleRequestMapper
             query.is_immutable, 
             query.sort, 
             query.sort_direction, 
-            query.page, 
-            query.paginate, 
-            query.limit
+            Number.isNaN(Number(query.page)) ? 0 : Number(query.page), 
+            Boolean(query.paginate), 
+            Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit)
         );
     }
 

@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["prismaSchemaFolder"]
+  previewFeatures = ["fullTextSearch", "prismaSchemaFolder"]
 }
 
 datasource db {
@@ -114,6 +114,7 @@ model Group {
     members                         GroupMember[]
     join_requests                   GroupMemberRequest[]
     roles                           GroupRole[]
+    history                         GroupLog[]
 
     @@map("groups")
 }
@@ -171,8 +172,8 @@ model GroupRole {
 model GroupRolePermission {
     group_role_id                   String
     group_permission_id             String
-    group_role                      GroupRole               @relation(fields: [group_role_id], references: [id], onDelete: Cascade)
-    group_permission                GroupPermission         @relation(fields: [group_permission_id], references: [id])
+    group_role                      GroupRole                   @relation(fields: [group_role_id], references: [id], onDelete: Cascade)
+    group_permission                GroupPermission             @relation(fields: [group_permission_id], references: [id])
 
     @@id(fields: [group_permission_id, group_role_id])
     @@map("group_role_permissions")
@@ -184,4 +185,14 @@ model GroupPermission {
     group_role_permission           GroupRolePermission[]
 
     @@map("group_permissions")
+}
+
+model GroupLog {
+    id                              String                      @id @default(uuid())
+    group_id                        String
+    text                            String
+    occurred_at                     DateTime                    @default(now())
+    group                           Group                       @relation(fields: [group_id], references: [id], onDelete: Cascade)
+
+    @@map("group_logs")
 }

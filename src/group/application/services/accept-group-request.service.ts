@@ -10,6 +10,8 @@ import { GroupRepository, GroupRepositoryProvider } from "../ports/out/group.rep
 import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
 import { AcceptGroupRequestCommand } from "../ports/in/commands/accept-group-request.command";
 import { AcceptGroupRequestDto } from "../ports/out/dto/accept-group-request.dto";
+import { randomUUID } from "crypto";
+import { GroupLog } from "src/group/domain/group-log.model";
 
 @Injectable()
 export class AcceptGroupRequestService implements AcceptGroupRequestUseCase
@@ -63,6 +65,14 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase
         await this.groupMemberRepository.store(newGroupMember);
 
         this.groupMemberRepository.deleteRequest(groupMemberRequest.id());
+
+        const log = GroupLog.create(
+            randomUUID(), 
+            group, 
+            `${authenticatedGroupMember.user().credentials().name()} accepted the join request of ${newGroupMember.user().credentials().name()}`
+        );
+
+        this.groupRepository.storeLog(log);
 
         return new AcceptGroupRequestDto(
             group.id(),

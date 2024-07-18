@@ -1,4 +1,6 @@
 import { Inject } from "@nestjs/common";
+import { PaginateParameters, Pagination } from "src/common/common.repository";
+import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserAddressRepository } from "src/user/application/ports/out/user-address.repository";
 import { UserAddress } from "src/user/domain/user-address.model";
@@ -57,18 +59,106 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
         )
     }
 
+    public async paginate(params: PaginateParameters): Promise<Pagination<UserAddress>> 
+    {
+        let query = `SELECT id FROM user_addresses`;
+
+        if(params.filters) {
+            if(typeof params.filters['userId'] === 'string') {
+                const userId = params.filters['userId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND user_id = '${userId}'`;
+                }else {
+                    query = `${query} WHERE user_id = '${userId}'`;
+                }
+            }
+
+            if(typeof params.filters['main'] === 'boolean') {
+                const main = params.filters['main'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND main = ${main}`;
+                }else {
+                    query = `${query} WHERE main = ${main}`;
+                }
+            }
+
+            if(typeof params.filters['name'] === 'string') {
+                const name = params.filters['name'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+                }else {
+                    query = `${query} WHERE LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+                }
+            }
+
+            if(typeof params.filters['isDeleted'] === 'boolean') {
+                const isDeleted = params.filters['isDeleted'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND is_deleted = ${isDeleted}`;
+                }else {
+                    query = `${query} WHERE is_deleted = ${isDeleted}`;
+                }
+            }
+        }
+
+        const ids = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+
+        const sort = params.sort ?? 'name';
+        const sortDirection = params.sortDirection ?? SortDirection.ASC;
+
+        let orderBy = {};
+
+        switch(sort) {
+            case 'created_at':
+            case 'createdAt':
+                orderBy = {created_at: sortDirection};
+                break;
+            case 'updated_at':
+            case 'updatedAt':
+                orderBy = {updated_at: sortDirection};
+                break;
+            case 'name':
+            default:
+                orderBy = {name: sortDirection};
+                break;
+        }
+
+        let items = [];
+
+        const paginate = params.paginate ?? false;
+        const page = params.page ?? 0;
+        const limit = params.limit ?? 12;
+        const total = ids.length;
+
+        if(paginate) {
+            items = await this.prismaService.userAddress.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {user: {include: {credentials: true, visibility_configuration: true}}},
+                skip: limit * page,
+                take: limit
+            });
+        }else {
+            items = await this.prismaService.userAddress.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {user: {include: {credentials: true, visibility_configuration: true}}}
+            });
+        }
+
+        items = items.map((i) => {
+            return this.mapUserAddressToDomain(i);
+        });
+
+        return new Pagination(items, total, page);
+    }
+
     public async findBy(values: Object): Promise<Array<UserAddress>> 
     {
         const userId = values['userId'];
         const main = values['main'];
         const name = values['name'];
         const isDeleted = values['isDeleted'] ?? false;
-
-        const sort = String(values['sort'] ?? 'name').toLowerCase();
-        const sortDirection = String(values['sortDirection'] ?? 'asc').toLowerCase();
-        const paginate = values['paginate'] ?? false;
-        const page = values['page'] ?? 0;
-        const limit = values['limit'] ?? 12;
 
         let query = `SELECT id FROM user_addresses`;
 
@@ -105,42 +195,11 @@ export class UserAddressRepositoryImpl implements UserAddressRepository
         }
 
         const userAddressIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
-
-        let orderBy = {};
-
-        switch(sort) {
-            case 'name':
-                orderBy = {
-                    name: sortDirection
-                };
-
-                break;
-            case 'id':
-            default:
-                orderBy = {
-                    id: sortDirection
-                };
-
-                break;
-        }
-
-        let userAddresses = [];
-
-        if(paginate) {
-            userAddresses = await this.prismaService.userAddress.findMany({
-                where: {id: {in: userAddressIds.map((row) => row.id)}},
-                orderBy: orderBy,
-                include: {user: {include: {credentials: true, visibility_configuration: true}}},
-                skip: page * limit,
-                take: limit
-            });
-        }else {
-            userAddresses = await this.prismaService.userAddress.findMany({
-                where: {id: {in: userAddressIds.map((row) => row.id)}},
-                orderBy: orderBy,
-                include: {user: {include: {credentials: true, visibility_configuration: true}}}
-            });
-        }
+        
+        const userAddresses = await this.prismaService.userAddress.findMany({
+            where: {id: {in: userAddressIds.map((row) => row.id)}},
+            include: {user: {include: {credentials: true, visibility_configuration: true}}}
+        });
         
         return userAddresses.map((userAddress) => {
             return this.mapUserAddressToDomain(userAddress);

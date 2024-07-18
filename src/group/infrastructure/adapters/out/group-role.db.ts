@@ -1,4 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { PaginateParameters, Pagination } from "src/common/common.repository";
+import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { GroupRoleRepository } from "src/group/application/ports/out/group-role.repository";
 import { GroupPermission } from "src/group/domain/group-permission.model";
 import { GroupRole } from "src/group/domain/group-role.model";
@@ -58,17 +60,110 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository
         );
     }
 
+    public async paginate(params: PaginateParameters): Promise<Pagination<GroupRole>> 
+    {
+        let query = `SELECT id FROM group_roles`;
+
+        if(params.filters) {
+            if(typeof params.filters['name'] === 'string') {
+                const name = params.filters['name'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND LOWER(name) = '${name.toLowerCase()}'`;
+                }else {
+                    query = `${query} WHERE LOWER(name) = '${name.toLowerCase()}'`;
+                }
+            }
+
+            if(typeof params.filters['isImmutable'] === 'boolean') {
+                const isImmutable = params.filters['isImmutable'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND is_immutable = ${isImmutable}`;
+                }else {
+                    query = `${query} WHERE is_immutable = ${isImmutable}`;
+                }
+            }
+
+            if(typeof params.filters['groupId'] === 'string') {
+                const groupId = params.filters['groupId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND (group_id = '${groupId}' OR group_id IS null)`;
+                }else {
+                    query = `${query} WHERE (group_id = '${groupId}' OR group_id is null)`;
+                }
+            }
+        }
+
+        const ids = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+
+        const sort = params.sort ?? 'name';
+        const sortDirection = params.sortDirection ?? SortDirection.ASC;
+
+        let orderBy = {};
+
+        switch(sort) {
+            case 'created_at':
+            case 'createdAt':
+                orderBy = {created_at: sortDirection};
+                break;
+            case 'updated_at':
+            case 'updatedAt':
+                orderBy = {updated_at: sortDirection};
+                break;
+            case 'name':
+            default:
+                orderBy = {name: sortDirection};
+                break;
+        }
+
+        let items = [];
+
+        const paginate = params.paginate ?? false;
+        const page = params.page ?? 0;
+        const limit = params.limit ?? 12;
+        const total = ids.length;
+
+        if(paginate) {
+            items = await this.prismaService.groupRole.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                include: {
+                    permissions: {include: {group_permission: true}},
+                    group: {
+                        include: {
+                            visibility_configuration: true
+                        }
+                    }
+                },
+                orderBy: orderBy,
+                skip: limit * page,
+                take: limit
+            });
+        }else {
+            items = await this.prismaService.groupRole.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                include: {
+                    permissions: {include: {group_permission: true}},
+                    group: {
+                        include: {
+                            visibility_configuration: true
+                        }
+                    }
+                },
+                orderBy: orderBy
+            });
+        }
+
+        items = items.map((i) => {
+            return this.mapGroupRoleToDomain(i);
+        });
+
+        return new Pagination(items, total, page);
+    }
+
     public async findBy(values: Object): Promise<Array<GroupRole>> 
     {
         const name = values['name'];
         const isImmutable = values['isImmutable'];
         const groupId = values['groupId'];
-        
-        const sort = String(values['sort'] ?? 'name').toLowerCase();
-        const sortDirection = String(values['sortDirection'] ?? 'asc').toLowerCase();
-        const page = values['sortDirection'] ?? 0;
-        const paginate = values['paginate'] ?? false;
-        const limit = values['limit'] ?? 12;
 
         let query = 'SELECT group_roles.id FROM group_roles';
 
@@ -98,55 +193,17 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository
 
         const groupRoleIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
-        let orderBy = {};
-
-        switch(sort) {
-            case 'name':
-                orderBy = {
-                    name: sortDirection
-                };
-                
-                break;
-            case 'id':
-            default:
-                orderBy = {
-                    id: sortDirection
-                };
-
-                break;
-        }
-
-        let groupRoles = [];
-
-        if(paginate) {
-            groupRoles = await this.prismaService.groupRole.findMany({
-                where: {id: {in: groupRoleIds.map((row) => row.id)}},
-                include: {
-                    permissions: {include: {group_permission: true}},
-                    group: {
-                        include: {
-                            visibility_configuration: true
-                        }
+        const groupRoles = await this.prismaService.groupRole.findMany({
+            where: {id: {in: groupRoleIds.map((row) => row.id)}},
+            include: {
+                permissions: {include: {group_permission: true}},
+                group: {
+                    include: {
+                        visibility_configuration: true
                     }
-                },
-                orderBy: orderBy,
-                skip: page * limit,
-                take: limit
-            });
-        }else {
-            groupRoles = await this.prismaService.groupRole.findMany({
-                where: {id: {in: groupRoleIds.map((row) => row.id)}},
-                include: {
-                    permissions: {include: {group_permission: true}},
-                    group: {
-                        include: {
-                            visibility_configuration: true
-                        }
-                    }
-                },
-                orderBy: orderBy
-            });
-        }
+                }
+            }
+        });
 
         return groupRoles.map((groupRole) => {
             return this.mapGroupRoleToDomain(groupRole);

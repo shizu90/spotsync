@@ -19,6 +19,8 @@ export class GetUserProfileDto extends Dto
         readonly credentials: {
             name: string
         },
+        readonly total_followers: number,
+        readonly total_following: number,
         readonly address?: {
             id: string,
             name: string,

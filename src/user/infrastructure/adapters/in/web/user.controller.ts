@@ -46,7 +46,7 @@ export class UserController
     ) 
     {}
 
-    @ApiOperation({summary: 'List and search users'})
+    @ApiOperation({summary: 'List users'})
     @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe({transform: true}))
     @Get()
@@ -54,6 +54,8 @@ export class UserController
     {
         const command = UserRequestMapper.listUsersCommand(query);
        
+        console.log(command)
+
         const data = await this.listUsersUseCase.execute(command);
 
         res

@@ -8,6 +8,8 @@ import { UserNotFoundError } from "src/user/application/services/errors/user-not
 import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../ports/out/group-member.repository";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
+import { GroupLog } from "src/group/domain/group-log.model";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class UpdateGroupService implements UpdateGroupUseCase 
@@ -61,5 +63,13 @@ export class UpdateGroupService implements UpdateGroupUseCase
         }
 
         this.groupRepository.update(group);
+
+        const log = GroupLog.create(
+            randomUUID(), 
+            group, 
+            `${authenticatedGroupMember.user().credentials().name()} removed the group settings`
+        );
+
+        this.groupRepository.storeLog(log);
     }
 }

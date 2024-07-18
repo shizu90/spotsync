@@ -8,6 +8,8 @@ import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from
 import { UserNotFoundError } from "src/user/application/services/errors/user-not-found.error";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
+import { GroupLog } from "src/group/domain/group-log.model";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class UpdateGroupVisibilityService implements UpdateGroupVisibilityUseCase 
@@ -65,5 +67,13 @@ export class UpdateGroupVisibilityService implements UpdateGroupVisibilityUseCas
         }
 
         this.groupRepository.updateVisibilityConfiguration(group.visibilityConfiguration());
+
+        const log = GroupLog.create(
+            randomUUID(), 
+            group, 
+            `${authenticatedGroupMember.user().credentials().name()} updated the group visibility`
+        );
+
+        this.groupRepository.storeLog(log);
     }
 }

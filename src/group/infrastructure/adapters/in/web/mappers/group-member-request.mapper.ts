@@ -20,9 +20,9 @@ export class GroupMemberRequestMapper
             query.role_id,
             query.sort,
             query.sort_direction,
-            query.page,
-            query.paginate,
-            query.limit
+            Number.isNaN(Number(query.page)) ? 0 : Number(query.page),
+            Boolean(query.paginate),
+            Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit)
         );
     }
 
@@ -33,9 +33,9 @@ export class GroupMemberRequestMapper
             query.name,
             query.sort,
             query.sort_direction,
-            query.paginate,
-            query.page,
-            query.limit
+            Boolean(query.paginate),
+            Number.isNaN(Number(query.page)) ? 0 : Number(query.page),
+            Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit)
         );
     }
 
@@ -61,7 +61,7 @@ export class GroupMemberRequestMapper
         );
     }
 
-    public static acceptGroupRequestCommand(groupId: string, requestId: string) 
+    public static acceptGroupRequestCommand(groupId: string, requestId: string): AcceptGroupRequestCommand
     {
         return new AcceptGroupRequestCommand(
             requestId,
@@ -69,7 +69,7 @@ export class GroupMemberRequestMapper
         );
     }
 
-    public static refuseGroupRequestCommand(groupId: string, requestId: string) 
+    public static refuseGroupRequestCommand(groupId: string, requestId: string): RefuseGroupRequestCommand
     {
         return new RefuseGroupRequestCommand(
             requestId,
@@ -77,7 +77,7 @@ export class GroupMemberRequestMapper
         );
     }
 
-    public static removeGroupMemberCommand(groupId: string, memberId: string) 
+    public static removeGroupMemberCommand(groupId: string, memberId: string): RemoveGroupMemberCommand
     {
         return new RemoveGroupMemberCommand(
             memberId,

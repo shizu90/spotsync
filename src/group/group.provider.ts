@@ -43,15 +43,21 @@ import { GetGroupRoleUseCaseProvider } from "./application/ports/in/use-cases/ge
 import { GetGroupRoleService } from "./application/services/get-group-role.service";
 import { ListGroupRequestsUseCaseProvider } from "./application/ports/in/use-cases/list-group-requests.use-case";
 import { ListGroupRequestsService } from "./application/services/list-group-requests.service";
+import { GetGroupHistoryUseCaseProvider } from "./application/ports/in/use-cases/get-group-history.use-case";
+import { GetGroupHistoryService } from "./application/services/get-group-history.service";
 
 export const Providers: Provider[] = [
     {
-        provide: AcceptGroupRequestUseCaseProvider,
-        useClass: AcceptGroupRequestService
+        provide: GetGroupUseCaseProvider,
+        useClass: GetGroupService
     },
     {
-        provide: RefuseGroupRequestUseCaseProvider,
-        useClass: RefuseGroupRequestService
+        provide: ListGroupsUseCaseProvider,
+        useClass: ListGroupsService
+    },
+    {
+        provide: GetGroupHistoryUseCaseProvider,
+        useClass: GetGroupHistoryService
     },
     {
         provide: CreateGroupUseCaseProvider,
@@ -66,6 +72,26 @@ export const Providers: Provider[] = [
         useClass: UpdateGroupVisibilityService
     },
     {
+        provide: DeleteGroupUseCaseProvider,
+        useClass: DeleteGroupService
+    },
+    {
+        provide: ListGroupMembersUseCaseProvider,
+        useClass: ListGroupMembersService
+    },
+    {
+        provide: ListGroupRequestsUseCaseProvider,
+        useClass: ListGroupRequestsService
+    },
+    {
+        provide: AcceptGroupRequestUseCaseProvider,
+        useClass: AcceptGroupRequestService
+    },
+    {
+        provide: RefuseGroupRequestUseCaseProvider,
+        useClass: RefuseGroupRequestService
+    },
+    {
         provide: JoinGroupUseCaseProvider,
         useClass: JoinGroupService
     },
@@ -74,36 +100,20 @@ export const Providers: Provider[] = [
         useClass: LeaveGroupService
     },
     {
-        provide: GetGroupUseCaseProvider,
-        useClass: GetGroupService
+        provide: RemoveGroupMemberUseCaseProvider,
+        useClass: RemoveGroupMemberService
     },
     {
-        provide: DeleteGroupUseCaseProvider,
-        useClass: DeleteGroupService
-    },
-    {
-        provide: ListGroupsUseCaseProvider,
-        useClass: ListGroupsService
-    },
-    {
-        provide: ListGroupMembersUseCaseProvider,
-        useClass: ListGroupMembersService
+        provide: ChangeMemberRoleUseCaseProvider,
+        useClass: ChangeMemberRoleService
     },
     {
         provide: ListGroupRolesUseCaseProvider,
         useClass: ListGroupRolesService
     },
     {
-        provide: ListGroupRequestsUseCaseProvider,
-        useClass: ListGroupRequestsService
-    },
-    {
         provide: GetGroupRoleUseCaseProvider,
         useClass: GetGroupRoleService
-    },
-    {
-        provide: RemoveGroupMemberUseCaseProvider,
-        useClass: RemoveGroupMemberService
     },
     {
         provide: CreateGroupRoleUseCaseProvider,
@@ -112,10 +122,6 @@ export const Providers: Provider[] = [
     {
         provide: UpdateGroupRoleUseCaseProvider,
         useClass: UpdateGroupRoleService
-    },
-    {
-        provide: ChangeMemberRoleUseCaseProvider,
-        useClass: ChangeMemberRoleService
     },
     {
         provide: RemoveGroupRoleUseCaseProvider,

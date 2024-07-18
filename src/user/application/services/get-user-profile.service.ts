@@ -50,6 +50,9 @@ export class GetUserProfileService implements GetUserProfileUseCase
             }
         }
 
+        const totalFollowers = (await this.followRepository.findBy({toUserId: user.id()})).length;
+        const totalFollowing = (await this.followRepository.findBy({fromUserId: user.id()})).length;
+
         return new GetUserProfileDto(
             user.id(),
             user.biograph(),
@@ -67,6 +70,8 @@ export class GetUserProfileService implements GetUserProfileUseCase
             {
                 name: user.credentials().name()
             },
+            totalFollowers,
+            totalFollowing,
             userMainAddress ? {
                 id: userMainAddress.id(),
                 name: userMainAddress.name(),

@@ -15,6 +15,7 @@ import { GroupMember } from "src/group/domain/group-member.model";
 import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
 import { AlreadyRequestedToJoinError } from "./errors/already-requested-to-join.error";
 import { AlreadyMemberOfGroup } from "./errors/already-member-of-group.error";
+import { GroupLog } from "src/group/domain/group-log.model";
 
 @Injectable()
 export class JoinGroupService implements JoinGroupUseCase 
@@ -60,6 +61,12 @@ export class JoinGroupService implements JoinGroupUseCase
 
             this.groupMemberRepository.storeRequest(groupMemberRequest);
 
+            const log = GroupLog.create(
+                randomUUID(), 
+                group, 
+                `${user.credentials().name()} requested to join the group`
+            );
+
             return new JoinGroupDto(
                 groupMemberRequest.id(),
                 group.id(),
@@ -84,6 +91,14 @@ export class JoinGroupService implements JoinGroupUseCase
             );
 
             this.groupMemberRepository.store(groupMember);
+
+            const log = GroupLog.create(
+                randomUUID(), 
+                group, 
+                `${user.credentials().name()} joined the group`
+            );
+
+            this.groupRepository.storeLog(log);
 
             return new AcceptGroupRequestDto(
                 group.id(),

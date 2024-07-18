@@ -8,6 +8,8 @@ import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/g
 import { GroupNotFoundError } from "./errors/group-not-found.error";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupRoleNotFoundError } from "./errors/group-role-not-found.error";
+import { GroupLog } from "src/group/domain/group-log.model";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class UpdateGroupRoleService implements UpdateGroupRoleUseCase 
@@ -75,5 +77,13 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase
         }
 
         this.groupRoleRepository.update(groupRole);
+
+        const log = GroupLog.create(
+            randomUUID(), 
+            group, 
+            `${authenticatedGroupMember.user().credentials().name()} updated the role ${groupRole.name()}`
+        );
+
+        this.groupRepository.storeLog(log);
     }
 }

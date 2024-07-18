@@ -1,4 +1,5 @@
 import { Command } from "src/common/common.command";
+import { SortDirection } from "src/common/enums/sort-direction.enum";
 
 export class ListGroupRequestsCommand extends Command 
 {
@@ -6,7 +7,7 @@ export class ListGroupRequestsCommand extends Command
         readonly groupId: string,
         readonly name?: string,
         readonly sort?: string,
-        readonly sortDirection?: string,
+        readonly sortDirection?: SortDirection,
         readonly paginate?: boolean,
         readonly page?: number,
         readonly limit?: number

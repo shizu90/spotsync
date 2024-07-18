@@ -7,6 +7,8 @@ import { UnauthorizedAccessError } from "src/auth/application/services/errors/un
 import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../ports/out/group-member.repository";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
 import { UnableToLeaveGroupError } from "./errors/unable-to-leave-group.error";
+import { GroupLog } from "src/group/domain/group-log.model";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class LeaveGroupService implements LeaveGroupUseCase 
@@ -50,5 +52,13 @@ export class LeaveGroupService implements LeaveGroupUseCase
         }
 
         this.groupMemberRepository.delete(groupMember.id());
+
+        const log = GroupLog.create(
+            randomUUID(), 
+            group, 
+            `${groupMember.user().credentials().name()} left the group`
+        );
+
+        this.groupRepository.storeLog(log);
     }
 }

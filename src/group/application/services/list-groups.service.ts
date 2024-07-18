@@ -1,11 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ListGroupsUseCase } from "../ports/in/use-cases/list-groups.use-case";
 import { ListGroupsCommand } from "../ports/in/commands/list-groups.command";
-import { Pagination } from "src/common/pagination.dto";
 import { GetGroupDto } from "../ports/out/dto/get-group.dto";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { GroupRepository, GroupRepositoryProvider } from "../ports/out/group.repository";
 import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../ports/out/group-member.repository";
+import { Pagination } from "src/common/common.repository";
 
 @Injectable()
 export class ListGroupsService implements ListGroupsUseCase 
@@ -20,13 +20,15 @@ export class ListGroupsService implements ListGroupsUseCase
     ) 
     {}
 
-    public async execute(command: ListGroupsCommand): Promise<Array<GetGroupDto> | Pagination<GetGroupDto>> 
+    public async execute(command: ListGroupsCommand): Promise<Pagination<GetGroupDto>> 
     {
         const authenticatedUserId = this.getAuthenticatedUser.execute(null);
 
-        const res = await this.groupRepository.findBy({
-            name: command.name,
-            visibility: command.groupVisibility,
+        const pagination = await this.groupRepository.paginate({
+            filters: {
+                name: command.name,
+                groupVisibility: command.groupVisibility
+            },
             sort: command.sort,
             sortDirection: command.sortDirection,
             page: command.page,
@@ -34,7 +36,7 @@ export class ListGroupsService implements ListGroupsUseCase
             limit: command.limit
         });
 
-        const items = await Promise.all(res.map(async (g) => {
+        const items = await Promise.all(pagination.items.map(async (g) => {
             if(g === null || g === undefined) return null;
 
             const groupMember = (await this.groupMemberRepository.findBy({groupId: g.id(), userId: authenticatedUserId})).at(0);
@@ -67,10 +69,6 @@ export class ListGroupsService implements ListGroupsUseCase
             );
         }));
 
-        if(command.paginate) {
-            return new Pagination(items, items.length);
-        }else {
-            return items;
-        }
+        return new Pagination(items, pagination.total, pagination.current_page);
     }
 }

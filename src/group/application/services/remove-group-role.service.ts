@@ -7,6 +7,8 @@ import { RemoveGroupRoleCommand } from "../ports/in/commands/remove-group-role.c
 import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupRoleNotFoundError } from "./errors/group-role-not-found.error";
+import { GroupLog } from "src/group/domain/group-log.model";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class RemoveGroupRoleService implements RemoveGroupRoleUseCase 
@@ -52,5 +54,13 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase
         }
 
         this.groupRoleRepository.delete(groupRole.id());
+
+        const log = GroupLog.create(
+            randomUUID(), 
+            group, 
+            `${authenticatedGroupMember.user().credentials().name()} removed the role ${groupRole.name()}`
+        );
+
+        this.groupRepository.storeLog(log);
     }
 }

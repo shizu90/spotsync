@@ -9,6 +9,8 @@ import { GroupMemberNotFoundError } from "./errors/group-member-not-found.error"
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { GroupRoleRepository, GroupRoleRepositoryProvider } from "../ports/out/group-role.repository";
 import { GroupRoleNotFoundError } from "./errors/group-role-not-found.error";
+import { GroupLog } from "src/group/domain/group-log.model";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class ChangeMemberRoleService implements ChangeMemberRoleUseCase 
@@ -62,5 +64,13 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase
         groupMember.changeRole(role);
 
         this.groupMemberRepository.update(groupMember);
+
+        const log = GroupLog.create(
+            randomUUID(), 
+            group, 
+            `${authenticatedGroupMember.user().credentials().name()} changed the role of ${groupMember.user().credentials().name()}`
+        );
+
+        this.groupRepository.storeLog(log);
     }
 }

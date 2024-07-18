@@ -13,7 +13,7 @@ export class ListGroupRequestsQueryRequest
     
     @IsOptional()
     @IsEnum(SortDirection)
-    public sort_direction?: 'asc' | 'desc';
+    public sort_direction?: SortDirection;
     
     @IsOptional()
     @IsBooleanString()

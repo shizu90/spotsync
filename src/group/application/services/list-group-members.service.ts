@@ -2,10 +2,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ListGroupMembersUseCase } from "../ports/in/use-cases/list-group-members.use-case";
 import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../ports/out/group-member.repository";
 import { ListGroupMembersCommand } from "../ports/in/commands/list-group-members.command";
-import { Pagination } from "src/common/pagination.dto";
 import { GetGroupMemberDto } from "../ports/out/dto/get-group-member.dto";
 import { GroupRepository, GroupRepositoryProvider } from "../ports/out/group.repository";
 import { GroupNotFoundError } from "./errors/group-not-found.error";
+import { Pagination } from "src/common/common.repository";
 
 @Injectable()
 export class ListGroupMembersService implements ListGroupMembersUseCase 
@@ -18,7 +18,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase
     ) 
     {}
 
-    public async execute(command: ListGroupMembersCommand): Promise<Array<GetGroupMemberDto> | Pagination<GetGroupMemberDto>> 
+    public async execute(command: ListGroupMembersCommand): Promise<Pagination<GetGroupMemberDto>> 
     {
         const group = await this.groupRepository.findById(command.groupId);
 
@@ -27,19 +27,14 @@ export class ListGroupMembersService implements ListGroupMembersUseCase
         }
 
         if(group.visibilityConfiguration().groupVisibility() === 'PRIVATE') {
-            if(command.paginate) {
-                return new Pagination(
-                    [],
-                    0
-                );
-            }else {
-                return [];
-            }
+            return new Pagination([], 0, 0);
         }else {
-            const groupMembers = await this.groupMemberRepository.findBy({
-                groupId: command.groupId,
-                name: command.name,
-                roleId: command.roleId,
+            const pagination = await this.groupMemberRepository.paginate({
+                filters: {
+                    groupId: command.groupId,
+                    name: command.name,
+                    roleId: command.roleId
+                },
                 sort: command.sort,
                 sortDirection: command.sortDirection,
                 paginate: command.paginate,
@@ -47,7 +42,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase
                 limit: command.limit
             });
 
-            const items = groupMembers.map((gm) => {
+            const items = pagination.items.map((gm) => {
                 return new GetGroupMemberDto(
                     gm.id(),
                     {
@@ -68,11 +63,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase
                 );
             });
 
-            if(command.paginate) {
-                return new Pagination(items, items.length);
-            }else {
-                return items;
-            }
+            return new Pagination(items, pagination.total, pagination.current_page);
         }
     }
 }

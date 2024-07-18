@@ -1,4 +1,6 @@
 import { Inject } from "@nestjs/common";
+import { PaginateParameters, Pagination } from "src/common/common.repository";
+import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { FollowRepository } from "src/follower/application/ports/out/follow.repository";
 import { FollowRequest } from "src/follower/domain/follow-request.model";
 import { Follow } from "src/follower/domain/follow.model";
@@ -137,6 +139,182 @@ export class FollowRepositoryImpl implements FollowRepository
             ),
             prisma_model.requested_on
         );
+    }
+
+    public async paginate(params: PaginateParameters): Promise<Pagination<Follow>> 
+    {
+        let query = `SELECT id FROM follows`;
+
+        if(params.filters) {
+            if(typeof params.filters['fromUserId'] === 'string') {
+                const fromUserId = params.filters['fromUserId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND from_user_id = '${fromUserId}'`;
+                }else {
+                    query = `${query} WHERE from_user_id = '${fromUserId}'`;
+                }
+            }
+
+            if(typeof params.filters['toUserId'] === 'string') {
+                const toUserId = params.filters['toUserId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND to_user_id = '${toUserId}'`;
+                }else {
+                    query = `${query} WHERE to_user_id = '${toUserId}'`;
+                }
+            }
+        }
+
+        const ids = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+
+        const sort = params.sort ?? 'followedAt';
+        const sortDirection = params.sortDirection ?? SortDirection.ASC;
+
+        let orderBy = {};
+
+        switch(sort) {
+            case 'followed_at':
+            case 'followedAt':
+            default:
+                orderBy = {
+                    followed_at: sortDirection
+                };
+                break;
+        }
+
+        let items = [];
+
+        const paginate = params.paginate ?? false;
+        const page = params.page ?? 0;
+        const limit = params.limit ?? 12;
+        const total = ids.length;
+
+        if(paginate) {
+            items = await this.prismaService.follow.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {
+                    from_user: {
+                        include: {
+                            credentials: true,
+                            visibility_configuration: true
+                        }
+                    },
+                    to_user: {
+                        include: {
+                            credentials: true,
+                            visibility_configuration: true
+                        }
+                    }
+                },
+                skip: limit * page,
+                take: limit 
+            });
+        }else {
+            items = await this.prismaService.follow.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {
+                    from_user: {
+                        include: {
+                            credentials: true,
+                            visibility_configuration: true
+                        }
+                    },
+                    to_user: {
+                        include: {
+                            credentials: true,
+                            visibility_configuration: true
+                        }
+                    }
+                }
+            });
+        }
+
+        items = items.map((i) => {
+            return this.mapFollowToDomain(i);
+        });
+
+        return new Pagination(items, total, page);
+    }
+
+    public async paginateRequest(params: PaginateParameters): Promise<Pagination<FollowRequest>> 
+    {
+        let query = `SELECT id FROM follow_requests`;
+
+        if(params.filters) {
+            if(typeof params.filters['fromUserId'] === 'string') {
+                const fromUserId = params.filters['fromUserId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND from_user_id = '${fromUserId}'`;
+                }else {
+                    query = `${query} WHERE from_user_id = '${fromUserId}'`;
+                }
+            }
+
+            if(typeof params.filters['toUserId'] === 'string') {
+                const toUserId = params.filters['toUserId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND to_user_id = '${toUserId}'`;
+                }else {
+                    query = `${query} WHERE to_user_id = '${toUserId}'`;
+                }
+            }
+        }
+
+        const ids = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+
+        const sort = params.sort ?? 'followedAt';
+        const sortDirection = params.sortDirection ?? SortDirection.ASC;
+
+        let orderBy = {};
+
+        switch(sort) {
+            case 'requested_on':
+            case 'requestedOn':
+            default:
+                orderBy = {requested_on: sortDirection};
+                break;
+        }
+
+        let items = [];
+
+        const paginate = params.paginate ?? false;
+        const page = params.page ?? 0;
+        const limit = params.limit ?? 12;
+        const total = ids.length;
+
+        if(paginate) {
+            items = await this.prismaService.followRequest.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {
+                    from_user: {
+                        include: {credentials: true, visibility_configuration: true}
+                    },
+                    to_user: {
+                        include: {credentials: true, visibility_configuration: true}
+                    }
+                },
+                skip: limit * page,
+                take: limit
+            });
+        }else {
+            items = await this.prismaService.followRequest.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {
+                    from_user: {
+                        include: {credentials: true, visibility_configuration: true}
+                    },
+                    to_user: {
+                        include: {credentials: true, visibility_configuration: true}
+                    }
+                }
+            });
+        }
+
+        return new Pagination(items, total, page);
     }
 
     public async findBy(values: Object): Promise<Array<Follow>> {

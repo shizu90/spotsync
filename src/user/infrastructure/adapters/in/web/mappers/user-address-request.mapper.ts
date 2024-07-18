@@ -19,12 +19,12 @@ export class UserAddressRequestMapper
         return new ListUserAddressesCommand(
             userId,
             query.name,
-            query.main,
+            Boolean(query.main),
             query.sort,
             query.sort_direction,
-            query.paginate,
-            query.page,
-            query.limit
+            Boolean(query.paginate),
+            Number.isNaN(Number(query.page)) ? 0 : Number(query.page),
+            Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit)
         );
     }
 
@@ -37,7 +37,7 @@ export class UserAddressRequestMapper
             request.sub_area, 
             request.locality, 
             request.country_code, 
-            request.main
+            Boolean(request.main)
         );
     }
 
@@ -51,7 +51,7 @@ export class UserAddressRequestMapper
             request.sub_area, 
             request.locality, 
             request.country_code, 
-            request.main
+            Boolean(request.main)
         );
     }
 

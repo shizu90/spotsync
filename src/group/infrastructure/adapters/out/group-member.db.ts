@@ -1,4 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { PaginateParameters, Pagination } from "src/common/common.repository";
+import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { GroupMemberRepository } from "src/group/application/ports/out/group-member.repository";
 import { GroupMemberRequest } from "src/group/domain/group-member-request.model";
 import { GroupMember } from "src/group/domain/group-member.model";
@@ -134,17 +136,225 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
         );
     }
 
+    public async paginate(params: PaginateParameters): Promise<Pagination<GroupMember>> 
+    {
+        let query = `SELECT group_members.id FROM group_members JOIN users ON users.id = group_members.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false`;
+
+        if(params.filters) {
+            if(typeof params.filters['name'] === 'string') {
+                const name = params.filters['name'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+                }else {
+                    query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+                }
+            }
+
+            if(typeof params.filters['roleId'] === 'string') {
+                const roleId = params.filters['roleId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND group_members.role_id = '${roleId}'`;
+                }else {
+                    query = `${query} WHERE group_members.role_id = '${roleId}'`;
+                }
+            }
+
+            if(typeof params.filters['groupId'] === 'string') {
+                const groupId = params.filters['groupId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND group_members.group_id = '${groupId}'`;
+                }else {
+                    query = `${query} WHERE group_members.group_id = '${groupId}'`
+                }
+            }
+        }
+
+        const ids = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+
+        const sort = params.sort ?? 'name';
+        const sortDirection = params.sortDirection ?? SortDirection.ASC;
+
+        let orderBy = {};
+
+        switch(sort) {
+            case 'name':
+                orderBy = {user: {credentials: {name: sortDirection}}};
+                break;
+            case 'joined_at':
+            case 'joinedAt':
+            default:
+                orderBy = {joined_at: sortDirection};
+                break;
+        }
+
+        let items = [];
+
+        const paginate = params.paginate ?? false;
+        const page = params.page ?? 0;
+        const limit = params.limit ?? 12;
+        const total = ids.length;
+
+        if(paginate) {
+            items = await this.prismaService.groupMember.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {
+                    user: {
+                        include: {
+                            credentials: true,
+                            visibility_configuration: true
+                        }
+                    },
+                    group_role: {
+                        include: {
+                            permissions: {
+                                include: {
+                                    group_permission: true
+                                }
+                            }
+                        }
+                    },
+                    group: {
+                        include: {
+                            visibility_configuration: true
+                        }
+                    }
+                },
+                skip: page * limit,
+                take: limit
+            });
+        }else {
+            items = await this.prismaService.groupMember.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {
+                    user: {
+                        include: {
+                            credentials: true,
+                            visibility_configuration: true
+                        }
+                    },
+                    group_role: {
+                        include: {
+                            permissions: {
+                                include: {
+                                    group_permission: true
+                                }
+                            }
+                        }
+                    },
+                    group: {
+                        include: {
+                            visibility_configuration: true
+                        }
+                    }
+                }
+            });
+        }
+
+        items = items.map((i) => {
+            return this.mapGroupMemberToDomain(i);
+        });
+
+        return new Pagination(items, total, page);
+    }
+
+    public async paginateRequest(params: PaginateParameters): Promise<Pagination<GroupMemberRequest>> 
+    {
+        let query = `SELECT group_member_requests.id FROM group_member_requests JOIN users ON users.id = group_member_requests.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false`;
+    
+        if(params.filters) {
+            if(typeof params.filters['name'] === 'string') {
+                const name = params.filters['name'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+                }else {
+                    query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+                }
+            }
+
+            if(typeof params.filters['roleId'] === 'string') {
+                const roleId = params.filters['roleId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND group_members.role_id = '${roleId}'`;
+                }else {
+                    query = `${query} WHERE group_members.role_id = '${roleId}'`;
+                }
+            }
+
+            if(typeof params.filters['groupId'] === 'string') {
+                const groupId = params.filters['groupId'];
+                if(query.includes('WHERE')) {
+                    query = `${query} AND group_members.group_id = '${groupId}'`;
+                }else {
+                    query = `${query} WHERE group_members.group_id = '${groupId}'`
+                }
+            }
+        }
+
+        const ids = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+
+        const sort = params.sort ?? 'name';
+        const sortDirection = params.sortDirection ?? SortDirection.ASC;
+
+        let orderBy = {};
+
+        switch(sort) {
+            case 'name':
+            default:
+                orderBy = {user: {credentials: {name: sortDirection}}};
+                break;
+        }
+
+        let items = [];
+
+        const paginate = params.paginate ?? false;
+        const page = params.page ?? 0;
+        const limit = params.limit ?? 12;
+        const total = ids.length;
+        
+        if(paginate) {
+            items = await this.prismaService.groupMemberRequest.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                skip: limit * page,
+                take: limit,
+                include: {
+                    user: {
+                        include: {credentials: true, visibility_configuration: true}
+                    },
+                    group: {
+                        include: {visibility_configuration: true}
+                    }
+                }
+            });
+        }else {
+            items = await this.prismaService.groupMemberRequest.findMany({
+                where: {id: {in: ids.map((row) => row.id)}},
+                orderBy: orderBy,
+                include: {
+                    user: {
+                        include: {credentials: true, visibility_configuration: true}
+                    },
+                    group: {
+                        include: {visibility_configuration: true}
+                    }
+                }
+            });
+        }
+
+        items = items.map((i) => {
+            return this.mapGroupMemberRequestToDomain(i);
+        });
+
+        return new Pagination(items, total, page);
+    }
+
     public async findBy(values: Object): Promise<Array<GroupMember>> {
         const name = values['name'];
         const roleId = values['roleId'];
         const groupId = values['groupId'];
         const userId = values['userId'];
-
-        const sort = String(values['sort'] ?? 'name').toLowerCase();
-        const sortDirection = String(values['sortDirection'] ?? 'asc').toLowerCase();
-        const paginate = values['paginate'] ?? false;
-        const page = values['page'] ?? 0;
-        const limit = values['limit'] ?? 12;
 
         let query = 'SELECT group_members.id FROM group_members JOIN users ON users.id = group_members.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false';
 
@@ -182,94 +392,32 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository
 
         const groupMemberIds = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
 
-        let orderBy = {};
-
-        switch(sort) {
-            case 'name':
-                orderBy = {
-                    user: {
-                        credentials: {
-                            name: sortDirection
-                        }
+        const groupMembers = await this.prismaService.groupMember.findMany({
+            where: {id: {in: groupMemberIds.map((row) => row.id)}},
+            include: {
+                user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
                     }
-                };
-
-                break;
-            case 'joinedAt':
-                orderBy = {
-                    joined_at: sortDirection
-                };
-
-                break;
-            case 'id':
-            case 'default':
-                orderBy = {
-                    id: sortDirection
-                };
-
-                break;
-        }
-
-        let groupMembers = [];
-
-        if(paginate) {
-            groupMembers = await this.prismaService.groupMember.findMany({
-                where: {id: {in: groupMemberIds.map((row) => row.id)}},
-                orderBy: orderBy,
-                include: {
-                    user: {
-                        include: {
-                            credentials: true,
-                            visibility_configuration: true
-                        }
-                    },
-                    group_role: {
-                        include: {
-                            permissions: {
-                                include: {
-                                    group_permission: true
-                                }
+                },
+                group_role: {
+                    include: {
+                        permissions: {
+                            include: {
+                                group_permission: true
                             }
-                        }
-                    },
-                    group: {
-                        include: {
-                            visibility_configuration: true
                         }
                     }
                 },
-                skip: page * limit,
-                take: limit
-            });
-        }else {
-            groupMembers = await this.prismaService.groupMember.findMany({
-                where: {id: {in: groupMemberIds.map((row) => row.id)}},
-                orderBy: orderBy,
-                include: {
-                    user: {
-                        include: {
-                            credentials: true,
-                            visibility_configuration: true
-                        }
-                    },
-                    group_role: {
-                        include: {
-                            permissions: {
-                                include: {
-                                    group_permission: true
-                                }
-                            }
-                        }
-                    },
-                    group: {
-                        include: {
-                            visibility_configuration: true
-                        }
+                group: {
+                    include: {
+                        visibility_configuration: true
                     }
                 }
-            });
-        }
-
+            },
+        });
+       
         return groupMembers.map((gm) => {
             return this.mapGroupMemberToDomain(gm);
         });
