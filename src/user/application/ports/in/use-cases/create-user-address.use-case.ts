@@ -5,4 +5,4 @@ import { CreateUserAddressDto } from '../../out/dto/create-user-address.dto';
 export const CreateUserAddressUseCaseProvider = 'CreateUserAddressUseCase';
 
 export interface CreateUserAddressUseCase
-  extends UseCase<CreateUserAddressCommand, Promise<CreateUserAddressDto>> {}
+	extends UseCase<CreateUserAddressCommand, Promise<CreateUserAddressDto>> {}

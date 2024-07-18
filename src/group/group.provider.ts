@@ -47,96 +47,96 @@ import { GetGroupHistoryUseCaseProvider } from './application/ports/in/use-cases
 import { GetGroupHistoryService } from './application/services/get-group-history.service';
 
 export const Providers: Provider[] = [
-  {
-    provide: GetGroupUseCaseProvider,
-    useClass: GetGroupService,
-  },
-  {
-    provide: ListGroupsUseCaseProvider,
-    useClass: ListGroupsService,
-  },
-  {
-    provide: GetGroupHistoryUseCaseProvider,
-    useClass: GetGroupHistoryService,
-  },
-  {
-    provide: CreateGroupUseCaseProvider,
-    useClass: CreateGroupService,
-  },
-  {
-    provide: UpdateGroupUseCaseProvider,
-    useClass: UpdateGroupService,
-  },
-  {
-    provide: UpdateGroupVisibilityUseCaseProvider,
-    useClass: UpdateGroupVisibilityService,
-  },
-  {
-    provide: DeleteGroupUseCaseProvider,
-    useClass: DeleteGroupService,
-  },
-  {
-    provide: ListGroupMembersUseCaseProvider,
-    useClass: ListGroupMembersService,
-  },
-  {
-    provide: ListGroupRequestsUseCaseProvider,
-    useClass: ListGroupRequestsService,
-  },
-  {
-    provide: AcceptGroupRequestUseCaseProvider,
-    useClass: AcceptGroupRequestService,
-  },
-  {
-    provide: RefuseGroupRequestUseCaseProvider,
-    useClass: RefuseGroupRequestService,
-  },
-  {
-    provide: JoinGroupUseCaseProvider,
-    useClass: JoinGroupService,
-  },
-  {
-    provide: LeaveGroupUseCaseProvider,
-    useClass: LeaveGroupService,
-  },
-  {
-    provide: RemoveGroupMemberUseCaseProvider,
-    useClass: RemoveGroupMemberService,
-  },
-  {
-    provide: ChangeMemberRoleUseCaseProvider,
-    useClass: ChangeMemberRoleService,
-  },
-  {
-    provide: ListGroupRolesUseCaseProvider,
-    useClass: ListGroupRolesService,
-  },
-  {
-    provide: GetGroupRoleUseCaseProvider,
-    useClass: GetGroupRoleService,
-  },
-  {
-    provide: CreateGroupRoleUseCaseProvider,
-    useClass: CreateGroupRoleService,
-  },
-  {
-    provide: UpdateGroupRoleUseCaseProvider,
-    useClass: UpdateGroupRoleService,
-  },
-  {
-    provide: RemoveGroupRoleUseCaseProvider,
-    useClass: RemoveGroupRoleService,
-  },
-  {
-    provide: GroupRepositoryProvider,
-    useClass: GroupRepositoryImpl,
-  },
-  {
-    provide: GroupRoleRepositoryProvider,
-    useClass: GroupRoleRepositoryImpl,
-  },
-  {
-    provide: GroupMemberRepositoryProvider,
-    useClass: GroupMemberRepositoryImpl,
-  },
+	{
+		provide: GetGroupUseCaseProvider,
+		useClass: GetGroupService,
+	},
+	{
+		provide: ListGroupsUseCaseProvider,
+		useClass: ListGroupsService,
+	},
+	{
+		provide: GetGroupHistoryUseCaseProvider,
+		useClass: GetGroupHistoryService,
+	},
+	{
+		provide: CreateGroupUseCaseProvider,
+		useClass: CreateGroupService,
+	},
+	{
+		provide: UpdateGroupUseCaseProvider,
+		useClass: UpdateGroupService,
+	},
+	{
+		provide: UpdateGroupVisibilityUseCaseProvider,
+		useClass: UpdateGroupVisibilityService,
+	},
+	{
+		provide: DeleteGroupUseCaseProvider,
+		useClass: DeleteGroupService,
+	},
+	{
+		provide: ListGroupMembersUseCaseProvider,
+		useClass: ListGroupMembersService,
+	},
+	{
+		provide: ListGroupRequestsUseCaseProvider,
+		useClass: ListGroupRequestsService,
+	},
+	{
+		provide: AcceptGroupRequestUseCaseProvider,
+		useClass: AcceptGroupRequestService,
+	},
+	{
+		provide: RefuseGroupRequestUseCaseProvider,
+		useClass: RefuseGroupRequestService,
+	},
+	{
+		provide: JoinGroupUseCaseProvider,
+		useClass: JoinGroupService,
+	},
+	{
+		provide: LeaveGroupUseCaseProvider,
+		useClass: LeaveGroupService,
+	},
+	{
+		provide: RemoveGroupMemberUseCaseProvider,
+		useClass: RemoveGroupMemberService,
+	},
+	{
+		provide: ChangeMemberRoleUseCaseProvider,
+		useClass: ChangeMemberRoleService,
+	},
+	{
+		provide: ListGroupRolesUseCaseProvider,
+		useClass: ListGroupRolesService,
+	},
+	{
+		provide: GetGroupRoleUseCaseProvider,
+		useClass: GetGroupRoleService,
+	},
+	{
+		provide: CreateGroupRoleUseCaseProvider,
+		useClass: CreateGroupRoleService,
+	},
+	{
+		provide: UpdateGroupRoleUseCaseProvider,
+		useClass: UpdateGroupRoleService,
+	},
+	{
+		provide: RemoveGroupRoleUseCaseProvider,
+		useClass: RemoveGroupRoleService,
+	},
+	{
+		provide: GroupRepositoryProvider,
+		useClass: GroupRepositoryImpl,
+	},
+	{
+		provide: GroupRoleRepositoryProvider,
+		useClass: GroupRoleRepositoryImpl,
+	},
+	{
+		provide: GroupMemberRepositoryProvider,
+		useClass: GroupMemberRepositoryImpl,
+	},
 ];

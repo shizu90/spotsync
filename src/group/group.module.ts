@@ -8,9 +8,9 @@ import { GroupMemberController } from './infrastructure/adapters/in/web/group-me
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [UserModule, AuthModule, PrismaModule],
-  providers: [...Providers],
-  exports: [...Providers],
-  controllers: [GroupController, GroupRoleController, GroupMemberController],
+	imports: [UserModule, AuthModule, PrismaModule],
+	providers: [...Providers],
+	exports: [...Providers],
+	controllers: [GroupController, GroupRoleController, GroupMemberController],
 })
 export class GroupModule {}

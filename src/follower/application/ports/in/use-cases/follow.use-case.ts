@@ -5,4 +5,4 @@ import { FollowDto } from '../../out/dto/follow.dto';
 export const FollowUseCaseProvider = 'FollowUseCase';
 
 export interface FollowUseCase
-  extends UseCase<FollowCommand, Promise<FollowDto>> {}
+	extends UseCase<FollowCommand, Promise<FollowDto>> {}

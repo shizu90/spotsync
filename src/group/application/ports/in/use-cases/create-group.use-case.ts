@@ -5,4 +5,4 @@ import { CreateGroupDto } from '../../out/dto/create-group.dto';
 export const CreateGroupUseCaseProvider = 'CreateGroupUseCase';
 
 export interface CreateGroupUseCase
-  extends UseCase<CreateGroupCommand, Promise<CreateGroupDto>> {}
+	extends UseCase<CreateGroupCommand, Promise<CreateGroupDto>> {}

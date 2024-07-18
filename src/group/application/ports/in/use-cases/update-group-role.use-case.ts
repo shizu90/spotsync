@@ -4,4 +4,4 @@ import { UpdateGroupRoleCommand } from '../commands/update-group-role.command';
 export const UpdateGroupRoleUseCaseProvider = 'UpdateGroupRoleUseCae';
 
 export interface UpdateGroupRoleUseCase
-  extends UseCase<UpdateGroupRoleCommand, Promise<void>> {}
+	extends UseCase<UpdateGroupRoleCommand, Promise<void>> {}

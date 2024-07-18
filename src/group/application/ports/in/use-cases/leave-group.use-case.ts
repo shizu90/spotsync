@@ -4,4 +4,4 @@ import { LeaveGroupCommand } from '../commands/leave-group.command';
 export const LeaveGroupUseCaseProvider = 'LeaveGroupUseCase';
 
 export interface LeaveGroupUseCase
-  extends UseCase<LeaveGroupCommand, Promise<void>> {}
+	extends UseCase<LeaveGroupCommand, Promise<void>> {}

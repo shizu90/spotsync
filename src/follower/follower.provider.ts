@@ -15,32 +15,32 @@ import { ListFollowsUseCaseProvider } from './application/ports/in/use-cases/lis
 import { ListFollowsService } from './application/services/list-follows.service';
 
 export const Providers: Provider[] = [
-  {
-    provide: FollowUseCaseProvider,
-    useClass: FollowService,
-  },
-  {
-    provide: UnfollowUseCaseProvider,
-    useClass: UnfollowService,
-  },
-  {
-    provide: AcceptFollowRequestUseCaseProvider,
-    useClass: AcceptFollowRequestService,
-  },
-  {
-    provide: RefuseFollowRequestUseCaseProvider,
-    useClass: RefuseFollowRequestService,
-  },
-  {
-    provide: ListFollowsUseCaseProvider,
-    useClass: ListFollowsService,
-  },
-  {
-    provide: ListFollowRequestsUseCaseProvider,
-    useClass: ListFollowRequestsService,
-  },
-  {
-    provide: FollowRepositoryProvider,
-    useClass: FollowRepositoryImpl,
-  },
+	{
+		provide: FollowUseCaseProvider,
+		useClass: FollowService,
+	},
+	{
+		provide: UnfollowUseCaseProvider,
+		useClass: UnfollowService,
+	},
+	{
+		provide: AcceptFollowRequestUseCaseProvider,
+		useClass: AcceptFollowRequestService,
+	},
+	{
+		provide: RefuseFollowRequestUseCaseProvider,
+		useClass: RefuseFollowRequestService,
+	},
+	{
+		provide: ListFollowsUseCaseProvider,
+		useClass: ListFollowsService,
+	},
+	{
+		provide: ListFollowRequestsUseCaseProvider,
+		useClass: ListFollowRequestsService,
+	},
+	{
+		provide: FollowRepositoryProvider,
+		useClass: FollowRepositoryImpl,
+	},
 ];

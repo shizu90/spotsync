@@ -6,4 +6,4 @@ import { Pagination } from 'src/common/common.repository';
 export const ListUsersUseCaseProvider = 'ListUsersUseCase';
 
 export interface ListUsersUseCase
-  extends UseCase<ListUsersCommand, Promise<Pagination<GetUserProfileDto>>> {}
+	extends UseCase<ListUsersCommand, Promise<Pagination<GetUserProfileDto>>> {}

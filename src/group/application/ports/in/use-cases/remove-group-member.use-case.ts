@@ -4,4 +4,4 @@ import { RemoveGroupMemberCommand } from '../commands/remove-group-member.comman
 export const RemoveGroupMemberUseCaseProvider = 'RemoveGroupMemberUseCase';
 
 export interface RemoveGroupMemberUseCase
-  extends UseCase<RemoveGroupMemberCommand, Promise<void>> {}
+	extends UseCase<RemoveGroupMemberCommand, Promise<void>> {}

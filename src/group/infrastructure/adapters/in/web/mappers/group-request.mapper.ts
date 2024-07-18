@@ -10,50 +10,50 @@ import { DeleteGroupCommand } from 'src/group/application/ports/in/commands/dele
 import { ListGroupsQueryRequest } from '../requests/list-groups-query.request';
 
 export class GroupRequestMapper {
-  public static listGroupsCommand(
-    query: ListGroupsQueryRequest,
-  ): ListGroupsCommand {
-    return new ListGroupsCommand(
-      query.name,
-      query.group_visibility,
-      query.sort,
-      query.sort_direction,
-      Number.isNaN(Number(query.page)) ? 0 : Number(query.page),
-      Boolean(query.paginate),
-      Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit),
-    );
-  }
+	public static listGroupsCommand(
+		query: ListGroupsQueryRequest,
+	): ListGroupsCommand {
+		return new ListGroupsCommand(
+			query.name,
+			query.group_visibility,
+			query.sort,
+			query.sort_direction,
+			Number.isNaN(Number(query.page)) ? 0 : Number(query.page),
+			Boolean(query.paginate),
+			Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit),
+		);
+	}
 
-  public static getGroupCommand(id: string): GetGroupCommand {
-    return new GetGroupCommand(id);
-  }
+	public static getGroupCommand(id: string): GetGroupCommand {
+		return new GetGroupCommand(id);
+	}
 
-  public static createGroupCommand(
-    request: CreateGroupRequest,
-  ): CreateGroupCommand {
-    return new CreateGroupCommand(request.name, request.about);
-  }
+	public static createGroupCommand(
+		request: CreateGroupRequest,
+	): CreateGroupCommand {
+		return new CreateGroupCommand(request.name, request.about);
+	}
 
-  public static updateGroupCommand(
-    id: string,
-    request: UpdateGroupRequest,
-  ): UpdateGroupCommand {
-    return new UpdateGroupCommand(id, request.name, request.about);
-  }
+	public static updateGroupCommand(
+		id: string,
+		request: UpdateGroupRequest,
+	): UpdateGroupCommand {
+		return new UpdateGroupCommand(id, request.name, request.about);
+	}
 
-  public static updateGroupVisibilityCommand(
-    id: string,
-    request: UpdateGroupVisibilityRequest,
-  ): UpdateGroupVisibilityCommand {
-    return new UpdateGroupVisibilityCommand(
-      id,
-      request.group_visibility,
-      request.post_visibility,
-      request.event_visibility,
-    );
-  }
+	public static updateGroupVisibilityCommand(
+		id: string,
+		request: UpdateGroupVisibilityRequest,
+	): UpdateGroupVisibilityCommand {
+		return new UpdateGroupVisibilityCommand(
+			id,
+			request.group_visibility,
+			request.post_visibility,
+			request.event_visibility,
+		);
+	}
 
-  public static deleteGroupCommand(id: string): DeleteGroupCommand {
-    return new DeleteGroupCommand(id);
-  }
+	public static deleteGroupCommand(id: string): DeleteGroupCommand {
+		return new DeleteGroupCommand(id);
+	}
 }

@@ -5,14 +5,14 @@ import { Request } from 'express';
 
 @Injectable()
 export class GetAuthenticatedUserService
-  implements GetAuthenticatedUserUseCase
+	implements GetAuthenticatedUserUseCase
 {
-  public constructor(
-    @Inject(REQUEST)
-    protected request: Request,
-  ) {}
+	public constructor(
+		@Inject(REQUEST)
+		protected request: Request,
+	) {}
 
-  public execute(command?: null): string {
-    return this.request['authenticated_user'];
-  }
+	public execute(command?: null): string {
+		return this.request['authenticated_user'];
+	}
 }

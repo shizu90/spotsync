@@ -6,7 +6,7 @@ import { Pagination } from 'src/common/common.repository';
 export const ListGroupRolesUseCaseProvider = 'ListGroupRolesUseCase';
 
 export interface ListGroupRolesUseCase
-  extends UseCase<
-    ListGroupRolesCommand,
-    Promise<Pagination<GetGroupRoleDto>>
-  > {}
+	extends UseCase<
+		ListGroupRolesCommand,
+		Promise<Pagination<GetGroupRoleDto>>
+	> {}

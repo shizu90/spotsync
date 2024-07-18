@@ -4,4 +4,4 @@ import { DeleteUserCommand } from '../commands/delete-user.command';
 export const DeleteUserUseCaseProvider = 'DeleteUserUseCase';
 
 export interface DeleteUserUseCase
-  extends UseCase<DeleteUserCommand, Promise<void>> {}
+	extends UseCase<DeleteUserCommand, Promise<void>> {}

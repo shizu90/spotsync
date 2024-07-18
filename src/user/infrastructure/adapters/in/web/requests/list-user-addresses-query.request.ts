@@ -1,40 +1,40 @@
 import {
-  IsBoolean,
-  IsBooleanString,
-  IsEnum,
-  IsNumber,
-  IsNumberString,
-  IsOptional,
-  IsString,
+	IsBoolean,
+	IsBooleanString,
+	IsEnum,
+	IsNumber,
+	IsNumberString,
+	IsOptional,
+	IsString,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 
 export class ListUserAddressesQueryRequest {
-  @IsOptional()
-  @IsString()
-  public name?: string;
+	@IsOptional()
+	@IsString()
+	public name?: string;
 
-  @IsOptional()
-  @IsBooleanString()
-  public main?: boolean;
+	@IsOptional()
+	@IsBooleanString()
+	public main?: boolean;
 
-  @IsOptional()
-  @IsString()
-  public sort?: string;
+	@IsOptional()
+	@IsString()
+	public sort?: string;
 
-  @IsOptional()
-  @IsEnum(SortDirection)
-  public sort_direction?: SortDirection;
+	@IsOptional()
+	@IsEnum(SortDirection)
+	public sort_direction?: SortDirection;
 
-  @IsOptional()
-  @IsBooleanString()
-  public paginate?: boolean;
+	@IsOptional()
+	@IsBooleanString()
+	public paginate?: boolean;
 
-  @IsOptional()
-  @IsNumberString()
-  public page?: number;
+	@IsOptional()
+	@IsNumberString()
+	public page?: number;
 
-  @IsOptional()
-  @IsNumberString()
-  public limit?: number;
+	@IsOptional()
+	@IsNumberString()
+	public limit?: number;
 }

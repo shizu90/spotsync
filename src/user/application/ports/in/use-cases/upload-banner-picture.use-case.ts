@@ -4,4 +4,4 @@ import { UploadBannerPictureCommand } from '../commands/upload-banner-picture.co
 export const UploadBannerPictureUseCaseProvider = 'UploadBannerPictureUseCase';
 
 export interface UploadBannerPictureUseCase
-  extends UseCase<UploadBannerPictureCommand, Promise<string>> {}
+	extends UseCase<UploadBannerPictureCommand, Promise<string>> {}

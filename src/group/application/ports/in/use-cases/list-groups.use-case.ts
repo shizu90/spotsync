@@ -6,4 +6,4 @@ import { Pagination } from 'src/common/common.repository';
 export const ListGroupsUseCaseProvider = 'ListGroupsUseCase';
 
 export interface ListGroupsUseCase
-  extends UseCase<ListGroupsCommand, Promise<Pagination<GetGroupDto>>> {}
+	extends UseCase<ListGroupsCommand, Promise<Pagination<GetGroupDto>>> {}

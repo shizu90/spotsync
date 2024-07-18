@@ -4,4 +4,4 @@ import { UpdateUserProfileCommand } from '../commands/update-user-profile.comman
 export const UpdateUserProfileUseCaseProvider = 'UpdateUserProfileUseCase';
 
 export interface UpdateUserProfileUseCase
-  extends UseCase<UpdateUserProfileCommand, Promise<void>> {}
+	extends UseCase<UpdateUserProfileCommand, Promise<void>> {}

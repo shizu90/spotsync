@@ -3,9 +3,11 @@ import { Geolocator, GeoLocatorInput, GeoLocatorOutput } from './geolocator';
 
 @Injectable()
 export class GeoLocatorService implements Geolocator {
-  constructor() {}
+	constructor() {}
 
-  public async coordinates(input: GeoLocatorInput): Promise<GeoLocatorOutput> {
-    return new GeoLocatorOutput(0, 0);
-  }
+	public async coordinates(
+		input: GeoLocatorInput,
+	): Promise<GeoLocatorOutput> {
+		return new GeoLocatorOutput(0, 0);
+	}
 }

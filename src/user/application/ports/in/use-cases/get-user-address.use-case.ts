@@ -5,4 +5,4 @@ import { GetUserAddressDto } from '../../out/dto/get-user-address.dto';
 export const GetUserAddressUseCaseProvider = 'GetUserAddressUseCase';
 
 export interface GetUserAddressUseCase
-  extends UseCase<GetUserAddressCommand, Promise<GetUserAddressDto>> {}
+	extends UseCase<GetUserAddressCommand, Promise<GetUserAddressDto>> {}

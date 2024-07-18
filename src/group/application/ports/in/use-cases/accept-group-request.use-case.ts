@@ -5,4 +5,7 @@ import { AcceptGroupRequestDto } from '../../out/dto/accept-group-request.dto';
 export const AcceptGroupRequestUseCaseProvider = 'AcceptGroupRequestUseCase';
 
 export interface AcceptGroupRequestUseCase
-  extends UseCase<AcceptGroupRequestCommand, Promise<AcceptGroupRequestDto>> {}
+	extends UseCase<
+		AcceptGroupRequestCommand,
+		Promise<AcceptGroupRequestDto>
+	> {}

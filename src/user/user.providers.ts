@@ -35,72 +35,72 @@ import { ListUsersUseCaseProvider } from './application/ports/in/use-cases/list-
 import { ListUsersService } from './application/services/list-users.service';
 
 export const Providers: Provider[] = [
-  {
-    provide: CreateUserUseCaseProvider,
-    useClass: CreateUserService,
-  },
-  {
-    provide: UpdateUserCredentialsUseCaseProvider,
-    useClass: UpdateUserCredentialsService,
-  },
-  {
-    provide: UpdateUserVisibilityConfigUseCaseProvider,
-    useClass: UpdateUserVisibilityConfigService,
-  },
-  {
-    provide: UpdateUserProfileUseCaseProvider,
-    useClass: UpdateUserProfileService,
-  },
-  {
-    provide: DeleteUserUseCaseProvider,
-    useClass: DeleteUserService,
-  },
-  {
-    provide: UploadProfilePictureUseCaseProvider,
-    useClass: UploadProfilePictureService,
-  },
-  {
-    provide: UploadBannerPictureUseCaseProvider,
-    useClass: UploadBannerPictureService,
-  },
-  {
-    provide: GetUserProfileUseCaseProvider,
-    useClass: GetUserProfileService,
-  },
-  {
-    provide: ListUsersUseCaseProvider,
-    useClass: ListUsersService,
-  },
-  {
-    provide: CreateUserAddressUseCaseProvider,
-    useClass: CreateUserAddressService,
-  },
-  {
-    provide: UpdateUserAddressUseCaseProvider,
-    useClass: UpdateUserAddressService,
-  },
-  {
-    provide: DeleteUserAddressUseCaseProvider,
-    useClass: DeleteUserAddressService,
-  },
-  {
-    provide: GetUserAddressUseCaseProvider,
-    useClass: GetUserAddressService,
-  },
-  {
-    provide: ListUserAddressesUseCaseProvider,
-    useClass: ListUserAddressesService,
-  },
-  {
-    provide: UserRepositoryProvider,
-    useClass: UserRepositoryImpl,
-  },
-  {
-    provide: UserAddressRepositoryProvider,
-    useClass: UserAddressRepositoryImpl,
-  },
-  {
-    provide: EncryptPasswordServiceProvider,
-    useClass: EncryptPasswordServiceImpl,
-  },
+	{
+		provide: CreateUserUseCaseProvider,
+		useClass: CreateUserService,
+	},
+	{
+		provide: UpdateUserCredentialsUseCaseProvider,
+		useClass: UpdateUserCredentialsService,
+	},
+	{
+		provide: UpdateUserVisibilityConfigUseCaseProvider,
+		useClass: UpdateUserVisibilityConfigService,
+	},
+	{
+		provide: UpdateUserProfileUseCaseProvider,
+		useClass: UpdateUserProfileService,
+	},
+	{
+		provide: DeleteUserUseCaseProvider,
+		useClass: DeleteUserService,
+	},
+	{
+		provide: UploadProfilePictureUseCaseProvider,
+		useClass: UploadProfilePictureService,
+	},
+	{
+		provide: UploadBannerPictureUseCaseProvider,
+		useClass: UploadBannerPictureService,
+	},
+	{
+		provide: GetUserProfileUseCaseProvider,
+		useClass: GetUserProfileService,
+	},
+	{
+		provide: ListUsersUseCaseProvider,
+		useClass: ListUsersService,
+	},
+	{
+		provide: CreateUserAddressUseCaseProvider,
+		useClass: CreateUserAddressService,
+	},
+	{
+		provide: UpdateUserAddressUseCaseProvider,
+		useClass: UpdateUserAddressService,
+	},
+	{
+		provide: DeleteUserAddressUseCaseProvider,
+		useClass: DeleteUserAddressService,
+	},
+	{
+		provide: GetUserAddressUseCaseProvider,
+		useClass: GetUserAddressService,
+	},
+	{
+		provide: ListUserAddressesUseCaseProvider,
+		useClass: ListUserAddressesService,
+	},
+	{
+		provide: UserRepositoryProvider,
+		useClass: UserRepositoryImpl,
+	},
+	{
+		provide: UserAddressRepositoryProvider,
+		useClass: UserAddressRepositoryImpl,
+	},
+	{
+		provide: EncryptPasswordServiceProvider,
+		useClass: EncryptPasswordServiceImpl,
+	},
 ];

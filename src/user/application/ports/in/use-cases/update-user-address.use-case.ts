@@ -4,4 +4,4 @@ import { UpdateUserAddressCommand } from '../commands/update-user-address.comman
 export const UpdateUserAddressUseCaseProvider = 'UpdateUserAddressUseCase';
 
 export interface UpdateUserAddressUseCase
-  extends UseCase<UpdateUserAddressCommand, Promise<void>> {}
+	extends UseCase<UpdateUserAddressCommand, Promise<void>> {}

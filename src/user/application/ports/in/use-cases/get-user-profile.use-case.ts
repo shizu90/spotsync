@@ -5,4 +5,4 @@ import { GetUserProfileDto } from '../../out/dto/get-user-profile.dto';
 export const GetUserProfileUseCaseProvider = 'GetUserProfileUseCase';
 
 export interface GetUserProfileUseCase
-  extends UseCase<GetUserProfileCommand, Promise<GetUserProfileDto>> {}
+	extends UseCase<GetUserProfileCommand, Promise<GetUserProfileDto>> {}

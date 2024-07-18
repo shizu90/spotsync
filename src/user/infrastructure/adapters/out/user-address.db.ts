@@ -9,305 +9,327 @@ import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.mod
 import { User } from 'src/user/domain/user.model';
 
 export class UserAddressRepositoryImpl implements UserAddressRepository {
-  public constructor(
-    @Inject(PrismaService) protected prismaService: PrismaService,
-  ) {}
+	public constructor(
+		@Inject(PrismaService) protected prismaService: PrismaService,
+	) {}
 
-  private mapUserAddressToDomain(prisma_model: any): UserAddress {
-    if (prisma_model === null || prisma_model === undefined) return null;
+	private mapUserAddressToDomain(prisma_model: any): UserAddress {
+		if (prisma_model === null || prisma_model === undefined) return null;
 
-    return UserAddress.create(
-      prisma_model.id,
-      prisma_model.name,
-      prisma_model.area,
-      prisma_model.sub_area,
-      prisma_model.locality,
-      prisma_model.latitude.toNumber(),
-      prisma_model.longitude.toNumber(),
-      prisma_model.country_code,
-      prisma_model.main,
-      User.create(
-        prisma_model.user.id,
-        prisma_model.user.profile_picture,
-        prisma_model.user.banner_picture,
-        prisma_model.user.biograph,
-        prisma_model.user.birth_date,
-        UserCredentials.create(
-          prisma_model.user.id,
-          prisma_model.user.credentials.name,
-          prisma_model.user.credentials.email,
-          prisma_model.user.credentials.password,
-          prisma_model.user.credentials.last_login,
-          prisma_model.user.credentials.last_logout,
-        ),
-        UserVisibilityConfig.create(
-          prisma_model.user.id,
-          prisma_model.user.visibility_configuration.profile_visibility,
-          prisma_model.user.visibility_configuration.address_visibility,
-          prisma_model.user.visibility_configuration.poi_folder_visibility,
-          prisma_model.user.visibility_configuration.visited_poi_visibility,
-          prisma_model.user.visibility_configuration.post_visibility,
-        ),
-        prisma_model.user.created_at,
-        prisma_model.user.updated_at,
-        prisma_model.is_deleted,
-      ),
-      prisma_model.created_at,
-      prisma_model.updated_at,
-      prisma_model.is_deleted,
-    );
-  }
+		return UserAddress.create(
+			prisma_model.id,
+			prisma_model.name,
+			prisma_model.area,
+			prisma_model.sub_area,
+			prisma_model.locality,
+			prisma_model.latitude.toNumber(),
+			prisma_model.longitude.toNumber(),
+			prisma_model.country_code,
+			prisma_model.main,
+			User.create(
+				prisma_model.user.id,
+				prisma_model.user.profile_picture,
+				prisma_model.user.banner_picture,
+				prisma_model.user.biograph,
+				prisma_model.user.birth_date,
+				UserCredentials.create(
+					prisma_model.user.id,
+					prisma_model.user.credentials.name,
+					prisma_model.user.credentials.email,
+					prisma_model.user.credentials.password,
+					prisma_model.user.credentials.last_login,
+					prisma_model.user.credentials.last_logout,
+				),
+				UserVisibilityConfig.create(
+					prisma_model.user.id,
+					prisma_model.user.visibility_configuration
+						.profile_visibility,
+					prisma_model.user.visibility_configuration
+						.address_visibility,
+					prisma_model.user.visibility_configuration
+						.poi_folder_visibility,
+					prisma_model.user.visibility_configuration
+						.visited_poi_visibility,
+					prisma_model.user.visibility_configuration.post_visibility,
+				),
+				prisma_model.user.created_at,
+				prisma_model.user.updated_at,
+				prisma_model.is_deleted,
+			),
+			prisma_model.created_at,
+			prisma_model.updated_at,
+			prisma_model.is_deleted,
+		);
+	}
 
-  public async paginate(
-    params: PaginateParameters,
-  ): Promise<Pagination<UserAddress>> {
-    let query = `SELECT id FROM user_addresses`;
+	public async paginate(
+		params: PaginateParameters,
+	): Promise<Pagination<UserAddress>> {
+		let query = `SELECT id FROM user_addresses`;
 
-    if (params.filters) {
-      if (typeof params.filters['userId'] === 'string') {
-        const userId = params.filters['userId'];
-        if (query.includes('WHERE')) {
-          query = `${query} AND user_id = '${userId}'`;
-        } else {
-          query = `${query} WHERE user_id = '${userId}'`;
-        }
-      }
+		if (params.filters) {
+			if (typeof params.filters['userId'] === 'string') {
+				const userId = params.filters['userId'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND user_id = '${userId}'`;
+				} else {
+					query = `${query} WHERE user_id = '${userId}'`;
+				}
+			}
 
-      if (typeof params.filters['main'] === 'boolean') {
-        const main = params.filters['main'];
-        if (query.includes('WHERE')) {
-          query = `${query} AND main = ${main}`;
-        } else {
-          query = `${query} WHERE main = ${main}`;
-        }
-      }
+			if (typeof params.filters['main'] === 'boolean') {
+				const main = params.filters['main'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND main = ${main}`;
+				} else {
+					query = `${query} WHERE main = ${main}`;
+				}
+			}
 
-      if (typeof params.filters['name'] === 'string') {
-        const name = params.filters['name'];
-        if (query.includes('WHERE')) {
-          query = `${query} AND LOWER(name) LIKE '%${name.toLowerCase()}%'`;
-        } else {
-          query = `${query} WHERE LOWER(name) LIKE '%${name.toLowerCase()}%'`;
-        }
-      }
+			if (typeof params.filters['name'] === 'string') {
+				const name = params.filters['name'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+				} else {
+					query = `${query} WHERE LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+				}
+			}
 
-      if (typeof params.filters['isDeleted'] === 'boolean') {
-        const isDeleted = params.filters['isDeleted'];
-        if (query.includes('WHERE')) {
-          query = `${query} AND is_deleted = ${isDeleted}`;
-        } else {
-          query = `${query} WHERE is_deleted = ${isDeleted}`;
-        }
-      }
-    }
+			if (typeof params.filters['isDeleted'] === 'boolean') {
+				const isDeleted = params.filters['isDeleted'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND is_deleted = ${isDeleted}`;
+				} else {
+					query = `${query} WHERE is_deleted = ${isDeleted}`;
+				}
+			}
+		}
 
-    const ids =
-      await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+		const ids =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
 
-    const sort = params.sort ?? 'name';
-    const sortDirection = params.sortDirection ?? SortDirection.ASC;
+		const sort = params.sort ?? 'name';
+		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
-    let orderBy = {};
+		let orderBy = {};
 
-    switch (sort) {
-      case 'created_at':
-      case 'createdAt':
-        orderBy = { created_at: sortDirection };
-        break;
-      case 'updated_at':
-      case 'updatedAt':
-        orderBy = { updated_at: sortDirection };
-        break;
-      case 'name':
-      default:
-        orderBy = { name: sortDirection };
-        break;
-    }
+		switch (sort) {
+			case 'created_at':
+			case 'createdAt':
+				orderBy = { created_at: sortDirection };
+				break;
+			case 'updated_at':
+			case 'updatedAt':
+				orderBy = { updated_at: sortDirection };
+				break;
+			case 'name':
+			default:
+				orderBy = { name: sortDirection };
+				break;
+		}
 
-    let items = [];
+		let items = [];
 
-    const paginate = params.paginate ?? false;
-    const page = params.page ?? 0;
-    const limit = params.limit ?? 12;
-    const total = ids.length;
+		const paginate = params.paginate ?? false;
+		const page = params.page ?? 0;
+		const limit = params.limit ?? 12;
+		const total = ids.length;
 
-    if (paginate) {
-      items = await this.prismaService.userAddress.findMany({
-        where: { id: { in: ids.map((row) => row.id) } },
-        orderBy: orderBy,
-        include: {
-          user: {
-            include: { credentials: true, visibility_configuration: true },
-          },
-        },
-        skip: limit * page,
-        take: limit,
-      });
-    } else {
-      items = await this.prismaService.userAddress.findMany({
-        where: { id: { in: ids.map((row) => row.id) } },
-        orderBy: orderBy,
-        include: {
-          user: {
-            include: { credentials: true, visibility_configuration: true },
-          },
-        },
-      });
-    }
+		if (paginate) {
+			items = await this.prismaService.userAddress.findMany({
+				where: { id: { in: ids.map((row) => row.id) } },
+				orderBy: orderBy,
+				include: {
+					user: {
+						include: {
+							credentials: true,
+							visibility_configuration: true,
+						},
+					},
+				},
+				skip: limit * page,
+				take: limit,
+			});
+		} else {
+			items = await this.prismaService.userAddress.findMany({
+				where: { id: { in: ids.map((row) => row.id) } },
+				orderBy: orderBy,
+				include: {
+					user: {
+						include: {
+							credentials: true,
+							visibility_configuration: true,
+						},
+					},
+				},
+			});
+		}
 
-    items = items.map((i) => {
-      return this.mapUserAddressToDomain(i);
-    });
+		items = items.map((i) => {
+			return this.mapUserAddressToDomain(i);
+		});
 
-    return new Pagination(items, total, page);
-  }
+		return new Pagination(items, total, page);
+	}
 
-  public async findBy(values: Object): Promise<Array<UserAddress>> {
-    const userId = values['userId'];
-    const main = values['main'];
-    const name = values['name'];
-    const isDeleted = values['isDeleted'] ?? false;
+	public async findBy(values: Object): Promise<Array<UserAddress>> {
+		const userId = values['userId'];
+		const main = values['main'];
+		const name = values['name'];
+		const isDeleted = values['isDeleted'] ?? false;
 
-    let query = `SELECT id FROM user_addresses`;
+		let query = `SELECT id FROM user_addresses`;
 
-    if (userId) {
-      if (query.includes('WHERE')) {
-        query = `${query} AND user_id = '${userId}'`;
-      } else {
-        query = `${query} WHERE user_id = '${userId}'`;
-      }
-    }
+		if (userId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND user_id = '${userId}'`;
+			} else {
+				query = `${query} WHERE user_id = '${userId}'`;
+			}
+		}
 
-    if (main) {
-      if (query.includes('WHERE')) {
-        query = `${query} AND main = ${main}`;
-      } else {
-        query = `${query} WHERE main = ${main}`;
-      }
-    }
+		if (main) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND main = ${main}`;
+			} else {
+				query = `${query} WHERE main = ${main}`;
+			}
+		}
 
-    if (name) {
-      if (query.includes('WHERE')) {
-        query = `${query} AND LOWER(name) LIKE '%${name.toLowerCase()}%'`;
-      } else {
-        query = `${query} WHERE LOWER(name) LIKE '%${name.toLowerCase()}%'`;
-      }
-    }
+		if (name) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+			} else {
+				query = `${query} WHERE LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+			}
+		}
 
-    if (isDeleted !== undefined) {
-      if (query.includes('WHERE')) {
-        query = `${query} AND is_deleted = ${isDeleted}`;
-      } else {
-        query = `${query} WHERE is_deleted = ${isDeleted}`;
-      }
-    }
+		if (isDeleted !== undefined) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND is_deleted = ${isDeleted}`;
+			} else {
+				query = `${query} WHERE is_deleted = ${isDeleted}`;
+			}
+		}
 
-    const userAddressIds =
-      await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+		const userAddressIds =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
 
-    const userAddresses = await this.prismaService.userAddress.findMany({
-      where: { id: { in: userAddressIds.map((row) => row.id) } },
-      include: {
-        user: {
-          include: { credentials: true, visibility_configuration: true },
-        },
-      },
-    });
+		const userAddresses = await this.prismaService.userAddress.findMany({
+			where: { id: { in: userAddressIds.map((row) => row.id) } },
+			include: {
+				user: {
+					include: {
+						credentials: true,
+						visibility_configuration: true,
+					},
+				},
+			},
+		});
 
-    return userAddresses.map((userAddress) => {
-      return this.mapUserAddressToDomain(userAddress);
-    });
-  }
+		return userAddresses.map((userAddress) => {
+			return this.mapUserAddressToDomain(userAddress);
+		});
+	}
 
-  public async findAll(): Promise<Array<UserAddress>> {
-    const userAddresses = await this.prismaService.userAddress.findMany({
-      include: {
-        user: {
-          include: {
-            credentials: true,
-            visibility_configuration: true,
-          },
-        },
-      },
-    });
+	public async findAll(): Promise<Array<UserAddress>> {
+		const userAddresses = await this.prismaService.userAddress.findMany({
+			include: {
+				user: {
+					include: {
+						credentials: true,
+						visibility_configuration: true,
+					},
+				},
+			},
+		});
 
-    return userAddresses.map((userAddress) => {
-      return this.mapUserAddressToDomain(userAddress);
-    });
-  }
+		return userAddresses.map((userAddress) => {
+			return this.mapUserAddressToDomain(userAddress);
+		});
+	}
 
-  public async findById(id: string): Promise<UserAddress> {
-    const userAddress = await this.prismaService.userAddress.findFirst({
-      where: {
-        id: id,
-      },
-      include: {
-        user: {
-          include: { credentials: true, visibility_configuration: true },
-        },
-      },
-    });
+	public async findById(id: string): Promise<UserAddress> {
+		const userAddress = await this.prismaService.userAddress.findFirst({
+			where: {
+				id: id,
+			},
+			include: {
+				user: {
+					include: {
+						credentials: true,
+						visibility_configuration: true,
+					},
+				},
+			},
+		});
 
-    return this.mapUserAddressToDomain(userAddress);
-  }
+		return this.mapUserAddressToDomain(userAddress);
+	}
 
-  public async store(model: UserAddress): Promise<UserAddress> {
-    const userAddress = await this.prismaService.userAddress.create({
-      data: {
-        id: model.id(),
-        name: model.name(),
-        area: model.area(),
-        sub_area: model.subArea(),
-        latitude: model.latitude(),
-        longitude: model.longitude(),
-        country_code: model.countryCode(),
-        locality: model.locality(),
-        main: model.main(),
-        created_at: model.createdAt(),
-        updated_at: model.updatedAt(),
-        user_id: model.user().id(),
-      },
-      include: {
-        user: {
-          include: { credentials: true, visibility_configuration: true },
-        },
-      },
-    });
+	public async store(model: UserAddress): Promise<UserAddress> {
+		const userAddress = await this.prismaService.userAddress.create({
+			data: {
+				id: model.id(),
+				name: model.name(),
+				area: model.area(),
+				sub_area: model.subArea(),
+				latitude: model.latitude(),
+				longitude: model.longitude(),
+				country_code: model.countryCode(),
+				locality: model.locality(),
+				main: model.main(),
+				created_at: model.createdAt(),
+				updated_at: model.updatedAt(),
+				user_id: model.user().id(),
+			},
+			include: {
+				user: {
+					include: {
+						credentials: true,
+						visibility_configuration: true,
+					},
+				},
+			},
+		});
 
-    return this.mapUserAddressToDomain(userAddress);
-  }
+		return this.mapUserAddressToDomain(userAddress);
+	}
 
-  public async update(model: UserAddress): Promise<UserAddress> {
-    const userAddress = await this.prismaService.userAddress.update({
-      where: {
-        id: model.id(),
-      },
-      data: {
-        name: model.name(),
-        area: model.area(),
-        sub_area: model.subArea(),
-        locality: model.locality(),
-        country_code: model.countryCode(),
-        latitude: model.latitude(),
-        longitude: model.longitude(),
-        main: model.main(),
-        created_at: model.createdAt(),
-        updated_at: model.updatedAt(),
-        is_deleted: model.isDeleted(),
-      },
-      include: {
-        user: {
-          include: { credentials: true, visibility_configuration: true },
-        },
-      },
-    });
+	public async update(model: UserAddress): Promise<UserAddress> {
+		const userAddress = await this.prismaService.userAddress.update({
+			where: {
+				id: model.id(),
+			},
+			data: {
+				name: model.name(),
+				area: model.area(),
+				sub_area: model.subArea(),
+				locality: model.locality(),
+				country_code: model.countryCode(),
+				latitude: model.latitude(),
+				longitude: model.longitude(),
+				main: model.main(),
+				created_at: model.createdAt(),
+				updated_at: model.updatedAt(),
+				is_deleted: model.isDeleted(),
+			},
+			include: {
+				user: {
+					include: {
+						credentials: true,
+						visibility_configuration: true,
+					},
+				},
+			},
+		});
 
-    return this.mapUserAddressToDomain(userAddress);
-  }
+		return this.mapUserAddressToDomain(userAddress);
+	}
 
-  public async delete(id: string): Promise<void> {
-    this.prismaService.userAddress.delete({
-      where: { id: id },
-    });
-  }
+	public async delete(id: string): Promise<void> {
+		this.prismaService.userAddress.delete({
+			where: { id: id },
+		});
+	}
 }

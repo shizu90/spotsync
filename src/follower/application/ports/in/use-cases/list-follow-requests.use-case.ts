@@ -6,7 +6,7 @@ import { GetFollowRequestDto } from '../../out/dto/get-follow-request.dto';
 export const ListFollowRequestsUseCaseProvider = 'ListFollowRequestsUseCase';
 
 export interface ListFollowRequestsUseCase
-  extends UseCase<
-    ListFollowRequestsCommand,
-    Promise<Pagination<GetFollowRequestDto>>
-  > {}
+	extends UseCase<
+		ListFollowRequestsCommand,
+		Promise<Pagination<GetFollowRequestDto>>
+	> {}

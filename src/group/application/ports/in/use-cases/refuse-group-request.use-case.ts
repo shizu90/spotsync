@@ -4,4 +4,4 @@ import { RefuseGroupRequestCommand } from '../commands/refuse-group-request.comm
 export const RefuseGroupRequestUseCaseProvider = 'RefuseGroupRequestUseCase';
 
 export interface RefuseGroupRequestUseCase
-  extends UseCase<RefuseGroupRequestCommand, Promise<void>> {}
+	extends UseCase<RefuseGroupRequestCommand, Promise<void>> {}

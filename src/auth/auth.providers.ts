@@ -7,16 +7,16 @@ import { GetAuthenticatedUserUseCaseProvider } from './application/ports/in/use-
 import { GetAuthenticatedUserService } from './application/services/get-authenticated-user.service';
 
 export const Providers: Provider[] = [
-  {
-    provide: SignInUseCaseProvider,
-    useClass: SignInService,
-  },
-  {
-    provide: SignOutUseCaseProvider,
-    useClass: SignOutService,
-  },
-  {
-    provide: GetAuthenticatedUserUseCaseProvider,
-    useClass: GetAuthenticatedUserService,
-  },
+	{
+		provide: SignInUseCaseProvider,
+		useClass: SignInService,
+	},
+	{
+		provide: SignOutUseCaseProvider,
+		useClass: SignOutService,
+	},
+	{
+		provide: GetAuthenticatedUserUseCaseProvider,
+		useClass: GetAuthenticatedUserService,
+	},
 ];

@@ -8,14 +8,14 @@ import { UserAddressController } from './infrastructure/adapters/in/web/user-add
 import { GeolocationModule } from 'src/geolocation/geolocation.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    forwardRef(() => AuthModule),
-    forwardRef(() => FollowerModule),
-    GeolocationModule,
-  ],
-  controllers: [UserController, UserAddressController],
-  providers: [...Providers],
-  exports: [...Providers],
+	imports: [
+		PrismaModule,
+		forwardRef(() => AuthModule),
+		forwardRef(() => FollowerModule),
+		GeolocationModule,
+	],
+	controllers: [UserController, UserAddressController],
+	providers: [...Providers],
+	exports: [...Providers],
 })
 export class UserModule {}

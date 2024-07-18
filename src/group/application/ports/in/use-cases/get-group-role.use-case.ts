@@ -5,4 +5,4 @@ import { GetGroupRoleDto } from '../../out/dto/get-group-role.dto';
 export const GetGroupRoleUseCaseProvider = 'GetGroupRoleUseCase';
 
 export interface GetGroupRoleUseCase
-  extends UseCase<GetGroupRoleCommand, Promise<GetGroupRoleDto>> {}
+	extends UseCase<GetGroupRoleCommand, Promise<GetGroupRoleDto>> {}

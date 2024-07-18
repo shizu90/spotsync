@@ -5,4 +5,4 @@ import { SignInDto } from '../../out/dto/sign-in.dto';
 export const SignInUseCaseProvider = 'SignInUseCase';
 
 export interface SignInUseCase
-  extends UseCase<SignInCommand, Promise<SignInDto>> {}
+	extends UseCase<SignInCommand, Promise<SignInDto>> {}

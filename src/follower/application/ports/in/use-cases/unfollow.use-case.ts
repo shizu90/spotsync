@@ -4,4 +4,4 @@ import { UnfollowCommand } from '../commands/unfollow.command';
 export const UnfollowUseCaseProvider = 'UnfollowUseCase';
 
 export interface UnfollowUseCase
-  extends UseCase<UnfollowCommand, Promise<void>> {}
+	extends UseCase<UnfollowCommand, Promise<void>> {}

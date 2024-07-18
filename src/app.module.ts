@@ -6,12 +6,12 @@ import { GroupModule } from './group/group.module';
 import { GeolocationModule } from './geolocation/geolocation.module';
 
 @Module({
-  imports: [
-    UserModule,
-    AuthModule,
-    FollowerModule,
-    GroupModule,
-    GeolocationModule,
-  ],
+	imports: [
+		UserModule,
+		AuthModule,
+		FollowerModule,
+		GroupModule,
+		GeolocationModule,
+	],
 })
 export class AppModule {}

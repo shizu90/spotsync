@@ -4,4 +4,4 @@ import { UpdateGroupCommand } from '../commands/update-group.command';
 export const UpdateGroupUseCaseProvider = 'UpdateGroupUseCase';
 
 export interface UpdateGroupUseCase
-  extends UseCase<UpdateGroupCommand, Promise<void>> {}
+	extends UseCase<UpdateGroupCommand, Promise<void>> {}

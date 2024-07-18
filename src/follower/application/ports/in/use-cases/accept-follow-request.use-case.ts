@@ -4,4 +4,4 @@ import { AcceptFollowRequestCommand } from '../commands/accept-follow-request.co
 export const AcceptFollowRequestUseCaseProvider = 'AcceptFollowRequestUseCase';
 
 export interface AcceptFollowRequestUseCase
-  extends UseCase<AcceptFollowRequestCommand, Promise<void>> {}
+	extends UseCase<AcceptFollowRequestCommand, Promise<void>> {}

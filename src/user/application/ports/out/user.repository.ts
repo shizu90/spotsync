@@ -6,10 +6,10 @@ import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.mod
 export const UserRepositoryProvider = 'UserRepository';
 
 export interface UserRepository extends Repository<User, string> {
-  findByName(name: string): Promise<User>;
-  findByEmail(email: string): Promise<User>;
-  updateCredentials(credentials: UserCredentials): Promise<User>;
-  updateVisibilityConfig(
-    userVisibilityConfig: UserVisibilityConfig,
-  ): Promise<User>;
+	findByName(name: string): Promise<User>;
+	findByEmail(email: string): Promise<User>;
+	updateCredentials(credentials: UserCredentials): Promise<User>;
+	updateVisibilityConfig(
+		userVisibilityConfig: UserVisibilityConfig,
+	): Promise<User>;
 }

@@ -6,7 +6,7 @@ import { Pagination } from 'src/common/common.repository';
 export const GetGroupHistoryUseCaseProvider = 'GetGroupHistoryUseCase';
 
 export interface GetGroupHistoryUseCase
-  extends UseCase<
-    GetGroupHistoryCommand,
-    Promise<Pagination<GetGroupLogDto>>
-  > {}
+	extends UseCase<
+		GetGroupHistoryCommand,
+		Promise<Pagination<GetGroupLogDto>>
+	> {}

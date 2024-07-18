@@ -5,4 +5,4 @@ import { CreateUserDto } from '../../out/dto/create-user.dto';
 export const CreateUserUseCaseProvider = 'CreateUserUseCaseProvider';
 
 export interface CreateUserUseCase
-  extends UseCase<CreateUserCommand, Promise<CreateUserDto>> {}
+	extends UseCase<CreateUserCommand, Promise<CreateUserDto>> {}
