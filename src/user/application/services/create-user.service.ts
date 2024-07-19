@@ -1,4 +1,3 @@
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
 import { CreateUserCommand } from '../ports/in/commands/create-user.command';
 import { CreateUserUseCase } from '../ports/in/use-cases/create-user.use-case';
 import { randomUUID } from 'crypto';
@@ -14,7 +13,6 @@ import {
 	EncryptPasswordServiceProvider,
 } from '../ports/out/encrypt-password.service';
 import { CreateUserDto } from '../ports/out/dto/create-user.dto';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 
 @Injectable()

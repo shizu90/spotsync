@@ -1,9 +1,8 @@
 import { Model } from 'src/common/common.model';
 import { UserCredentials } from './user-credentials.model';
 import { UserVisibilityConfig } from './user-visibility-config.model';
-import { first } from 'rxjs';
 import { UserVisibility } from './user-visibility.enum';
-import moment from 'moment';
+import * as moment from 'moment';
 
 export class User extends Model {
 	private _id: string;
@@ -29,8 +28,8 @@ export class User extends Model {
 		bannerPicture: string,
 		biograph: string,
 		birthDate: Date,
-		credentials: UserCredentials,
-		visibilityConfiguration: UserVisibilityConfig,
+		credentials?: UserCredentials,
+		visibilityConfiguration?: UserVisibilityConfig,
 		createdAt?: Date,
 		updatedAt?: Date,
 		isDeleted?: boolean,
@@ -93,6 +92,10 @@ export class User extends Model {
 
 	public lastName(): string {
 		return this._lastName;
+	}
+
+	public fullName(): string {
+		return `${this._firstName} ${this._lastName}`;
 	}
 
 	public profileThemeColor(): string {
