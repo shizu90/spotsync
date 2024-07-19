@@ -1,8 +1,7 @@
 import { CreateUserService } from "../create-user.service";
 import { TestBed } from "@automock/jest";
 import { CreateUserCommand } from "../../ports/in/commands/create-user.command";
-import { UserRepositoryImpl } from "src/user/infrastructure/adapters/out/user.db";
-import { UserRepositoryProvider } from "../../ports/out/user.repository";
+import { UserRepository, UserRepositoryProvider } from "../../ports/out/user.repository";
 import { User } from "src/user/domain/user.model";
 import { randomUUID } from "crypto";
 import { UserCredentials } from "src/user/domain/user-credentials.model";
@@ -16,7 +15,7 @@ const command = new CreateUserCommand(
     "Password123"
 );
 
-const resolvedValue = () => {
+const mockUser = () => {
     const id = randomUUID();
 
     return User.create(
@@ -45,7 +44,7 @@ const resolvedValue = () => {
 
 describe('CreateUserService', () => {
     let service: CreateUserService;
-    let repository: jest.Mocked<UserRepositoryImpl>
+    let repository: jest.Mocked<UserRepository>
 
     beforeAll(async () => {
         const { unit, unitRef } = TestBed.create(CreateUserService).compile();
@@ -63,7 +62,7 @@ describe('CreateUserService', () => {
 
         repository.findByEmail.mockResolvedValue(null);
         repository.findByName.mockResolvedValue(null);
-        repository.store.mockResolvedValue(resolvedValue());
+        repository.store.mockResolvedValue(mockUser());
 
         const user = await service.execute(command);
 
@@ -71,7 +70,7 @@ describe('CreateUserService', () => {
     });
 
     it('should not create a user with the same email', async () => {
-        repository.findByEmail.mockResolvedValue(resolvedValue());
+        repository.findByEmail.mockResolvedValue(mockUser());
 
         const user = await service.execute(command).catch(e => {
             expect(e.constructor).toBe(UserAlreadyExistsError);
@@ -79,7 +78,7 @@ describe('CreateUserService', () => {
     });
 
     it('should not create a user with the same name', async () => {
-        repository.findByName.mockResolvedValue(resolvedValue());
+        repository.findByName.mockResolvedValue(mockUser());
 
         const user = await service.execute(command).catch(e => {
             expect(e.constructor).toBe(UserAlreadyExistsError);

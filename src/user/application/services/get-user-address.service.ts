@@ -18,6 +18,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { UserAddressNotFoundError } from './errors/user-address-not-found.error';
 
 @Injectable()
 export class GetUserAddressService implements GetUserAddressUseCase {
@@ -52,7 +53,7 @@ export class GetUserAddressService implements GetUserAddressUseCase {
 			userAddress.user().id() != user.id() ||
 			userAddress.isDeleted()
 		) {
-			throw new UserNotFoundError(`User address ${command.id} not found`);
+			throw new UserAddressNotFoundError(`User address ${command.id} not found`);
 		}
 
 		return new GetUserAddressDto(

@@ -8,10 +8,6 @@ import {
 import { UserNotFoundError } from './errors/user-not-found.error';
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	UserAddressRepository,
-	UserAddressRepositoryProvider,
-} from '../ports/out/user-address.repository';
-import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
@@ -22,8 +18,6 @@ export class DeleteUserService implements DeleteUserUseCase {
 	constructor(
 		@Inject(UserRepositoryProvider)
 		protected userRepository: UserRepository,
-		@Inject(UserAddressRepositoryProvider)
-		protected userAddressRepository: UserAddressRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 	) {}
@@ -38,15 +32,6 @@ export class DeleteUserService implements DeleteUserUseCase {
 		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
-
-		const userAddresses = await this.userAddressRepository.findBy({
-			userId: user.id(),
-		});
-
-		userAddresses.forEach((userAddress) => {
-			userAddress.delete();
-			this.userAddressRepository.update(userAddress);
-		});
 
 		user.delete();
 

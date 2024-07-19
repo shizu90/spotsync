@@ -1,4 +1,4 @@
-import moment from 'moment';
+import * as moment from 'moment';
 import { Model } from 'src/common/common.model';
 import { User } from 'src/user/domain/user.model';
 

@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DeleteUserAddressUseCase } from '../ports/in/use-cases/delete-user-address.use-case';
 import {
 	UserAddressRepository,
@@ -17,6 +17,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 
 @Injectable()
 export class DeleteUserAddressService implements DeleteUserAddressUseCase {
@@ -37,7 +38,7 @@ export class DeleteUserAddressService implements DeleteUserAddressUseCase {
 		}
 
 		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
-			throw new UnauthorizedException(`Unauthorized access`);
+			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
 		const userAddress: UserAddress =

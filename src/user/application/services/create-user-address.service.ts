@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserAddressUseCase } from '../ports/in/use-cases/create-user-address.use-case';
 import {
 	UserAddressRepository,
@@ -24,6 +24,7 @@ import {
 	GeoLocatorOutput,
 	GeoLocatorProvider,
 } from 'src/geolocation/geolocator';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 
 @Injectable()
 export class CreateUserAddressService implements CreateUserAddressUseCase {
@@ -48,7 +49,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase {
 		}
 
 		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
-			throw new UnauthorizedException(`Unauthorized access`);
+			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
 		const coordinates: GeoLocatorOutput =
