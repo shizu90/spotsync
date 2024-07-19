@@ -29,5 +29,5 @@ export class CreateUserRequest {
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
-	public phone_number: string;
+	public phone_number?: string;
 }

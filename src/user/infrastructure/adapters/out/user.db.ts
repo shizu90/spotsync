@@ -83,18 +83,18 @@ export class UserRepositoryImpl implements UserRepository {
 			if (typeof params.filters['lastName'] === 'string') {
 				const lastName = params.filters['lastName'];
 				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(users.first_name) LIKE '%${lastName.toLowerCase()}%'`;
+					query = `${query} AND LOWER(users.last_name) LIKE '%${lastName.toLowerCase()}%'`;
 				} else {
-					query = `${query} WHERE LOWER(users.first_name) LIKE '%${lastName.toLowerCase()}%'`;
+					query = `${query} WHERE LOWER(users.last_name) LIKE '%${lastName.toLowerCase()}%'`;
 				}
 			}
 
 			if (typeof params.filters['fullName'] === 'string') {
 				const fullName = params.filters['fullName'];
 				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER((users.first_name || users.last_name)) LIKE '%${fullName.trim().toLowerCase()}%'`;
+					query = `${query} AND LOWER((users.first_name || COALESCE(users.last_name, ''))) LIKE '%${fullName.trim().toLowerCase()}%'`;
 				} else {
-					query = `${query} WHERE LOWER((users.first_name || users.last_name)) LIKE '%${fullName.trim().toLowerCase()}%'`;
+					query = `${query} WHERE LOWER((users.first_name || COALESCE(users.last_name, ''))) LIKE '%${fullName.trim().toLowerCase()}%'`;
 				}
 			}
 

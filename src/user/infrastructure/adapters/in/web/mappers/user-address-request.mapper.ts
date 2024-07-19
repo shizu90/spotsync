@@ -22,7 +22,7 @@ export class UserAddressRequestMapper {
 		return new ListUserAddressesCommand(
 			userId,
 			query.name,
-			Boolean(query.main),
+			query.main,
 			query.sort,
 			query.sort_direction,
 			Boolean(query.paginate),

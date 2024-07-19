@@ -28,4 +28,9 @@ export class UpdateUserCredentialsRequest {
 	@MaxLength(32, { message: 'Password must have less than 32 characters.' })
 	@IsOptional()
 	public password?: string;
+
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	public phone_number?: string;
 }

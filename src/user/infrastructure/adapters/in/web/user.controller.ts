@@ -99,8 +99,6 @@ export class UserController {
 	) {
 		const command = UserRequestMapper.listUsersCommand(query);
 
-		console.log(command);
-
 		const data = await this.listUsersUseCase.execute(command);
 
 		res.status(HttpStatus.OK).json({

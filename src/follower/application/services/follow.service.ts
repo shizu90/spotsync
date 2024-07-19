@@ -75,7 +75,6 @@ export class FollowService implements FollowUseCase {
 			toUser.visibilityConfiguration().profileVisibility() !==
 			UserVisibility.PUBLIC
 		) {
-			console.log('hello');
 			const followRequest = FollowRequest.create(
 				randomUUID(),
 				fromUser,

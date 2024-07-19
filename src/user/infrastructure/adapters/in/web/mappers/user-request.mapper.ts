@@ -69,6 +69,7 @@ export class UserRequestMapper {
 			request.name,
 			request.email,
 			request.password,
+			request.phone_number
 		);
 	}
 
