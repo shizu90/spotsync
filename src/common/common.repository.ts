@@ -20,7 +20,7 @@ export class Pagination<T> {
 		this.items = items;
 		this.total = total;
 		this.current_page = current_page;
-		this.next_page = (items.length * (current_page+1)) < total;
+		this.next_page = items.length * (current_page + 1) < total;
 	}
 }
 

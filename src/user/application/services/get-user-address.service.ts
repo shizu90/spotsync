@@ -53,7 +53,9 @@ export class GetUserAddressService implements GetUserAddressUseCase {
 			userAddress.user().id() != user.id() ||
 			userAddress.isDeleted()
 		) {
-			throw new UserAddressNotFoundError(`User address ${command.id} not found`);
+			throw new UserAddressNotFoundError(
+				`User address ${command.id} not found`,
+			);
 		}
 
 		return new GetUserAddressDto(

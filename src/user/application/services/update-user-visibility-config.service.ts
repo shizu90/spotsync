@@ -6,7 +6,10 @@ import {
 } from '../ports/out/user.repository';
 import { UpdateUserVisibilityConfigCommand } from '../ports/in/commands/update-user-visibility-config.command';
 import { UserNotFoundError } from './errors/user-not-found.error';
-import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import {
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 
 @Injectable()
