@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { Model } from 'src/common/common.model';
 
 export class UserCredentials extends Model {
@@ -93,10 +94,10 @@ export class UserCredentials extends Model {
 	}
 
 	public login() {
-		this._lastLogin = new Date();
+		this._lastLogin = moment().toDate();
 	}
 
 	public logout() {
-		this._lastLogout = new Date();
+		this._lastLogout = moment().toDate();
 	}
 }

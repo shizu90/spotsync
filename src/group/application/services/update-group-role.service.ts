@@ -61,19 +61,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 			);
 		}
 
-		const hasPermission = authenticatedGroupMember
-			.role()
-			.permissions()
-			.map((p) => p.name())
-			.includes('update-role');
-
-		if (
-			!(
-				hasPermission ||
-				authenticatedGroupMember.isCreator() ||
-				authenticatedGroupMember.role().name() === 'administrator'
-			)
-		) {
+		if (!authenticatedGroupMember.canExecute('update-role')) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to update role`,
 			);
@@ -119,9 +107,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 
 		this.groupRoleRepository.update(groupRole);
 
-		const log = GroupLog.create(
-			randomUUID(),
-			group,
+		const log = group.newLog(
 			`${authenticatedGroupMember.user().credentials().name()} updated the role ${groupRole.name()}`,
 		);
 

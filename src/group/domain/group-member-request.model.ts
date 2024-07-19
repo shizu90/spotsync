@@ -1,7 +1,6 @@
 import { Model } from 'src/common/common.model';
 import { Group } from './group.model';
 import { User } from 'src/user/domain/user.model';
-import { randomUUID } from 'crypto';
 import { GroupRole } from './group-role.model';
 import { GroupMember } from './group-member.model';
 
@@ -50,12 +49,6 @@ export class GroupMemberRequest extends Model {
 	}
 
 	public accept(role: GroupRole): GroupMember {
-		return GroupMember.create(
-			randomUUID(),
-			this._group,
-			this._user,
-			role,
-			false,
-		);
+		return this._group.addMember(this._user, role);
 	}
 }

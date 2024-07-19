@@ -25,14 +25,16 @@ export class UpdateUserVisibilityConfigService
 			throw new UserNotFoundError(`User not found`);
 		}
 
+		const userVisibilityConfig = user.visibilityConfiguration();
+
 		if (command.profileVisibility && command.profileVisibility !== null) {
-			user.visibilityConfiguration().changeProfileVisibility(
+			userVisibilityConfig.changeProfileVisibility(
 				command.profileVisibility,
 			);
 		}
 
 		if (command.addressVisibility && command.addressVisibility !== null) {
-			user.visibilityConfiguration().changeAddressVisibility(
+			userVisibilityConfig.changeAddressVisibility(
 				command.addressVisibility,
 			);
 		}
@@ -41,7 +43,7 @@ export class UpdateUserVisibilityConfigService
 			command.poiFolderVisibility &&
 			command.poiFolderVisibility !== null
 		) {
-			user.visibilityConfiguration().changePoiFolderVisibility(
+			userVisibilityConfig.changePoiFolderVisibility(
 				command.poiFolderVisibility,
 			);
 		}
@@ -50,18 +52,16 @@ export class UpdateUserVisibilityConfigService
 			command.visitedPoiVisibility &&
 			command.visitedPoiVisibility !== null
 		) {
-			user.visibilityConfiguration().changeVisitedPoiVisibility(
+			userVisibilityConfig.changeVisitedPoiVisibility(
 				command.visitedPoiVisibility,
 			);
 		}
 
 		if (command.postVisibility && command.postVisibility !== null) {
-			user.visibilityConfiguration().changePostVisibility(
-				command.postVisibility,
-			);
+			userVisibilityConfig.changePostVisibility(command.postVisibility);
 		}
 
-		user.changeVisibilityConfig(user.visibilityConfiguration());
+		user.changeVisibilityConfig(userVisibilityConfig);
 
 		this.userRepository.updateVisibilityConfig(
 			user.visibilityConfiguration(),

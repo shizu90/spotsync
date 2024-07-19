@@ -64,19 +64,7 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 			);
 		}
 
-		const hasPermission = authenticatedGroupMember
-			.role()
-			.permissions()
-			.map((p) => p.name())
-			.includes('create-role');
-
-		if (
-			!(
-				hasPermission ||
-				authenticatedGroupMember.isCreator() ||
-				authenticatedGroupMember.role().name() === 'administrator'
-			)
-		) {
+		if (!authenticatedGroupMember.canExecute('create-role')) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to create role`,
 			);
@@ -100,7 +88,12 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 			group,
 		);
 
+		const log = group.newLog(
+			`${authenticatedGroupMember.user().credentials().name()} created the role ${groupRole.name()}`,
+		);
+
 		this.groupRoleRepository.store(groupRole);
+		this.groupRepository.storeLog(log);
 
 		return new CreateGroupRoleDto(
 			groupRole.id(),

@@ -60,10 +60,11 @@ export class JoinGroupService implements JoinGroupUseCase {
 
 		const group = await this.groupRepository.findById(command.id);
 
-		if (
-			group.visibilityConfiguration().groupVisibility() ===
-			GroupVisibility.PRIVATE
-		) {
+		const memberRole = await this.groupRoleRepository.findByName('member');
+
+		const groupMember = group.joinGroup(user, memberRole, false);
+
+		if (groupMember instanceof GroupMemberRequest) {
 			let groupMemberRequest = (
 				await this.groupMemberRepository.findRequestBy({
 					groupId: group.id(),
@@ -80,17 +81,9 @@ export class JoinGroupService implements JoinGroupUseCase {
 				);
 			}
 
-			groupMemberRequest = GroupMemberRequest.create(
-				randomUUID(),
-				group,
-				user,
-			);
+			this.groupMemberRepository.storeRequest(groupMember);
 
-			this.groupMemberRepository.storeRequest(groupMemberRequest);
-
-			const log = GroupLog.create(
-				randomUUID(),
-				group,
+			const log = group.newLog(
 				`${user.credentials().name()} requested to join the group`,
 			);
 
@@ -125,9 +118,7 @@ export class JoinGroupService implements JoinGroupUseCase {
 
 			this.groupMemberRepository.store(groupMember);
 
-			const log = GroupLog.create(
-				randomUUID(),
-				group,
+			const log = group.newLog(
 				`${user.credentials().name()} joined the group`,
 			);
 

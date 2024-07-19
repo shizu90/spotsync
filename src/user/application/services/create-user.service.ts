@@ -41,24 +41,6 @@ export class CreateUserService implements CreateUserUseCase {
 
 		const userId = randomUUID();
 
-		let userCredentials: UserCredentials = UserCredentials.create(
-			userId,
-			command.name,
-			command.email,
-			await this.encryptPasswordService.encrypt(command.password),
-			command.phoneNumber ?? null,
-		);
-
-		const userVisibilityConfig: UserVisibilityConfig =
-			UserVisibilityConfig.create(
-				userId,
-				UserVisibility.PUBLIC,
-				UserVisibility.PUBLIC,
-				UserVisibility.PUBLIC,
-				UserVisibility.PUBLIC,
-				UserVisibility.PUBLIC,
-			);
-
 		const user: User = User.create(
 			userId,
 			command.name,
@@ -68,8 +50,21 @@ export class CreateUserService implements CreateUserUseCase {
 			null,
 			null,
 			null,
-			userCredentials,
-			userVisibilityConfig,
+		);
+
+		user.createCredentials(
+			command.name,
+			command.email,
+			await this.encryptPasswordService.encrypt(command.password),
+			command.phoneNumber ?? null,
+		);
+
+		user.createVisibilityConfig(
+			UserVisibility.PUBLIC,
+			UserVisibility.PUBLIC,
+			UserVisibility.PUBLIC,
+			UserVisibility.PUBLIC,
+			UserVisibility.PUBLIC,
 		);
 
 		this.userRepository.store(user);

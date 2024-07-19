@@ -72,19 +72,7 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 			);
 		}
 
-		const hasPermission = authenticatedGroupMember
-			.role()
-			.permissions()
-			.map((gm) => gm.name())
-			.includes('update-settings');
-
-		if (
-			!(
-				hasPermission ||
-				authenticatedGroupMember.isCreator() ||
-				authenticatedGroupMember.role().name() === 'administrator'
-			)
-		) {
+		if (!authenticatedGroupMember.canExecute('update-settings')) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to update group settings`,
 			);
@@ -104,9 +92,7 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 
 		this.groupRepository.update(group);
 
-		const log = GroupLog.create(
-			randomUUID(),
-			group,
+		const log = group.newLog(
 			`${authenticatedGroupMember.user().credentials().name()} removed the group settings`,
 		);
 

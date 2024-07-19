@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { Model } from 'src/common/common.model';
 import { User } from 'src/user/domain/user.model';
 
@@ -42,8 +43,8 @@ export class UserAddress extends Model {
 		this._countryCode = countryCode;
 		this._main = main;
 		this._user = user;
-		this._createdAt = createdAt ?? new Date();
-		this._updatedAt = updatedAt ?? new Date();
+		this._createdAt = createdAt ?? moment().toDate();
+		this._updatedAt = updatedAt ?? moment().toDate();
 		this._isDeleted = isDeleted ?? false;
 	}
 
@@ -133,46 +134,46 @@ export class UserAddress extends Model {
 
 	public changeName(name: string) {
 		this._name = name;
-		this._updatedAt = new Date();
+		this._updatedAt = moment().toDate();
 	}
 
 	public changeArea(area: string) {
 		this._area = area;
-		this._updatedAt = new Date();
+		this._updatedAt = moment().toDate();
 	}
 
 	public changeSubArea(subArea: string) {
 		this._subArea = subArea;
-		this._updatedAt = new Date();
+		this._updatedAt = moment().toDate();
 	}
 
 	public changeLocality(locality: string) {
 		this._locality = locality;
-		this._updatedAt = new Date();
+		this._updatedAt = moment().toDate();
 	}
 
 	public changeLatitude(latitude: number) {
 		this._latitude = latitude;
-		this._updatedAt = new Date();
+		this._updatedAt = moment().toDate();
 	}
 
 	public changeLongitude(longitude: number) {
 		this._longitude = longitude;
-		this._updatedAt = new Date();
+		this._updatedAt = moment().toDate();
 	}
 
 	public changeCountryCode(countryCode: string) {
 		this._countryCode = countryCode;
-		this._updatedAt = new Date();
+		this._updatedAt = moment().toDate();
 	}
 
 	public changeMain(main: boolean) {
 		this._main = main;
-		this._updatedAt = new Date();
+		this._updatedAt = moment().toDate();
 	}
 
 	public delete() {
 		this._isDeleted = true;
-		this._updatedAt = new Date();
+		this._updatedAt = moment().toDate();
 	}
 }

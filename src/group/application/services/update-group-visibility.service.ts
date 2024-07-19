@@ -74,19 +74,7 @@ export class UpdateGroupVisibilityService
 			);
 		}
 
-		const hasPermission = authenticatedGroupMember
-			.role()
-			.permissions()
-			.map((gm) => gm.name())
-			.includes('update-settings');
-
-		if (
-			!(
-				hasPermission ||
-				authenticatedGroupMember.isCreator() ||
-				authenticatedGroupMember.role().name() === 'adminitrator'
-			)
-		) {
+		if (!authenticatedGroupMember.canExecute('update-settings')) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to update group settings`,
 			);
@@ -126,9 +114,7 @@ export class UpdateGroupVisibilityService
 			group.visibilityConfiguration(),
 		);
 
-		const log = GroupLog.create(
-			randomUUID(),
-			group,
+		const log = group.newLog(
 			`${authenticatedGroupMember.user().credentials().name()} updated the group visibility`,
 		);
 

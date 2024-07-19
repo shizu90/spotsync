@@ -66,4 +66,8 @@ export class GroupMember extends Model {
 	public changeRole(role: GroupRole): void {
 		this._role = role;
 	}
+
+	public canExecute(permissionName: string): boolean {
+		return this._isCreator || this._role.hasPermission(permissionName);
+	}
 }

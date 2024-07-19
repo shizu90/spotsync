@@ -1,5 +1,12 @@
 import { Model } from 'src/common/common.model';
 import { GroupVisibilityConfig } from './group-visibility-config.model';
+import { GroupMember } from './group-member.model';
+import { User } from 'src/user/domain/user.model';
+import { GroupRole } from './group-role.model';
+import { randomUUID } from 'crypto';
+import { GroupVisibility } from './group-visibility.enum';
+import { GroupMemberRequest } from './group-member-request.model';
+import { GroupLog } from './group-log.model';
 
 export class Group extends Model {
 	private _id: string;
@@ -115,8 +122,80 @@ export class Group extends Model {
 		this._updatedAt = new Date();
 	}
 
+	public changeVisibilityConfig(
+		visibilityConfig: GroupVisibilityConfig,
+	): void {
+		this._visibilityConfiguration = visibilityConfig;
+		this._updatedAt = new Date();
+	}
+
 	public delete(): void {
 		this._isDeleted = true;
 		this._updatedAt = new Date();
+	}
+
+	public createVisibilityConfig(
+		groupVisibility: GroupVisibility,
+		postVisibility: GroupVisibility,
+		eventVisibility: GroupVisibility,
+	): GroupVisibilityConfig {
+		const groupVisibilityConfig = GroupVisibilityConfig.create(
+			this._id,
+			groupVisibility,
+			postVisibility,
+			eventVisibility,
+		);
+
+		this._visibilityConfiguration = groupVisibilityConfig;
+
+		return groupVisibilityConfig;
+	}
+
+	public joinGroup(
+		user: User,
+		role: GroupRole,
+		isCreator: boolean = false,
+	): GroupMember | GroupMemberRequest {
+		if (
+			!isCreator &&
+			this._visibilityConfiguration.groupVisibility() ===
+				GroupVisibility.PRIVATE
+		) {
+			return this.requestMembership(user);
+		} else {
+			return this.addMember(user, role, isCreator);
+		}
+	}
+
+	public addMember(
+		user: User,
+		role: GroupRole,
+		isCreator: boolean = false,
+	): GroupMember {
+		const groupMember = GroupMember.create(
+			randomUUID(),
+			this,
+			user,
+			role,
+			isCreator,
+		);
+
+		return groupMember;
+	}
+
+	public requestMembership(user: User): GroupMemberRequest {
+		const groupMemberRequest = GroupMemberRequest.create(
+			randomUUID(),
+			this,
+			user,
+		);
+
+		return groupMemberRequest;
+	}
+
+	public newLog(text: string): GroupLog {
+		const groupLog = GroupLog.create(randomUUID(), this, text);
+
+		return groupLog;
 	}
 }

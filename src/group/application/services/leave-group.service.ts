@@ -69,9 +69,7 @@ export class LeaveGroupService implements LeaveGroupUseCase {
 
 		this.groupMemberRepository.delete(groupMember.id());
 
-		const log = GroupLog.create(
-			randomUUID(),
-			group,
+		const log = group.newLog(
 			`${groupMember.user().credentials().name()} left the group`,
 		);
 

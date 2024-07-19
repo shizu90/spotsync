@@ -116,4 +116,8 @@ export class GroupRole extends Model {
 			this._updatedAt = new Date();
 		}
 	}
+
+	public hasPermission(permissionName: string): boolean {
+		return this._permissions.some((p) => p.name() === permissionName);
+	}
 }

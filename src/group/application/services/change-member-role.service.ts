@@ -62,19 +62,7 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase {
 			);
 		}
 
-		const hasPermission = authenticatedGroupMember
-			.role()
-			.permissions()
-			.map((p) => p.name())
-			.includes('change-role');
-
-		if (
-			!(
-				hasPermission ||
-				authenticatedGroupMember.isCreator() ||
-				authenticatedGroupMember.role().name() === 'administrator'
-			)
-		) {
+		if (!authenticatedGroupMember.canExecute('change-member-role')) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to change member role`,
 			);
@@ -98,9 +86,7 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase {
 
 		this.groupMemberRepository.update(groupMember);
 
-		const log = GroupLog.create(
-			randomUUID(),
-			group,
+		const log = group.newLog(
 			`${authenticatedGroupMember.user().credentials().name()} changed the role of ${groupMember.user().credentials().name()}`,
 		);
 

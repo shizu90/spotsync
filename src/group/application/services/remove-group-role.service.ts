@@ -60,19 +60,7 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase {
 			);
 		}
 
-		const hasPermission = authenticatedGroupMember
-			.role()
-			.permissions()
-			.map((p) => p.name())
-			.includes('delete-role');
-
-		if (
-			!(
-				hasPermission ||
-				authenticatedGroupMember.isCreator() ||
-				authenticatedGroupMember.role().name() === 'administrator'
-			)
-		) {
+		if (!authenticatedGroupMember.canExecute('delete-role')) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to delete role`,
 			);
@@ -91,9 +79,7 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase {
 
 		this.groupRoleRepository.delete(groupRole.id());
 
-		const log = GroupLog.create(
-			randomUUID(),
-			group,
+		const log = group.newLog(
 			`${authenticatedGroupMember.user().credentials().name()} removed the role ${groupRole.name()}`,
 		);
 

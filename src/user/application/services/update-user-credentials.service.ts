@@ -17,7 +17,6 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
 
 @Injectable()
 export class UpdateUserCredentialsService
@@ -43,6 +42,8 @@ export class UpdateUserCredentialsService
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
+		const userCredentials = user.credentials();
+
 		if (
 			command.email &&
 			user.credentials().email() !== command.email &&
@@ -54,7 +55,7 @@ export class UpdateUserCredentialsService
 		}
 
 		if (command.name && command.name !== null && command.name.length > 0) {
-			user.credentials().changeName(command.name);
+			userCredentials.changeName(command.name);
 		}
 
 		if (
@@ -62,7 +63,7 @@ export class UpdateUserCredentialsService
 			command.email !== null &&
 			command.email.length > 0
 		) {
-			user.credentials().changeEmail(command.email);
+			userCredentials.changeEmail(command.email);
 		}
 
 		if (
@@ -70,7 +71,7 @@ export class UpdateUserCredentialsService
 			command.password !== null &&
 			command.password.length > 0
 		) {
-			user.credentials().changePassword(
+			userCredentials.changePassword(
 				await this.encryptPasswordService.encrypt(command.password),
 			);
 		}
@@ -80,10 +81,10 @@ export class UpdateUserCredentialsService
 			command.phoneNumber !== null &&
 			command.phoneNumber.length > 0
 		) {
-			user.credentials().changePhoneNumber(command.phoneNumber);
+			userCredentials.changePhoneNumber(command.phoneNumber);
 		}
 
-		user.changeCredentials(user.credentials());
+		user.changeCredentials(userCredentials);
 
 		this.userRepository.updateCredentials(user.credentials());
 	}

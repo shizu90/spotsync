@@ -55,19 +55,7 @@ export class RemoveGroupMemberService implements RemoveGroupMemberUseCase {
 			);
 		}
 
-		const hasPermission = authenticatedGroupMember
-			.role()
-			.permissions()
-			.map((p) => p.name())
-			.includes('remove-members');
-
-		if (
-			!(
-				hasPermission ||
-				authenticatedGroupMember.isCreator() ||
-				authenticatedGroupMember.role().name() === 'administrator'
-			)
-		) {
+		if (!authenticatedGroupMember.canExecute('remove-members')) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to remove members`,
 			);
@@ -83,9 +71,7 @@ export class RemoveGroupMemberService implements RemoveGroupMemberUseCase {
 
 		this.groupMemberRepository.delete(groupMember.id());
 
-		const log = GroupLog.create(
-			randomUUID(),
-			group,
+		const log = group.newLog(
 			`${authenticatedGroupMember.user().credentials().name()} removed the member ${groupMember.user().credentials().name()}`,
 		);
 

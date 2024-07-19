@@ -70,19 +70,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 			);
 		}
 
-		const hasPermission = authenticatedGroupMember
-			.role()
-			.permissions()
-			.map((p) => p.name())
-			.includes('accept-requests');
-
-		if (
-			!(
-				hasPermission ||
-				authenticatedGroupMember.isCreator() ||
-				authenticatedGroupMember.role().name() === 'administrator'
-			)
-		) {
+		if (!authenticatedGroupMember.canExecute('accept-requests')) {
 			throw new UnauthorizedAccessError(
 				`You don't have permission to accept join requests`,
 			);
@@ -103,9 +91,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 
 		this.groupMemberRepository.deleteRequest(groupMemberRequest.id());
 
-		const log = GroupLog.create(
-			randomUUID(),
-			group,
+		const log = group.newLog(
 			`${authenticatedGroupMember.user().credentials().name()} accepted the join request of ${newGroupMember.user().credentials().name()}`,
 		);
 
