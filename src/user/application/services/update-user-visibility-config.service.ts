@@ -6,6 +6,8 @@ import {
 } from '../ports/out/user.repository';
 import { UpdateUserVisibilityConfigCommand } from '../ports/in/commands/update-user-visibility-config.command';
 import { UserNotFoundError } from './errors/user-not-found.error';
+import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 
 @Injectable()
 export class UpdateUserVisibilityConfigService
@@ -14,6 +16,8 @@ export class UpdateUserVisibilityConfigService
 	public constructor(
 		@Inject(UserRepositoryProvider)
 		protected userRepository: UserRepository,
+		@Inject(GetAuthenticatedUserUseCaseProvider)
+		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 	) {}
 
 	public async execute(
@@ -23,6 +27,10 @@ export class UpdateUserVisibilityConfigService
 
 		if (user === null || user === undefined || user.isDeleted()) {
 			throw new UserNotFoundError(`User not found`);
+		}
+
+		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
+			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
 		const userVisibilityConfig = user.visibilityConfiguration();
