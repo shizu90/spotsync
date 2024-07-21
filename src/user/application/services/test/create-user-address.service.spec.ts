@@ -9,11 +9,7 @@ import {
 	UserAddressRepositoryProvider,
 } from '../../ports/out/user-address.repository';
 import { CreateUserAddressCommand } from '../../ports/in/commands/create-user-address.command';
-import { User } from 'src/user/domain/user.model';
 import { randomUUID } from 'crypto';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
@@ -25,43 +21,7 @@ import {
 } from 'src/geolocation/geolocator';
 import { UserNotFoundError } from '../errors/user-not-found.error';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-
-const command = new CreateUserAddressCommand(
-	randomUUID(),
-	'Test Address',
-	'Area',
-	'Sub area',
-	'Locality',
-	'BR',
-	true,
-);
-
-const mockUser = () => {
-	const id = randomUUID();
-
-	return User.create(
-		id,
-		'Teste123',
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		UserCredentials.create(id, null, null, null, null, null, null),
-		UserVisibilityConfig.create(
-			id,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-		),
-		new Date(),
-		new Date(),
-		false,
-	);
-};
+import { mockUser, mockUserAddress } from './user-mock.helper';
 
 describe('CreateUserAddressService', () => {
 	let service: CreateUserAddressService;
@@ -88,35 +48,66 @@ describe('CreateUserAddressService', () => {
 
 	it('should create a user address', async () => {
 		const user = mockUser();
+		const address = mockUserAddress();
+
+		const command = new CreateUserAddressCommand(
+			user.id(),
+			address.name(),
+			address.area(),
+			address.subArea(),
+			address.locality(),
+			address.countryCode(),
+			address.main()
+		);
 
 		userRepository.findById.mockResolvedValue(user);
 		userAddressRepository.findBy.mockResolvedValue([]);
-		userAddressRepository.store.mockResolvedValue(null);
+		userAddressRepository.store.mockResolvedValue(address);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 		geoLocator.coordinates.mockResolvedValue(new GeoLocatorOutput(0, 0));
 
-		const address = await service.execute(command);
+		const response = await service.execute(command);
 
-		expect(address.name).toBe('Test Address');
+		expect(response.name).toBe(address.name());
 	});
 
 	it('should not create a user address if user does not exist', async () => {
+		const user = mockUser();
+		const address = mockUserAddress();
+
+		const command = new CreateUserAddressCommand(
+			user.id(),
+			address.name(),
+			address.area(),
+			address.subArea(),
+			address.locality(),
+			address.countryCode(),
+			address.main()
+		);
+
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(null);
 
-		await service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UserNotFoundError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
 	});
 
 	it('should not create a user address if user is not authenticated', async () => {
 		const user = mockUser();
+		const address = mockUserAddress();
+
+		const command = new CreateUserAddressCommand(
+			user.id(),
+			address.name(),
+			address.area(),
+			address.subArea(),
+			address.locality(),
+			address.countryCode(),
+			address.main()
+		);
 
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UnauthorizedAccessError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
 	});
 });

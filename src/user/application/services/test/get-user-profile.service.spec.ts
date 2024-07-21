@@ -16,49 +16,9 @@ import {
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import { TestBed } from '@automock/jest';
-import { randomUUID } from 'crypto';
-import { User } from 'src/user/domain/user.model';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { mockUser } from './user-mock.helper';
 import { GetUserProfileCommand } from '../../ports/in/commands/get-user-profile.command';
-
-const command = new GetUserProfileCommand(randomUUID());
-
-const mockUser = () => {
-	const id = randomUUID();
-
-	return User.create(
-		id,
-		'Teste123',
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		UserCredentials.create(
-			id,
-			'Test',
-			'test@test.test',
-			'Test123',
-			null,
-			null,
-			null,
-		),
-		UserVisibilityConfig.create(
-			id,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-		),
-		new Date(),
-		new Date(),
-		false,
-	);
-};
+import { randomUUID } from 'crypto';
 
 describe('GetUserProfileService', () => {
 	let service: GetUserProfileService;
@@ -86,6 +46,10 @@ describe('GetUserProfileService', () => {
 	it('should get user profile', async () => {
 		const user = mockUser();
 
+		const command = new GetUserProfileCommand(
+			randomUUID()
+		);
+
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 		followRepository.findBy.mockResolvedValue([]);
@@ -93,6 +57,6 @@ describe('GetUserProfileService', () => {
 
 		const userProfile = await service.execute(command);
 
-		expect(userProfile.first_name).toBe('Teste123');
+		expect(userProfile.first_name).toBe(user.firstName());
 	});
 });

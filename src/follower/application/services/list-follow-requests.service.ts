@@ -188,6 +188,6 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			);
 		});
 
-		return new Pagination(items, 0, 0);
+		return new Pagination(items, pagination.total, pagination.current_page);
 	}
 }

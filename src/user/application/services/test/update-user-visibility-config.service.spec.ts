@@ -16,46 +16,7 @@ import {
 import { TestBed } from '@automock/jest';
 import { UserNotFoundError } from '../errors/user-not-found.error';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-
-const command = new UpdateUserVisibilityConfigCommand(
-	randomUUID(),
-	UserVisibility.PRIVATE,
-);
-
-const mockUser = () => {
-	const id = randomUUID();
-
-	return User.create(
-		id,
-		'Teste123',
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		UserCredentials.create(
-			id,
-			'Test',
-			'test@test.test',
-			'Test123',
-			null,
-			null,
-			null,
-		),
-		UserVisibilityConfig.create(
-			id,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-		),
-		new Date(),
-		new Date(),
-		false,
-	);
-};
+import { mockUser } from './user-mock.helper';
 
 describe('UpdateUserVisibilityConfigService', () => {
 	let service: UpdateUserVisibilityConfigService;
@@ -79,6 +40,11 @@ describe('UpdateUserVisibilityConfigService', () => {
 	it('should update user visibility config', async () => {
 		const user = mockUser();
 
+		const command = new UpdateUserVisibilityConfigCommand(
+			randomUUID(),
+			UserVisibility.PRIVATE,
+		);
+
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 
@@ -89,21 +55,27 @@ describe('UpdateUserVisibilityConfigService', () => {
 		);
 	});
 
-	it('should not update user visibility config if user does not exist', () => {
+	it('should not update user visibility config if user does not exist', async () => {
+		const command = new UpdateUserVisibilityConfigCommand(
+			randomUUID(),
+			UserVisibility.PRIVATE,
+		);
+		
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UserNotFoundError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
 	});
 
-	it('should not update user visibility config if user is not authenticated', () => {
+	it('should not update user visibility config if user is not authenticated', async () => {
+		const command = new UpdateUserVisibilityConfigCommand(
+			randomUUID(),
+			UserVisibility.PRIVATE,
+		);
+		
 		userRepository.findById.mockResolvedValue(mockUser());
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UnauthorizedAccessError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
 	});
 });

@@ -16,43 +16,7 @@ import {
 import { TestBed } from '@automock/jest';
 import { UserNotFoundError } from '../errors/user-not-found.error';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-
-const command = new UpdateUserCredentialsCommand(randomUUID(), 'New Test');
-
-const mockUser = () => {
-	const id = randomUUID();
-
-	return User.create(
-		id,
-		'Teste123',
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		UserCredentials.create(
-			id,
-			'Test',
-			'test@test.test',
-			'Test123',
-			null,
-			null,
-			null,
-		),
-		UserVisibilityConfig.create(
-			id,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-		),
-		new Date(),
-		new Date(),
-		false,
-	);
-};
+import { mockUser } from './user-mock.helper';
 
 describe('UpdateUserCredentialsService', () => {
 	let service: UpdateUserCredentialsService;
@@ -76,31 +40,33 @@ describe('UpdateUserCredentialsService', () => {
 	it('should update user credentials', async () => {
 		const user = mockUser();
 
+		const command = new UpdateUserCredentialsCommand(randomUUID(), 'New Test');
+
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 
 		await service.execute(command);
 
-		expect(user.credentials().name()).toBe('New Test');
+		expect(user.credentials().name()).toBe(command.name);
 	});
 
 	it('should not update user credentials if user does not exist', async () => {
+		const command = new UpdateUserCredentialsCommand(randomUUID(), 'New Test');
+
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UserNotFoundError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
 	});
 
 	it('should not update user credentials if user is not authenticated', async () => {
 		const user = mockUser();
 
+		const command = new UpdateUserCredentialsCommand(randomUUID(), 'New Test');
+
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UnauthorizedAccessError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
 	});
 });

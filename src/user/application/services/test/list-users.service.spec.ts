@@ -24,47 +24,7 @@ import {
 import { get } from 'http';
 import { ListUsersCommand } from '../../ports/in/commands/list-users.command';
 import { Pagination } from 'src/common/common.repository';
-
-const command = new ListUsersCommand();
-
-const mockUser = () => {
-	const id = randomUUID();
-
-	return User.create(
-		id,
-		'Teste123',
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		UserCredentials.create(
-			id,
-			'Test',
-			'test@test.test',
-			'Test123',
-			null,
-			null,
-			null,
-		),
-		UserVisibilityConfig.create(
-			id,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-		),
-		new Date(),
-		new Date(),
-		false,
-	);
-};
-
-const mockUsers = () => {
-	return [mockUser(), mockUser(), mockUser()];
-};
+import { mockUser } from './user-mock.helper';
 
 describe('ListUsersService', () => {
 	let service: ListUsersService;
@@ -88,8 +48,10 @@ describe('ListUsersService', () => {
 	});
 
 	it('should list users', async () => {
+		const command = new ListUsersCommand();
+
 		userRepository.paginate.mockResolvedValue(
-			new Pagination(mockUsers(), 3, 0),
+			new Pagination([mockUser(), mockUser(), mockUser()], 3, 0),
 		);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 		followRepository.findBy.mockResolvedValue([]);

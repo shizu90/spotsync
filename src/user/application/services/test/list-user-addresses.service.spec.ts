@@ -12,74 +12,12 @@ import {
 } from '../../ports/out/user.repository';
 import { ListUserAddressesService } from '../list-user-addresses.service';
 import { TestBed } from '@automock/jest';
-import { randomUUID } from 'crypto';
-import { User } from 'src/user/domain/user.model';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
-import { UserAddress } from 'src/user/domain/user-address.model';
 import { Pagination } from 'src/common/common.repository';
 import { ListUserAddressesCommand } from '../../ports/in/commands/list-user-addresses.command';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { UserNotFoundError } from '../errors/user-not-found.error';
-
-const command = new ListUserAddressesCommand(randomUUID());
-
-const mockUser = () => {
-	const id = randomUUID();
-
-	return User.create(
-		id,
-		'Teste123',
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		UserCredentials.create(
-			id,
-			'Test',
-			'test@test.test',
-			'Test123',
-			null,
-			null,
-			null,
-		),
-		UserVisibilityConfig.create(
-			id,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-		),
-		new Date(),
-		new Date(),
-		false,
-	);
-};
-
-const mockUserAddress = () => {
-	const id = randomUUID();
-
-	return UserAddress.create(
-		id,
-		'Test Address',
-		'Area',
-		'Sub area',
-		'Locality',
-		0,
-		0,
-		'BR',
-		true,
-		mockUser(),
-	);
-};
-
-const mockUserAddresses = () => {
-	return [mockUserAddress(), mockUserAddress(), mockUserAddress()];
-};
+import { mockUser, mockUserAddress } from './user-mock.helper';
+import { randomUUID } from 'crypto';
 
 describe('ListUserAddressesService', () => {
 	let service: ListUserAddressesService;
@@ -105,10 +43,12 @@ describe('ListUserAddressesService', () => {
 	it('should list user addresses', async () => {
 		const user = mockUser();
 
+		const command = new ListUserAddressesCommand(randomUUID());
+
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 		userAddressRepository.paginate.mockResolvedValue(
-			new Pagination(mockUserAddresses(), 3, 0),
+			new Pagination([mockUserAddress(), mockUserAddress(), mockUserAddress()], 3, 0),
 		);
 
 		const addresses = await service.execute(command);
@@ -118,23 +58,23 @@ describe('ListUserAddressesService', () => {
 		expect(addresses.next_page).toBe(false);
 	});
 
-	it('should not list user addresses if user is not authenticated', () => {
+	it('should not list user addresses if user is not authenticated', async () => {
 		const user = mockUser();
+
+		const command = new ListUserAddressesCommand(randomUUID());
 
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(null);
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UnauthorizedAccessError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
 	});
 
-	it('should not list user addresses if user is not found', () => {
+	it('should not list user addresses if user is not found', async () => {
+		const command = new ListUserAddressesCommand(randomUUID());
+
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(null);
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UserNotFoundError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
 	});
 });

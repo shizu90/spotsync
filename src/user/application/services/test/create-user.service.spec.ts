@@ -5,53 +5,8 @@ import {
 	UserRepository,
 	UserRepositoryProvider,
 } from '../../ports/out/user.repository';
-import { User } from 'src/user/domain/user.model';
-import { randomUUID } from 'crypto';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error';
-
-const command = new CreateUserCommand(
-	'Test123',
-	'test123@test.test',
-	'Password123',
-);
-
-const mockUser = () => {
-	const id = randomUUID();
-
-	return User.create(
-		id,
-		'Teste123',
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		UserCredentials.create(
-			id,
-			command.name,
-			command.email,
-			command.password,
-			command.phoneNumber,
-			null,
-			null,
-		),
-		UserVisibilityConfig.create(
-			id,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-		),
-		new Date(),
-		new Date(),
-		false,
-	);
-};
+import { mockUser } from './user-mock.helper';
 
 describe('CreateUserService', () => {
 	let service: CreateUserService;
@@ -69,30 +24,51 @@ describe('CreateUserService', () => {
 	});
 
 	it('should create a user', async () => {
-		const id = randomUUID();
+		const user = mockUser();
+
+		const command = new CreateUserCommand(
+			user.credentials().name(),
+			user.credentials().email(),
+			user.credentials().password(),
+			user.credentials().phoneNumber()
+		);
 
 		repository.findByEmail.mockResolvedValue(null);
 		repository.findByName.mockResolvedValue(null);
-		repository.store.mockResolvedValue(mockUser());
+		repository.store.mockResolvedValue(user);
 
-		const user = await service.execute(command);
+		const response = await service.execute(command);
 
-		expect(user.first_name).toBe('Test123');
+		expect(response.first_name).toBe(user.credentials().name());
 	});
 
 	it('should not create a user with the same email', async () => {
+		const user = mockUser();
+
+		const command = new CreateUserCommand(
+			user.credentials().name(),
+			user.credentials().email(),
+			user.credentials().password(),
+			user.credentials().phoneNumber()
+		);
+
 		repository.findByEmail.mockResolvedValue(mockUser());
 
-		const user = await service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UserAlreadyExistsError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UserAlreadyExistsError);
 	});
 
 	it('should not create a user with the same name', async () => {
+		const user = mockUser();
+
+		const command = new CreateUserCommand(
+			user.credentials().name(),
+			user.credentials().email(),
+			user.credentials().password(),
+			user.credentials().phoneNumber()
+		);
+		
 		repository.findByName.mockResolvedValue(mockUser());
 
-		const user = await service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UserAlreadyExistsError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UserAlreadyExistsError);
 	});
 });

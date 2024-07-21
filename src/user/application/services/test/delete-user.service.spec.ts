@@ -9,42 +9,10 @@ import {
 import { TestBed } from '@automock/jest';
 import { DeleteUserService } from '../delete-user.service';
 import { randomUUID } from 'crypto';
-import { User } from 'src/user/domain/user.model';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
-import { DeleteUserCommand } from '../../ports/in/commands/delete-user.command';
 import { UserNotFoundError } from '../errors/user-not-found.error';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-
-const command = new DeleteUserCommand(randomUUID());
-
-const mockUser = () => {
-	const id = randomUUID();
-
-	return User.create(
-		id,
-		'Teste123',
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		UserCredentials.create(id, null, null, null, null, null, null),
-		UserVisibilityConfig.create(
-			id,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-		),
-		new Date(),
-		new Date(),
-		false,
-	);
-};
+import { mockUser } from './user-mock.helper';
+import { DeleteUserCommand } from '../../ports/in/commands/delete-user.command';
 
 describe('DeleteUserService', () => {
 	let service: DeleteUserService;
@@ -66,6 +34,8 @@ describe('DeleteUserService', () => {
 	it('should delete a user', async () => {
 		const user = mockUser();
 
+		const command = new DeleteUserCommand(randomUUID());
+
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 
@@ -74,21 +44,21 @@ describe('DeleteUserService', () => {
 		expect(deleted).toBeUndefined();
 	});
 
-	it('should not delete user if user is not found', () => {
+	it('should not delete user if user is not found', async () => {
+		const command = new DeleteUserCommand(randomUUID());
+
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(null);
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UserNotFoundError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
 	});
 
-	it('should not delete user if user is not authenticated', () => {
+	it('should not delete user if user is not authenticated', async () => {
+		const command = new DeleteUserCommand(randomUUID());
+
 		userRepository.findById.mockResolvedValue(mockUser());
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UnauthorizedAccessError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
 	});
 });

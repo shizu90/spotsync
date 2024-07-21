@@ -12,60 +12,10 @@ import {
 	UserAddressRepositoryProvider,
 } from '../../ports/out/user-address.repository';
 import { TestBed } from '@automock/jest';
-import { User } from 'src/user/domain/user.model';
+import { UserAddressNotFoundError } from '../errors/user-address-not-found.error';
+import { mockUser, mockUserAddress } from './user-mock.helper';
 import { randomUUID } from 'crypto';
 import { DeleteUserAddressCommand } from '../../ports/in/commands/delete-user-address.command';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
-import { UserAddress } from 'src/user/domain/user-address.model';
-import { UserAddressNotFoundError } from '../errors/user-address-not-found.error';
-
-const command = new DeleteUserAddressCommand(randomUUID(), randomUUID());
-
-const mockUser = () => {
-	const id = randomUUID();
-
-	return User.create(
-		id,
-		'Teste123',
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		UserCredentials.create(id, null, null, null, null, null, null),
-		UserVisibilityConfig.create(
-			id,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-			UserVisibility.PUBLIC,
-		),
-		new Date(),
-		new Date(),
-		false,
-	);
-};
-
-const mockUserAddress = () => {
-	const id = randomUUID();
-
-	return UserAddress.create(
-		id,
-		'Test Address',
-		'Area',
-		'Sub area',
-		'Locality',
-		0,
-		0,
-		'BR',
-		true,
-		mockUser(),
-	);
-};
 
 describe('DeleteUserAddressService', () => {
 	let service: DeleteUserAddressService;
@@ -91,6 +41,8 @@ describe('DeleteUserAddressService', () => {
 	it('should delete a user address', async () => {
 		const userAddress = mockUserAddress();
 
+		const command = new DeleteUserAddressCommand(randomUUID(), randomUUID());
+
 		userRepository.findById.mockResolvedValue(userAddress.user());
 		getAuthenticatedUser.execute.mockReturnValue(userAddress.user().id());
 		userAddressRepository.findById.mockResolvedValue(userAddress);
@@ -103,24 +55,24 @@ describe('DeleteUserAddressService', () => {
 	it('should not delete a user address that does not exist', async () => {
 		const userAddress = mockUserAddress();
 
+		const command = new DeleteUserAddressCommand(randomUUID(), randomUUID());
+
 		userRepository.findById.mockResolvedValue(userAddress.user());
 		getAuthenticatedUser.execute.mockReturnValue(userAddress.user().id());
 		userAddressRepository.findById.mockResolvedValue(null);
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UserAddressNotFoundError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UserAddressNotFoundError);
 	});
 
 	it('should not delete a user address that does not belong to the user', async () => {
 		const user = mockUser();
 
+		const command = new DeleteUserAddressCommand(randomUUID(), randomUUID());
+
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 		userAddressRepository.findById.mockResolvedValue(mockUserAddress());
 
-		service.execute(command).catch((e) => {
-			expect(e.constructor).toBe(UserAddressNotFoundError);
-		});
+		await expect(service.execute(command)).rejects.toThrow(UserAddressNotFoundError);
 	});
 });
