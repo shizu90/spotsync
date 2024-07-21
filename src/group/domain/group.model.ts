@@ -23,9 +23,9 @@ export class Group extends Model {
 		id: string,
 		name: string,
 		about: string,
-		groupPicture: string,
-		bannerPicture: string,
-		visibilityConfiguration: GroupVisibilityConfig,
+		groupPicture?: string,
+		bannerPicture?: string,
+		visibilityConfiguration?: GroupVisibilityConfig,
 		createdAt?: Date,
 		updatedAt?: Date,
 		isDeleted?: boolean,
@@ -34,9 +34,9 @@ export class Group extends Model {
 		this._id = id;
 		this._name = name;
 		this._about = about;
-		this._groupPicture = groupPicture;
-		this._bannerPicture = bannerPicture;
-		this._visibilityConfiguration = visibilityConfiguration;
+		this._groupPicture = groupPicture ?? null;
+		this._bannerPicture = bannerPicture ?? null;
+		this._visibilityConfiguration = visibilityConfiguration ?? null;
 		this._createdAt = createdAt ?? new Date();
 		this._updatedAt = updatedAt ?? new Date();
 		this._isDeleted = isDeleted ?? false;

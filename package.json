@@ -16,6 +16,7 @@
     "test:unit:user": "jest --config ./test/unit/jest-unit-user.json",
     "test:unit:follower": "jest --config ./test/unit/jest-unit-follower.json",
     "test:unit:group": "jest --config ./test/unit/jest-unit-group.json",
+    "test:unit:post": "jest --config ./test/unit/jest-unit-post.json",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",

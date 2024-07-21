@@ -2,7 +2,6 @@ import { Model } from 'src/common/common.model';
 import { UserCredentials } from './user-credentials.model';
 import { UserVisibilityConfig } from './user-visibility-config.model';
 import { UserVisibility } from './user-visibility.enum';
-import * as moment from 'moment';
 
 export class User extends Model {
 	private _id: string;
@@ -22,12 +21,12 @@ export class User extends Model {
 	private constructor(
 		id: string,
 		firstName: string,
-		lastName: string,
-		profileThemeColor: string,
-		profilePicture: string,
-		bannerPicture: string,
-		biograph: string,
-		birthDate: Date,
+		lastName?: string,
+		profileThemeColor?: string,
+		profilePicture?: string,
+		bannerPicture?: string,
+		biograph?: string,
+		birthDate?: Date,
 		credentials?: UserCredentials,
 		visibilityConfiguration?: UserVisibilityConfig,
 		createdAt?: Date,
@@ -37,28 +36,28 @@ export class User extends Model {
 		super();
 		this._id = id;
 		this._firstName = firstName;
-		this._lastName = lastName;
-		this._profileThemeColor = profileThemeColor;
-		this._profilePicture = profilePicture;
-		this._bannerPicture = bannerPicture;
-		this._biograph = biograph;
-		this._birthDate = birthDate;
+		this._lastName = lastName ?? null;
+		this._profileThemeColor = profileThemeColor ?? null;
+		this._profilePicture = profilePicture ?? null;
+		this._bannerPicture = bannerPicture ?? null;
+		this._biograph = biograph ?? null;
+		this._birthDate = birthDate ?? null;
 		this._credentials = credentials ?? null;
 		this._visibilityConfiguration = visibilityConfiguration ?? null;
-		this._createdAt = createdAt ?? moment().toDate();
-		this._updatedAt = updatedAt ?? moment().toDate();
+		this._createdAt = createdAt ?? new Date();
+		this._updatedAt = updatedAt ?? new Date();
 		this._isDeleted = isDeleted ?? false;
 	}
 
 	public static create(
 		id: string,
 		firstName: string,
-		lastName: string,
-		profileThemeColor: string,
-		profilePicture: string,
-		bannerPicture: string,
-		biograph: string,
-		birthDate: Date,
+		lastName?: string,
+		profileThemeColor?: string,
+		profilePicture?: string,
+		bannerPicture?: string,
+		biograph?: string,
+		birthDate?: Date,
 		credentials?: UserCredentials,
 		visibilityConfiguration?: UserVisibilityConfig,
 		createdAt?: Date,
@@ -140,54 +139,54 @@ export class User extends Model {
 
 	public changeFirstName(firstName: string): void {
 		this._firstName = firstName;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public changeLastName(lastName: string): void {
 		this._lastName = lastName;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public changeProfileThemeColor(profileThemeColor: string): void {
 		this._profileThemeColor = profileThemeColor;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public changeProfilePicture(profilePicture: string): void {
 		this._profilePicture = profilePicture;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public changeBannerPicture(bannerPicture: string): void {
 		this._bannerPicture = bannerPicture;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public changeBiograph(biograph: string): void {
 		this._biograph = biograph;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public changeBirthDate(birthDate: Date): void {
 		this._birthDate = birthDate;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public changeCredentials(userCredentials: UserCredentials): void {
 		this._credentials = userCredentials;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public changeVisibilityConfig(
 		visibilityConfig: UserVisibilityConfig,
 	): void {
 		this._visibilityConfiguration = visibilityConfig;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public delete(): void {
 		this._isDeleted = true;
-		this._updatedAt = moment().toDate();
+		this._updatedAt = new Date();
 	}
 
 	public createCredentials(
