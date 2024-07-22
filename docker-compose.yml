@@ -1,5 +1,28 @@
 version: '3'
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'spotsync_app'
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DATABASE}
+    volumes:
+      - './src:/app/src'
+      - './test:/app/test'
+      - './prisma:/app/prisma'
+      - './nest-cli.json:/app/nest-cli.json'
+      - './tsconfig.json:/app/tsconfig.json'
+      - './package.json:/app/package.json'
+      - './webpack-hmr.config.js:/app/webpack-hmr.config.js'
+      - './.prettierrc:/app/.prettierrc'
+      - './.eslintrc.js:/app/.eslintrc.js'
+    networks:
+      - net
   db:
     image: 'postgres:latest'
     container_name: 'spotsync_db'
@@ -8,11 +31,11 @@ services:
     volumes:
       - ./.docker/postgres:/var/lib/postgresql/data/
     networks:
-      - postgres-network
+      - net
     environment:
       - POSTGRES_DATABASE=${POSTGRES_DATABASE}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 networks:
-  postgres-network:
+  net:
     driver: bridge

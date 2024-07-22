@@ -2,7 +2,7 @@
   "name": "spotsync",
   "private": true,
   "version": "1.0.0",
-  "description": "POI based social network",
+  "description": "spotsync",
   "license": "MIT",
   "scripts": {
     "build": "nest build",

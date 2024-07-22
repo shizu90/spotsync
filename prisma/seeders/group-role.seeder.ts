@@ -1,4 +1,4 @@
-import { GroupPermission, GroupRole, GroupRolePermission, PrismaClient } from "@prisma/client";
+import { GroupPermission, GroupRole, PrismaClient } from "@prisma/client";
 import { randomUUID } from "crypto";
 
 export async function seed(client: PrismaClient) 

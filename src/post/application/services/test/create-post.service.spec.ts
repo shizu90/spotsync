@@ -1,28 +1,28 @@
+import { TestBed } from '@automock/jest';
+import { randomUUID } from 'crypto';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { CreatePostService } from '../create-post.service';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from 'src/group/application/ports/out/group.repository';
-import { TestBed } from '@automock/jest';
-import { CreatePostCommand } from '../../ports/in/commands/create-post.command';
+import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
-import { randomUUID } from 'crypto';
-import { mockGroup, mockPost, mockUser } from './post-mock.helper';
+import {
+	UserRepository,
+	UserRepositoryProvider,
+} from 'src/user/application/ports/out/user.repository';
+import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
+import { CreatePostCommand } from '../../ports/in/commands/create-post.command';
 import {
 	PostRepository,
 	PostRepositoryProvider,
 } from '../../ports/out/post.repository';
-import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
+import { CreatePostService } from '../create-post.service';
+import { mockPost } from './post-mock.helper';
 
 describe('CreatePostService', () => {
 	let service: CreatePostService;
