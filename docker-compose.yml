@@ -10,6 +10,8 @@ services:
     depends_on:
       - db
     environment:
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - GOOGLE_MAPS_API_SECRET=${GOOGLE_MAPS_API_SECRET}
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DATABASE}
     volumes:
       - './src:/app/src'
@@ -17,8 +19,8 @@ services:
       - './prisma:/app/prisma'
       - './nest-cli.json:/app/nest-cli.json'
       - './tsconfig.json:/app/tsconfig.json'
+      - './tsconfig.build.json:/app/tsconfig.build.json'
       - './package.json:/app/package.json'
-      - './webpack-hmr.config.js:/app/webpack-hmr.config.js'
       - './.prettierrc:/app/.prettierrc'
       - './.eslintrc.js:/app/.eslintrc.js'
     networks:
