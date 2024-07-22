@@ -29,8 +29,6 @@ export class UpdateGroupVisibilityService
 	implements UpdateGroupVisibilityUseCase
 {
 	constructor(
-		@Inject(UserRepositoryProvider)
-		protected userRepository: UserRepository,
 		@Inject(GroupRepositoryProvider)
 		protected groupRepository: GroupRepository,
 		@Inject(GroupMemberRepositoryProvider)
@@ -41,17 +39,6 @@ export class UpdateGroupVisibilityService
 
 	public async execute(command: UpdateGroupVisibilityCommand): Promise<void> {
 		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
-
-		const authenticatedUser =
-			await this.userRepository.findById(authenticatedUserId);
-
-		if (
-			authenticatedUser === null ||
-			authenticatedUser === undefined ||
-			authenticatedUser.isDeleted()
-		) {
-			throw new UserNotFoundError(`User not found`);
-		}
 
 		const group = await this.groupRepository.findById(command.id);
 

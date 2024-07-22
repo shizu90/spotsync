@@ -31,25 +31,12 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 		protected groupRepository: GroupRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
-		@Inject(UserRepositoryProvider)
-		protected userRepository: UserRepository,
 		@Inject(GroupMemberRepositoryProvider)
 		protected groupMemberRepository: GroupMemberRepository,
 	) {}
 
 	public async execute(command: UpdateGroupCommand): Promise<void> {
 		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
-
-		const authenticatedUser =
-			await this.userRepository.findById(authenticatedUserId);
-
-		if (
-			authenticatedUser === null ||
-			authenticatedUser === undefined ||
-			authenticatedUser.isDeleted()
-		) {
-			throw new UserNotFoundError(`User not found`);
-		}
 
 		const group = await this.groupRepository.findById(command.id);
 

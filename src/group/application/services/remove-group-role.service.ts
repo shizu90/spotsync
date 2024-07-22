@@ -22,6 +22,7 @@ import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
 import { GroupLog } from 'src/group/domain/group-log.model';
 import { randomUUID } from 'crypto';
 import { PermissionName } from 'src/group/domain/permission-name.enum';
+import { GroupNotFoundError } from './errors/group-not-found.error';
 
 @Injectable()
 export class RemoveGroupRoleService implements RemoveGroupRoleUseCase {
@@ -42,7 +43,7 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new UnauthorizedAccessError(`Group not found`);
+			throw new GroupNotFoundError(`Group not found`);
 		}
 
 		const authenticatedGroupMember = (
