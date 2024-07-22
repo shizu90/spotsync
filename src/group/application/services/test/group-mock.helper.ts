@@ -84,7 +84,8 @@ export const mockGroupRole = (isImmutable = false, name = 'member'): GroupRole =
 				PermissionName.REMOVE_MEMBER
 			)
 		],
-		isImmutable
+		isImmutable,
+		null
     )
 };
 
