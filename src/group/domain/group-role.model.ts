@@ -1,7 +1,7 @@
 import { Model } from 'src/common/common.model';
 import { GroupPermission } from './group-permission.model';
 import { Group } from './group.model';
-import { PermissionName } from './permission-name.enum';
+import { GroupPermissionName } from './group-permission-name.enum';
 
 export class GroupRole extends Model {
 	private _id: string;
@@ -101,8 +101,10 @@ export class GroupRole extends Model {
 		}
 	}
 
-	public findPermission(permissionName: PermissionName): GroupPermission {
-		return this._permissions.find((p) => p.name() === permissionName);
+	public findPermission(
+		GroupPermissionName: GroupPermissionName,
+	): GroupPermission {
+		return this._permissions.find((p) => p.name() === GroupPermissionName);
 	}
 
 	public addPermission(permission: GroupPermission): void {
@@ -123,7 +125,7 @@ export class GroupRole extends Model {
 		}
 	}
 
-	public hasPermission(permissionName: PermissionName): boolean {
-		return this.findPermission(permissionName) !== undefined;
+	public hasPermission(GroupPermissionName: GroupPermissionName): boolean {
+		return this.findPermission(GroupPermissionName) !== undefined;
 	}
 }

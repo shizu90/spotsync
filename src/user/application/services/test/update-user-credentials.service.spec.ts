@@ -40,7 +40,10 @@ describe('UpdateUserCredentialsService', () => {
 	it('should update user credentials', async () => {
 		const user = mockUser();
 
-		const command = new UpdateUserCredentialsCommand(randomUUID(), 'New Test');
+		const command = new UpdateUserCredentialsCommand(
+			randomUUID(),
+			'New Test',
+		);
 
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
@@ -51,22 +54,32 @@ describe('UpdateUserCredentialsService', () => {
 	});
 
 	it('should not update user credentials if user does not exist', async () => {
-		const command = new UpdateUserCredentialsCommand(randomUUID(), 'New Test');
+		const command = new UpdateUserCredentialsCommand(
+			randomUUID(),
+			'New Test',
+		);
 
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserNotFoundError,
+		);
 	});
 
 	it('should not update user credentials if user is not authenticated', async () => {
 		const user = mockUser();
 
-		const command = new UpdateUserCredentialsCommand(randomUUID(), 'New Test');
+		const command = new UpdateUserCredentialsCommand(
+			randomUUID(),
+			'New Test',
+		);
 
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 });

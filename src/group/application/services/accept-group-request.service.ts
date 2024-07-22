@@ -27,7 +27,8 @@ import { AcceptGroupRequestCommand } from '../ports/in/commands/accept-group-req
 import { AcceptGroupRequestDto } from '../ports/out/dto/accept-group-request.dto';
 import { randomUUID } from 'crypto';
 import { GroupLog } from 'src/group/domain/group-log.model';
-import { PermissionName } from 'src/group/domain/permission-name.enum';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
 
 @Injectable()
 export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
@@ -71,7 +72,11 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute(PermissionName.ACCEPT_REQUESTS)) {
+		if (
+			!authenticatedGroupMember.canExecute(
+				GroupPermissionName.ACCEPT_REQUESTS,
+			)
+		) {
 			throw new UnauthorizedAccessError(
 				`You don't have permission to accept join requests`,
 			);
@@ -84,7 +89,9 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 			throw new GroupRequestNotFoundError(`Group request not found`);
 		}
 
-		const memberRole = await this.groupRoleRepository.findByName('member');
+		const memberRole = await this.groupRoleRepository.findByName(
+			DefaultGroupRole.MEMBER,
+		);
 
 		const newGroupMember = groupMemberRequest.accept(memberRole);
 

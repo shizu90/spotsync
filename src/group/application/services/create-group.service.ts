@@ -28,6 +28,7 @@ import {
 import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
 import { CreateGroupDto } from '../ports/out/dto/create-group.dto';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
+import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
 
 @Injectable()
 export class CreateGroupService implements CreateGroupUseCase {
@@ -58,8 +59,9 @@ export class CreateGroupService implements CreateGroupUseCase {
 			throw new UserNotFoundError(`User not found`);
 		}
 
-		const adminRole =
-			await this.groupRoleRepository.findByName('administrator');
+		const adminRole = await this.groupRoleRepository.findByName(
+			DefaultGroupRole.ADMINISTRATOR,
+		);
 
 		const groupId = randomUUID();
 

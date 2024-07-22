@@ -1,12 +1,12 @@
-import { randomUUID } from "crypto";
-import { UserAddress } from "src/user/domain/user-address.model";
-import { UserCredentials } from "src/user/domain/user-credentials.model";
-import { UserVisibilityConfig } from "src/user/domain/user-visibility-config.model";
-import { UserVisibility } from "src/user/domain/user-visibility.enum";
-import { User } from "src/user/domain/user.model";
+import { randomUUID } from 'crypto';
+import { UserAddress } from 'src/user/domain/user-address.model';
+import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { User } from 'src/user/domain/user.model';
 
 export const mockUser = (): User => {
-    const id = randomUUID();
+	const id = randomUUID();
 	return User.create(
 		id,
 		'User',
@@ -34,20 +34,20 @@ export const mockUser = (): User => {
 		new Date(),
 		new Date(),
 		false,
-    );
+	);
 };
 
 export const mockUserAddress = (): UserAddress => {
-    return UserAddress.create(
-        randomUUID(),
-        'Test Address',
-        'Test Area',
-        'Test Subarea',
-        'Test Locality',
-        0,
-        0,
-        'BR',
-        true,
-        mockUser()
-    );
+	return UserAddress.create(
+		randomUUID(),
+		'Test Address',
+		'Test Area',
+		'Test Subarea',
+		'Test Locality',
+		0,
+		0,
+		'BR',
+		true,
+		mockUser(),
+	);
 };

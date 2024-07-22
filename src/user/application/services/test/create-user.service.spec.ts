@@ -30,7 +30,7 @@ describe('CreateUserService', () => {
 			user.credentials().name(),
 			user.credentials().email(),
 			user.credentials().password(),
-			user.credentials().phoneNumber()
+			user.credentials().phoneNumber(),
 		);
 
 		repository.findByEmail.mockResolvedValue(null);
@@ -49,12 +49,14 @@ describe('CreateUserService', () => {
 			user.credentials().name(),
 			user.credentials().email(),
 			user.credentials().password(),
-			user.credentials().phoneNumber()
+			user.credentials().phoneNumber(),
 		);
 
 		repository.findByEmail.mockResolvedValue(mockUser());
 
-		await expect(service.execute(command)).rejects.toThrow(UserAlreadyExistsError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserAlreadyExistsError,
+		);
 	});
 
 	it('should not create a user with the same name', async () => {
@@ -64,11 +66,13 @@ describe('CreateUserService', () => {
 			user.credentials().name(),
 			user.credentials().email(),
 			user.credentials().password(),
-			user.credentials().phoneNumber()
+			user.credentials().phoneNumber(),
 		);
-		
+
 		repository.findByName.mockResolvedValue(mockUser());
 
-		await expect(service.execute(command)).rejects.toThrow(UserAlreadyExistsError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserAlreadyExistsError,
+		);
 	});
 });

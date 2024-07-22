@@ -50,7 +50,9 @@ describe('DeleteUserService', () => {
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(null);
 
-		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserNotFoundError,
+		);
 	});
 
 	it('should not delete user if user is not authenticated', async () => {
@@ -59,6 +61,8 @@ describe('DeleteUserService', () => {
 		userRepository.findById.mockResolvedValue(mockUser());
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 });

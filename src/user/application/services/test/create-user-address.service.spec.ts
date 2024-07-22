@@ -57,7 +57,7 @@ describe('CreateUserAddressService', () => {
 			address.subArea(),
 			address.locality(),
 			address.countryCode(),
-			address.main()
+			address.main(),
 		);
 
 		userRepository.findById.mockResolvedValue(user);
@@ -82,13 +82,15 @@ describe('CreateUserAddressService', () => {
 			address.subArea(),
 			address.locality(),
 			address.countryCode(),
-			address.main()
+			address.main(),
 		);
 
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(null);
 
-		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserNotFoundError,
+		);
 	});
 
 	it('should not create a user address if user is not authenticated', async () => {
@@ -102,12 +104,14 @@ describe('CreateUserAddressService', () => {
 			address.subArea(),
 			address.locality(),
 			address.countryCode(),
-			address.main()
+			address.main(),
 		);
 
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 });

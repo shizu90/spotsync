@@ -1,16 +1,16 @@
-import { randomUUID } from "crypto";
-import { GroupMemberRequest } from "src/group/domain/group-member-request.model";
-import { GroupMember } from "src/group/domain/group-member.model";
-import { GroupPermission } from "src/group/domain/group-permission.model";
-import { GroupRole } from "src/group/domain/group-role.model";
-import { GroupVisibilityConfig } from "src/group/domain/group-visibility-config.model";
-import { GroupVisibility } from "src/group/domain/group-visibility.enum";
-import { Group } from "src/group/domain/group.model";
-import { PermissionName } from "src/group/domain/permission-name.enum";
-import { UserCredentials } from "src/user/domain/user-credentials.model";
-import { UserVisibilityConfig } from "src/user/domain/user-visibility-config.model";
-import { UserVisibility } from "src/user/domain/user-visibility.enum";
-import { User } from "src/user/domain/user.model";
+import { randomUUID } from 'crypto';
+import { GroupMemberRequest } from 'src/group/domain/group-member-request.model';
+import { GroupMember } from 'src/group/domain/group-member.model';
+import { GroupPermission } from 'src/group/domain/group-permission.model';
+import { GroupRole } from 'src/group/domain/group-role.model';
+import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
+import { Group } from 'src/group/domain/group.model';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { User } from 'src/user/domain/user.model';
 
 export const mockUser = (): User => {
 	const id = randomUUID();
@@ -42,81 +42,88 @@ export const mockUser = (): User => {
 		new Date(),
 		new Date(),
 		false,
-    );
+	);
 };
 
-export const mockGroupRole = (isImmutable = false, name = 'member'): GroupRole => {
-    return GroupRole.create(
-        randomUUID(),
-        name,
-        '#000000',
-        [
+export const mockGroupRole = (
+	isImmutable = false,
+	name = 'member',
+): GroupRole => {
+	return GroupRole.create(
+		randomUUID(),
+		name,
+		'#000000',
+		[
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.ACCEPT_REQUESTS
+				randomUUID(),
+				GroupPermissionName.ACCEPT_REQUESTS,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.UPDATE_SETTINGS
+				randomUUID(),
+				GroupPermissionName.UPDATE_SETTINGS,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.DELETE_GROUP
+				randomUUID(),
+				GroupPermissionName.DELETE_GROUP,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.DELETE_POSTS
+				randomUUID(),
+				GroupPermissionName.DELETE_POSTS,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.DELETE_EVENTS
+				randomUUID(),
+				GroupPermissionName.DELETE_EVENTS,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.CREATE_POSTS
+				randomUUID(),
+				GroupPermissionName.CREATE_POSTS,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.CREATE_EVENTS
+				randomUUID(),
+				GroupPermissionName.CREATE_EVENTS,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.REMOVE_MEMBER
+				randomUUID(),
+				GroupPermissionName.REMOVE_MEMBER,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.CREATE_ROLE
+				randomUUID(),
+				GroupPermissionName.CREATE_ROLE,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.UPDATE_ROLE
+				randomUUID(),
+				GroupPermissionName.UPDATE_ROLE,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.REMOVE_ROLE
+				randomUUID(),
+				GroupPermissionName.REMOVE_ROLE,
 			),
 			GroupPermission.create(
-				randomUUID(), 
-				PermissionName.CHANGE_MEMBER_ROLE
+				randomUUID(),
+				GroupPermissionName.CHANGE_MEMBER_ROLE,
 			),
 		],
 		isImmutable,
-		null
-    )
+		null,
+	);
 };
 
-export const mockGroupMember = (isCreator = false): GroupMember => {
+export const mockGroupMember = (
+	isCreator = false,
+	isImmutable = false,
+	role = 'member',
+): GroupMember => {
 	return GroupMember.create(
 		randomUUID(),
 		mockGroup(),
 		mockUser(),
-		mockGroupRole(),
-		isCreator
+		mockGroupRole(isImmutable, role),
+		isCreator,
 	);
 };
 
 export const mockGroup = (): Group => {
-    const id = randomUUID();
+	const id = randomUUID();
 
 	return Group.create(
 		id,
@@ -128,15 +135,11 @@ export const mockGroup = (): Group => {
 			id,
 			GroupVisibility.PUBLIC,
 			GroupVisibility.PUBLIC,
-			GroupVisibility.PUBLIC
-		)
+			GroupVisibility.PUBLIC,
+		),
 	);
 };
 
 export const mockGroupMemberRequest = (): GroupMemberRequest => {
-	return GroupMemberRequest.create(
-		randomUUID(),
-		mockGroup(),
-		mockUser()
-	);
+	return GroupMemberRequest.create(randomUUID(), mockGroup(), mockUser());
 };

@@ -42,10 +42,7 @@ describe('GetUserAddressService', () => {
 	it('should get user address', async () => {
 		const userAddress = mockUserAddress();
 
-		const command = new GetUserAddressCommand(
-			randomUUID(),
-			randomUUID()
-		);
+		const command = new GetUserAddressCommand(randomUUID(), randomUUID());
 
 		userAddressRepository.findById.mockResolvedValue(userAddress);
 		userRepository.findById.mockResolvedValue(userAddress.user());
@@ -59,30 +56,28 @@ describe('GetUserAddressService', () => {
 	it('should not get user address if user address does not exist', async () => {
 		const user = mockUser();
 
-		const command = new GetUserAddressCommand(
-			randomUUID(),
-			randomUUID()
-		);
+		const command = new GetUserAddressCommand(randomUUID(), randomUUID());
 
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 		userAddressRepository.findById.mockResolvedValue(null);
 
-		await expect(service.execute(command)).rejects.toThrow(UserAddressNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserAddressNotFoundError,
+		);
 	});
 
 	it('should not get user address if user is not the owner', async () => {
 		const userAddress = mockUserAddress();
 
-		const command = new GetUserAddressCommand(
-			randomUUID(),
-			randomUUID()
-		);
+		const command = new GetUserAddressCommand(randomUUID(), randomUUID());
 
 		userRepository.findById.mockResolvedValue(userAddress.user());
 		getAuthenticatedUser.execute.mockReturnValue(mockUser().id());
 		userAddressRepository.findById.mockResolvedValue(userAddress);
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 });

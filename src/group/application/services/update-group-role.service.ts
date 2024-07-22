@@ -22,7 +22,8 @@ import { UnauthorizedAccessError } from 'src/auth/application/services/errors/un
 import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
 import { GroupLog } from 'src/group/domain/group-log.model';
 import { randomUUID } from 'crypto';
-import { PermissionName } from 'src/group/domain/permission-name.enum';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { GroupRoleAlreadyExistsError } from './errors/group-role-already-exists.error';
 
 @Injectable()
 export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
@@ -62,7 +63,11 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute(PermissionName.UPDATE_ROLE)) {
+		if (
+			!authenticatedGroupMember.canExecute(
+				GroupPermissionName.UPDATE_ROLE,
+			)
+		) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to update role`,
 			);
@@ -79,7 +84,21 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 			throw new GroupRoleNotFoundError(`Group role not found`);
 		}
 
-		if (command.name && command.name !== null && command.name.length > 0) {
+		if (
+			command.name &&
+			command.name !== null &&
+			command.name.length > 0 &&
+			command.name !== groupRole.name()
+		) {
+			const roleExists =
+				(await this.groupRoleRepository.findByName(command.name)) !==
+				null;
+
+			if (roleExists)
+				throw new GroupRoleAlreadyExistsError(
+					`Role ${command.name} already exists`,
+				);
+
 			groupRole.changeName(command.name);
 		}
 

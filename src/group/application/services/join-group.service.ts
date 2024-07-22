@@ -31,6 +31,7 @@ import {
 import { AlreadyRequestedToJoinError } from './errors/already-requested-to-join.error';
 import { AlreadyMemberOfGroup } from './errors/already-member-of-group.error';
 import { GroupLog } from 'src/group/domain/group-log.model';
+import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
 
 @Injectable()
 export class JoinGroupService implements JoinGroupUseCase {
@@ -105,8 +106,9 @@ export class JoinGroupService implements JoinGroupUseCase {
 				throw new AlreadyMemberOfGroup(`Already member of the group`);
 			}
 
-			const memberRole =
-				await this.groupRoleRepository.findByName('member');
+			const memberRole = await this.groupRoleRepository.findByName(
+				DefaultGroupRole.MEMBER,
+			);
 
 			groupMember = GroupMember.create(
 				randomUUID(),

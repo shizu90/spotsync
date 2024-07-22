@@ -60,11 +60,13 @@ describe('UpdateUserVisibilityConfigService', () => {
 			randomUUID(),
 			UserVisibility.PRIVATE,
 		);
-		
+
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserNotFoundError,
+		);
 	});
 
 	it('should not update user visibility config if user is not authenticated', async () => {
@@ -72,10 +74,12 @@ describe('UpdateUserVisibilityConfigService', () => {
 			randomUUID(),
 			UserVisibility.PRIVATE,
 		);
-		
+
 		userRepository.findById.mockResolvedValue(mockUser());
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 });

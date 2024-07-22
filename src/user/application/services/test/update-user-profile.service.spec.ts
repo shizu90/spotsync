@@ -52,11 +52,13 @@ describe('UpdateUserProfileService', () => {
 
 	it('should not update user profile if user does not exist', async () => {
 		const command = new UpdateUserProfileCommand(randomUUID(), 'New Test');
-		
+
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserNotFoundError,
+		);
 	});
 
 	it('should not update user profile if user is not authenticated', async () => {
@@ -65,6 +67,8 @@ describe('UpdateUserProfileService', () => {
 		userRepository.findById.mockResolvedValue(mockUser());
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 });

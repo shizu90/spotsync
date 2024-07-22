@@ -78,7 +78,9 @@ describe('UpdateUserAddressService', () => {
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 
 	it('should not update user address if user address does not exist', async () => {
@@ -94,7 +96,9 @@ describe('UpdateUserAddressService', () => {
 		userAddressRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 
-		await expect(service.execute(command)).rejects.toThrow(UserAddressNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserAddressNotFoundError,
+		);
 	});
 
 	it('should not update user address if user address does not belong to user', async () => {
@@ -111,6 +115,8 @@ describe('UpdateUserAddressService', () => {
 		userAddressRepository.findById.mockResolvedValue(userAddress);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 
-		await expect(service.execute(command)).rejects.toThrow(UserAddressNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserAddressNotFoundError,
+		);
 	});
 });

@@ -23,7 +23,8 @@ import {
 	GroupRoleRepositoryProvider,
 } from '../ports/out/group-role.repository';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
-import { PermissionName } from 'src/group/domain/permission-name.enum';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { GroupRoleAlreadyExistsError } from './errors/group-role-already-exists.error';
 
 @Injectable()
 export class CreateGroupRoleService implements CreateGroupRoleUseCase {
@@ -65,9 +66,22 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute(PermissionName.CREATE_ROLE)) {
+		if (
+			!authenticatedGroupMember.canExecute(
+				GroupPermissionName.CREATE_ROLE,
+			)
+		) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to create role`,
+			);
+		}
+
+		let roleExists =
+			(await this.groupRoleRepository.findByName(command.name)) !== null;
+
+		if (roleExists) {
+			throw new GroupRoleAlreadyExistsError(
+				`Role ${command.name} already exists`,
 			);
 		}
 

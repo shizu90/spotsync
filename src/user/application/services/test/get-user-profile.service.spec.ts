@@ -46,9 +46,7 @@ describe('GetUserProfileService', () => {
 	it('should get user profile', async () => {
 		const user = mockUser();
 
-		const command = new GetUserProfileCommand(
-			randomUUID()
-		);
+		const command = new GetUserProfileCommand(randomUUID());
 
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());

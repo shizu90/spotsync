@@ -13,7 +13,7 @@ export class GeoLocatorService implements Geolocator {
 		input: GeoLocatorInput,
 	): Promise<GeoLocatorOutput> {
 		const response = this.httpService.get(
-			`${GoogleMapsApiUrl}&address=${input.locality}+${input.subArea}+${input.area}+${input.countryCode}`
+			`${GoogleMapsApiUrl}&address=${input.locality}+${input.subArea}+${input.area}+${input.countryCode}`,
 		);
 
 		return new GeoLocatorOutput(0, 0);

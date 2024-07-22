@@ -41,7 +41,10 @@ describe('DeleteUserAddressService', () => {
 	it('should delete a user address', async () => {
 		const userAddress = mockUserAddress();
 
-		const command = new DeleteUserAddressCommand(randomUUID(), randomUUID());
+		const command = new DeleteUserAddressCommand(
+			randomUUID(),
+			randomUUID(),
+		);
 
 		userRepository.findById.mockResolvedValue(userAddress.user());
 		getAuthenticatedUser.execute.mockReturnValue(userAddress.user().id());
@@ -55,24 +58,34 @@ describe('DeleteUserAddressService', () => {
 	it('should not delete a user address that does not exist', async () => {
 		const userAddress = mockUserAddress();
 
-		const command = new DeleteUserAddressCommand(randomUUID(), randomUUID());
+		const command = new DeleteUserAddressCommand(
+			randomUUID(),
+			randomUUID(),
+		);
 
 		userRepository.findById.mockResolvedValue(userAddress.user());
 		getAuthenticatedUser.execute.mockReturnValue(userAddress.user().id());
 		userAddressRepository.findById.mockResolvedValue(null);
 
-		await expect(service.execute(command)).rejects.toThrow(UserAddressNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserAddressNotFoundError,
+		);
 	});
 
 	it('should not delete a user address that does not belong to the user', async () => {
 		const user = mockUser();
 
-		const command = new DeleteUserAddressCommand(randomUUID(), randomUUID());
+		const command = new DeleteUserAddressCommand(
+			randomUUID(),
+			randomUUID(),
+		);
 
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 		userAddressRepository.findById.mockResolvedValue(mockUserAddress());
 
-		await expect(service.execute(command)).rejects.toThrow(UserAddressNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserAddressNotFoundError,
+		);
 	});
 });

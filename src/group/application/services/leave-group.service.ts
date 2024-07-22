@@ -18,6 +18,7 @@ import { GroupNotFoundError } from './errors/group-not-found.error';
 import { UnableToLeaveGroupError } from './errors/unable-to-leave-group.error';
 import { GroupLog } from 'src/group/domain/group-log.model';
 import { randomUUID } from 'crypto';
+import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
 
 @Injectable()
 export class LeaveGroupService implements LeaveGroupUseCase {
@@ -63,7 +64,11 @@ export class LeaveGroupService implements LeaveGroupUseCase {
 				hasAdministratorGroupMember = true;
 		});
 
-		if (groupMember.isCreator() || !hasAdministratorGroupMember) {
+		if (
+			groupMember.isCreator() ||
+			(!hasAdministratorGroupMember &&
+				groupMember.role().name() === DefaultGroupRole.ADMINISTRATOR)
+		) {
 			throw new UnableToLeaveGroupError(`Unable to leave group`);
 		}
 

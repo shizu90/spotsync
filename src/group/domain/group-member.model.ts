@@ -2,7 +2,7 @@ import { Model } from 'src/common/common.model';
 import { User } from 'src/user/domain/user.model';
 import { Group } from './group.model';
 import { GroupRole } from './group-role.model';
-import { PermissionName } from './permission-name.enum';
+import { GroupPermissionName } from './group-permission-name.enum';
 
 export class GroupMember extends Model {
 	private _id: string;
@@ -68,7 +68,7 @@ export class GroupMember extends Model {
 		this._role = role;
 	}
 
-	public canExecute(permissionName: PermissionName): boolean {
-		return this._isCreator || this._role.hasPermission(permissionName);
+	public canExecute(GroupPermissionName: GroupPermissionName): boolean {
+		return this._isCreator || this._role.hasPermission(GroupPermissionName);
 	}
 }

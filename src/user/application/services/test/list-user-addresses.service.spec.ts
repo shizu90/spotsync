@@ -48,7 +48,11 @@ describe('ListUserAddressesService', () => {
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(user.id());
 		userAddressRepository.paginate.mockResolvedValue(
-			new Pagination([mockUserAddress(), mockUserAddress(), mockUserAddress()], 3, 0),
+			new Pagination(
+				[mockUserAddress(), mockUserAddress(), mockUserAddress()],
+				3,
+				0,
+			),
 		);
 
 		const addresses = await service.execute(command);
@@ -66,7 +70,9 @@ describe('ListUserAddressesService', () => {
 		userRepository.findById.mockResolvedValue(user);
 		getAuthenticatedUser.execute.mockReturnValue(null);
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 
 	it('should not list user addresses if user is not found', async () => {
@@ -75,6 +81,8 @@ describe('ListUserAddressesService', () => {
 		userRepository.findById.mockResolvedValue(null);
 		getAuthenticatedUser.execute.mockReturnValue(null);
 
-		await expect(service.execute(command)).rejects.toThrow(UserNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UserNotFoundError,
+		);
 	});
 });
