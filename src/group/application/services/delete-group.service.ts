@@ -15,6 +15,7 @@ import {
 import { DeleteGroupCommand } from '../ports/in/commands/delete-group.command';
 import { GroupNotFoundError } from './errors/group-not-found.error';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { PermissionName } from 'src/group/domain/permission-name.enum';
 
 @Injectable()
 export class DeleteGroupService implements DeleteGroupUseCase {
@@ -52,7 +53,7 @@ export class DeleteGroupService implements DeleteGroupUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute('delete-group')) {
+		if (!authenticatedGroupMember.canExecute(PermissionName.DELETE_GROUP)) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to delete the group`,
 			);

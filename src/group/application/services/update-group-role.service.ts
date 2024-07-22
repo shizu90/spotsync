@@ -22,6 +22,7 @@ import { UnauthorizedAccessError } from 'src/auth/application/services/errors/un
 import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
 import { GroupLog } from 'src/group/domain/group-log.model';
 import { randomUUID } from 'crypto';
+import { PermissionName } from 'src/group/domain/permission-name.enum';
 
 @Injectable()
 export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
@@ -61,7 +62,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute('update-role')) {
+		if (!authenticatedGroupMember.canExecute(PermissionName.UPDATE_SETTINGS)) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to update role`,
 			);

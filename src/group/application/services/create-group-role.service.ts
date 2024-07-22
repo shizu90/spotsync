@@ -23,6 +23,7 @@ import {
 	GroupRoleRepositoryProvider,
 } from '../ports/out/group-role.repository';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
+import { PermissionName } from 'src/group/domain/permission-name.enum';
 
 @Injectable()
 export class CreateGroupRoleService implements CreateGroupRoleUseCase {
@@ -64,7 +65,7 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute('create-role')) {
+		if (!authenticatedGroupMember.canExecute(PermissionName.UPDATE_SETTINGS)) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to create role`,
 			);

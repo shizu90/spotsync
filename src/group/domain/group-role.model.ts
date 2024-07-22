@@ -1,6 +1,7 @@
 import { Model } from 'src/common/common.model';
 import { GroupPermission } from './group-permission.model';
 import { Group } from './group.model';
+import { PermissionName } from './permission-name.enum';
 
 export class GroupRole extends Model {
 	private _id: string;
@@ -100,6 +101,10 @@ export class GroupRole extends Model {
 		}
 	}
 
+	public findPermission(permissionName: PermissionName): GroupPermission {
+		return this._permissions.find((p) => p.name() === permissionName);
+	}
+
 	public addPermission(permission: GroupPermission): void {
 		if (!this._isImmutable) {
 			this._permissions.push(permission);
@@ -112,12 +117,13 @@ export class GroupRole extends Model {
 			const index = this._permissions.findIndex(
 				(p) => p.id() === permission.id(),
 			);
-			this._permissions = this._permissions.splice(index, 1);
+
+			this._permissions.splice(index, 1);
 			this._updatedAt = new Date();
 		}
 	}
 
-	public hasPermission(permissionName: string): boolean {
-		return this._permissions.some((p) => p.name() === permissionName);
+	public hasPermission(permissionName: PermissionName): boolean {
+		return this.findPermission(permissionName) !== undefined;
 	}
 }

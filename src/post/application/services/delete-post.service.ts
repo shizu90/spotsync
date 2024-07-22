@@ -7,6 +7,7 @@ import { DeletePostCommand } from "../ports/in/commands/delete-post.command";
 import { PostNotFoundError } from "./errors/post-not-found.error";
 import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { PostThreadRepository, PostThreadRepositoryProvider } from "../ports/out/post-thread.repository";
+import { PermissionName } from "src/group/domain/permission-name.enum";
 
 @Injectable()
 export class DeletePostService implements DeletePostUseCase 
@@ -42,7 +43,7 @@ export class DeletePostService implements DeletePostUseCase
                 throw new UnauthorizedAccessError(`User is not a member of the group`);
             }
             
-            canDelete = canDelete || authenticatedGroupMember.canExecute('delete-posts');
+            canDelete = canDelete || authenticatedGroupMember.canExecute(PermissionName.DELETE_POSTS);
         }
 
         if(!canDelete) {

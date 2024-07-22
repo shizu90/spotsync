@@ -75,5 +75,5 @@ export const mockGroup = (): Group => {
 			GroupVisibility.PUBLIC,
 			GroupVisibility.PUBLIC
 		)
-	)
+	);
 };

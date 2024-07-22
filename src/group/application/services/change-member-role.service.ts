@@ -23,6 +23,7 @@ import {
 import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
 import { GroupLog } from 'src/group/domain/group-log.model';
 import { randomUUID } from 'crypto';
+import { PermissionName } from 'src/group/domain/permission-name.enum';
 
 @Injectable()
 export class ChangeMemberRoleService implements ChangeMemberRoleUseCase {
@@ -57,12 +58,12 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new GroupMemberNotFoundError(
+			throw new UnauthorizedAccessError(
 				`You are not a member of the group`,
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute('change-member-role')) {
+		if (!authenticatedGroupMember.canExecute(PermissionName.UPDATE_SETTINGS)) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to change member role`,
 			);

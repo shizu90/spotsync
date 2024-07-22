@@ -27,6 +27,7 @@ import { AcceptGroupRequestCommand } from '../ports/in/commands/accept-group-req
 import { AcceptGroupRequestDto } from '../ports/out/dto/accept-group-request.dto';
 import { randomUUID } from 'crypto';
 import { GroupLog } from 'src/group/domain/group-log.model';
+import { PermissionName } from 'src/group/domain/permission-name.enum';
 
 @Injectable()
 export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
@@ -70,7 +71,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute('accept-requests')) {
+		if (!authenticatedGroupMember.canExecute(PermissionName.ACCEPT_REQUESTS)) {
 			throw new UnauthorizedAccessError(
 				`You don't have permission to accept join requests`,
 			);
