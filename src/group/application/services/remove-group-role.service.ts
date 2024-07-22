@@ -62,7 +62,7 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute(PermissionName.UPDATE_SETTINGS)) {
+		if (!authenticatedGroupMember.canExecute(PermissionName.REMOVE_ROLE)) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to delete role`,
 			);

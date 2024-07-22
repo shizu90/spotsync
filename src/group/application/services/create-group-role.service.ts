@@ -65,7 +65,7 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute(PermissionName.UPDATE_SETTINGS)) {
+		if (!authenticatedGroupMember.canExecute(PermissionName.CREATE_ROLE)) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to create role`,
 			);

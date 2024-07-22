@@ -1,16 +1,17 @@
 import { Model } from 'src/common/common.model';
+import { PermissionName } from './permission-name.enum';
 
 export class GroupPermission extends Model {
 	private _id: string;
-	private _name: string;
+	private _name: PermissionName;
 
-	private constructor(id: string, name: string) {
+	private constructor(id: string, name: PermissionName) {
 		super();
 		this._id = id;
 		this._name = name;
 	}
 
-	public static create(id: string, name: string): GroupPermission {
+	public static create(id: string, name: PermissionName): GroupPermission {
 		return new GroupPermission(id, name);
 	}
 
@@ -18,7 +19,7 @@ export class GroupPermission extends Model {
 		return this._id;
 	}
 
-	public name(): string {
+	public name(): PermissionName {
 		return this._name;
 	}
 }

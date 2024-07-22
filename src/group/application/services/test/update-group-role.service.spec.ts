@@ -109,7 +109,7 @@ describe("UpdateGroupRoleService", () => {
     it('should not update role if user does not have permission', async () => {
         const authenticatedGroupMember = mockGroupMember(false);
 
-        authenticatedGroupMember.role().removePermission(authenticatedGroupMember.role().findPermission(PermissionName.UPDATE_SETTINGS));
+        authenticatedGroupMember.role().removePermission(authenticatedGroupMember.role().findPermission(PermissionName.UPDATE_ROLE));
 
         const role = authenticatedGroupMember.role();
 

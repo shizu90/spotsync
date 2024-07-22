@@ -94,7 +94,7 @@ describe("CreateGroupRoleService", () => {
     it('should not create a group role if user does not have permission', async () => {
         const authenticatedGroupMember = mockGroupMember(false);
 
-        authenticatedGroupMember.role().removePermission(authenticatedGroupMember.role().findPermission(PermissionName.UPDATE_SETTINGS));
+        authenticatedGroupMember.role().removePermission(authenticatedGroupMember.role().findPermission(PermissionName.CREATE_ROLE));
 
         const command = new CreateGroupRoleCommand(
             authenticatedGroupMember.group().id(),

@@ -63,7 +63,7 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute(PermissionName.UPDATE_SETTINGS)) {
+		if (!authenticatedGroupMember.canExecute(PermissionName.CHANGE_MEMBER_ROLE)) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to change member role`,
 			);

@@ -216,11 +216,11 @@ model Post {
     created_at                      DateTime                    @default(now())
     updated_at                      DateTime                    @default(now())
     attachments                     PostAttachment[]
-    thread                          PostThread                  @relation("posts", fields: [thread_id], references: [id])
-    creator                         User                        @relation(fields: [user_id], references: [id])
-    group                           Group?                      @relation(fields: [group_id], references: [id])
+    thread                          PostThread                  @relation("posts", fields: [thread_id], references: [id], onDelete: Cascade)
+    creator                         User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    group                           Group?                      @relation(fields: [group_id], references: [id], onDelete: Cascade)
     children_posts                  Post[]                      @relation("parent_post")
-    parent_post                     Post?                       @relation("parent_post", fields: [parent_id], references: [id])
+    parent_post                     Post?                       @relation("parent_post", fields: [parent_id], references: [id], onDelete: Cascade)
 
     @@map("posts")
 }
@@ -230,7 +230,7 @@ model PostAttachment {
     file_path                       String
     file_type                       String
     post_id                         String
-    post                            Post                        @relation(fields: [post_id], references: [id])
+    post                            Post                        @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
     @@map("post_attachments")
 }

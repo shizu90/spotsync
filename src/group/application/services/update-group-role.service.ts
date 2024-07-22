@@ -62,7 +62,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 			);
 		}
 
-		if (!authenticatedGroupMember.canExecute(PermissionName.UPDATE_SETTINGS)) {
+		if (!authenticatedGroupMember.canExecute(PermissionName.UPDATE_ROLE)) {
 			throw new UnauthorizedAccessError(
 				`You don't have permissions to update role`,
 			);

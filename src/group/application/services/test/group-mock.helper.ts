@@ -82,7 +82,23 @@ export const mockGroupRole = (isImmutable = false, name = 'member'): GroupRole =
 			GroupPermission.create(
 				randomUUID(), 
 				PermissionName.REMOVE_MEMBER
-			)
+			),
+			GroupPermission.create(
+				randomUUID(), 
+				PermissionName.CREATE_ROLE
+			),
+			GroupPermission.create(
+				randomUUID(), 
+				PermissionName.UPDATE_ROLE
+			),
+			GroupPermission.create(
+				randomUUID(), 
+				PermissionName.REMOVE_ROLE
+			),
+			GroupPermission.create(
+				randomUUID(), 
+				PermissionName.CHANGE_MEMBER_ROLE
+			),
 		],
 		isImmutable,
 		null

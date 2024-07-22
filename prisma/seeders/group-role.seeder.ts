@@ -11,7 +11,11 @@ export async function seed(client: PrismaClient)
         {id: randomUUID(), name: 'delete-events'},
         {id: randomUUID(), name: 'create-posts'},
         {id: randomUUID(), name: 'create-events'},
-        {id: randomUUID(), name: 'accept-requests'}
+        {id: randomUUID(), name: 'accept-requests'},
+        {id: randomUUID(), name: 'create-role'},
+        {id: randomUUID(), name: 'remove-role'},
+        {id: randomUUID(), name: 'update-role'},
+        {id: randomUUID(), name: 'change-member-role'}
     ];
 
     for(const p of permissions) {
