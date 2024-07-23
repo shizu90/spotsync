@@ -17,6 +17,20 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiConflictResponse,
+	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
+import { Request, Response } from 'express';
+import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/common.repository';
+import { ErrorResponse } from 'src/common/web/common-error.response';
+import {
 	CreateUserUseCase,
 	CreateUserUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/create-user.use-case';
@@ -24,6 +38,14 @@ import {
 	DeleteUserUseCase,
 	DeleteUserUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/delete-user.use-case';
+import {
+	GetUserProfileUseCase,
+	GetUserProfileUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/get-user-profile.use-case';
+import {
+	ListUsersUseCase,
+	ListUsersUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/list-users.use-case';
 import {
 	UpdateUserCredentialsUseCase,
 	UpdateUserCredentialsUseCaseProvider,
@@ -33,6 +55,10 @@ import {
 	UpdateUserProfileUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/update-user-profile.use-case';
 import {
+	UpdateUserVisibilityConfigUseCase,
+	UpdateUserVisibilityConfigUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/update-user-visibility-config.use-case';
+import {
 	UploadBannerPictureUseCase,
 	UploadBannerPictureUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/upload-banner-picture.use-case';
@@ -40,30 +66,32 @@ import {
 	UploadProfilePictureUseCase,
 	UploadProfilePictureUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/upload-profile-picture.use-case';
-import { CreateUserRequest } from './requests/create-user.request';
-import { UserRequestMapper } from './mappers/user-request.mapper';
-import { UpdateUserProfileRequest } from './requests/update-user-profile.request';
-import { UpdateUserCredentialsRequest } from './requests/update-user-credentials.request';
+import { CreateUserDto } from 'src/user/application/ports/out/dto/create-user.dto';
+import { GetUserProfileDto } from 'src/user/application/ports/out/dto/get-user-profile.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
-import {
-	GetUserProfileUseCase,
-	GetUserProfileUseCaseProvider,
-} from 'src/user/application/ports/in/use-cases/get-user-profile.use-case';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Request, Response } from 'express';
-import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { UpdateUserVisibilityConfigRequest } from './requests/update-user-visibility-config.request';
-import {
-	UpdateUserVisibilityConfigUseCase,
-	UpdateUserVisibilityConfigUseCaseProvider,
-} from 'src/user/application/ports/in/use-cases/update-user-visibility-config.use-case';
-import {
-	ListUsersUseCase,
-	ListUsersUseCaseProvider,
-} from 'src/user/application/ports/in/use-cases/list-users.use-case';
+import { UserRequestMapper } from './mappers/user-request.mapper';
+import { CreateUserRequest } from './requests/create-user.request';
 import { ListUsersQueryRequest } from './requests/list-users-query.request';
+import { UpdateUserCredentialsRequest } from './requests/update-user-credentials.request';
+import { UpdateUserProfileRequest } from './requests/update-user-profile.request';
+import { UpdateUserVisibilityConfigRequest } from './requests/update-user-visibility-config.request';
 
 @ApiTags('Users')
+@ApiUnauthorizedResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiUnprocessableEntityResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiConflictResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiNotFoundResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiInternalServerErrorResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @Controller('users')
 @UseFilters(new UserErrorHandler())
 export class UserController {
@@ -89,6 +117,52 @@ export class UserController {
 	) {}
 
 	@ApiOperation({ summary: 'List users' })
+	@ApiOkResponse({
+		example: {
+			data: new Pagination(
+				[
+					new GetUserProfileDto(
+						'uuid',
+						'string',
+						'string',
+						'#000000',
+						'string',
+						new Date(),
+						new Date(),
+						'string',
+						'string',
+						{
+							address_visibility: 'public',
+							poi_folder_visibility: 'public',
+							post_visibility: 'public',
+							profile_visibility: 'public',
+							visited_poi_visibility: 'public',
+						},
+						{
+							name: 'string',
+						},
+						0,
+						0,
+						{
+							id: 'uuid',
+							name: 'string',
+							area: 'string',
+							sub_area: 'string',
+							locality: 'string',
+							latitude: 0,
+							longitude: 0,
+							country_code: 'BR',
+							created_at: new Date(),
+							updated_at: new Date(),
+						},
+						false,
+					),
+				],
+				1,
+				0,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Get()
@@ -107,6 +181,46 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Get user by id' })
+	@ApiOkResponse({
+		example: {
+			data: new GetUserProfileDto(
+				'uuid',
+				'string',
+				'string',
+				'#000000',
+				'string',
+				new Date(),
+				new Date(),
+				'string',
+				'string',
+				{
+					address_visibility: 'public',
+					poi_folder_visibility: 'public',
+					post_visibility: 'public',
+					profile_visibility: 'public',
+					visited_poi_visibility: 'public',
+				},
+				{
+					name: 'string',
+				},
+				0,
+				0,
+				{
+					id: 'uuid',
+					name: 'string',
+					area: 'string',
+					sub_area: 'string',
+					locality: 'string',
+					latitude: 0,
+					longitude: 0,
+					country_code: 'BR',
+					created_at: new Date(),
+					updated_at: new Date(),
+				},
+				false,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@Get(':id/profile')
 	public async get(
@@ -124,6 +238,35 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Create user' })
+	@ApiOkResponse({
+		example: {
+			data: new CreateUserDto(
+				'uuid',
+				'string',
+				'string',
+				'#000000',
+				'string',
+				'string',
+				'string',
+				new Date(),
+				false,
+				new Date(),
+				new Date(),
+				{
+					address_visibility: 'public',
+					poi_folder_visibility: 'public',
+					post_visibility: 'public',
+					profile_visibility: 'public',
+					visited_poi_visibility: 'public',
+				},
+				{
+					name: '',
+					email: '',
+					phone_number: '',
+				},
+			),
+		},
+	})
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Post()
 	public async create(
@@ -141,6 +284,7 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Update user profile' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Put(':id')
@@ -160,6 +304,7 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Update user credentials' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Put(':id/credentials')
@@ -182,6 +327,7 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Update user visibility configurations' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Put(':id/visibility-configuration')
@@ -204,6 +350,7 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Delete user by id' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id')
 	public async delete(

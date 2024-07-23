@@ -29,7 +29,7 @@ export class UpdateUserCredentialsRequest {
 	@IsOptional()
 	public password?: string;
 
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	@IsString()
 	@IsOptional()
 	public phone_number?: string;

@@ -26,7 +26,7 @@ export class CreateUserRequest {
 	@MaxLength(32, { message: 'Password must have less than 32 characters.' })
 	public password: string;
 
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	@IsString()
 	@IsOptional()
 	public phone_number?: string;

@@ -16,8 +16,20 @@ import {
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiConflictResponse,
+	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
+import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/common.repository';
+import { ErrorResponse } from 'src/common/web/common-error.response';
 import {
 	CreateGroupUseCase,
 	CreateGroupUseCaseProvider,
@@ -26,6 +38,10 @@ import {
 	DeleteGroupUseCase,
 	DeleteGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/delete-group.use-case';
+import {
+	GetGroupUseCase,
+	GetGroupUseCaseProvider,
+} from 'src/group/application/ports/in/use-cases/get-group.use-case';
 import {
 	ListGroupsUseCase,
 	ListGroupsUseCaseProvider,
@@ -38,19 +54,31 @@ import {
 	UpdateGroupUseCase,
 	UpdateGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group.use-case';
-import { GroupRequestMapper } from './mappers/group-request.mapper';
-import { Request, Response } from 'express';
-import {
-	GetGroupUseCase,
-	GetGroupUseCaseProvider,
-} from 'src/group/application/ports/in/use-cases/get-group.use-case';
-import { CreateGroupRequest } from './requests/create-group.request';
-import { UpdateGroupRequest } from './requests/update-group.request';
-import { UpdateGroupVisibilityRequest } from './requests/update-group-visibility.request';
+import { CreateGroupDto } from 'src/group/application/ports/out/dto/create-group.dto';
+import { GetGroupDto } from 'src/group/application/ports/out/dto/get-group.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
+import { GroupRequestMapper } from './mappers/group-request.mapper';
+import { CreateGroupRequest } from './requests/create-group.request';
 import { ListGroupsQueryRequest } from './requests/list-groups-query.request';
+import { UpdateGroupVisibilityRequest } from './requests/update-group-visibility.request';
+import { UpdateGroupRequest } from './requests/update-group.request';
 
 @ApiTags('Groups')
+@ApiUnauthorizedResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiUnprocessableEntityResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiConflictResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiNotFoundResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiInternalServerErrorResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
 export class GroupController {
@@ -70,6 +98,43 @@ export class GroupController {
 	) {}
 
 	@ApiOperation({ summary: 'List groups' })
+	@ApiOkResponse({
+		example: {
+			data: new Pagination(
+				[
+					new GetGroupDto(
+						'uuid',
+						'string',
+						'string',
+						'string',
+						'string',
+						{
+							event_visibility: 'public',
+							group_visibility: 'public',
+							post_visibility: 'public',
+						},
+						new Date(),
+						new Date(),
+						true,
+						{
+							id: 'uuid',
+							is_creator: false,
+							joined_at: new Date(),
+							role: {
+								id: 'uuid',
+								name: 'string',
+								permissions: [{ id: 'uuid', name: 'string' }],
+							},
+							user_id: 'uuid',
+						},
+						new Date(),
+					),
+				],
+				1,
+				0,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Get()
@@ -88,6 +153,37 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Find group by id' })
+	@ApiOkResponse({
+		example: {
+			data: new GetGroupDto(
+				'uuid',
+				'string',
+				'string',
+				'string',
+				'string',
+				{
+					event_visibility: 'public',
+					group_visibility: 'public',
+					post_visibility: 'public',
+				},
+				new Date(),
+				new Date(),
+				true,
+				{
+					id: 'uuid',
+					is_creator: false,
+					joined_at: new Date(),
+					role: {
+						id: 'uuid',
+						name: 'string',
+						permissions: [{ id: 'uuid', name: 'string' }],
+					},
+					user_id: 'uuid',
+				},
+				new Date(),
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async getById(
@@ -105,6 +201,24 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Create group' })
+	@ApiOkResponse({
+		example: {
+			data: new CreateGroupDto(
+				'uuid',
+				'string',
+				'string',
+				'string',
+				'string',
+				{
+					event_visibility: 'public',
+					group_visibility: 'public',
+					post_visibility: 'public',
+				},
+				new Date(),
+				new Date(),
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Post()
@@ -123,6 +237,7 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Update group' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Put(':id')
@@ -142,6 +257,7 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Update group visibility' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Put(':id/visibility')
@@ -164,6 +280,7 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Delete group' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id')
 	public async delete(

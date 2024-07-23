@@ -3,7 +3,7 @@ import { IsEnum, IsOptional } from 'class-validator';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 
 export class UpdateUserVisibilityConfigRequest {
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: UserVisibility })
 	@IsEnum(UserVisibility, {
 		message:
 			'User profile visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
@@ -11,7 +11,7 @@ export class UpdateUserVisibilityConfigRequest {
 	@IsOptional()
 	public profile_visibility?: UserVisibility;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: UserVisibility })
 	@IsEnum(UserVisibility, {
 		message:
 			'User address visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
@@ -19,7 +19,7 @@ export class UpdateUserVisibilityConfigRequest {
 	@IsOptional()
 	public address_visibility?: UserVisibility;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: UserVisibility })
 	@IsEnum(UserVisibility, {
 		message:
 			'User poi folder visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
@@ -27,7 +27,7 @@ export class UpdateUserVisibilityConfigRequest {
 	@IsOptional()
 	public poi_folder_visibility?: UserVisibility;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: UserVisibility })
 	@IsEnum(UserVisibility, {
 		message:
 			'User visited poi visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
@@ -35,7 +35,7 @@ export class UpdateUserVisibilityConfigRequest {
 	@IsOptional()
 	public visited_poi_visibility?: UserVisibility;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: UserVisibility })
 	@IsEnum(UserVisibility, {
 		message: 'User post visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
 	})

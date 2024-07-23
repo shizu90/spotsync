@@ -16,10 +16,28 @@ import {
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
+import {
+	ApiConflictResponse,
+	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { UserAddressRequestMapper } from './mappers/user-address-request.mapper';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Pagination } from 'src/common/common.repository';
+import { ErrorResponse } from 'src/common/web/common-error.response';
+import {
+	CreateUserAddressUseCase,
+	CreateUserAddressUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/create-user-address.use-case';
+import {
+	DeleteUserAddressUseCase,
+	DeleteUserAddressUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/delete-user-address.use-case';
 import {
 	GetUserAddressUseCase,
 	GetUserAddressUseCaseProvider,
@@ -29,23 +47,33 @@ import {
 	ListUserAddressesUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/list-user-addresses.use-case';
 import {
-	CreateUserAddressUseCase,
-	CreateUserAddressUseCaseProvider,
-} from 'src/user/application/ports/in/use-cases/create-user-address.use-case';
-import {
 	UpdateUserAddressUseCase,
 	UpdateUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/update-user-address.use-case';
-import {
-	DeleteUserAddressUseCase,
-	DeleteUserAddressUseCaseProvider,
-} from 'src/user/application/ports/in/use-cases/delete-user-address.use-case';
-import { CreateUserAddressRequest } from './requests/create-user-address.request';
-import { UpdateUserAddressRequest } from './requests/update-user-address.request';
+import { CreateUserAddressDto } from 'src/user/application/ports/out/dto/create-user-address.dto';
+import { GetUserAddressDto } from 'src/user/application/ports/out/dto/get-user-address.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
+import { UserAddressRequestMapper } from './mappers/user-address-request.mapper';
+import { CreateUserAddressRequest } from './requests/create-user-address.request';
 import { ListUserAddressesQueryRequest } from './requests/list-user-addresses-query.request';
+import { UpdateUserAddressRequest } from './requests/update-user-address.request';
 
 @ApiTags('User addresses')
+@ApiUnauthorizedResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiUnprocessableEntityResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiConflictResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiNotFoundResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiInternalServerErrorResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @Controller('users')
 @UseFilters(new UserErrorHandler())
 export class UserAddressController {
@@ -63,6 +91,29 @@ export class UserAddressController {
 	) {}
 
 	@ApiOperation({ summary: 'List user addresses' })
+	@ApiOkResponse({
+		example: {
+			data: new Pagination(
+				[
+					new GetUserAddressDto(
+						'uuid',
+						'string',
+						'string',
+						'string',
+						'string',
+						'BR',
+						0,
+						0,
+						false,
+						new Date(),
+						new Date(),
+					),
+				],
+				1,
+				0,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Get(':id/addresses')
@@ -85,6 +136,23 @@ export class UserAddressController {
 	}
 
 	@ApiOperation({ summary: 'Get user address' })
+	@ApiOkResponse({
+		example: {
+			data: new GetUserAddressDto(
+				'uuid',
+				'string',
+				'string',
+				'string',
+				'string',
+				'BR',
+				0,
+				0,
+				false,
+				new Date(),
+				new Date(),
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@Get(':id/addresses/:address_id')
 	public async getAddress(
@@ -106,6 +174,23 @@ export class UserAddressController {
 	}
 
 	@ApiOperation({ summary: 'Create user address' })
+	@ApiOkResponse({
+		example: {
+			data: new CreateUserAddressDto(
+				'uuid',
+				'string',
+				'string',
+				'string',
+				'string',
+				'BR',
+				0,
+				0,
+				false,
+				new Date(),
+				new Date(),
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Post(':id/addresses')
@@ -128,6 +213,7 @@ export class UserAddressController {
 	}
 
 	@ApiOperation({ summary: 'Update user address' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Put(':id/addresses/:address_id')
@@ -152,6 +238,7 @@ export class UserAddressController {
 	}
 
 	@ApiOperation({ summary: 'Delete user address' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id/addresses/:address_id')
 	public async deleteAddress(

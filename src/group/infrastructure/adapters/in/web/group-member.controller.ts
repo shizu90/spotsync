@@ -16,9 +16,20 @@ import {
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiConflictResponse,
+	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/common.repository';
+import { ErrorResponse } from 'src/common/web/common-error.response';
 import {
 	AcceptGroupRequestUseCase,
 	AcceptGroupRequestUseCaseProvider,
@@ -40,23 +51,42 @@ import {
 	ListGroupMembersUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/list-group-members.use-case';
 import {
+	ListGroupRequestsUseCase,
+	ListGroupRequestsUseCaseProvider,
+} from 'src/group/application/ports/in/use-cases/list-group-requests.use-case';
+import {
 	RefuseGroupRequestUseCase,
 	RefuseGroupRequestUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/refuse-group-request.use-case';
-import { ListGroupMembersQueryRequest } from './requests/list-group-members-query.request';
-import { GroupMemberRequestMapper } from './mappers/group-member-request.mapper';
-import { ChangeMemberRoleRequest } from './requests/change-member-role.request';
-import { GroupErrorHandler } from './handlers/group-error.handler';
 import {
 	RemoveGroupMemberUseCase,
 	RemoveGroupMemberUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/remove-group-member.use-case';
-import {
-	ListGroupRequestsUseCase,
-	ListGroupRequestsUseCaseProvider,
-} from 'src/group/application/ports/in/use-cases/list-group-requests.use-case';
+import { AcceptGroupRequestDto } from 'src/group/application/ports/out/dto/accept-group-request.dto';
+import { GetGroupMemberDto } from 'src/group/application/ports/out/dto/get-group-member.dto';
+import { GetGroupRequestDto } from 'src/group/application/ports/out/dto/get-group-request.dto';
+import { JoinGroupDto } from 'src/group/application/ports/out/dto/join-group.dto';
+import { GroupErrorHandler } from './handlers/group-error.handler';
+import { GroupMemberRequestMapper } from './mappers/group-member-request.mapper';
+import { ChangeMemberRoleRequest } from './requests/change-member-role.request';
+import { ListGroupMembersQueryRequest } from './requests/list-group-members-query.request';
 
 @ApiTags('Group members')
+@ApiUnauthorizedResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiUnprocessableEntityResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiConflictResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiNotFoundResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiInternalServerErrorResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
 export class GroupMemberController {
@@ -80,6 +110,36 @@ export class GroupMemberController {
 	) {}
 
 	@ApiOperation({ summary: 'List group members' })
+	@ApiOkResponse({
+		example: {
+			data: new Pagination(
+				[
+					new GetGroupMemberDto(
+						'uuid',
+						{
+							id: 'uuid',
+							credentials: { name: 'string' },
+							first_name: 'string',
+							last_name: 'string',
+							banner_picture: 'string',
+							profile_picture: 'string',
+						},
+						'uuid',
+						{
+							id: 'uuid',
+							name: 'string',
+							hex_color: '#000000',
+							permissions: [{ id: 'uuid', name: 'string' }],
+						},
+						new Date(),
+						false,
+					),
+				],
+				1,
+				0,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Get(':id/members')
@@ -102,6 +162,29 @@ export class GroupMemberController {
 	}
 
 	@ApiOperation({ summary: 'List group join requests' })
+	@ApiOkResponse({
+		example: {
+			data: new Pagination(
+				[
+					new GetGroupRequestDto(
+						'uuid',
+						{
+							id: 'uuid',
+							first_name: 'string',
+							last_name: 'string',
+							banner_picture: 'string',
+							credentials: { name: 'string' },
+							profile_picture: 'string',
+						},
+						'uuid',
+						new Date(),
+					),
+				],
+				1,
+				0,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Get(':id/join-requests')
@@ -124,6 +207,32 @@ export class GroupMemberController {
 	}
 
 	@ApiOperation({ summary: 'Join group' })
+	@ApiOkResponse({
+		example: {
+			data: new JoinGroupDto('uuid', 'uuid', 'uuid', new Date()),
+		},
+	})
+	@ApiOkResponse({
+		example: {
+			data: new AcceptGroupRequestDto(
+				'uuid',
+				{
+					id: 'uuid',
+					banner_picture: 'string',
+					credentials: { name: 'string' },
+					first_name: 'string',
+					last_name: 'string',
+					profile_picture: 'string',
+				},
+				new Date(),
+				{
+					name: 'string',
+					hex_color: 'string',
+					permissions: [{ id: 'uuid', name: 'string' }],
+				},
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@Post(':id/join')
 	public async joinGroup(
@@ -141,6 +250,7 @@ export class GroupMemberController {
 	}
 
 	@ApiOperation({ summary: 'Leave group' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id/leave')
 	public async leaveGroup(
@@ -158,6 +268,7 @@ export class GroupMemberController {
 	}
 
 	@ApiOperation({ summary: 'Change member role' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Put(':id/members/:member_id/change-role')
 	public async changeMemberRole(
@@ -181,6 +292,27 @@ export class GroupMemberController {
 	}
 
 	@ApiOperation({ summary: 'Accept group request' })
+	@ApiOkResponse({
+		example: {
+			data: new AcceptGroupRequestDto(
+				'uuid',
+				{
+					id: 'uuid',
+					banner_picture: 'string',
+					credentials: { name: 'string' },
+					first_name: 'string',
+					last_name: 'string',
+					profile_picture: 'string',
+				},
+				new Date(),
+				{
+					name: 'string',
+					hex_color: 'string',
+					permissions: [{ id: 'uuid', name: 'string' }],
+				},
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@Put(':id/join-requests/:request_id/accept')
 	public async acceptGroupRequest(
@@ -202,6 +334,7 @@ export class GroupMemberController {
 	}
 
 	@ApiOperation({ summary: 'Refuse group request' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id/join-requests/:request_id/refuse')
 	public async refuseGroupRequest(
@@ -223,6 +356,7 @@ export class GroupMemberController {
 	}
 
 	@ApiOperation({ summary: 'Remove group member' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id/members/:member_id')
 	public async removeGroupMember(

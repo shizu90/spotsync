@@ -1,8 +1,7 @@
 export class ErrorResponse {
-    constructor(
-        readonly path: string,
-        readonly timestamp: Date,
-        readonly message: string
-    ) 
-    {}
+	constructor(
+		readonly path: string,
+		readonly timestamp: string,
+		readonly message: string,
+	) {}
 }

@@ -16,12 +16,28 @@ import {
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiConflictResponse,
+	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/common.repository';
+import { ErrorResponse } from 'src/common/web/common-error.response';
 import {
 	CreateGroupRoleUseCase,
 	CreateGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/create-group-role.use-case';
+import {
+	GetGroupRoleUseCase,
+	GetGroupRoleUseCaseProvider,
+} from 'src/group/application/ports/in/use-cases/get-group-role.use-case';
 import {
 	ListGroupRolesUseCase,
 	ListGroupRolesUseCaseProvider,
@@ -34,18 +50,30 @@ import {
 	UpdateGroupRoleUseCase,
 	UpdateGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group-role.use-case';
-import { ListGroupRolesQueryRequest } from './requests/list-group-roles-query.request';
-import { GroupRoleRequestMapper } from './mappers/group-role-request.mapper';
-import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { CreateGroupRoleRequest } from './requests/create-group-role.request';
-import { UpdateGroupRoleRequest } from './requests/update-group-role.request';
-import {
-	GetGroupRoleUseCase,
-	GetGroupRoleUseCaseProvider,
-} from 'src/group/application/ports/in/use-cases/get-group-role.use-case';
+import { CreateGroupRoleDto } from 'src/group/application/ports/out/dto/create-group-role.dto';
+import { GetGroupRoleDto } from 'src/group/application/ports/out/dto/get-group-role.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
+import { GroupRoleRequestMapper } from './mappers/group-role-request.mapper';
+import { CreateGroupRoleRequest } from './requests/create-group-role.request';
+import { ListGroupRolesQueryRequest } from './requests/list-group-roles-query.request';
+import { UpdateGroupRoleRequest } from './requests/update-group-role.request';
 
 @ApiTags('Group roles')
+@ApiUnauthorizedResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiUnprocessableEntityResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiConflictResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiNotFoundResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiInternalServerErrorResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
 export class GroupRoleController {
@@ -63,6 +91,26 @@ export class GroupRoleController {
 	) {}
 
 	@ApiOperation({ summary: 'List group roles' })
+	@ApiOkResponse({
+		example: {
+			data: new Pagination(
+				[
+					new GetGroupRoleDto(
+						'uuid',
+						'uuid',
+						'string',
+						false,
+						'#000000',
+						[{ id: 'uuid', name: 'string' }],
+						new Date(),
+						new Date(),
+					),
+				],
+				1,
+				0,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Get(':id/roles')
@@ -85,6 +133,20 @@ export class GroupRoleController {
 	}
 
 	@ApiOperation({ summary: 'Get group role by id' })
+	@ApiOkResponse({
+		example: {
+			data: new GetGroupRoleDto(
+				'uuid',
+				'uuid',
+				'string',
+				false,
+				'#000000',
+				[{ id: 'uuid', name: 'string' }],
+				new Date(),
+				new Date(),
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@Get(':id/roles/:role_id')
 	public async getById(
@@ -106,6 +168,19 @@ export class GroupRoleController {
 	}
 
 	@ApiOperation({ summary: 'Create group role' })
+	@ApiOkResponse({
+		example: {
+			data: new CreateGroupRoleDto(
+				'uuid',
+				'string',
+				'#000000',
+				[{ id: 'uuid', name: 'string' }],
+				new Date(),
+				new Date(),
+				false,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Post(':id/roles')
@@ -128,6 +203,7 @@ export class GroupRoleController {
 	}
 
 	@ApiOperation({ summary: 'Update group role' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Put(':id/roles/:role_id')
@@ -152,6 +228,7 @@ export class GroupRoleController {
 	}
 
 	@ApiOperation({ summary: 'Delete group role' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id/roles/:role_id')
 	public async delete(

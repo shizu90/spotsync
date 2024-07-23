@@ -15,39 +15,64 @@ import {
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiConflictResponse,
+	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import {
-	FollowUseCase,
-	FollowUseCaseProvider,
-} from 'src/follower/application/ports/in/use-cases/follow.use-case';
-import {
-	UnfollowUseCase,
-	UnfollowUseCaseProvider,
-} from 'src/follower/application/ports/in/use-cases/unfollow.use-case';
-import { FollowRequestMapper } from './mappers/follow-request.mapper';
-import { FollowErrorHandler } from './handlers/follow-error.handler';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/common.repository';
+import { ErrorResponse } from 'src/common/web/common-error.response';
 import {
 	AcceptFollowRequestUseCase,
 	AcceptFollowRequestUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/accept-follow-request.use-case';
 import {
-	RefuseFollowRequestUseCaseProvider,
-	RefusseFollowRequestUseCase,
-} from 'src/follower/application/ports/in/use-cases/refuse-follow-request.use-case';
-import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
-import { ListFollowRequestsQueryRequest } from './requests/list-follow-requests-query.request';
+	FollowUseCase,
+	FollowUseCaseProvider,
+} from 'src/follower/application/ports/in/use-cases/follow.use-case';
+import {
+	ListFollowRequestsUseCase,
+	ListFollowRequestsUseCaseProvider,
+} from 'src/follower/application/ports/in/use-cases/list-follow-requests.use-case';
 import {
 	ListFollowsUseCase,
 	ListFollowsUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/list-follows.use-case';
 import {
-	ListFollowRequestsUseCase,
-	ListFollowRequestsUseCaseProvider,
-} from 'src/follower/application/ports/in/use-cases/list-follow-requests.use-case';
+	RefuseFollowRequestUseCaseProvider,
+	RefusseFollowRequestUseCase,
+} from 'src/follower/application/ports/in/use-cases/refuse-follow-request.use-case';
+import {
+	UnfollowUseCase,
+	UnfollowUseCaseProvider,
+} from 'src/follower/application/ports/in/use-cases/unfollow.use-case';
+import { FollowDto } from 'src/follower/application/ports/out/dto/follow.dto';
+import { GetFollowRequestDto } from 'src/follower/application/ports/out/dto/get-follow-request.dto';
+import { GetFollowDto } from 'src/follower/application/ports/out/dto/get-follow.dto';
+import { FollowErrorHandler } from './handlers/follow-error.handler';
+import { FollowRequestMapper } from './mappers/follow-request.mapper';
+import { ListFollowRequestsQueryRequest } from './requests/list-follow-requests-query.request';
+import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
 
 @ApiTags('Followers')
+@ApiUnauthorizedResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiConflictResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiNotFoundResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
+@ApiInternalServerErrorResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @Controller('followers')
 @UseFilters(new FollowErrorHandler())
 export class FollowController {
@@ -67,6 +92,54 @@ export class FollowController {
 	) {}
 
 	@ApiOperation({ summary: 'List follows' })
+	@ApiOkResponse({
+		example: {
+			data: new Pagination(
+				[
+					new GetFollowDto(
+						'uuid',
+						{
+							id: 'uuid',
+							banner_picture: 'string',
+							birth_date: new Date(),
+							credentials: { name: 'string' },
+							first_name: 'string',
+							last_name: 'string',
+							profile_picture: 'string',
+							profile_theme_color: '#000000',
+							visibility_config: {
+								address_visibility: 'public',
+								poi_folder_visibility: 'public',
+								post_visibility: 'public',
+								profile_visibility: 'public',
+								visited_poi_visibility: 'public',
+							},
+						},
+						{
+							id: 'uuid',
+							banner_picture: 'string',
+							birth_date: new Date(),
+							credentials: { name: 'string' },
+							first_name: 'string',
+							last_name: 'string',
+							profile_picture: 'string',
+							profile_theme_color: '#000000',
+							visibility_config: {
+								address_visibility: 'public',
+								poi_folder_visibility: 'public',
+								post_visibility: 'public',
+								profile_visibility: 'public',
+								visited_poi_visibility: 'public',
+							},
+						},
+						new Date(),
+					),
+				],
+				1,
+				0,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Get()
@@ -85,6 +158,54 @@ export class FollowController {
 	}
 
 	@ApiOperation({ summary: 'List follow requests' })
+	@ApiOkResponse({
+		example: {
+			data: new Pagination(
+				[
+					new GetFollowRequestDto(
+						'uuid',
+						{
+							id: 'uuid',
+							banner_picture: 'string',
+							birth_date: new Date(),
+							credentials: { name: 'string' },
+							first_name: 'string',
+							last_name: 'string',
+							profile_picture: 'string',
+							profile_theme_color: '#000000',
+							visibility_config: {
+								address_visibility: 'public',
+								poi_folder_visibility: 'public',
+								post_visibility: 'public',
+								profile_visibility: 'public',
+								visited_poi_visibility: 'public',
+							},
+						},
+						{
+							id: 'uuid',
+							banner_picture: 'string',
+							birth_date: new Date(),
+							credentials: { name: 'string' },
+							first_name: 'string',
+							last_name: 'string',
+							profile_picture: 'string',
+							profile_theme_color: '#000000',
+							visibility_config: {
+								address_visibility: 'public',
+								poi_folder_visibility: 'public',
+								post_visibility: 'public',
+								profile_visibility: 'public',
+								visited_poi_visibility: 'public',
+							},
+						},
+						new Date(),
+					),
+				],
+				1,
+				0,
+			),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@Get('requests')
@@ -103,6 +224,11 @@ export class FollowController {
 	}
 
 	@ApiOperation({ summary: 'Follow user' })
+	@ApiOkResponse({
+		example: {
+			data: new FollowDto('uuid', 'uuid', 'uuid', new Date(), new Date()),
+		},
+	})
 	@UseGuards(AuthGuard)
 	@Post(':from_id/follow/:to_id')
 	public async follow(
@@ -121,6 +247,7 @@ export class FollowController {
 	}
 
 	@ApiOperation({ summary: 'Unfollow user' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':from_id/unfollow/:to_id')
 	public async unfollow(
@@ -142,6 +269,7 @@ export class FollowController {
 	}
 
 	@ApiOperation({ summary: 'Accept follow request' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Put('requests/:follow_request_id/accept')
 	public async acceptFollowRequest(
@@ -160,6 +288,7 @@ export class FollowController {
 	}
 
 	@ApiOperation({ summary: 'Refuse follow request' })
+	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Put('requests/:follow_request_id/refuse')
 	public async refuseFollowRequest(

@@ -75,10 +75,18 @@ export class DeletePostService implements DeletePostUseCase {
 
 		const thread = post.thread();
 
-		if(post.depthLevel() === post.thread().maxDepthLevel()) {
-			const countPostsInSameDepthLevel = (await this.postRepository.findBy({threadId: thread.id(), depthLevel: post.depthLevel()})).length;
+		if (post.depthLevel() === post.thread().maxDepthLevel()) {
+			const countPostsInSameDepthLevel = (
+				await this.postRepository.findBy({
+					threadId: thread.id(),
+					depthLevel: post.depthLevel(),
+				})
+			).length;
 
-			if(countPostsInSameDepthLevel === 1 && (post.depthLevel() - 1 >= 0)) {
+			if (
+				countPostsInSameDepthLevel === 1 &&
+				post.depthLevel() - 1 >= 0
+			) {
 				thread.changeMaxDepthLevel(post.depthLevel() - 1);
 				this.postThreadRepository.update(thread);
 			}
@@ -86,6 +94,7 @@ export class DeletePostService implements DeletePostUseCase {
 
 		await this.postRepository.delete(post.id());
 
-		if (post.depthLevel() === 0) this.postThreadRepository.delete(thread.id());
+		if (post.depthLevel() === 0)
+			this.postThreadRepository.delete(thread.id());
 	}
 }

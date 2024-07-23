@@ -46,7 +46,7 @@ export class Post extends Model {
 			: parent
 				? parent.thread()
 				: PostThread.create(randomUUID(), 0);
-		this._depthLevel = parent ? parent.depthLevel() + 1 : depthLevel ?? 0;
+		this._depthLevel = parent ? parent.depthLevel() + 1 : (depthLevel ?? 0);
 		this._parent = parent ?? null;
 		this._group = group ?? null;
 		this._createdAt = createdAt ?? null;
