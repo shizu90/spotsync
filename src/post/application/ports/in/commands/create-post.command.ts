@@ -5,8 +5,7 @@ export class CreatePostCommand extends Command {
 	constructor(
 		readonly title: string,
 		readonly content: string,
-		readonly visibility: PostVisibility,
-		readonly userId: string,
+		readonly visibility?: PostVisibility,
 		readonly parentId?: string,
 		readonly groupId?: string,
 	) {

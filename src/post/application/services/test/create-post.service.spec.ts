@@ -52,7 +52,6 @@ describe('CreatePostService', () => {
 			'Test Post',
 			'Test Content',
 			PostVisibility.PUBLIC,
-			post.creator().id(),
 			post.parent().id(),
 		);
 
@@ -75,7 +74,6 @@ describe('CreatePostService', () => {
 			'Test Post',
 			'Test Content',
 			PostVisibility.PUBLIC,
-			post.creator().id(),
 			post.parent().id(),
 		);
 
@@ -94,7 +92,6 @@ describe('CreatePostService', () => {
 			'Test Post',
 			'Test Content',
 			PostVisibility.PUBLIC,
-			post.creator().id(),
 			post.parent().id(),
 		);
 
@@ -113,7 +110,6 @@ describe('CreatePostService', () => {
 			'Test Post',
 			'Test Content',
 			PostVisibility.PUBLIC,
-			post.creator().id(),
 			post.parent().id(),
 			randomUUID(),
 		);
