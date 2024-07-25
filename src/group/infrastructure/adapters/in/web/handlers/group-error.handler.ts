@@ -59,10 +59,10 @@ export class GroupErrorHandler implements ExceptionFilter {
 						new ErrorResponse(
 							request.url,
 							new Date().toISOString(),
-							error.message
-						)
+							error.message,
+						),
 					);
-	
+
 				break;
 			case 'UnauthorizedAccessError':
 				response
@@ -74,7 +74,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 							error.message,
 						),
 					);
-		
+
 				break;
 			case 'ValidationError':
 				response

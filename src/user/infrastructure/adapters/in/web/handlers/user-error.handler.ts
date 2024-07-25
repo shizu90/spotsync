@@ -37,7 +37,7 @@ export class UserErrorHandler implements ExceptionFilter {
 							error.message,
 						),
 					);
-				
+
 				break;
 			case 'UnauthenticatedError':
 				response
@@ -46,8 +46,8 @@ export class UserErrorHandler implements ExceptionFilter {
 						new ErrorResponse(
 							request.url,
 							new Date().toISOString(),
-							error.message
-						)
+							error.message,
+						),
 					);
 
 				break;
@@ -61,7 +61,7 @@ export class UserErrorHandler implements ExceptionFilter {
 							error.message,
 						),
 					);
-	
+
 				break;
 			default:
 				if (error instanceof BadRequestException) {

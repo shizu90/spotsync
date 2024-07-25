@@ -24,7 +24,7 @@ import {
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -208,10 +208,15 @@ export class GroupMemberController {
 		content: {
 			'application/json': {
 				examples: {
-					'JoinGroupDto': {
-						value: new JoinGroupDto('uuid', 'uuid', 'uuid', new Date())
-					}, 
-					'AcceptGroupRequestDto': {
+					JoinGroupDto: {
+						value: new JoinGroupDto(
+							'uuid',
+							'uuid',
+							'uuid',
+							new Date(),
+						),
+					},
+					AcceptGroupRequestDto: {
 						value: new AcceptGroupRequestDto(
 							'uuid',
 							{
@@ -228,11 +233,11 @@ export class GroupMemberController {
 								hex_color: 'string',
 								permissions: [{ id: 'uuid', name: 'string' }],
 							},
-						)
-					}
-				}
-			}
-		}
+						),
+					},
+				},
+			},
+		},
 	})
 	@UseGuards(AuthGuard)
 	@Post(':id/join')

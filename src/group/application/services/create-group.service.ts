@@ -9,10 +9,6 @@ import { GroupMember } from 'src/group/domain/group-member.model';
 import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
 import { CreateGroupCommand } from '../ports/in/commands/create-group.command';
 import { CreateGroupUseCase } from '../ports/in/use-cases/create-group.use-case';
 import { CreateGroupDto } from '../ports/out/dto/create-group.dto';
@@ -34,8 +30,6 @@ export class CreateGroupService implements CreateGroupUseCase {
 	constructor(
 		@Inject(GroupRepositoryProvider)
 		protected groupRepository: GroupRepository,
-		@Inject(UserRepositoryProvider)
-		protected userRepository: UserRepository,
 		@Inject(GroupMemberRepositoryProvider)
 		protected groupMemberRepository: GroupMemberRepository,
 		@Inject(GroupRoleRepositoryProvider)

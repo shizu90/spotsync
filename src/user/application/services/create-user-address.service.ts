@@ -37,7 +37,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase {
 	): Promise<CreateUserAddressDto> {
 		const user: User = await this.getAuthenticatedUser.execute(null);
 
-		if(command.userId !== user.id()) {
+		if (command.userId !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

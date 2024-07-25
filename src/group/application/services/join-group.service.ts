@@ -54,7 +54,11 @@ export class JoinGroupService implements JoinGroupUseCase {
 
 		const memberRole = await this.groupRoleRepository.findByName('member');
 
-		const groupMember = group.joinGroup(authenticatedUser, memberRole, false);
+		const groupMember = group.joinGroup(
+			authenticatedUser,
+			memberRole,
+			false,
+		);
 
 		if (groupMember instanceof GroupMemberRequest) {
 			let groupMemberRequest = (
@@ -125,7 +129,9 @@ export class JoinGroupService implements JoinGroupUseCase {
 					last_name: authenticatedUser.lastName(),
 					profile_picture: authenticatedUser.profilePicture(),
 					banner_picture: authenticatedUser.bannerPicture(),
-					credentials: { name: authenticatedUser.credentials().name() },
+					credentials: {
+						name: authenticatedUser.credentials().name(),
+					},
 				},
 				groupMember.joinedAt(),
 				{

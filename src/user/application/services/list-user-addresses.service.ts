@@ -27,7 +27,7 @@ export class ListUserAddressesService implements ListUserAddressesUseCase {
 	): Promise<Pagination<GetUserAddressDto>> {
 		const user = await this.getAuthenticatedUser.execute(null);
 
-		if(command.userId !== user.id()) {
+		if (command.userId !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

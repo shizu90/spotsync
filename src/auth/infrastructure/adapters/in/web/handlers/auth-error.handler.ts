@@ -16,47 +16,71 @@ export class AuthErrorHandler implements ExceptionFilter {
 
 		switch (error.constructor.name) {
 			case 'UserNotFoundError':
-				response.status(HttpStatus.NOT_FOUND).json(new ErrorResponse(
-					request.url,
-					new Date().toISOString(),
-					error.message
-				));
+				response
+					.status(HttpStatus.NOT_FOUND)
+					.json(
+						new ErrorResponse(
+							request.url,
+							new Date().toISOString(),
+							error.message,
+						),
+					);
 				break;
 			case 'UnauthorizedAccessError':
-				response.status(HttpStatus.FORBIDDEN).json(new ErrorResponse(
-					request.url,
-					new Date().toISOString(),
-					error.message
-				));
+				response
+					.status(HttpStatus.FORBIDDEN)
+					.json(
+						new ErrorResponse(
+							request.url,
+							new Date().toISOString(),
+							error.message,
+						),
+					);
 				break;
 			case 'UnauthenticatedError':
-				response.status(HttpStatus.UNAUTHORIZED).json(new ErrorResponse(
-					request.url,
-					new Date().toISOString(),
-					error.message
-				));
+				response
+					.status(HttpStatus.UNAUTHORIZED)
+					.json(
+						new ErrorResponse(
+							request.url,
+							new Date().toISOString(),
+							error.message,
+						),
+					);
 				break;
 			case 'UserInvalidCredentialsError':
 			case 'ValidationError':
-				response.status(HttpStatus.UNPROCESSABLE_ENTITY).json(new ErrorResponse(
-					request.url,
-					new Date().toISOString(),
-					error.message
-				));
+				response
+					.status(HttpStatus.UNPROCESSABLE_ENTITY)
+					.json(
+						new ErrorResponse(
+							request.url,
+							new Date().toISOString(),
+							error.message,
+						),
+					);
 				break;
 			default:
 				if (error instanceof BadRequestException) {
-					response.status(HttpStatus.BAD_REQUEST).json(new ErrorResponse(
-						request.url,
-						new Date().toISOString(),
-						error.getResponse()['message']
-					));
+					response
+						.status(HttpStatus.BAD_REQUEST)
+						.json(
+							new ErrorResponse(
+								request.url,
+								new Date().toISOString(),
+								error.getResponse()['message'],
+							),
+						);
 				} else {
-					response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new ErrorResponse(
-						request.url,
-						new Date().toISOString(),
-						error.message
-					));
+					response
+						.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.json(
+							new ErrorResponse(
+								request.url,
+								new Date().toISOString(),
+								error.message,
+							),
+						);
 				}
 				break;
 		}

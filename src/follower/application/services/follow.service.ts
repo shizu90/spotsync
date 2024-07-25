@@ -36,8 +36,8 @@ export class FollowService implements FollowUseCase {
 
 	public async execute(command: FollowCommand): Promise<FollowDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
-		
-		if(command.fromUserId !== authenticatedUser.id()) {
+
+		if (command.fromUserId !== authenticatedUser.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
@@ -68,13 +68,17 @@ export class FollowService implements FollowUseCase {
 			toUser.visibilityConfiguration().profileVisibility() !==
 			UserVisibility.PUBLIC
 		) {
-			const request = (await this.followRepository.findRequestBy({
-				fromUserId: authenticatedUser.id(),
-				toUserId: toUser.id(),
-			})).at(0);
+			const request = (
+				await this.followRepository.findRequestBy({
+					fromUserId: authenticatedUser.id(),
+					toUserId: toUser.id(),
+				})
+			).at(0);
 
 			if (request !== null && request !== undefined) {
-				throw new AlreadyRequestedFollowError(`Already requested to follow`);
+				throw new AlreadyRequestedFollowError(
+					`Already requested to follow`,
+				);
 			}
 
 			const followRequest = FollowRequest.create(

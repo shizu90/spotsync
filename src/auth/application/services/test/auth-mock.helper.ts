@@ -1,8 +1,8 @@
-import { randomUUID } from "crypto";
-import { UserCredentials } from "src/user/domain/user-credentials.model";
-import { UserVisibilityConfig } from "src/user/domain/user-visibility-config.model";
-import { UserVisibility } from "src/user/domain/user-visibility.enum";
-import { User } from "src/user/domain/user.model";
+import { randomUUID } from 'crypto';
+import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { User } from 'src/user/domain/user.model';
 
 export const mockUser = (): User => {
 	const id = randomUUID();

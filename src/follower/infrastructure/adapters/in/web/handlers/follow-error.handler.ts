@@ -25,7 +25,7 @@ export class FollowErrorHandler implements ExceptionFilter {
 						),
 					);
 
-				break; 
+				break;
 			case 'UnauthenticatedError':
 				response
 					.status(HttpStatus.UNAUTHORIZED)
@@ -33,8 +33,8 @@ export class FollowErrorHandler implements ExceptionFilter {
 						new ErrorResponse(
 							request.url,
 							new Date().toISOString(),
-							error.message
-						)
+							error.message,
+						),
 					);
 
 				break;

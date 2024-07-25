@@ -58,7 +58,9 @@ export class CreatePostService implements CreatePostUseCase {
 		let visibility = command.visibility;
 
 		if (visibility === null || visibility === undefined) {
-			switch (authenticatedUser.visibilityConfiguration().postVisibility()) {
+			switch (
+				authenticatedUser.visibilityConfiguration().postVisibility()
+			) {
 				case UserVisibility.PUBLIC:
 					visibility = PostVisibility.PUBLIC;
 					break;

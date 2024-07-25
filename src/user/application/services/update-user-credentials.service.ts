@@ -32,7 +32,7 @@ export class UpdateUserCredentialsService
 	public async execute(command: UpdateUserCredentialsCommand): Promise<void> {
 		const user = await this.getAuthenticatedUser.execute(null);
 
-		if(command.id !== user.id()) {
+		if (command.id !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
@@ -49,8 +49,8 @@ export class UpdateUserCredentialsService
 		}
 
 		if (
-			command.name && 
-			command.name !== null && 
+			command.name &&
+			command.name !== null &&
 			user.credentials().name() !== command.name &&
 			(await this.userRepository.findByName(command.name)) !== null
 		) {
@@ -67,11 +67,7 @@ export class UpdateUserCredentialsService
 			userCredentials.changeEmail(command.email);
 		}
 
-		if (
-			command.name &&
-			command.name !== null &&
-			command.name.length > 0
-		) {
+		if (command.name && command.name !== null && command.name.length > 0) {
 			userCredentials.changeName(command.name);
 		}
 

@@ -419,8 +419,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 		});
 	}
 
-	public async findRequestBy(values: Object): Promise<Array<FollowRequest>> 
-	{
+	public async findRequestBy(values: Object): Promise<Array<FollowRequest>> {
 		const fromUserId = values['fromUserId'];
 		const toUserId = values['toUserId'];
 
@@ -446,7 +445,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
 
 		const followRequests = await this.prismaService.followRequest.findMany({
-			where: {id: {in: followRequestIds.map((row) => row.id)}},
+			where: { id: { in: followRequestIds.map((row) => row.id) } },
 			include: {
 				from_user: {
 					include: {

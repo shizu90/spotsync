@@ -26,7 +26,7 @@ export class DeleteUserAddressService implements DeleteUserAddressUseCase {
 	public async execute(command: DeleteUserAddressCommand): Promise<void> {
 		const user: User = await this.getAuthenticatedUser.execute(null);
 
-		if(command.userId !== user.id()) {
+		if (command.userId !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

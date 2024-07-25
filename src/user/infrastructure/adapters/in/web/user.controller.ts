@@ -288,10 +288,10 @@ export class UserController {
 
 	@ApiOperation({ summary: 'Update user profile' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
@@ -317,10 +317,10 @@ export class UserController {
 
 	@ApiOperation({ summary: 'Update user credentials' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
@@ -352,10 +352,10 @@ export class UserController {
 
 	@ApiOperation({ summary: 'Update user visibility configurations' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
@@ -384,10 +384,10 @@ export class UserController {
 
 	@ApiOperation({ summary: 'Delete user by id' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)

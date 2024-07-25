@@ -23,7 +23,7 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase {
 	public async execute(command: UpdateUserProfileCommand): Promise<void> {
 		const user = await this.getAuthenticatedUser.execute(null);
 
-		if(command.id !== user.id()) {
+		if (command.id !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

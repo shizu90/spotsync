@@ -3,64 +3,57 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { CreateGroupRoleCommand } from '../../ports/in/commands/create-group-role.command';
-import { CreateGroupRoleDto } from '../../ports/out/dto/create-group-role.dto';
+import { Pagination } from 'src/common/common.repository';
+import { GetGroupHistoryCommand } from '../../ports/in/commands/get-group-history.command';
+import { GetGroupLogDto } from '../../ports/out/dto/get-group-log.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from '../../ports/out/group-member.repository';
 import {
-	GroupRoleRepository,
-	GroupRoleRepositoryProvider,
-} from '../../ports/out/group-role.repository';
-import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from '../../ports/out/group.repository';
-import { CreateGroupRoleService } from '../create-group-role.service';
+import { GetGroupHistoryService } from '../get-group-history.service';
 import { mockGroupMember } from './group-mock.helper';
 
-describe('CreateGroupRoleService', () => {
-	let service: CreateGroupRoleService;
-	let groupRoleRepository: jest.Mocked<GroupRoleRepository>;
+describe('GetGroupHistoryService', () => {
+	let service: GetGroupHistoryService;
 	let groupRepository: jest.Mocked<GroupRepository>;
 	let groupMemberRepository: jest.Mocked<GroupMemberRepository>;
 	let getAuthenticatedUser: jest.Mocked<GetAuthenticatedUserUseCase>;
 
 	beforeAll(() => {
 		const { unit, unitRef } = TestBed.create(
-			CreateGroupRoleService,
+			GetGroupHistoryService,
 		).compile();
 
 		service = unit;
-		groupRoleRepository = unitRef.get(GroupRoleRepositoryProvider);
 		groupRepository = unitRef.get(GroupRepositoryProvider);
 		groupMemberRepository = unitRef.get(GroupMemberRepositoryProvider);
 		getAuthenticatedUser = unitRef.get(GetAuthenticatedUserUseCaseProvider);
 	});
 
-	it('should be defined', async () => {
+	it('should be defined', () => {
 		expect(service).toBeDefined();
 	});
 
-	it('should create group role', async () => {
+	it('should get group history', async () => {
 		const groupMember = mockGroupMember(true, true, 'administrator');
 
-		const command = new CreateGroupRoleCommand(
-			groupMember.group().id(),
-			'New Role',
-			'#000000',
-			[],
-		);
+		const command = new GetGroupHistoryCommand(groupMember.group().id());
 
 		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());
 		groupRepository.findById.mockResolvedValue(groupMember.group());
 		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
-		groupRoleRepository.findByName.mockResolvedValue(null);
+		groupRepository.paginateLog.mockResolvedValue(new Pagination([], 0, 0));
 
-		const role = await service.execute(command);
+		const history = await service.execute(command);
 
-		expect(role).toBeInstanceOf(CreateGroupRoleDto);
-		expect(role.name).toBe(command.name);
+		expect(history).toBeInstanceOf(Pagination<GetGroupLogDto>);
+		expect(history.items).toHaveLength(0);
+		expect(history.total).toBe(0);
+		expect(history.current_page).toBe(0);
+		expect(history.next_page).toBeFalsy();
 	});
 });
