@@ -6,10 +6,6 @@ import {
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
 import { AcceptGroupRequestCommand } from '../ports/in/commands/accept-group-request.command';
 import { AcceptGroupRequestUseCase } from '../ports/in/use-cases/accept-group-request.use-case';
 import { AcceptGroupRequestDto } from '../ports/out/dto/accept-group-request.dto';
@@ -37,8 +33,6 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 		protected groupRepository: GroupRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
-		@Inject(UserRepositoryProvider)
-		protected userRepository: UserRepository,
 		@Inject(GroupRoleRepositoryProvider)
 		protected groupRoleRepository: GroupRoleRepository,
 	) {}
