@@ -3,6 +3,8 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { AcceptGroupRequestCommand } from '../../ports/in/commands/accept-group-request.command';
 import { AcceptGroupRequestDto } from '../../ports/out/dto/accept-group-request.dto';
 import {
@@ -48,24 +50,44 @@ describe('AcceptGroupRequestService', () => {
 	});
 
 	it('should accept group request', async () => {
-		const request = mockGroupMemberRequest();
-		const groupMember = mockGroupMember(true, true, 'administrator');
-		const memberRole = mockGroupRole();
+		const groupMemberRequest = mockGroupMemberRequest();
+		const group = groupMemberRequest.group();
+		const authenticatedGroupMember = mockGroupMember(true, false, 'administrator');
+		const groupRole = mockGroupRole();
 
 		const command = new AcceptGroupRequestCommand(
-			request.id(),
-			groupMember.group().id(),
+			groupMemberRequest.id(),
+			group.id(),
 		);
 
-		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());
-		groupRepository.findById.mockResolvedValue(groupMember.group());
-		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
-		groupMemberRepository.findRequestById.mockResolvedValue(request);
-		groupRoleRepository.findByName.mockResolvedValue(memberRole);
+		getAuthenticatedUser.execute.mockResolvedValue(authenticatedGroupMember.user());
+		groupRepository.findById.mockResolvedValue(group);
+		groupMemberRepository.findBy.mockResolvedValue([authenticatedGroupMember]);
+		groupMemberRepository.findRequestById.mockResolvedValue(groupMemberRequest);
+		groupRoleRepository.findByName.mockResolvedValue(groupRole);
 
 		const member = await service.execute(command);
 
 		expect(member).toBeInstanceOf(AcceptGroupRequestDto);
-		expect(member.group_id).toBe(groupMember.group().id());
+		expect(member.group_id).toBe(group.id());
+	});
+
+	it('should not accept group request if user is not authorized', async () => {
+		const groupMemberRequest = mockGroupMemberRequest();
+		const group = groupMemberRequest.group();
+		const authenticatedGroupMember = mockGroupMember(false, false, 'administrator');
+		
+		authenticatedGroupMember.role().removePermission(authenticatedGroupMember.role().findPermission(GroupPermissionName.ACCEPT_REQUESTS));
+
+		const command = new AcceptGroupRequestCommand(
+			groupMemberRequest.id(),
+			group.id()
+		);
+
+		getAuthenticatedUser.execute.mockResolvedValue(authenticatedGroupMember.user());
+		groupRepository.findById.mockResolvedValue(group);
+		groupMemberRepository.findBy.mockResolvedValue([authenticatedGroupMember]);
+
+		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
 	});
 });

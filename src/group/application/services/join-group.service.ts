@@ -7,10 +7,6 @@ import {
 import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
 import { GroupMemberRequest } from 'src/group/domain/group-member-request.model';
 import { GroupMember } from 'src/group/domain/group-member.model';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
 import { JoinGroupCommand } from '../ports/in/commands/join-group.command';
 import { JoinGroupUseCase } from '../ports/in/use-cases/join-group.use-case';
 import { AcceptGroupRequestDto } from '../ports/out/dto/accept-group-request.dto';
@@ -33,8 +29,6 @@ import { AlreadyRequestedToJoinError } from './errors/already-requested-to-join.
 @Injectable()
 export class JoinGroupService implements JoinGroupUseCase {
 	constructor(
-		@Inject(UserRepositoryProvider)
-		protected userRepository: UserRepository,
 		@Inject(GroupRepositoryProvider)
 		protected groupRepository: GroupRepository,
 		@Inject(GroupMemberRepositoryProvider)
@@ -52,7 +46,9 @@ export class JoinGroupService implements JoinGroupUseCase {
 
 		const group = await this.groupRepository.findById(command.id);
 
-		const memberRole = await this.groupRoleRepository.findByName('member');
+		const memberRole = await this.groupRoleRepository.findByName(
+			DefaultGroupRole.MEMBER
+		);
 
 		const groupMember = group.joinGroup(
 			authenticatedUser,
@@ -83,6 +79,8 @@ export class JoinGroupService implements JoinGroupUseCase {
 				`${authenticatedUser.credentials().name()} requested to join the group`,
 			);
 
+			this.groupRepository.storeLog(log);
+
 			return new JoinGroupDto(
 				groupMemberRequest.id(),
 				group.id(),
@@ -100,10 +98,6 @@ export class JoinGroupService implements JoinGroupUseCase {
 			if (groupMember !== null && groupMember !== undefined) {
 				throw new AlreadyMemberOfGroup(`Already member of the group`);
 			}
-
-			const memberRole = await this.groupRoleRepository.findByName(
-				DefaultGroupRole.MEMBER,
-			);
 
 			groupMember = GroupMember.create(
 				randomUUID(),

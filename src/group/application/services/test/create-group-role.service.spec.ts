@@ -3,6 +3,8 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { CreateGroupRoleCommand } from '../../ports/in/commands/create-group-role.command';
 import { CreateGroupRoleDto } from '../../ports/out/dto/create-group-role.dto';
 import {
@@ -62,5 +64,24 @@ describe('CreateGroupRoleService', () => {
 
 		expect(role).toBeInstanceOf(CreateGroupRoleDto);
 		expect(role.name).toBe(command.name);
+	});
+
+	it('should not create group role if user is not authorized', async () => {
+		const groupMember = mockGroupMember(false, false, 'adminitrator');
+
+		groupMember.role().removePermission(groupMember.role().findPermission(GroupPermissionName.CREATE_ROLE));
+
+		const command = new CreateGroupRoleCommand(
+			groupMember.group().id(),
+			'New Role',
+			'#000000',
+			[]
+		);
+
+		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());
+		groupRepository.findById.mockResolvedValue(groupMember.group());
+		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
+
+		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
 	});
 });

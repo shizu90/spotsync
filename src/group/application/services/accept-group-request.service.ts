@@ -50,7 +50,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 
 		const authenticatedGroupMember = (
 			await this.groupMemberRepository.findBy({
-				GroupId: command.id,
+				groupId: command.id,
 				userId: authenticatedUser.id(),
 			})
 		).at(0);
