@@ -419,6 +419,55 @@ export class FollowRepositoryImpl implements FollowRepository {
 		});
 	}
 
+	public async findRequestBy(values: Object): Promise<Array<FollowRequest>> 
+	{
+		const fromUserId = values['fromUserId'];
+		const toUserId = values['toUserId'];
+
+		let query = 'SELECT id FROM follow_requests';
+
+		if (fromUserId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND from_user_id = '${fromUserId}'`;
+			} else {
+				query = `${query} WHERE from_user_id = '${fromUserId}'`;
+			}
+		}
+
+		if (toUserId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND to_user_id = '${toUserId}'`;
+			} else {
+				query = `${query} WHERE to_user_id = '${toUserId}'`;
+			}
+		}
+
+		const followRequestIds =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+
+		const followRequests = await this.prismaService.followRequest.findMany({
+			where: {id: {in: followRequestIds.map((row) => row.id)}},
+			include: {
+				from_user: {
+					include: {
+						credentials: true,
+						visibility_configuration: true,
+					},
+				},
+				to_user: {
+					include: {
+						credentials: true,
+						visibility_configuration: true,
+					},
+				},
+			},
+		});
+
+		return followRequests.map((followRequest) => {
+			return this.mapFollowRequestToDomain(followRequest);
+		});
+	}
+
 	public async findAll(): Promise<Array<Follow>> {
 		const follows = await this.prismaService.follow.findMany({
 			include: {

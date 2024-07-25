@@ -50,6 +50,7 @@ export class FollowErrorHandler implements ExceptionFilter {
 					);
 
 				break;
+			case 'AlreadyRequestedFollowError':
 			case 'AlreadyFollowingError':
 				response
 					.status(HttpStatus.CONFLICT)

@@ -21,6 +21,7 @@ import {
 	FollowRepositoryProvider,
 } from '../ports/out/follow.repository';
 import { AlreadyFollowingError } from './errors/already-following.error';
+import { AlreadyRequestedFollowError } from './errors/already-requested-follow.error';
 
 @Injectable()
 export class FollowService implements FollowUseCase {
@@ -67,6 +68,15 @@ export class FollowService implements FollowUseCase {
 			toUser.visibilityConfiguration().profileVisibility() !==
 			UserVisibility.PUBLIC
 		) {
+			const request = (await this.followRepository.findRequestBy({
+				fromUserId: authenticatedUser.id(),
+				toUserId: toUser.id(),
+			})).at(0);
+
+			if (request !== null && request !== undefined) {
+				throw new AlreadyRequestedFollowError(`Already requested to follow`);
+			}
+
 			const followRequest = FollowRequest.create(
 				randomUUID(),
 				authenticatedUser,

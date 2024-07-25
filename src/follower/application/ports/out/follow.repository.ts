@@ -14,5 +14,6 @@ export interface FollowRepository extends Repository<Follow, string> {
 	): Promise<Pagination<FollowRequest>>;
 	storeRequest(model: FollowRequest): Promise<FollowRequest>;
 	findRequestById(id: string): Promise<FollowRequest>;
+	findRequestBy(values: Object): Promise<Array<FollowRequest>>;
 	deleteRequest(id: string): Promise<void>;
 }
