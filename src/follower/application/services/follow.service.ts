@@ -36,24 +36,14 @@ export class FollowService implements FollowUseCase {
 	public async execute(command: FollowCommand): Promise<FollowDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 		
+		if(command.fromUserId !== authenticatedUser.id()) {
+			throw new UnauthorizedAccessError(`Unauthorized access`);
+		}
+
 		if (command.fromUserId === command.toUserId) {
 			throw new AlreadyFollowingError(
 				`To user must be a different user.`,
 			);
-		}
-
-		const fromUser = await this.userRepository.findById(command.fromUserId);
-
-		if (
-			fromUser === null ||
-			fromUser === undefined ||
-			fromUser.isDeleted()
-		) {
-			throw new UserNotFoundError(`From user not found`);
-		}
-
-		if (fromUser.id() !== authenticatedUser.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
 		const toUser = await this.userRepository.findById(command.toUserId);
@@ -65,7 +55,7 @@ export class FollowService implements FollowUseCase {
 		let follow = (
 			await this.followRepository.findBy({
 				toUserId: toUser.id(),
-				fromUserId: fromUser.id(),
+				fromUserId: authenticatedUser.id(),
 			})
 		).at(0);
 
@@ -79,7 +69,7 @@ export class FollowService implements FollowUseCase {
 		) {
 			const followRequest = FollowRequest.create(
 				randomUUID(),
-				fromUser,
+				authenticatedUser,
 				toUser,
 			);
 
@@ -93,7 +83,7 @@ export class FollowService implements FollowUseCase {
 				followRequest.requestedOn(),
 			);
 		} else {
-			follow = Follow.create(randomUUID(), fromUser, toUser);
+			follow = Follow.create(randomUUID(), authenticatedUser, toUser);
 
 			this.followRepository.store(follow);
 

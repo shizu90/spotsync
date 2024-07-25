@@ -30,17 +30,8 @@ export class UnfollowService implements UnfollowUseCase {
 
 	public async execute(command: UnfollowCommand): Promise<void> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
-		const fromUser = await this.userRepository.findById(command.fromUserId);
 
-		if (
-			fromUser === null ||
-			fromUser === undefined ||
-			fromUser.isDeleted()
-		) {
-			throw new UserNotFoundError(`From user not found`);
-		}
-
-		if (fromUser.id() !== authenticatedUser.id()) {
+		if (command.fromUserId !== authenticatedUser.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
@@ -52,7 +43,7 @@ export class UnfollowService implements UnfollowUseCase {
 
 		const follow = (
 			await this.followRepository.findBy({
-				fromUserId: fromUser.id(),
+				fromUserId: authenticatedUser.id(),
 				toUserId: toUser.id(),
 			})
 		).at(0);
