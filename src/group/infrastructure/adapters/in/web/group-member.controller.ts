@@ -18,15 +18,13 @@ import {
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
-	ApiExtraModels,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
-	refs,
+	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -206,34 +204,36 @@ export class GroupMemberController {
 	@ApiConflictResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
-	@ApiExtraModels(JoinGroupDto, AcceptGroupRequestDto)
-	@ApiOkResponse({schema: {anyOf: refs(JoinGroupDto, AcceptGroupRequestDto)}})
-	/*@ApiOkResponse({
-		example: {
-			data: new JoinGroupDto('uuid', 'uuid', 'uuid', new Date()),
-		},
-	})
 	@ApiOkResponse({
-		example: {
-			data: new AcceptGroupRequestDto(
-				'uuid',
-				{
-					id: 'uuid',
-					banner_picture: 'string',
-					credentials: { name: 'string' },
-					first_name: 'string',
-					last_name: 'string',
-					profile_picture: 'string',
-				},
-				new Date(),
-				{
-					name: 'string',
-					hex_color: 'string',
-					permissions: [{ id: 'uuid', name: 'string' }],
-				},
-			),
-		},
-	})*/
+		content: {
+			'application/json': {
+				examples: {
+					'JoinGroupDto': {
+						value: new JoinGroupDto('uuid', 'uuid', 'uuid', new Date())
+					}, 
+					'AcceptGroupRequestDto': {
+						value: new AcceptGroupRequestDto(
+							'uuid',
+							{
+								id: 'uuid',
+								banner_picture: 'string',
+								credentials: { name: 'string' },
+								first_name: 'string',
+								last_name: 'string',
+								profile_picture: 'string',
+							},
+							new Date(),
+							{
+								name: 'string',
+								hex_color: 'string',
+								permissions: [{ id: 'uuid', name: 'string' }],
+							},
+						)
+					}
+				}
+			}
+		}
+	})
 	@UseGuards(AuthGuard)
 	@Post(':id/join')
 	public async joinGroup(
