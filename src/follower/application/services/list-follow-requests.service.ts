@@ -1,22 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ListFollowRequestsUseCase } from '../ports/in/use-cases/list-follow-requests.use-case';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import {
-	FollowRepository,
-	FollowRepositoryProvider,
-} from '../ports/out/follow.repository';
+import { Pagination } from 'src/common/common.repository';
 import {
 	UserRepository,
 	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
-import { ListFollowRequestsCommand } from '../ports/in/commands/list-follow-requests.command';
-import { Pagination } from 'src/common/common.repository';
-import { GetFollowRequestDto } from '../ports/out/dto/get-follow-request.dto';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { ListFollowRequestsCommand } from '../ports/in/commands/list-follow-requests.command';
+import { ListFollowRequestsUseCase } from '../ports/in/use-cases/list-follow-requests.use-case';
+import { GetFollowRequestDto } from '../ports/out/dto/get-follow-request.dto';
+import {
+	FollowRepository,
+	FollowRepositoryProvider,
+} from '../ports/out/follow.repository';
 
 @Injectable()
 export class ListFollowRequestsService implements ListFollowRequestsUseCase {
@@ -32,7 +32,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 	public async execute(
 		command: ListFollowRequestsCommand,
 	): Promise<Pagination<GetFollowRequestDto>> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		if (
 			command.from_user_id !== null &&
@@ -49,7 +49,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			const isFollowing =
 				(
 					await this.followRepository.findBy({
-						fromUserId: authenticatedUserId,
+						fromUserId: authenticatedUser.id(),
 						toUserId: user.id(),
 					})
 				).at(0) !== undefined;
@@ -57,7 +57,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			if (
 				user.visibilityConfiguration().profileVisibility() ===
 					UserVisibility.FOLLOWERS &&
-				authenticatedUserId !== user.id() &&
+				authenticatedUser.id() !== user.id() &&
 				!isFollowing
 			) {
 				return new Pagination([], 0, 0);
@@ -66,7 +66,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			if (
 				user.visibilityConfiguration().profileVisibility() ===
 					UserVisibility.PRIVATE &&
-				authenticatedUserId !== user.id()
+				authenticatedUser.id() !== user.id()
 			) {
 				return new Pagination([], 0, 0);
 			}
@@ -82,7 +82,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			const isFollowing =
 				(
 					await this.followRepository.findBy({
-						fromUserId: authenticatedUserId,
+						fromUserId: authenticatedUser.id(),
 						toUserId: user.id(),
 					})
 				).at(0) !== undefined;
@@ -90,7 +90,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			if (
 				user.visibilityConfiguration().profileVisibility() ===
 					UserVisibility.FOLLOWERS &&
-				authenticatedUserId !== user.id() &&
+				authenticatedUser.id() !== user.id() &&
 				!isFollowing
 			) {
 				return new Pagination([], 0, 0);
@@ -99,7 +99,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			if (
 				user.visibilityConfiguration().profileVisibility() ===
 					UserVisibility.PRIVATE &&
-				authenticatedUserId !== user.id()
+				authenticatedUser.id() !== user.id()
 			) {
 				return new Pagination([], 0, 0);
 			}

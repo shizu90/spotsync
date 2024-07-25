@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { env } from 'process';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { UnauthenticatedError } from 'src/auth/application/services/errors/unauthenticated.error';
 
 export class AuthGuard implements CanActivate {
 	public constructor(
@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
 		const token = this.extractTokenFromHeader(request);
 
 		if (!token) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthenticatedError(`Not authenticated`);
 		}
 
 		try {
@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
 
 			request['authenticated_user'] = payload.sub;
 		} catch {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthenticatedError(`Not authenticated`);
 		}
 
 		return true;

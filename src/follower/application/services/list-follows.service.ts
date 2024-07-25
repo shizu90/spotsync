@@ -1,9 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	FollowRepository,
-	FollowRepositoryProvider,
-} from '../ports/out/follow.repository';
-import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
@@ -14,9 +10,13 @@ import {
 } from 'src/user/application/ports/out/user.repository';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
-import { GetFollowDto } from '../ports/out/dto/get-follow.dto';
 import { ListFollowsCommand } from '../ports/in/commands/list-follows.command';
 import { ListFollowsUseCase } from '../ports/in/use-cases/list-follows.use-case';
+import { GetFollowDto } from '../ports/out/dto/get-follow.dto';
+import {
+	FollowRepository,
+	FollowRepositoryProvider,
+} from '../ports/out/follow.repository';
 
 @Injectable()
 export class ListFollowsService implements ListFollowsUseCase {
@@ -32,7 +32,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 	public async execute(
 		command: ListFollowsCommand,
 	): Promise<Pagination<GetFollowDto>> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		if (
 			command.from_user_id !== undefined &&
@@ -49,7 +49,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			const isFollowingUser =
 				(
 					await this.followRepository.findBy({
-						fromUserId: authenticatedUserId,
+						fromUserId: authenticatedUser.id(),
 						toUserId: user.id(),
 					})
 				).at(0) !== undefined;
@@ -57,7 +57,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			if (
 				user.visibilityConfiguration().profileVisibility() ===
 					UserVisibility.PRIVATE &&
-				authenticatedUserId !== user.id()
+				authenticatedUser.id() !== user.id()
 			) {
 				return new Pagination([], 0, 0);
 			}
@@ -65,7 +65,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			if (
 				user.visibilityConfiguration().profileVisibility() ===
 					UserVisibility.FOLLOWERS &&
-				authenticatedUserId !== user.id() &&
+				authenticatedUser.id() !== user.id() &&
 				!isFollowingUser
 			) {
 				return new Pagination([], 0, 0);
@@ -84,7 +84,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			const isFollowingUser =
 				(
 					await this.followRepository.findBy({
-						fromUserId: authenticatedUserId,
+						fromUserId: authenticatedUser.id(),
 						toUserId: user.id(),
 					})
 				).at(0) !== undefined;
@@ -92,7 +92,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			if (
 				user.visibilityConfiguration().profileVisibility() ===
 					UserVisibility.PRIVATE &&
-				authenticatedUserId !== user.id()
+				authenticatedUser.id() !== user.id()
 			) {
 				return new Pagination([], 0, 0);
 			}
@@ -100,7 +100,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			if (
 				user.visibilityConfiguration().profileVisibility() ===
 					UserVisibility.FOLLOWERS &&
-				authenticatedUserId !== user.id() &&
+				authenticatedUser.id() !== user.id() &&
 				!isFollowingUser
 			) {
 				return new Pagination([], 0, 0);

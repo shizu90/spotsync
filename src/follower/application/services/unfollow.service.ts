@@ -1,21 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UnfollowUseCase } from '../ports/in/use-cases/unfollow.use-case';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
-import {
-	FollowRepository,
-	FollowRepositoryProvider,
-} from '../ports/out/follow.repository';
-import { UnfollowCommand } from '../ports/in/commands/unfollow.command';
-import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
-import { NotFollowingError } from './errors/not-following.error';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import {
+	UserRepository,
+	UserRepositoryProvider,
+} from 'src/user/application/ports/out/user.repository';
+import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
+import { UnfollowCommand } from '../ports/in/commands/unfollow.command';
+import { UnfollowUseCase } from '../ports/in/use-cases/unfollow.use-case';
+import {
+	FollowRepository,
+	FollowRepositoryProvider,
+} from '../ports/out/follow.repository';
+import { NotFollowingError } from './errors/not-following.error';
 
 @Injectable()
 export class UnfollowService implements UnfollowUseCase {
@@ -29,6 +29,7 @@ export class UnfollowService implements UnfollowUseCase {
 	) {}
 
 	public async execute(command: UnfollowCommand): Promise<void> {
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 		const fromUser = await this.userRepository.findById(command.fromUserId);
 
 		if (
@@ -39,7 +40,7 @@ export class UnfollowService implements UnfollowUseCase {
 			throw new UserNotFoundError(`From user not found`);
 		}
 
-		if (fromUser.id() !== this.getAuthenticatedUser.execute(null)) {
+		if (fromUser.id() !== authenticatedUser.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

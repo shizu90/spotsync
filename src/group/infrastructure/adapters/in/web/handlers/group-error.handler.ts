@@ -52,9 +52,21 @@ export class GroupErrorHandler implements ExceptionFilter {
 					);
 
 				break;
-			case 'UnauthorizedAccessError':
+			case 'UnauthenticatedError':
 				response
 					.status(HttpStatus.UNAUTHORIZED)
+					.json(
+						new ErrorResponse(
+							request.url,
+							new Date().toISOString(),
+							error.message
+						)
+					);
+	
+				break;
+			case 'UnauthorizedAccessError':
+				response
+					.status(HttpStatus.FORBIDDEN)
 					.json(
 						new ErrorResponse(
 							request.url,
@@ -62,7 +74,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 							error.message,
 						),
 					);
-
+		
 				break;
 			case 'ValidationError':
 				response

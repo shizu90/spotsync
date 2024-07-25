@@ -1,22 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateGroupUseCase } from '../ports/in/use-cases/create-group.use-case';
+import { randomUUID } from 'crypto';
 import {
-	GroupRepository,
-	GroupRepositoryProvider,
-} from '../ports/out/group.repository';
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
+import { GroupMember } from 'src/group/domain/group-member.model';
+import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
+import { Group } from 'src/group/domain/group.model';
 import {
 	UserRepository,
 	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { CreateGroupCommand } from '../ports/in/commands/create-group.command';
-import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
-import { GroupMember } from 'src/group/domain/group-member.model';
-import { Group } from 'src/group/domain/group.model';
-import { randomUUID } from 'crypto';
+import { CreateGroupUseCase } from '../ports/in/use-cases/create-group.use-case';
+import { CreateGroupDto } from '../ports/out/dto/create-group.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -25,10 +24,10 @@ import {
 	GroupRoleRepository,
 	GroupRoleRepositoryProvider,
 } from '../ports/out/group-role.repository';
-import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
-import { CreateGroupDto } from '../ports/out/dto/create-group.dto';
-import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
-import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
+import {
+	GroupRepository,
+	GroupRepositoryProvider,
+} from '../ports/out/group.repository';
 
 @Injectable()
 export class CreateGroupService implements CreateGroupUseCase {
@@ -46,18 +45,7 @@ export class CreateGroupService implements CreateGroupUseCase {
 	) {}
 
 	public async execute(command: CreateGroupCommand): Promise<CreateGroupDto> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
-
-		const authenticatedUser =
-			await this.userRepository.findById(authenticatedUserId);
-
-		if (
-			authenticatedUser === null ||
-			authenticatedUser === undefined ||
-			authenticatedUser.isDeleted()
-		) {
-			throw new UserNotFoundError(`User not found`);
-		}
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const adminRole = await this.groupRoleRepository.findByName(
 			DefaultGroupRole.ADMINISTRATOR,

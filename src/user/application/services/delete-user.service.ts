@@ -1,3 +1,9 @@
+import { Inject, Injectable } from '@nestjs/common';
+import {
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { User } from 'src/user/domain/user.model';
 import { DeleteUserCommand } from '../ports/in/commands/delete-user.command';
 import { DeleteUserUseCase } from '../ports/in/use-cases/delete-user.use-case';
@@ -5,13 +11,6 @@ import {
 	UserRepository,
 	UserRepositoryProvider,
 } from '../ports/out/user.repository';
-import { UserNotFoundError } from './errors/user-not-found.error';
-import { Inject, Injectable } from '@nestjs/common';
-import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 
 @Injectable()
 export class DeleteUserService implements DeleteUserUseCase {
@@ -23,13 +22,9 @@ export class DeleteUserService implements DeleteUserUseCase {
 	) {}
 
 	public async execute(command: DeleteUserCommand): Promise<void> {
-		const user: User = await this.userRepository.findById(command.id);
+		const user: User = await this.getAuthenticatedUser.execute(null);
 
-		if (user === null || user === undefined || user.isDeleted()) {
-			throw new UserNotFoundError(`User not found`);
-		}
-
-		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
+		if(command.id !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

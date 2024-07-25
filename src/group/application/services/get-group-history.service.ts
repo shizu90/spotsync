@@ -1,22 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { GetGroupHistoryUseCase } from '../ports/in/use-cases/get-group-history.use-case';
-import {
-	GroupRepository,
-	GroupRepositoryProvider,
-} from '../ports/out/group.repository';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { Pagination } from 'src/common/common.repository';
 import { GetGroupHistoryCommand } from '../ports/in/commands/get-group-history.command';
+import { GetGroupHistoryUseCase } from '../ports/in/use-cases/get-group-history.use-case';
 import { GetGroupLogDto } from '../ports/out/dto/get-group-log.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
+import {
+	GroupRepository,
+	GroupRepositoryProvider,
+} from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { Pagination } from 'src/common/common.repository';
 
 @Injectable()
 export class GetGroupHistoryService implements GetGroupHistoryUseCase {
@@ -32,7 +32,7 @@ export class GetGroupHistoryService implements GetGroupHistoryUseCase {
 	public async execute(
 		command: GetGroupHistoryCommand,
 	): Promise<Pagination<GetGroupLogDto>> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
 
@@ -43,7 +43,7 @@ export class GetGroupHistoryService implements GetGroupHistoryUseCase {
 		const authenticatedGroupMember = (
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 

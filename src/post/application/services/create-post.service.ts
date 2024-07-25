@@ -4,7 +4,6 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import {
 	GroupRepository,
 	GroupRepositoryProvider,
@@ -14,10 +13,6 @@ import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import { Post } from 'src/post/domain/post.model';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { CreatePostCommand } from '../ports/in/commands/create-post.command';
 import { CreatePostUseCase } from '../ports/in/use-cases/create-post.use-case';
@@ -41,20 +36,12 @@ export class CreatePostService implements CreatePostUseCase {
 		protected postThreadRepository: PostThreadRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
-		@Inject(UserRepositoryProvider)
-		protected userRepository: UserRepository,
 		@Inject(GroupRepositoryProvider)
 		protected groupRepository: GroupRepository,
 	) {}
 
 	public async execute(command: CreatePostCommand): Promise<CreatePostDto> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
-
-		const user = await this.userRepository.findById(authenticatedUserId);
-
-		if (user === null || user === undefined || user.isDeleted()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
-		}
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		let parent: Post = null;
 
@@ -71,7 +58,7 @@ export class CreatePostService implements CreatePostUseCase {
 		let visibility = command.visibility;
 
 		if (visibility === null || visibility === undefined) {
-			switch (user.visibilityConfiguration().postVisibility()) {
+			switch (authenticatedUser.visibilityConfiguration().postVisibility()) {
 				case UserVisibility.PUBLIC:
 					visibility = PostVisibility.PUBLIC;
 					break;
@@ -115,7 +102,7 @@ export class CreatePostService implements CreatePostUseCase {
 			command.title,
 			command.content,
 			visibility,
-			user,
+			authenticatedUser,
 			[],
 			parent,
 			group,

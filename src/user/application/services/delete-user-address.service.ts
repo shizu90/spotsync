@@ -1,4 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
+import {
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { UserAddress } from 'src/user/domain/user-address.model';
+import { User } from 'src/user/domain/user.model';
+import { DeleteUserAddressCommand } from '../ports/in/commands/delete-user-address.command';
 import { DeleteUserAddressUseCase } from '../ports/in/use-cases/delete-user-address.use-case';
 import {
 	UserAddressRepository,
@@ -8,16 +16,7 @@ import {
 	UserRepository,
 	UserRepositoryProvider,
 } from '../ports/out/user.repository';
-import { DeleteUserAddressCommand } from '../ports/in/commands/delete-user-address.command';
-import { User } from 'src/user/domain/user.model';
-import { UserNotFoundError } from './errors/user-not-found.error';
-import { UserAddress } from 'src/user/domain/user-address.model';
 import { UserAddressNotFoundError } from './errors/user-address-not-found.error';
-import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 
 @Injectable()
 export class DeleteUserAddressService implements DeleteUserAddressUseCase {
@@ -31,13 +30,9 @@ export class DeleteUserAddressService implements DeleteUserAddressUseCase {
 	) {}
 
 	public async execute(command: DeleteUserAddressCommand): Promise<void> {
-		const user: User = await this.userRepository.findById(command.userId);
+		const user: User = await this.getAuthenticatedUser.execute(null);
 
-		if (user === null || user === undefined || user.isDeleted()) {
-			throw new UserNotFoundError(`User not found`);
-		}
-
-		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
+		if(command.userId !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

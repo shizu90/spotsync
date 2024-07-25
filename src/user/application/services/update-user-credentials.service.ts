@@ -1,22 +1,20 @@
-import { User } from 'src/user/domain/user.model';
-import { UpdateUserCredentialsCommand } from '../ports/in/commands/update-user-credentials.command';
-import { UpdateUserCredentialsUseCase } from '../ports/in/use-cases/update-user-credentials.use-case';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from '../ports/out/user.repository';
-import { UserAlreadyExistsError } from './errors/user-already-exists.error';
-import {
-	EncryptPasswordService,
-	EncryptPasswordServiceProvider,
-} from '../ports/out/encrypt-password.service';
-import { UserNotFoundError } from './errors/user-not-found.error';
 import { Inject, Injectable } from '@nestjs/common';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { UpdateUserCredentialsCommand } from '../ports/in/commands/update-user-credentials.command';
+import { UpdateUserCredentialsUseCase } from '../ports/in/use-cases/update-user-credentials.use-case';
+import {
+	EncryptPasswordService,
+	EncryptPasswordServiceProvider,
+} from '../ports/out/encrypt-password.service';
+import {
+	UserRepository,
+	UserRepositoryProvider,
+} from '../ports/out/user.repository';
+import { UserAlreadyExistsError } from './errors/user-already-exists.error';
 
 @Injectable()
 export class UpdateUserCredentialsService
@@ -32,13 +30,9 @@ export class UpdateUserCredentialsService
 	) {}
 
 	public async execute(command: UpdateUserCredentialsCommand): Promise<void> {
-		const user: User = await this.userRepository.findById(command.id);
+		const user = await this.getAuthenticatedUser.execute(null);
 
-		if (user === null || user === undefined || user.isDeleted()) {
-			throw new UserNotFoundError(`User not found`);
-		}
-
-		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
+		if(command.id !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

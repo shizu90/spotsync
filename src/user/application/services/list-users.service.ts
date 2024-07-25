@@ -1,25 +1,25 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ListUsersUseCase } from '../ports/in/use-cases/list-users.use-case';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from '../ports/out/user.repository';
-import { ListUsersCommand } from '../ports/in/commands/list-users.command';
-import { GetUserProfileDto } from '../ports/out/dto/get-user-profile.dto';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { Pagination } from 'src/common/common.repository';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
+import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { ListUsersCommand } from '../ports/in/commands/list-users.command';
+import { ListUsersUseCase } from '../ports/in/use-cases/list-users.use-case';
+import { GetUserProfileDto } from '../ports/out/dto/get-user-profile.dto';
 import {
 	UserAddressRepository,
 	UserAddressRepositoryProvider,
 } from '../ports/out/user-address.repository';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
-import { Pagination } from 'src/common/common.repository';
+import {
+	UserRepository,
+	UserRepositoryProvider,
+} from '../ports/out/user.repository';
 
 @Injectable()
 export class ListUsersService implements ListUsersUseCase {
@@ -37,7 +37,7 @@ export class ListUsersService implements ListUsersUseCase {
 	public async execute(
 		command: ListUsersCommand,
 	): Promise<Pagination<GetUserProfileDto>> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const pagination = await this.userRepository.paginate({
 			filters: {
@@ -58,7 +58,7 @@ export class ListUsersService implements ListUsersUseCase {
 			pagination.items.map(async (u) => {
 				const isFollowing = (
 					await this.followRepository.findBy({
-						fromUserId: authenticatedUserId,
+						fromUserId: authenticatedUser.id(),
 						toUserId: u.id(),
 					})
 				).at(0);
@@ -70,7 +70,7 @@ export class ListUsersService implements ListUsersUseCase {
 					})
 				).at(0);
 
-				if (authenticatedUserId !== u.id()) {
+				if (authenticatedUser.id() !== u.id()) {
 					if (
 						u.visibilityConfiguration().addressVisibility() ===
 						UserVisibility.PRIVATE

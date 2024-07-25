@@ -1,20 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ListGroupsUseCase } from '../ports/in/use-cases/list-groups.use-case';
-import { ListGroupsCommand } from '../ports/in/commands/list-groups.command';
-import { GetGroupDto } from '../ports/out/dto/get-group.dto';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import {
-	GroupRepository,
-	GroupRepositoryProvider,
-} from '../ports/out/group.repository';
+import { Pagination } from 'src/common/common.repository';
+import { ListGroupsCommand } from '../ports/in/commands/list-groups.command';
+import { ListGroupsUseCase } from '../ports/in/use-cases/list-groups.use-case';
+import { GetGroupDto } from '../ports/out/dto/get-group.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
-import { Pagination } from 'src/common/common.repository';
+import {
+	GroupRepository,
+	GroupRepositoryProvider,
+} from '../ports/out/group.repository';
 
 @Injectable()
 export class ListGroupsService implements ListGroupsUseCase {
@@ -30,7 +30,7 @@ export class ListGroupsService implements ListGroupsUseCase {
 	public async execute(
 		command: ListGroupsCommand,
 	): Promise<Pagination<GetGroupDto>> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const pagination = await this.groupRepository.paginate({
 			filters: {
@@ -51,7 +51,7 @@ export class ListGroupsService implements ListGroupsUseCase {
 				const groupMember = (
 					await this.groupMemberRepository.findBy({
 						groupId: g.id(),
-						userId: authenticatedUserId,
+						userId: authenticatedUser.id(),
 					})
 				).at(0);
 

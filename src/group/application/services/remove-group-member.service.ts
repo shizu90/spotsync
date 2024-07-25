@@ -1,24 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { RemoveGroupMemberUseCase } from '../ports/in/use-cases/remove-group-member.use-case';
-import { RemoveGroupMemberCommand } from '../ports/in/commands/remove-group-member.command';
 import {
-	GroupRepository,
-	GroupRepositoryProvider,
-} from '../ports/out/group.repository';
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { RemoveGroupMemberCommand } from '../ports/in/commands/remove-group-member.command';
+import { RemoveGroupMemberUseCase } from '../ports/in/use-cases/remove-group-member.use-case';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { GroupNotFoundError } from './errors/group-not-found.error';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+	GroupRepository,
+	GroupRepositoryProvider,
+} from '../ports/out/group.repository';
 import { GroupMemberNotFoundError } from './errors/group-member-not-found.error';
-import { GroupLog } from 'src/group/domain/group-log.model';
-import { randomUUID } from 'crypto';
-import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { GroupNotFoundError } from './errors/group-not-found.error';
 
 @Injectable()
 export class RemoveGroupMemberService implements RemoveGroupMemberUseCase {
@@ -32,7 +30,7 @@ export class RemoveGroupMemberService implements RemoveGroupMemberUseCase {
 	) {}
 
 	public async execute(command: RemoveGroupMemberCommand): Promise<void> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
 
@@ -43,7 +41,7 @@ export class RemoveGroupMemberService implements RemoveGroupMemberUseCase {
 		const authenticatedGroupMember = (
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 

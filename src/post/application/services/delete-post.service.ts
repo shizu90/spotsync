@@ -35,7 +35,7 @@ export class DeletePostService implements DeletePostUseCase {
 	) {}
 
 	public async execute(command: DeletePostCommand): Promise<void> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const post = await this.postRepository.findById(command.id);
 
@@ -43,13 +43,13 @@ export class DeletePostService implements DeletePostUseCase {
 			throw new PostNotFoundError(`Post not found`);
 		}
 
-		let canDelete = post.creator().id() === authenticatedUserId;
+		let canDelete = post.creator().id() === authenticatedUser.id();
 
 		if (post.group() !== null) {
 			const authenticatedGroupMember = (
 				await this.groupMemberRepository.findBy({
 					groupId: post.group().id(),
-					userId: authenticatedUserId,
+					userId: authenticatedUser.id(),
 				})
 			).at(0);
 

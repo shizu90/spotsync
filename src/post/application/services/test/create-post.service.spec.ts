@@ -4,18 +4,12 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from 'src/group/application/ports/out/group.repository';
 import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
-import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { CreatePostCommand } from '../../ports/in/commands/create-post.command';
 import {
 	PostRepository,
@@ -27,7 +21,6 @@ import { mockPost } from './post-mock.helper';
 describe('CreatePostService', () => {
 	let service: CreatePostService;
 	let getAuthenticatedUser: jest.Mocked<GetAuthenticatedUserUseCase>;
-	let userRepository: jest.Mocked<UserRepository>;
 	let groupRepository: jest.Mocked<GroupRepository>;
 	let postRepository: jest.Mocked<PostRepository>;
 
@@ -36,7 +29,6 @@ describe('CreatePostService', () => {
 
 		service = unit;
 		getAuthenticatedUser = unitRef.get(GetAuthenticatedUserUseCaseProvider);
-		userRepository = unitRef.get(UserRepositoryProvider);
 		groupRepository = unitRef.get(GroupRepositoryProvider);
 		postRepository = unitRef.get(PostRepositoryProvider);
 	});
@@ -55,8 +47,7 @@ describe('CreatePostService', () => {
 			post.parent().id(),
 		);
 
-		getAuthenticatedUser.execute.mockReturnValue(post.creator().id());
-		userRepository.findById.mockResolvedValue(post.creator());
+		getAuthenticatedUser.execute.mockResolvedValue(post.creator());
 		postRepository.findById.mockResolvedValue(post.parent());
 
 		const response = await service.execute(command);
@@ -65,42 +56,6 @@ describe('CreatePostService', () => {
 		expect(response.title).toBe(command.title);
 		expect(response.parent_id).toBe(post.parent().id());
 		expect(response.thread_id).toBe(post.parent().thread().id());
-	});
-
-	it('should not create a post if user does not exist', async () => {
-		const post = mockPost();
-
-		const command = new CreatePostCommand(
-			'Test Post',
-			'Test Content',
-			PostVisibility.PUBLIC,
-			post.parent().id(),
-		);
-
-		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
-		userRepository.findById.mockResolvedValue(null);
-
-		await expect(service.execute(command)).rejects.toThrow(
-			UserNotFoundError,
-		);
-	});
-
-	it('should not create a post if user is not authenticated', async () => {
-		const post = mockPost();
-
-		const command = new CreatePostCommand(
-			'Test Post',
-			'Test Content',
-			PostVisibility.PUBLIC,
-			post.parent().id(),
-		);
-
-		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
-		userRepository.findById.mockResolvedValue(post.creator());
-
-		await expect(service.execute(command)).rejects.toThrow(
-			UnauthorizedAccessError,
-		);
 	});
 
 	it('should not create a post if group does not exist', async () => {
@@ -114,8 +69,7 @@ describe('CreatePostService', () => {
 			randomUUID(),
 		);
 
-		getAuthenticatedUser.execute.mockReturnValue(post.creator().id());
-		userRepository.findById.mockResolvedValue(post.creator());
+		getAuthenticatedUser.execute.mockResolvedValue(post.creator());
 		postRepository.findById.mockResolvedValue(post.parent());
 		groupRepository.findById.mockResolvedValue(null);
 

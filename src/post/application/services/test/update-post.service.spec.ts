@@ -1,19 +1,19 @@
+import { TestBed } from '@automock/jest';
+import { randomUUID } from 'crypto';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UpdatePostService } from '../update-post.service';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { PostVisibility } from 'src/post/domain/post-visibility.enum';
+import { UpdatePostCommand } from '../../ports/in/commands/update-post.command';
 import {
 	PostRepository,
 	PostRepositoryProvider,
 } from '../../ports/out/post.repository';
-import { TestBed } from '@automock/jest';
-import { mockPost } from './post-mock.helper';
-import { UpdatePostCommand } from '../../ports/in/commands/update-post.command';
-import { PostVisibility } from 'src/post/domain/post-visibility.enum';
-import { randomUUID } from 'crypto';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { PostNotFoundError } from '../errors/post-not-found.error';
+import { UpdatePostService } from '../update-post.service';
+import { mockPost, mockUser } from './post-mock.helper';
 
 describe('UpdatePostService', () => {
 	let service: UpdatePostService;
@@ -42,7 +42,7 @@ describe('UpdatePostService', () => {
 			PostVisibility.PRIVATE,
 		);
 
-		getAuthenticatedUser.execute.mockReturnValue(post.creator().id());
+		getAuthenticatedUser.execute.mockResolvedValue(post.creator());
 		postRepository.findById.mockResolvedValue(post);
 
 		await service.execute(command);
@@ -62,7 +62,7 @@ describe('UpdatePostService', () => {
 			PostVisibility.PRIVATE,
 		);
 
-		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
+		getAuthenticatedUser.execute.mockResolvedValue(mockUser());
 		postRepository.findById.mockResolvedValue(post);
 
 		await expect(service.execute(command)).rejects.toThrow(
@@ -78,7 +78,7 @@ describe('UpdatePostService', () => {
 			PostVisibility.PRIVATE,
 		);
 
-		getAuthenticatedUser.execute.mockReturnValue(randomUUID());
+		getAuthenticatedUser.execute.mockResolvedValue(mockUser());
 		postRepository.findById.mockResolvedValue(null);
 
 		await expect(service.execute(command)).rejects.toThrow(

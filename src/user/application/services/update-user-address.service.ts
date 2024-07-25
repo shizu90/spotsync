@@ -1,18 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UpdateUserAddressUseCase } from '../ports/in/use-cases/update-user-address.use-case';
-import {
-	UserAddressRepository,
-	UserAddressRepositoryProvider,
-} from '../ports/out/user-address.repository';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from '../ports/out/user.repository';
-import { UpdateUserAddressCommand } from '../ports/in/commands/update-user-address.command';
-import { UserAddress } from 'src/user/domain/user-address.model';
-import { User } from 'src/user/domain/user.model';
-import { UserNotFoundError } from './errors/user-not-found.error';
-import { UserAddressNotFoundError } from './errors/user-address-not-found.error';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
@@ -24,6 +10,18 @@ import {
 	GeoLocatorOutput,
 	GeoLocatorProvider,
 } from 'src/geolocation/geolocator';
+import { UserAddress } from 'src/user/domain/user-address.model';
+import { UpdateUserAddressCommand } from '../ports/in/commands/update-user-address.command';
+import { UpdateUserAddressUseCase } from '../ports/in/use-cases/update-user-address.use-case';
+import {
+	UserAddressRepository,
+	UserAddressRepositoryProvider,
+} from '../ports/out/user-address.repository';
+import {
+	UserRepository,
+	UserRepositoryProvider,
+} from '../ports/out/user.repository';
+import { UserAddressNotFoundError } from './errors/user-address-not-found.error';
 
 @Injectable()
 export class UpdateUserAddressService implements UpdateUserAddressUseCase {
@@ -39,13 +37,9 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase {
 	) {}
 
 	public async execute(command: UpdateUserAddressCommand): Promise<void> {
-		const user: User = await this.userRepository.findById(command.userId);
+		const user = await this.getAuthenticatedUser.execute(null);
 
-		if (user === null || user === undefined || user.isDeleted()) {
-			throw new UserNotFoundError(`User not found`);
-		}
-
-		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
+		if(command.userId !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

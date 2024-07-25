@@ -1,28 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UpdateGroupUseCase } from '../ports/in/use-cases/update-group.use-case';
-import {
-	GroupRepository,
-	GroupRepositoryProvider,
-} from '../ports/out/group.repository';
-import { UpdateGroupCommand } from '../ports/in/commands/update-group.command';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
-import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { UpdateGroupCommand } from '../ports/in/commands/update-group.command';
+import { UpdateGroupUseCase } from '../ports/in/use-cases/update-group.use-case';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import {
+	GroupRepository,
+	GroupRepositoryProvider,
+} from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
-import { GroupLog } from 'src/group/domain/group-log.model';
-import { randomUUID } from 'crypto';
-import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 
 @Injectable()
 export class UpdateGroupService implements UpdateGroupUseCase {
@@ -36,7 +29,7 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 	) {}
 
 	public async execute(command: UpdateGroupCommand): Promise<void> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.id);
 
@@ -47,7 +40,7 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 		const authenticatedGroupMember = (
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 

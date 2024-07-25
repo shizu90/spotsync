@@ -1,5 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
+import {
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { Pagination } from 'src/common/common.repository';
+import { ListGroupRequestsCommand } from '../ports/in/commands/list-group-requests.command';
 import { ListGroupRequestsUseCase } from '../ports/in/use-cases/list-group-requests.use-case';
+import { GetGroupRequestDto } from '../ports/out/dto/get-group-request.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -8,15 +16,7 @@ import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from '../ports/out/group.repository';
-import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { ListGroupRequestsCommand } from '../ports/in/commands/list-group-requests.command';
-import { GetGroupRequestDto } from '../ports/out/dto/get-group-request.dto';
 import { GroupNotFoundError } from './errors/group-not-found.error';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { Pagination } from 'src/common/common.repository';
 
 @Injectable()
 export class ListGroupRequestsService implements ListGroupRequestsUseCase {
@@ -32,7 +32,7 @@ export class ListGroupRequestsService implements ListGroupRequestsUseCase {
 	public async execute(
 		command: ListGroupRequestsCommand,
 	): Promise<Pagination<GetGroupRequestDto>> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
 
@@ -43,7 +43,7 @@ export class ListGroupRequestsService implements ListGroupRequestsUseCase {
 		const authenticatedGroupMember = (
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 

@@ -1,9 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { GetGroupUseCase } from '../ports/in/use-cases/get-group.use-case';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { GetGroupCommand } from '../ports/in/commands/get-group.command';
+import { GetGroupUseCase } from '../ports/in/use-cases/get-group.use-case';
+import { GetGroupDto } from '../ports/out/dto/get-group.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -12,8 +14,6 @@ import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from '../ports/out/group.repository';
-import { GetGroupCommand } from '../ports/in/commands/get-group.command';
-import { GetGroupDto } from '../ports/out/dto/get-group.dto';
 import { GroupNotFoundError } from './errors/group-not-found.error';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class GetGroupService implements GetGroupUseCase {
 	) {}
 
 	public async execute(command: GetGroupCommand): Promise<GetGroupDto> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.id);
 
@@ -39,14 +39,14 @@ export class GetGroupService implements GetGroupUseCase {
 		const groupMember = (
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 
 		const groupMemberRequest = (
 			await this.groupMemberRepository.findRequestBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 

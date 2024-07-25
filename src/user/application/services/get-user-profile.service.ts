@@ -1,16 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { GetUserProfileUseCase } from '../ports/in/use-cases/get-user-profile.use-case';
-import { GetUserProfileCommand } from '../ports/in/commands/get-user-profile.command';
-import { GetUserProfileDto } from '../ports/out/dto/get-user-profile.dto';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from '../ports/out/user.repository';
-import { UserNotFoundError } from './errors/user-not-found.error';
-import {
-	UserAddressRepository,
-	UserAddressRepositoryProvider,
-} from '../ports/out/user-address.repository';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
@@ -20,6 +8,18 @@ import {
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { GetUserProfileCommand } from '../ports/in/commands/get-user-profile.command';
+import { GetUserProfileUseCase } from '../ports/in/use-cases/get-user-profile.use-case';
+import { GetUserProfileDto } from '../ports/out/dto/get-user-profile.dto';
+import {
+	UserAddressRepository,
+	UserAddressRepositoryProvider,
+} from '../ports/out/user-address.repository';
+import {
+	UserRepository,
+	UserRepositoryProvider,
+} from '../ports/out/user.repository';
+import { UserNotFoundError } from './errors/user-not-found.error';
 
 @Injectable()
 export class GetUserProfileService implements GetUserProfileUseCase {
@@ -37,6 +37,8 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 	public async execute(
 		command: GetUserProfileCommand,
 	): Promise<GetUserProfileDto> {
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
+
 		const user = await (command.id
 			? this.userRepository.findById(command.id)
 			: this.userRepository.findByName(command.name));
@@ -45,12 +47,10 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 			throw new UserNotFoundError(`User not found`);
 		}
 
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
-
 		const isFollowing =
 			(
 				await this.followRepository.findBy({
-					fromUserId: authenticatedUserId,
+					fromUserId: authenticatedUser.id(),
 					toUserId: user.id(),
 				})
 			).length > 0
@@ -64,7 +64,7 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 			})
 		).at(0);
 
-		if (authenticatedUserId !== user.id()) {
+		if (authenticatedUser.id() !== user.id()) {
 			if (
 				user.visibilityConfiguration().addressVisibility() ===
 				UserVisibility.PRIVATE

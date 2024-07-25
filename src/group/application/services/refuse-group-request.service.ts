@@ -1,4 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
+import {
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { RefuseGroupRequestCommand } from '../ports/in/commands/refuse-group-request.command';
 import { RefuseGroupRequestUseCase } from '../ports/in/use-cases/refuse-group-request.use-case';
 import {
 	GroupMemberRepository,
@@ -8,17 +15,8 @@ import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from '../ports/out/group.repository';
-import { RefuseGroupRequestCommand } from '../ports/in/commands/refuse-group-request.command';
-import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { GroupNotFoundError } from './errors/group-not-found.error';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { GroupRequestNotFoundError } from './errors/group-request-not-found.error';
-import { GroupLog } from 'src/group/domain/group-log.model';
-import { randomUUID } from 'crypto';
-import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 
 @Injectable()
 export class RefuseGroupRequestService implements RefuseGroupRequestUseCase {
@@ -32,7 +30,7 @@ export class RefuseGroupRequestService implements RefuseGroupRequestUseCase {
 	) {}
 
 	public async execute(command: RefuseGroupRequestCommand): Promise<void> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
 
@@ -43,7 +41,7 @@ export class RefuseGroupRequestService implements RefuseGroupRequestUseCase {
 		const authenticatedGroupMember = (
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 

@@ -1,28 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UpdateGroupVisibilityUseCase } from '../ports/in/use-cases/update-group-visibility.use-case';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
-import {
-	GroupRepository,
-	GroupRepositoryProvider,
-} from '../ports/out/group.repository';
-import {
-	GroupMemberRepository,
-	GroupMemberRepositoryProvider,
-} from '../ports/out/group-member.repository';
-import { UpdateGroupVisibilityCommand } from '../ports/in/commands/update-group-visibility.command';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { GroupNotFoundError } from './errors/group-not-found.error';
-import { GroupLog } from 'src/group/domain/group-log.model';
-import { randomUUID } from 'crypto';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { UpdateGroupVisibilityCommand } from '../ports/in/commands/update-group-visibility.command';
+import { UpdateGroupVisibilityUseCase } from '../ports/in/use-cases/update-group-visibility.use-case';
+import {
+	GroupMemberRepository,
+	GroupMemberRepositoryProvider,
+} from '../ports/out/group-member.repository';
+import {
+	GroupRepository,
+	GroupRepositoryProvider,
+} from '../ports/out/group.repository';
+import { GroupNotFoundError } from './errors/group-not-found.error';
 
 @Injectable()
 export class UpdateGroupVisibilityService
@@ -38,7 +31,7 @@ export class UpdateGroupVisibilityService
 	) {}
 
 	public async execute(command: UpdateGroupVisibilityCommand): Promise<void> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.id);
 
@@ -49,7 +42,7 @@ export class UpdateGroupVisibilityService
 		const authenticatedGroupMember = (
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 

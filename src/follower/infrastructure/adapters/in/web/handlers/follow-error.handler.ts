@@ -25,10 +25,22 @@ export class FollowErrorHandler implements ExceptionFilter {
 						),
 					);
 
+				break; 
+			case 'UnauthenticatedError':
+				response
+					.status(HttpStatus.UNAUTHORIZED)
+					.json(
+						new ErrorResponse(
+							request.url,
+							new Date().toISOString(),
+							error.message
+						)
+					);
+
 				break;
 			case 'UnauthorizedAccessError':
 				response
-					.status(HttpStatus.UNAUTHORIZED)
+					.status(HttpStatus.FORBIDDEN)
 					.json(
 						new ErrorResponse(
 							request.url,

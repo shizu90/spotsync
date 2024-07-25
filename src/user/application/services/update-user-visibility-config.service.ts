@@ -1,16 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UpdateUserVisibilityConfigUseCase } from '../ports/in/use-cases/update-user-visibility-config.use-case';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from '../ports/out/user.repository';
-import { UpdateUserVisibilityConfigCommand } from '../ports/in/commands/update-user-visibility-config.command';
-import { UserNotFoundError } from './errors/user-not-found.error';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { UpdateUserVisibilityConfigCommand } from '../ports/in/commands/update-user-visibility-config.command';
+import { UpdateUserVisibilityConfigUseCase } from '../ports/in/use-cases/update-user-visibility-config.use-case';
+import {
+	UserRepository,
+	UserRepositoryProvider,
+} from '../ports/out/user.repository';
 
 @Injectable()
 export class UpdateUserVisibilityConfigService
@@ -26,13 +25,9 @@ export class UpdateUserVisibilityConfigService
 	public async execute(
 		command: UpdateUserVisibilityConfigCommand,
 	): Promise<void> {
-		const user = await this.userRepository.findById(command.userId);
+		const user = await this.getAuthenticatedUser.execute(null);
 
-		if (user === null || user === undefined || user.isDeleted()) {
-			throw new UserNotFoundError(`User not found`);
-		}
-
-		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
+		if(command.userId !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

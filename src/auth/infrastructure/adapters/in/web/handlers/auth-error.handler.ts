@@ -6,6 +6,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ErrorResponse } from 'src/common/web/common-error.response';
 
 export class AuthErrorHandler implements ExceptionFilter {
 	public catch(error: Error | HttpException, host: ArgumentsHost) {
@@ -15,40 +16,47 @@ export class AuthErrorHandler implements ExceptionFilter {
 
 		switch (error.constructor.name) {
 			case 'UserNotFoundError':
-				response.status(HttpStatus.NOT_FOUND).json({
-					timestamp: new Date().toISOString(),
-					path: request.url,
-					message: error.message,
-				});
+				response.status(HttpStatus.NOT_FOUND).json(new ErrorResponse(
+					request.url,
+					new Date().toISOString(),
+					error.message
+				));
 				break;
 			case 'UnauthorizedAccessError':
-				response.status(HttpStatus.UNAUTHORIZED).json({
-					timestamp: new Date().toISOString(),
-					path: request.url,
-					message: error.message,
-				});
+				response.status(HttpStatus.FORBIDDEN).json(new ErrorResponse(
+					request.url,
+					new Date().toISOString(),
+					error.message
+				));
+				break;
+			case 'UnauthenticatedError':
+				response.status(HttpStatus.UNAUTHORIZED).json(new ErrorResponse(
+					request.url,
+					new Date().toISOString(),
+					error.message
+				));
 				break;
 			case 'UserInvalidCredentialsError':
 			case 'ValidationError':
-				response.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
-					timestamp: new Date().toISOString(),
-					path: request.url,
-					message: error.message,
-				});
+				response.status(HttpStatus.UNPROCESSABLE_ENTITY).json(new ErrorResponse(
+					request.url,
+					new Date().toISOString(),
+					error.message
+				));
 				break;
 			default:
 				if (error instanceof BadRequestException) {
-					response.status(HttpStatus.BAD_REQUEST).json({
-						timestamp: new Date().toISOString(),
-						path: request.url,
-						message: error.getResponse()['message'],
-					});
+					response.status(HttpStatus.BAD_REQUEST).json(new ErrorResponse(
+						request.url,
+						new Date().toISOString(),
+						error.getResponse()['message']
+					));
 				} else {
-					response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-						timestamp: new Date().toISOString(),
-						path: request.url,
-						message: error.message,
-					});
+					response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new ErrorResponse(
+						request.url,
+						new Date().toISOString(),
+						error.message
+					));
 				}
 				break;
 		}

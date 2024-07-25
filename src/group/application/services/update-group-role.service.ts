@@ -1,29 +1,27 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GroupRepository,
-	GroupRepositoryProvider,
-} from '../ports/out/group.repository';
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { UpdateGroupRoleCommand } from '../ports/in/commands/update-group-role.command';
+import { UpdateGroupRoleUseCase } from '../ports/in/use-cases/update-group-role.use-case';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UpdateGroupRoleUseCase } from '../ports/in/use-cases/update-group-role.use-case';
-import { UpdateGroupRoleCommand } from '../ports/in/commands/update-group-role.command';
-import {
 	GroupRoleRepository,
 	GroupRoleRepositoryProvider,
 } from '../ports/out/group-role.repository';
+import {
+	GroupRepository,
+	GroupRepositoryProvider,
+} from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
-import { GroupLog } from 'src/group/domain/group-log.model';
-import { randomUUID } from 'crypto';
-import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { GroupRoleAlreadyExistsError } from './errors/group-role-already-exists.error';
+import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
 
 @Injectable()
 export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
@@ -39,7 +37,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 	) {}
 
 	public async execute(command: UpdateGroupRoleCommand): Promise<void> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
 
@@ -50,7 +48,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 		const authenticatedGroupMember = (
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 

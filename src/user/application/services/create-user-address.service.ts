@@ -1,30 +1,29 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateUserAddressUseCase } from '../ports/in/use-cases/create-user-address.use-case';
-import {
-	UserAddressRepository,
-	UserAddressRepositoryProvider,
-} from '../ports/out/user-address.repository';
-import { CreateUserAddressCommand } from '../ports/in/commands/create-user-address.command';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from '../ports/out/user.repository';
-import { User } from 'src/user/domain/user.model';
-import { UserNotFoundError } from './errors/user-not-found.error';
-import { UserAddress } from 'src/user/domain/user-address.model';
 import { randomUUID } from 'crypto';
-import { CreateUserAddressDto } from '../ports/out/dto/create-user-address.dto';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import {
 	Geolocator,
 	GeoLocatorInput,
 	GeoLocatorOutput,
 	GeoLocatorProvider,
 } from 'src/geolocation/geolocator';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { UserAddress } from 'src/user/domain/user-address.model';
+import { User } from 'src/user/domain/user.model';
+import { CreateUserAddressCommand } from '../ports/in/commands/create-user-address.command';
+import { CreateUserAddressUseCase } from '../ports/in/use-cases/create-user-address.use-case';
+import { CreateUserAddressDto } from '../ports/out/dto/create-user-address.dto';
+import {
+	UserAddressRepository,
+	UserAddressRepositoryProvider,
+} from '../ports/out/user-address.repository';
+import {
+	UserRepository,
+	UserRepositoryProvider,
+} from '../ports/out/user.repository';
 
 @Injectable()
 export class CreateUserAddressService implements CreateUserAddressUseCase {
@@ -42,13 +41,9 @@ export class CreateUserAddressService implements CreateUserAddressUseCase {
 	public async execute(
 		command: CreateUserAddressCommand,
 	): Promise<CreateUserAddressDto> {
-		const user: User = await this.userRepository.findById(command.userId);
+		const user: User = await this.getAuthenticatedUser.execute(null);
 
-		if (user === null || user === undefined || user.isDeleted()) {
-			throw new UserNotFoundError(`User ${command.userId} not found`);
-		}
-
-		if (user.id() !== this.getAuthenticatedUser.execute(null)) {
+		if(command.userId !== user.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

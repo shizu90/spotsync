@@ -37,10 +37,23 @@ export class UserErrorHandler implements ExceptionFilter {
 							error.message,
 						),
 					);
+				
 				break;
-			case 'ValidationError':
+			case 'UnauthenticatedError':
 				response
-					.status(HttpStatus.UNPROCESSABLE_ENTITY)
+					.status(HttpStatus.UNAUTHORIZED)
+					.json(
+						new ErrorResponse(
+							request.url,
+							new Date().toISOString(),
+							error.message
+						)
+					);
+
+				break;
+			case 'UnauthorizedAccessError':
+				response
+					.status(HttpStatus.FORBIDDEN)
 					.json(
 						new ErrorResponse(
 							request.url,
@@ -48,6 +61,7 @@ export class UserErrorHandler implements ExceptionFilter {
 							error.message,
 						),
 					);
+	
 				break;
 			default:
 				if (error instanceof BadRequestException) {

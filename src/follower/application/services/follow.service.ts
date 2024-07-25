@@ -1,26 +1,26 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { FollowUseCase } from '../ports/in/use-cases/follow.use-case';
-import { FollowCommand } from '../ports/in/commands/follow.command';
-import { FollowDto } from '../ports/out/dto/follow.dto';
+import { randomUUID } from 'crypto';
+import {
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { FollowRequest } from 'src/follower/domain/follow-request.model';
+import { Follow } from 'src/follower/domain/follow.model';
 import {
 	UserRepository,
 	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
+import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { FollowCommand } from '../ports/in/commands/follow.command';
+import { FollowUseCase } from '../ports/in/use-cases/follow.use-case';
+import { FollowDto } from '../ports/out/dto/follow.dto';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
 } from '../ports/out/follow.repository';
 import { AlreadyFollowingError } from './errors/already-following.error';
-import { Follow } from 'src/follower/domain/follow.model';
-import { randomUUID } from 'crypto';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
-import { FollowRequest } from 'src/follower/domain/follow-request.model';
 
 @Injectable()
 export class FollowService implements FollowUseCase {
@@ -34,6 +34,8 @@ export class FollowService implements FollowUseCase {
 	) {}
 
 	public async execute(command: FollowCommand): Promise<FollowDto> {
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
+		
 		if (command.fromUserId === command.toUserId) {
 			throw new AlreadyFollowingError(
 				`To user must be a different user.`,
@@ -50,7 +52,7 @@ export class FollowService implements FollowUseCase {
 			throw new UserNotFoundError(`From user not found`);
 		}
 
-		if (fromUser.id() !== this.getAuthenticatedUser.execute(null)) {
+		if (fromUser.id() !== authenticatedUser.id()) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 

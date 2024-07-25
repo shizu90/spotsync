@@ -1,7 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { GetGroupRoleUseCase } from '../ports/in/use-cases/get-group-role.use-case';
+import {
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { GetGroupRoleCommand } from '../ports/in/commands/get-group-role.command';
+import { GetGroupRoleUseCase } from '../ports/in/use-cases/get-group-role.use-case';
 import { GetGroupRoleDto } from '../ports/out/dto/get-group-role.dto';
+import {
+	GroupMemberRepository,
+	GroupMemberRepositoryProvider,
+} from '../ports/out/group-member.repository';
 import {
 	GroupRoleRepository,
 	GroupRoleRepositoryProvider,
@@ -10,16 +19,7 @@ import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from '../ports/out/group.repository';
-import {
-	GroupMemberRepository,
-	GroupMemberRepositoryProvider,
-} from '../ports/out/group-member.repository';
-import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { GroupNotFoundError } from './errors/group-not-found.error';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class GetGroupRoleService implements GetGroupRoleUseCase {
 	public async execute(
 		command: GetGroupRoleCommand,
 	): Promise<GetGroupRoleDto> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
 
@@ -49,7 +49,7 @@ export class GetGroupRoleService implements GetGroupRoleUseCase {
 		const authenticatedGroupMember =
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			});
 
 		if (

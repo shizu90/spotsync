@@ -1,24 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LeaveGroupUseCase } from '../ports/in/use-cases/leave-group.use-case';
-import { LeaveGroupCommand } from '../ports/in/commands/leave-group.command';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import {
-	GroupRepository,
-	GroupRepositoryProvider,
-} from '../ports/out/group.repository';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
+import { LeaveGroupCommand } from '../ports/in/commands/leave-group.command';
+import { LeaveGroupUseCase } from '../ports/in/use-cases/leave-group.use-case';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
+import {
+	GroupRepository,
+	GroupRepositoryProvider,
+} from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
 import { UnableToLeaveGroupError } from './errors/unable-to-leave-group.error';
-import { GroupLog } from 'src/group/domain/group-log.model';
-import { randomUUID } from 'crypto';
-import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
 
 @Injectable()
 export class LeaveGroupService implements LeaveGroupUseCase {
@@ -32,7 +30,7 @@ export class LeaveGroupService implements LeaveGroupUseCase {
 	) {}
 
 	public async execute(command: LeaveGroupCommand): Promise<void> {
-		const authenticatedUserId = this.getAuthenticatedUser.execute(null);
+		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.id);
 
@@ -43,7 +41,7 @@ export class LeaveGroupService implements LeaveGroupUseCase {
 		const groupMember = (
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
-				userId: authenticatedUserId,
+				userId: authenticatedUser.id(),
 			})
 		).at(0);
 
