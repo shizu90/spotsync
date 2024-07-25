@@ -1,33 +1,26 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SignOutUseCase } from '../ports/in/use-cases/sign-out.use-case';
 import {
 	UserRepository,
 	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { SignOutCommand } from '../ports/in/commands/sign-out.command';
-import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
-import { UnauthorizedAccessError } from './errors/unauthorized-access.error';
+import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from '../ports/in/use-cases/get-authenticated-user.use-case';
+import { SignOutUseCase } from '../ports/in/use-cases/sign-out.use-case';
 
 @Injectable()
 export class SignOutService implements SignOutUseCase {
 	public constructor(
 		@Inject(UserRepositoryProvider)
 		protected userRepository: UserRepository,
+		@Inject(GetAuthenticatedUserUseCaseProvider)
+		protected getAuthenticatedUserUseCase: GetAuthenticatedUserUseCase
 	) {}
 
 	public async execute(command: SignOutCommand): Promise<void> {
-		if (command.userId === null || command.userId === undefined) {
-			throw new UnauthorizedAccessError(`Unable to logout`);
-		}
+		const authenticatedUser = await this.getAuthenticatedUserUseCase.execute(null);
 
-		const user = await this.userRepository.findById(command.userId);
+		authenticatedUser.credentials().logout();
 
-		if (user === null) {
-			throw new UserNotFoundError(`User not found`);
-		}
-
-		user.credentials().logout();
-
-		this.userRepository.updateCredentials(user.credentials());
+		this.userRepository.updateCredentials(authenticatedUser.credentials());
 	}
 }

@@ -13,6 +13,7 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
+    "test:unit:auth": "jest --config ./test/unit/jest-unit-auth.json",
     "test:unit:user": "jest --config ./test/unit/jest-unit-user.json",
     "test:unit:follower": "jest --config ./test/unit/jest-unit-follower.json",
     "test:unit:group": "jest --config ./test/unit/jest-unit-group.json",
