@@ -17,14 +17,13 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiConflictResponse,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -60,15 +59,6 @@ import { UpdateUserAddressRequest } from './requests/update-user-address.request
 
 @ApiTags('User addresses')
 @ApiUnauthorizedResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiUnprocessableEntityResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiConflictResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiNotFoundResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
 @ApiInternalServerErrorResponse({
@@ -136,6 +126,9 @@ export class UserAddressController {
 	}
 
 	@ApiOperation({ summary: 'Get user address' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new GetUserAddressDto(
@@ -174,6 +167,12 @@ export class UserAddressController {
 	}
 
 	@ApiOperation({ summary: 'Create user address' })
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new CreateUserAddressDto(
@@ -213,6 +212,12 @@ export class UserAddressController {
 	}
 
 	@ApiOperation({ summary: 'Update user address' })
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -238,6 +243,9 @@ export class UserAddressController {
 	}
 
 	@ApiOperation({ summary: 'Delete user address' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id/addresses/:address_id')

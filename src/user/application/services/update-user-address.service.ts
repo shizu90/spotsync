@@ -5,10 +5,10 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import {
-	Geolocator,
 	GeoLocatorInput,
 	GeoLocatorOutput,
 	GeoLocatorProvider,
+	Geolocator,
 } from 'src/geolocation/geolocator';
 import { UserAddress } from 'src/user/domain/user-address.model';
 import { UpdateUserAddressCommand } from '../ports/in/commands/update-user-address.command';
@@ -17,10 +17,6 @@ import {
 	UserAddressRepository,
 	UserAddressRepositoryProvider,
 } from '../ports/out/user-address.repository';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from '../ports/out/user.repository';
 import { UserAddressNotFoundError } from './errors/user-address-not-found.error';
 
 @Injectable()
@@ -28,8 +24,6 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase {
 	constructor(
 		@Inject(UserAddressRepositoryProvider)
 		protected userAddressRepository: UserAddressRepository,
-		@Inject(UserRepositoryProvider)
-		protected userRepository: UserRepository,
 		@Inject(GeoLocatorProvider)
 		protected geoLocatorService: Geolocator,
 		@Inject(GetAuthenticatedUserUseCaseProvider)

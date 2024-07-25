@@ -48,8 +48,15 @@ export class UpdateUserCredentialsService
 			);
 		}
 
-		if (command.name && command.name !== null && command.name.length > 0) {
-			userCredentials.changeName(command.name);
+		if (
+			command.name && 
+			command.name !== null && 
+			user.credentials().name() !== command.name &&
+			(await this.userRepository.findByName(command.name)) !== null
+		) {
+			throw new UserAlreadyExistsError(
+				`User name ${command.name} already taken`,
+			);
 		}
 
 		if (
@@ -58,6 +65,14 @@ export class UpdateUserCredentialsService
 			command.email.length > 0
 		) {
 			userCredentials.changeEmail(command.email);
+		}
+
+		if (
+			command.name &&
+			command.name !== null &&
+			command.name.length > 0
+		) {
+			userCredentials.changeName(command.name);
 		}
 
 		if (

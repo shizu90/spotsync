@@ -12,10 +12,6 @@ import {
 	UserAddressRepository,
 	UserAddressRepositoryProvider,
 } from '../ports/out/user-address.repository';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from '../ports/out/user.repository';
 import { UserAddressNotFoundError } from './errors/user-address-not-found.error';
 
 @Injectable()
@@ -23,8 +19,6 @@ export class DeleteUserAddressService implements DeleteUserAddressUseCase {
 	constructor(
 		@Inject(UserAddressRepositoryProvider)
 		protected userAddressRepository: UserAddressRepository,
-		@Inject(UserRepositoryProvider)
-		protected userRepository: UserRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 	) {}

@@ -77,18 +77,6 @@ import { UpdateUserProfileRequest } from './requests/update-user-profile.request
 import { UpdateUserVisibilityConfigRequest } from './requests/update-user-visibility-config.request';
 
 @ApiTags('Users')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiUnprocessableEntityResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiConflictResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiNotFoundResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
@@ -117,6 +105,9 @@ export class UserController {
 	) {}
 
 	@ApiOperation({ summary: 'List users' })
+	@ApiUnauthorizedResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new Pagination(
@@ -181,6 +172,12 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Get user by id' })
+	@ApiUnauthorizedResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new GetUserProfileDto(
@@ -238,6 +235,12 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Create user' })
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiConflictResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new CreateUserDto(
@@ -284,6 +287,15 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Update user profile' })
+	@ApiUnauthorizedResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+	})
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -304,6 +316,18 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Update user credentials' })
+	@ApiUnauthorizedResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+	})
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiConflictResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -327,6 +351,15 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Update user visibility configurations' })
+	@ApiUnauthorizedResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+	})
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -350,6 +383,12 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: 'Delete user by id' })
+	@ApiUnauthorizedResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string')
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id')

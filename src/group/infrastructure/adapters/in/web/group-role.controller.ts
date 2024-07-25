@@ -62,15 +62,6 @@ import { UpdateGroupRoleRequest } from './requests/update-group-role.request';
 @ApiUnauthorizedResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
-@ApiUnprocessableEntityResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiConflictResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiNotFoundResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
@@ -133,6 +124,9 @@ export class GroupRoleController {
 	}
 
 	@ApiOperation({ summary: 'Get group role by id' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new GetGroupRoleDto(
@@ -168,6 +162,15 @@ export class GroupRoleController {
 	}
 
 	@ApiOperation({ summary: 'Create group role' })
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiConflictResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new CreateGroupRoleDto(
@@ -203,6 +206,15 @@ export class GroupRoleController {
 	}
 
 	@ApiOperation({ summary: 'Update group role' })
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiConflictResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -228,6 +240,9 @@ export class GroupRoleController {
 	}
 
 	@ApiOperation({ summary: 'Delete group role' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id/roles/:role_id')

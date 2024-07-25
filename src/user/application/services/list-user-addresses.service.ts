@@ -12,18 +12,12 @@ import {
 	UserAddressRepository,
 	UserAddressRepositoryProvider,
 } from '../ports/out/user-address.repository';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from '../ports/out/user.repository';
 
 @Injectable()
 export class ListUserAddressesService implements ListUserAddressesUseCase {
 	constructor(
 		@Inject(UserAddressRepositoryProvider)
 		protected userAddressRepository: UserAddressRepository,
-		@Inject(UserRepositoryProvider)
-		protected userRepository: UserRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 	) {}

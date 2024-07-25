@@ -17,14 +17,13 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiConflictResponse,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -65,15 +64,6 @@ import { UpdateGroupRequest } from './requests/update-group.request';
 
 @ApiTags('Groups')
 @ApiUnauthorizedResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiUnprocessableEntityResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiConflictResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiNotFoundResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
 @ApiInternalServerErrorResponse({
@@ -153,6 +143,9 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Find group by id' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new GetGroupDto(
@@ -201,6 +194,9 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Create group' })
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new CreateGroupDto(
@@ -237,6 +233,12 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Update group' })
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -257,6 +259,12 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Update group visibility' })
+	@ApiUnprocessableEntityResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -280,6 +288,9 @@ export class GroupController {
 	}
 
 	@ApiOperation({ summary: 'Delete group' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':id')

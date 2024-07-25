@@ -22,7 +22,7 @@ import {
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
-	ApiUnauthorizedResponse,
+	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -62,12 +62,6 @@ import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
 
 @ApiTags('Followers')
 @ApiUnauthorizedResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiConflictResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
-})
-@ApiNotFoundResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
 @ApiInternalServerErrorResponse({
@@ -224,6 +218,12 @@ export class FollowController {
 	}
 
 	@ApiOperation({ summary: 'Follow user' })
+	@ApiConflictResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: new FollowDto('uuid', 'uuid', 'uuid', new Date(), new Date()),
@@ -247,6 +247,12 @@ export class FollowController {
 	}
 
 	@ApiOperation({ summary: 'Unfollow user' })
+	@ApiConflictResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Delete(':from_id/unfollow/:to_id')
@@ -269,6 +275,12 @@ export class FollowController {
 	}
 
 	@ApiOperation({ summary: 'Accept follow request' })
+	@ApiConflictResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Put('requests/:follow_request_id/accept')
@@ -288,6 +300,12 @@ export class FollowController {
 	}
 
 	@ApiOperation({ summary: 'Refuse follow request' })
+	@ApiConflictResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@Put('requests/:follow_request_id/refuse')
