@@ -1,49 +1,57 @@
-import { TestBed } from "@automock/jest";
-import { Pagination } from "src/common/common.repository";
-import { ListGroupMembersCommand } from "../../ports/in/commands/list-group-members.command";
-import { GetGroupMemberDto } from "../../ports/out/dto/get-group-member.dto";
-import { GroupMemberRepository, GroupMemberRepositoryProvider } from "../../ports/out/group-member.repository";
-import { GroupRepository, GroupRepositoryProvider } from "../../ports/out/group.repository";
-import { ListGroupMembersService } from "../list-group-members.service";
-import { mockGroup, mockGroupMember } from "./group-mock.helper";
+import { TestBed } from '@automock/jest';
+import { Pagination } from 'src/common/common.repository';
+import { ListGroupMembersCommand } from '../../ports/in/commands/list-group-members.command';
+import { GetGroupMemberDto } from '../../ports/out/dto/get-group-member.dto';
+import {
+	GroupMemberRepository,
+	GroupMemberRepositoryProvider,
+} from '../../ports/out/group-member.repository';
+import {
+	GroupRepository,
+	GroupRepositoryProvider,
+} from '../../ports/out/group.repository';
+import { ListGroupMembersService } from '../list-group-members.service';
+import { mockGroup, mockGroupMember } from './group-mock.helper';
 
-describe("ListGroupMembersService", () => {
-    let service: ListGroupMembersService;
-    let groupRepository: jest.Mocked<GroupRepository>;
-    let groupMemberRepository: jest.Mocked<GroupMemberRepository>;
+describe('ListGroupMembersService', () => {
+	let service: ListGroupMembersService;
+	let groupRepository: jest.Mocked<GroupRepository>;
+	let groupMemberRepository: jest.Mocked<GroupMemberRepository>;
 
-    beforeAll(() => {
-        const { unit, unitRef } = TestBed.create(ListGroupMembersService).compile();
+	beforeAll(() => {
+		const { unit, unitRef } = TestBed.create(
+			ListGroupMembersService,
+		).compile();
 
-        service = unit;
-        groupRepository = unitRef.get(GroupRepositoryProvider);
-        groupMemberRepository = unitRef.get(GroupMemberRepositoryProvider);
-    });
+		service = unit;
+		groupRepository = unitRef.get(GroupRepositoryProvider);
+		groupMemberRepository = unitRef.get(GroupMemberRepositoryProvider);
+	});
 
-    it("should be defined", () => {
-        expect(service).toBeDefined();
-    });
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+	});
 
-    it("should list group members", async () => {
-        const group = mockGroup();
+	it('should list group members', async () => {
+		const group = mockGroup();
 
-        const command = new ListGroupMembersCommand(group.id());
-     
-        groupRepository.findById.mockResolvedValue(group);
-        groupMemberRepository.paginate.mockResolvedValue(
-            new Pagination(
-                [mockGroupMember(), mockGroupMember(), mockGroupMember()],
-                3,
-                0
-            )
-        );
+		const command = new ListGroupMembersCommand(group.id());
 
-        const members = await service.execute(command);
+		groupRepository.findById.mockResolvedValue(group);
+		groupMemberRepository.paginate.mockResolvedValue(
+			new Pagination(
+				[mockGroupMember(), mockGroupMember(), mockGroupMember()],
+				3,
+				0,
+			),
+		);
 
-        expect(members).toBeInstanceOf(Pagination<GetGroupMemberDto>);
-        expect(members.items).toHaveLength(3);
-        expect(members.total).toBe(3);
-        expect(members.current_page).toBe(0);
-        expect(members.next_page).toBeFalsy();
-    });
+		const members = await service.execute(command);
+
+		expect(members).toBeInstanceOf(Pagination<GetGroupMemberDto>);
+		expect(members.items).toHaveLength(3);
+		expect(members.total).toBe(3);
+		expect(members.current_page).toBe(0);
+		expect(members.next_page).toBeFalsy();
+	});
 });

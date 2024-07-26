@@ -84,7 +84,13 @@ describe('ChangeMemberRoleService', () => {
 			'administrator',
 		);
 
-		authenticatedGroupMember.role().removePermission(authenticatedGroupMember.role().findPermission(GroupPermissionName.CHANGE_MEMBER_ROLE));
+		authenticatedGroupMember
+			.role()
+			.removePermission(
+				authenticatedGroupMember
+					.role()
+					.findPermission(GroupPermissionName.CHANGE_MEMBER_ROLE),
+			);
 
 		const groupMember = mockGroupMember(false, false, 'member');
 		const group = groupMember.group();
@@ -105,18 +111,24 @@ describe('ChangeMemberRoleService', () => {
 		]);
 		groupMemberRepository.findById.mockResolvedValue(groupMember);
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 
 	it('should not change member role if role does not exist', async () => {
-		const authenticatedGroupMember = mockGroupMember(true, true, 'administrator');
+		const authenticatedGroupMember = mockGroupMember(
+			true,
+			true,
+			'administrator',
+		);
 		const groupMember = mockGroupMember(false, true, 'member');
 		const group = groupMember.group();
 
 		const command = new ChangeMemberRoleCommand(
 			groupMember.id(),
 			group.id(),
-			randomUUID()
+			randomUUID(),
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(
@@ -129,17 +141,23 @@ describe('ChangeMemberRoleService', () => {
 		groupMemberRepository.findById.mockResolvedValue(groupMember);
 		groupRoleRepository.findById.mockResolvedValue(null);
 
-		await expect(service.execute(command)).rejects.toThrow(GroupRoleNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			GroupRoleNotFoundError,
+		);
 	});
 
 	it('should not change member role if member does not exist', async () => {
-		const authenticatedGroupMember = mockGroupMember(true, true, 'administrator');
+		const authenticatedGroupMember = mockGroupMember(
+			true,
+			true,
+			'administrator',
+		);
 		const group = authenticatedGroupMember.group();
 
 		const command = new ChangeMemberRoleCommand(
 			randomUUID(),
 			group.id(),
-			randomUUID()
+			randomUUID(),
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(
@@ -151,6 +169,8 @@ describe('ChangeMemberRoleService', () => {
 		]);
 		groupMemberRepository.findById.mockResolvedValue(null);
 
-		await expect(service.execute(command)).rejects.toThrow(GroupMemberNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			GroupMemberNotFoundError,
+		);
 	});
 });

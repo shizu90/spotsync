@@ -58,7 +58,10 @@ export class LeaveGroupService implements LeaveGroupUseCase {
 		let hasAdministratorGroupMember = false;
 
 		groupMembers.forEach((gm) => {
-			if ((gm.role().name() === 'administrator' || gm.isCreator()) && gm.id() !== groupMember.id())
+			if (
+				(gm.role().name() === 'administrator' || gm.isCreator()) &&
+				gm.id() !== groupMember.id()
+			)
 				hasAdministratorGroupMember = true;
 		});
 

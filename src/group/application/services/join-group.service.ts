@@ -47,7 +47,7 @@ export class JoinGroupService implements JoinGroupUseCase {
 		const group = await this.groupRepository.findById(command.id);
 
 		const memberRole = await this.groupRoleRepository.findByName(
-			DefaultGroupRole.MEMBER
+			DefaultGroupRole.MEMBER,
 		);
 
 		const groupMember = group.joinGroup(
@@ -67,7 +67,7 @@ export class JoinGroupService implements JoinGroupUseCase {
 			let alreadyMember = (
 				await this.groupMemberRepository.findBy({
 					groupId: group.id(),
-					userId: authenticatedUser.id()
+					userId: authenticatedUser.id(),
 				})
 			).at(0);
 
@@ -80,13 +80,8 @@ export class JoinGroupService implements JoinGroupUseCase {
 				);
 			}
 
-			if(
-				alreadyMember !== null &&
-				alreadyMember !== undefined
-			) {
-				throw new AlreadyMemberOfGroup(
-					`Already member of the group`
-				);
+			if (alreadyMember !== null && alreadyMember !== undefined) {
+				throw new AlreadyMemberOfGroup(`Already member of the group`);
 			}
 
 			this.groupMemberRepository.storeRequest(groupMember);

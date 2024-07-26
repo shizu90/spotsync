@@ -54,7 +54,11 @@ describe('AcceptGroupRequestService', () => {
 	it('should accept group request', async () => {
 		const groupMemberRequest = mockGroupMemberRequest();
 		const group = groupMemberRequest.group();
-		const authenticatedGroupMember = mockGroupMember(true, false, 'administrator');
+		const authenticatedGroupMember = mockGroupMember(
+			true,
+			false,
+			'administrator',
+		);
 		const groupRole = mockGroupRole();
 
 		const command = new AcceptGroupRequestCommand(
@@ -62,10 +66,16 @@ describe('AcceptGroupRequestService', () => {
 			group.id(),
 		);
 
-		getAuthenticatedUser.execute.mockResolvedValue(authenticatedGroupMember.user());
+		getAuthenticatedUser.execute.mockResolvedValue(
+			authenticatedGroupMember.user(),
+		);
 		groupRepository.findById.mockResolvedValue(group);
-		groupMemberRepository.findBy.mockResolvedValue([authenticatedGroupMember]);
-		groupMemberRepository.findRequestById.mockResolvedValue(groupMemberRequest);
+		groupMemberRepository.findBy.mockResolvedValue([
+			authenticatedGroupMember,
+		]);
+		groupMemberRepository.findRequestById.mockResolvedValue(
+			groupMemberRequest,
+		);
 		groupRoleRepository.findByName.mockResolvedValue(groupRole);
 
 		const member = await service.execute(command);
@@ -77,36 +87,59 @@ describe('AcceptGroupRequestService', () => {
 	it('should not accept group request if user is not authorized', async () => {
 		const groupMemberRequest = mockGroupMemberRequest();
 		const group = groupMemberRequest.group();
-		const authenticatedGroupMember = mockGroupMember(false, false, 'administrator');
-		
-		authenticatedGroupMember.role().removePermission(authenticatedGroupMember.role().findPermission(GroupPermissionName.ACCEPT_REQUESTS));
+		const authenticatedGroupMember = mockGroupMember(
+			false,
+			false,
+			'administrator',
+		);
+
+		authenticatedGroupMember
+			.role()
+			.removePermission(
+				authenticatedGroupMember
+					.role()
+					.findPermission(GroupPermissionName.ACCEPT_REQUESTS),
+			);
 
 		const command = new AcceptGroupRequestCommand(
 			groupMemberRequest.id(),
-			group.id()
+			group.id(),
 		);
 
-		getAuthenticatedUser.execute.mockResolvedValue(authenticatedGroupMember.user());
+		getAuthenticatedUser.execute.mockResolvedValue(
+			authenticatedGroupMember.user(),
+		);
 		groupRepository.findById.mockResolvedValue(group);
-		groupMemberRepository.findBy.mockResolvedValue([authenticatedGroupMember]);
+		groupMemberRepository.findBy.mockResolvedValue([
+			authenticatedGroupMember,
+		]);
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 
 	it('should not accept group request if it does not exist', async () => {
-		const authenticatedGroupMember = mockGroupMember(true, true, 'administrator');
+		const authenticatedGroupMember = mockGroupMember(
+			true,
+			true,
+			'administrator',
+		);
 		const group = authenticatedGroupMember.group();
 
-		const command = new AcceptGroupRequestCommand(
-			randomUUID(),
-			group.id()
-		);
+		const command = new AcceptGroupRequestCommand(randomUUID(), group.id());
 
-		getAuthenticatedUser.execute.mockResolvedValue(authenticatedGroupMember.user());
+		getAuthenticatedUser.execute.mockResolvedValue(
+			authenticatedGroupMember.user(),
+		);
 		groupRepository.findById.mockResolvedValue(group);
-		groupMemberRepository.findBy.mockResolvedValue([authenticatedGroupMember]);
+		groupMemberRepository.findBy.mockResolvedValue([
+			authenticatedGroupMember,
+		]);
 		groupMemberRepository.findRequestById.mockResolvedValue(null);
 
-		await expect(service.execute(command)).rejects.toThrow(GroupRequestNotFoundError);
+		await expect(service.execute(command)).rejects.toThrow(
+			GroupRequestNotFoundError,
+		);
 	});
 });

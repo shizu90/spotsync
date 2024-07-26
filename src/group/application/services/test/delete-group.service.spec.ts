@@ -51,7 +51,13 @@ describe('DeleteGroupService', () => {
 	it('should not delete group if user is not authorized', async () => {
 		const groupMember = mockGroupMember(false, false, 'adminitrator');
 
-		groupMember.role().removePermission(groupMember.role().findPermission(GroupPermissionName.DELETE_GROUP));
+		groupMember
+			.role()
+			.removePermission(
+				groupMember
+					.role()
+					.findPermission(GroupPermissionName.DELETE_GROUP),
+			);
 
 		const command = new DeleteGroupCommand(groupMember.group().id());
 
@@ -59,6 +65,8 @@ describe('DeleteGroupService', () => {
 		groupRepository.findById.mockResolvedValue(groupMember.group());
 		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 });

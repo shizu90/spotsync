@@ -69,19 +69,27 @@ describe('CreateGroupRoleService', () => {
 	it('should not create group role if user is not authorized', async () => {
 		const groupMember = mockGroupMember(false, false, 'adminitrator');
 
-		groupMember.role().removePermission(groupMember.role().findPermission(GroupPermissionName.CREATE_ROLE));
+		groupMember
+			.role()
+			.removePermission(
+				groupMember
+					.role()
+					.findPermission(GroupPermissionName.CREATE_ROLE),
+			);
 
 		const command = new CreateGroupRoleCommand(
 			groupMember.group().id(),
 			'New Role',
 			'#000000',
-			[]
+			[],
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());
 		groupRepository.findById.mockResolvedValue(groupMember.group());
 		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
 
-		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+		await expect(service.execute(command)).rejects.toThrow(
+			UnauthorizedAccessError,
+		);
 	});
 });
