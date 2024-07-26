@@ -64,12 +64,28 @@ export class JoinGroupService implements JoinGroupUseCase {
 				})
 			).at(0);
 
+			let alreadyMember = (
+				await this.groupMemberRepository.findBy({
+					groupId: group.id(),
+					userId: authenticatedUser.id()
+				})
+			).at(0);
+
 			if (
 				groupMemberRequest !== null &&
 				groupMemberRequest !== undefined
 			) {
 				throw new AlreadyRequestedToJoinError(
 					`Already requested to join group`,
+				);
+			}
+
+			if(
+				alreadyMember !== null &&
+				alreadyMember !== undefined
+			) {
+				throw new AlreadyMemberOfGroup(
+					`Already member of the group`
 				);
 			}
 
@@ -82,10 +98,10 @@ export class JoinGroupService implements JoinGroupUseCase {
 			this.groupRepository.storeLog(log);
 
 			return new JoinGroupDto(
-				groupMemberRequest.id(),
+				groupMember.id(),
 				group.id(),
 				authenticatedUser.id(),
-				groupMemberRequest.requestedOn(),
+				groupMember.requestedOn(),
 			);
 		} else {
 			let groupMember = (

@@ -1,4 +1,5 @@
 import { TestBed } from '@automock/jest';
+import { randomUUID } from 'crypto';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
@@ -19,6 +20,8 @@ import {
 	GroupRepositoryProvider,
 } from '../../ports/out/group.repository';
 import { ChangeMemberRoleService } from '../change-member-role.service';
+import { GroupMemberNotFoundError } from '../errors/group-member-not-found.error';
+import { GroupRoleNotFoundError } from '../errors/group-role-not-found.error';
 import { mockGroupMember, mockGroupRole } from './group-mock.helper';
 
 describe('ChangeMemberRoleService', () => {
@@ -103,5 +106,51 @@ describe('ChangeMemberRoleService', () => {
 		groupMemberRepository.findById.mockResolvedValue(groupMember);
 
 		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+	});
+
+	it('should not change member role if role does not exist', async () => {
+		const authenticatedGroupMember = mockGroupMember(true, true, 'administrator');
+		const groupMember = mockGroupMember(false, true, 'member');
+		const group = groupMember.group();
+
+		const command = new ChangeMemberRoleCommand(
+			groupMember.id(),
+			group.id(),
+			randomUUID()
+		);
+
+		getAuthenticatedUser.execute.mockResolvedValue(
+			authenticatedGroupMember.user(),
+		);
+		groupRepository.findById.mockResolvedValue(group);
+		groupMemberRepository.findBy.mockResolvedValue([
+			authenticatedGroupMember,
+		]);
+		groupMemberRepository.findById.mockResolvedValue(groupMember);
+		groupRoleRepository.findById.mockResolvedValue(null);
+
+		await expect(service.execute(command)).rejects.toThrow(GroupRoleNotFoundError);
+	});
+
+	it('should not change member role if member does not exist', async () => {
+		const authenticatedGroupMember = mockGroupMember(true, true, 'administrator');
+		const group = authenticatedGroupMember.group();
+
+		const command = new ChangeMemberRoleCommand(
+			randomUUID(),
+			group.id(),
+			randomUUID()
+		);
+
+		getAuthenticatedUser.execute.mockResolvedValue(
+			authenticatedGroupMember.user(),
+		);
+		groupRepository.findById.mockResolvedValue(group);
+		groupMemberRepository.findBy.mockResolvedValue([
+			authenticatedGroupMember,
+		]);
+		groupMemberRepository.findById.mockResolvedValue(null);
+
+		await expect(service.execute(command)).rejects.toThrow(GroupMemberNotFoundError);
 	});
 });

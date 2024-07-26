@@ -1,4 +1,5 @@
 import { TestBed } from '@automock/jest';
+import { randomUUID } from 'crypto';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
@@ -20,6 +21,7 @@ import {
 	GroupRepositoryProvider,
 } from '../../ports/out/group.repository';
 import { AcceptGroupRequestService } from '../accept-group-request.service';
+import { GroupRequestNotFoundError } from '../errors/group-request-not-found.error';
 import {
 	mockGroupMember,
 	mockGroupMemberRequest,
@@ -89,5 +91,22 @@ describe('AcceptGroupRequestService', () => {
 		groupMemberRepository.findBy.mockResolvedValue([authenticatedGroupMember]);
 
 		await expect(service.execute(command)).rejects.toThrow(UnauthorizedAccessError);
+	});
+
+	it('should not accept group request if it does not exist', async () => {
+		const authenticatedGroupMember = mockGroupMember(true, true, 'administrator');
+		const group = authenticatedGroupMember.group();
+
+		const command = new AcceptGroupRequestCommand(
+			randomUUID(),
+			group.id()
+		);
+
+		getAuthenticatedUser.execute.mockResolvedValue(authenticatedGroupMember.user());
+		groupRepository.findById.mockResolvedValue(group);
+		groupMemberRepository.findBy.mockResolvedValue([authenticatedGroupMember]);
+		groupMemberRepository.findRequestById.mockResolvedValue(null);
+
+		await expect(service.execute(command)).rejects.toThrow(GroupRequestNotFoundError);
 	});
 });
