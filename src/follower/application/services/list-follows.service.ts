@@ -3,6 +3,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/common.repository';
 import {
 	UserRepository,
@@ -59,7 +60,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
-				return new Pagination([], 0, 0);
+				throw new UnauthorizedAccessError(`Unauthorized access`);
 			}
 
 			if (
@@ -68,7 +69,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 				authenticatedUser.id() !== user.id() &&
 				!isFollowingUser
 			) {
-				return new Pagination([], 0, 0);
+				throw new UnauthorizedAccessError(`Unauthorized access`);
 			}
 		}
 
@@ -94,7 +95,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
-				return new Pagination([], 0, 0);
+				throw new UnauthorizedAccessError(`Unauthorized access`);
 			}
 
 			if (
@@ -103,7 +104,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 				authenticatedUser.id() !== user.id() &&
 				!isFollowingUser
 			) {
-				return new Pagination([], 0, 0);
+				throw new UnauthorizedAccessError(`Unauthorized access`);
 			}
 		}
 

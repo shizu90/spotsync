@@ -1,10 +1,10 @@
+import { randomUUID } from 'crypto';
 import { Model } from 'src/common/common.model';
 import { Group } from 'src/group/domain/group.model';
 import { User } from 'src/user/domain/user.model';
-import { PostVisibility } from './post-visibility.enum';
 import { PostAttachment } from './post-attachment.model';
 import { PostThread } from './post-thread.model';
-import { randomUUID } from 'crypto';
+import { PostVisibility } from './post-visibility.enum';
 
 export class Post extends Model {
 	private _id: string;
@@ -17,6 +17,7 @@ export class Post extends Model {
 	private _attachments: PostAttachment[];
 	private _group: Group;
 	private _parent: Post;
+	private _childrens: Post[];
 	private _createdAt: Date;
 	private _updatedAt: Date;
 
@@ -28,6 +29,7 @@ export class Post extends Model {
 		creator: User,
 		attachments?: PostAttachment[],
 		parent?: Post,
+		childrens?: Post[],
 		group?: Group,
 		thread?: PostThread,
 		depthLevel?: number,
@@ -43,11 +45,12 @@ export class Post extends Model {
 		this._attachments = attachments ?? [];
 		this._thread = thread
 			? thread
-			: parent
-				? parent.thread()
-				: PostThread.create(randomUUID(), 0);
+			: parent 
+			? parent.thread() 
+			: PostThread.create(randomUUID(), 0);
 		this._depthLevel = parent ? parent.depthLevel() + 1 : depthLevel ?? 0;
-		this._parent = parent ?? null;
+		this._parent = parent;
+		this._childrens = childrens ?? [];		
 		this._group = group ?? null;
 		this._createdAt = createdAt ?? null;
 		this._updatedAt = updatedAt ?? null;
@@ -65,6 +68,7 @@ export class Post extends Model {
 		creator: User,
 		attachment?: PostAttachment[],
 		parent?: Post,
+		childrens?: Post[],
 		group?: Group,
 		thread?: PostThread,
 		depthLevel?: number,
@@ -79,6 +83,7 @@ export class Post extends Model {
 			creator,
 			attachment,
 			parent,
+			childrens,
 			group,
 			thread,
 			depthLevel,
@@ -111,8 +116,14 @@ export class Post extends Model {
 		return this._group;
 	}
 
-	public parent(): Post {
+	public parent(): Post 
+	{
 		return this._parent;
+	}
+
+	public childrens(): Post[] 
+	{
+		return this._childrens;
 	}
 
 	public attachments(): PostAttachment[] {

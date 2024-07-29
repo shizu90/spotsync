@@ -43,18 +43,6 @@ export class CreatePostService implements CreatePostUseCase {
 	public async execute(command: CreatePostCommand): Promise<CreatePostDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
-		let parent: Post = null;
-
-		if (command.parentId !== null && command.parentId !== undefined) {
-			const post = await this.postRepository.findById(command.parentId);
-
-			if (post === null || post === undefined) {
-				throw new PostNotFoundError(`Parent post not found`);
-			}
-
-			parent = post;
-		}
-
 		let visibility = command.visibility;
 
 		if (visibility === null || visibility === undefined) {
@@ -99,7 +87,20 @@ export class CreatePostService implements CreatePostUseCase {
 			}
 		}
 
-		const post = Post.create(
+		let parent: Post = null;
+
+		if (command.parentId !== null && command.parentId !== undefined) {
+			const post = await this.postRepository.findById(command.parentId);
+
+			if (post === null || post === undefined) {
+				throw new PostNotFoundError(`Parent post not found`);
+			}
+
+			parent = post;
+			visibility = parent.visibility();
+		}
+
+		const newPost = Post.create(
 			randomUUID(),
 			command.title,
 			command.content,
@@ -107,25 +108,28 @@ export class CreatePostService implements CreatePostUseCase {
 			authenticatedUser,
 			[],
 			parent,
+			[],
 			group,
 		);
 
-		if (post.thread().maxDepthLevel() === 0) {
-			await this.postThreadRepository.store(post.thread());
+		if (newPost.thread().maxDepthLevel() === 0) {
+			await this.postThreadRepository.store(newPost.thread());
 		}
-		this.postRepository.store(post);
+
+
+		this.postRepository.store(newPost);
 
 		return new CreatePostDto(
-			post.id(),
-			post.title(),
-			post.content(),
-			post.visibility(),
+			newPost.id(),
+			newPost.title(),
+			newPost.content(),
+			newPost.visibility(),
 			[],
-			post.thread().id(),
-			post.depthLevel(),
-			post.parent() ? post.parent().id() : null,
-			post.creator().id(),
-			post.group() ? post.group().id() : null,
+			newPost.thread().id(),
+			newPost.depthLevel(),
+			parent ? parent.id() : null,
+			newPost.creator().id(),
+			newPost.group() ? newPost.group().id() : null,
 		);
 	}
 }

@@ -39,38 +39,40 @@ describe('CreatePostService', () => {
 
 	it('should create a post', async () => {
 		const post = mockPost();
+		const parent = mockPost();
 
 		const command = new CreatePostCommand(
 			'Test Post',
 			'Test Content',
 			PostVisibility.PUBLIC,
-			post.parent().id(),
+			parent.id(),
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(post.creator());
-		postRepository.findById.mockResolvedValue(post.parent());
+		postRepository.findById.mockResolvedValue(parent);
 
 		const response = await service.execute(command);
 
 		expect(response.depth_level).toBe(1);
 		expect(response.title).toBe(command.title);
-		expect(response.parent_id).toBe(post.parent().id());
-		expect(response.thread_id).toBe(post.parent().thread().id());
+		expect(response.parent_id).toBe(parent.id());
+		expect(response.thread_id).toBe(parent.thread().id());
 	});
 
 	it('should not create a post if group does not exist', async () => {
 		const post = mockPost();
+		const parent = mockPost();
 
 		const command = new CreatePostCommand(
 			'Test Post',
 			'Test Content',
 			PostVisibility.PUBLIC,
-			post.parent().id(),
+			parent.id(),
 			randomUUID(),
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(post.creator());
-		postRepository.findById.mockResolvedValue(post.parent());
+		postRepository.findById.mockResolvedValue(parent);
 		groupRepository.findById.mockResolvedValue(null);
 
 		await expect(service.execute(command)).rejects.toThrow(

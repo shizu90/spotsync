@@ -1,17 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { Pagination } from 'src/common/common.repository';
+import { ListGroupMembersCommand } from '../ports/in/commands/list-group-members.command';
 import { ListGroupMembersUseCase } from '../ports/in/use-cases/list-group-members.use-case';
+import { GetGroupMemberDto } from '../ports/out/dto/get-group-member.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
-import { ListGroupMembersCommand } from '../ports/in/commands/list-group-members.command';
-import { GetGroupMemberDto } from '../ports/out/dto/get-group-member.dto';
 import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
-import { Pagination } from 'src/common/common.repository';
 
 @Injectable()
 export class ListGroupMembersService implements ListGroupMembersUseCase {
@@ -32,7 +33,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 		}
 
 		if (group.visibilityConfiguration().groupVisibility() === 'PRIVATE') {
-			return new Pagination([], 0, 0);
+			throw new UnauthorizedAccessError(`Unauthorized access`);
 		} else {
 			const pagination = await this.groupMemberRepository.paginate({
 				filters: {
