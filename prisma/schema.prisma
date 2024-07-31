@@ -229,7 +229,7 @@ model PostAttachment {
     id                              String                      @id @default(uuid())
     file_path                       String
     file_type                       String
-    post_id                         String
+    post_id                         String                      
     post                            Post                        @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
     @@map("post_attachments")
