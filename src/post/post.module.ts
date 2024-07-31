@@ -10,9 +10,16 @@ import { PostController } from './infrastructure/adapters/in/web/post.controller
 import { Providers } from './post.provider';
 
 @Module({
-	imports: [PrismaModule, UserModule, GroupModule, FollowerModule, LikeModule, AuthModule],
+	imports: [
+		PrismaModule,
+		UserModule,
+		GroupModule,
+		FollowerModule,
+		LikeModule,
+		AuthModule,
+	],
 	providers: [...Providers],
 	exports: [...Providers],
-	controllers: [PostController, PostThreadController]
+	controllers: [PostController, PostThreadController],
 })
 export class PostModule {}

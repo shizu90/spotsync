@@ -1,30 +1,34 @@
-import { ArgumentsHost, BadRequestException, ExceptionFilter, HttpException, HttpStatus } from "@nestjs/common";
+import {
+	ArgumentsHost,
+	BadRequestException,
+	ExceptionFilter,
+	HttpException,
+	HttpStatus,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ErrorResponse } from "src/common/web/common-error.response";
+import { ErrorResponse } from 'src/common/web/common-error.response';
 
-export class PostErrorHandler implements ExceptionFilter 
-{
-    public catch(error: Error | HttpException, host: ArgumentsHost) 
-    {
-        const ctx = host.switchToHttp();
+export class PostErrorHandler implements ExceptionFilter {
+	public catch(error: Error | HttpException, host: ArgumentsHost) {
+		const ctx = host.switchToHttp();
 		const response = ctx.getResponse<Response>();
 		const request = ctx.getRequest<Request>();
 
 		switch (error.constructor.name) {
-            case 'UserNotFoundError':
-            case 'GroupNotFoundError':
-            case 'PostNotFoundError':
-                response
-                    .status(HttpStatus.NOT_FOUND)
-                    .json(
-                        new ErrorResponse(
-                            request.url,
-                            new Date().toISOString(),
-                            error.message,
-                        )
-                    )
+			case 'UserNotFoundError':
+			case 'GroupNotFoundError':
+			case 'PostNotFoundError':
+				response
+					.status(HttpStatus.NOT_FOUND)
+					.json(
+						new ErrorResponse(
+							request.url,
+							new Date().toISOString(),
+							error.message,
+						),
+					);
 
-                break;
+				break;
 			case 'UnauthenticatedError':
 				response
 					.status(HttpStatus.UNAUTHORIZED)
@@ -62,7 +66,7 @@ export class PostErrorHandler implements ExceptionFilter
 						);
 				} else {
 					response
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.status(HttpStatus.INTERNAL_SERVER_ERROR)
 						.json(
 							new ErrorResponse(
 								request.url,
@@ -72,6 +76,6 @@ export class PostErrorHandler implements ExceptionFilter
 						);
 				}
 				break;
-        }
-    }
+		}
+	}
 }

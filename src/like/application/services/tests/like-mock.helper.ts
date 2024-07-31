@@ -1,13 +1,13 @@
-import { randomUUID } from "crypto";
-import { LikableSubject } from "src/like/domain/likable-subject.enum";
-import { Like } from "src/like/domain/like.model";
-import { UserCredentials } from "src/user/domain/user-credentials.model";
-import { UserVisibilityConfig } from "src/user/domain/user-visibility-config.model";
-import { UserVisibility } from "src/user/domain/user-visibility.enum";
-import { User } from "src/user/domain/user.model";
+import { randomUUID } from 'crypto';
+import { LikableSubject } from 'src/like/domain/likable-subject.enum';
+import { Like } from 'src/like/domain/like.model';
+import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { User } from 'src/user/domain/user.model';
 
 export const mockUser = (): User => {
-    const id = randomUUID();
+	const id = randomUUID();
 	return User.create(
 		id,
 		'User',
@@ -39,10 +39,10 @@ export const mockUser = (): User => {
 };
 
 export const mockLike = (): Like => {
-    return Like.create(
-        randomUUID(),
-        LikableSubject.POST,
-        randomUUID(),
-        mockUser(),
-    );
+	return Like.create(
+		randomUUID(),
+		LikableSubject.POST,
+		randomUUID(),
+		mockUser(),
+	);
 };

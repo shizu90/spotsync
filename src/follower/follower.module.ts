@@ -6,7 +6,11 @@ import { Providers } from './follower.provider';
 import { FollowController } from './infrastructure/adapters/in/web/follow.controller';
 
 @Module({
-	imports: [forwardRef(() => UserModule), PrismaModule, forwardRef(() => AuthModule)],
+	imports: [
+		forwardRef(() => UserModule),
+		PrismaModule,
+		forwardRef(() => AuthModule),
+	],
 	providers: [...Providers],
 	exports: [...Providers],
 	controllers: [FollowController],

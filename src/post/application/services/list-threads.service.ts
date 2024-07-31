@@ -19,7 +19,10 @@ import {
 } from 'src/group/application/ports/out/group.repository';
 import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
-import { LikeRepository, LikeRepositoryProvider } from 'src/like/application/ports/out/like.repository';
+import {
+	LikeRepository,
+	LikeRepositoryProvider,
+} from 'src/like/application/ports/out/like.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import {
@@ -52,7 +55,7 @@ export class ListThreadsService implements ListThreadsUseCase {
 		@Inject(FollowRepositoryProvider)
 		protected followRepository: FollowRepository,
 		@Inject(LikeRepositoryProvider)
-		protected likeRepository: LikeRepository
+		protected likeRepository: LikeRepository,
 	) {}
 
 	public async execute(
@@ -145,51 +148,58 @@ export class ListThreadsService implements ListThreadsUseCase {
 			limit: command.limit,
 		});
 
-		const items = await Promise.all(pagination.items.map(async (i) => {
-			const totalLikes = (await this.likeRepository.findBy({
-				subject: LikableSubject.POST,
-				subjectId: i.id()
-			})).length;
+		const items = await Promise.all(
+			pagination.items.map(async (i) => {
+				const totalLikes = (
+					await this.likeRepository.findBy({
+						subject: LikableSubject.POST,
+						subjectId: i.id(),
+					})
+				).length;
 
-			const liked = (await this.likeRepository.findBy({
-				subject: LikableSubject.POST,
-				subjectId: i.id(),
-				userId: authenticatedUser.id()
-			})).at(0) !== undefined;
+				const liked =
+					(
+						await this.likeRepository.findBy({
+							subject: LikableSubject.POST,
+							subjectId: i.id(),
+							userId: authenticatedUser.id(),
+						})
+					).at(0) !== undefined;
 
-			return new GetPostDto(
-				i.id(),
-				i.title(),
-				i.content(),
-				i.attachments().map((i) => {
-					return {
-						id: i.id(),
-						file_path: i.filePath(),
-						file_type: i.fileType(),
-					};
-				}),
-				{
-					id: i.creator().id(),
-					first_name: i.creator().firstName(),
-					last_name: i.creator().lastName(),
-					profile_picture: i.creator().profilePicture(),
-					banner_picture: i.creator().bannerPicture(),
-					profile_theme_color: i.creator().profileThemeColor(),
-					credentials: { name: i.creator().credentials().name() },
-				},
-				i.visibility(),
-				i.depthLevel(),
-				i.thread().id(),
-				i.createdAt(),
-				i.updatedAt(),
-				i.parent() ? i.parent().id() : null,
-				i.group() ? i.group().id() : null,
-				[],
-				i.childrens().length,
-				totalLikes,
-				liked
-			);
-		}));
+				return new GetPostDto(
+					i.id(),
+					i.title(),
+					i.content(),
+					i.attachments().map((i) => {
+						return {
+							id: i.id(),
+							file_path: i.filePath(),
+							file_type: i.fileType(),
+						};
+					}),
+					{
+						id: i.creator().id(),
+						first_name: i.creator().firstName(),
+						last_name: i.creator().lastName(),
+						profile_picture: i.creator().profilePicture(),
+						banner_picture: i.creator().bannerPicture(),
+						profile_theme_color: i.creator().profileThemeColor(),
+						credentials: { name: i.creator().credentials().name() },
+					},
+					i.visibility(),
+					i.depthLevel(),
+					i.thread().id(),
+					i.createdAt(),
+					i.updatedAt(),
+					i.parent() ? i.parent().id() : null,
+					i.group() ? i.group().id() : null,
+					[],
+					i.childrens().length,
+					totalLikes,
+					liked,
+				);
+			}),
+		);
 
 		return new Pagination(items, pagination.total, pagination.current_page);
 	}

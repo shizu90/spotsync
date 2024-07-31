@@ -1,7 +1,5 @@
-export class LikeNotFoundError extends Error 
-{
-    constructor(message: string) 
-    {
-        super(message);
-    }
+export class LikeNotFoundError extends Error {
+	constructor(message: string) {
+		super(message);
+	}
 }

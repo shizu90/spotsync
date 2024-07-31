@@ -12,7 +12,10 @@ import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from 'src/group/application/ports/out/group-member.repository';
-import { LikeRepository, LikeRepositoryProvider } from 'src/like/application/ports/out/like.repository';
+import {
+	LikeRepository,
+	LikeRepositoryProvider,
+} from 'src/like/application/ports/out/like.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import { Post } from 'src/post/domain/post.model';
@@ -37,7 +40,7 @@ export class GetPostService implements GetPostUseCase {
 		@Inject(FollowRepositoryProvider)
 		protected followRepository: FollowRepository,
 		@Inject(LikeRepositoryProvider)
-		protected likeRepository: LikeRepository
+		protected likeRepository: LikeRepository,
 	) {}
 
 	public async execute(command: GetPostCommand): Promise<GetPostDto> {
@@ -90,16 +93,21 @@ export class GetPostService implements GetPostUseCase {
 				break;
 		}
 
-		const totalLikes = (await this.likeRepository.findBy({
-			subject: LikableSubject.POST,
-			subjectId: post.id()
-		})).length;
+		const totalLikes = (
+			await this.likeRepository.findBy({
+				subject: LikableSubject.POST,
+				subjectId: post.id(),
+			})
+		).length;
 
-		const liked = (await this.likeRepository.findBy({
-			subject: LikableSubject.POST,
-			subjectId: post.id(),
-			userId: authenticatedUser.id()
-		})).at(0) !== undefined;
+		const liked =
+			(
+				await this.likeRepository.findBy({
+					subject: LikableSubject.POST,
+					subjectId: post.id(),
+					userId: authenticatedUser.id(),
+				})
+			).at(0) !== undefined;
 
 		const toGetPostDto = (post: Post) => {
 			return new GetPostDto(
@@ -146,7 +154,7 @@ export class GetPostService implements GetPostUseCase {
 						}),
 				post.childrens().length,
 				totalLikes,
-				liked
+				liked,
 			);
 		};
 
