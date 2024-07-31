@@ -11,6 +11,10 @@ import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from 'src/group/application/ports/out/group-member.repository';
+import {
+	LikeRepository,
+	LikeRepositoryProvider,
+} from 'src/like/application/ports/out/like.repository';
 import { GetPostCommand } from '../../ports/in/commands/get-post.command';
 import { GetPostDto } from '../../ports/out/dto/get-post.dto';
 import {
@@ -26,6 +30,7 @@ describe('GetPostService', () => {
 	let groupMemberRepository: jest.Mocked<GroupMemberRepository>;
 	let followRepository: jest.Mocked<FollowRepository>;
 	let getAuthenticatedUser: jest.Mocked<GetAuthenticatedUserUseCase>;
+	let likeRepository: jest.Mocked<LikeRepository>;
 
 	beforeAll(() => {
 		const { unit, unitRef } = TestBed.create(GetPostService).compile();
@@ -35,6 +40,7 @@ describe('GetPostService', () => {
 		groupMemberRepository = unitRef.get(GroupMemberRepositoryProvider);
 		followRepository = unitRef.get(FollowRepositoryProvider);
 		getAuthenticatedUser = unitRef.get(GetAuthenticatedUserUseCaseProvider);
+		likeRepository = unitRef.get(LikeRepositoryProvider);
 	});
 
 	it('should be defined', () => {
@@ -49,6 +55,9 @@ describe('GetPostService', () => {
 
 		getAuthenticatedUser.execute.mockResolvedValue(post.creator());
 		postRepository.findById.mockResolvedValue(post);
+		likeRepository.findBy
+			.mockResolvedValueOnce([])
+			.mockResolvedValueOnce([]);
 
 		const p = await service.execute(command);
 
