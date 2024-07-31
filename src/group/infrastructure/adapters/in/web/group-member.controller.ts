@@ -6,15 +6,15 @@ import {
 	HttpStatus,
 	Inject,
 	Param,
+	Patch,
 	Post,
-	Put,
 	Query,
 	Req,
 	Res,
 	UseFilters,
 	UseGuards,
 	UsePipes,
-	ValidationPipe,
+	ValidationPipe
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
@@ -279,7 +279,7 @@ export class GroupMemberController {
 	@ApiOperation({ summary: 'Change member role' })
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
-	@Put(':id/members/:member_id/change-role')
+	@Patch(':id/members/:member_id/change-role')
 	public async changeMemberRole(
 		@Param('id') groupId: string,
 		@Param('member_id') memberId: string,
@@ -326,7 +326,7 @@ export class GroupMemberController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@Put(':id/join-requests/:request_id/accept')
+	@Post(':id/join-requests/:request_id/accept')
 	public async acceptGroupRequest(
 		@Param('id') groupId: string,
 		@Param('request_id') requestId: string,
