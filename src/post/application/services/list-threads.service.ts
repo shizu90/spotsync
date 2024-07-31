@@ -19,6 +19,8 @@ import {
 } from 'src/group/application/ports/out/group.repository';
 import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
+import { LikeRepository, LikeRepositoryProvider } from 'src/like/application/ports/out/like.repository';
+import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import {
 	UserRepository,
@@ -49,6 +51,8 @@ export class ListThreadsService implements ListThreadsUseCase {
 		protected userRepository: UserRepository,
 		@Inject(FollowRepositoryProvider)
 		protected followRepository: FollowRepository,
+		@Inject(LikeRepositoryProvider)
+		protected likeRepository: LikeRepository
 	) {}
 
 	public async execute(
@@ -141,7 +145,18 @@ export class ListThreadsService implements ListThreadsUseCase {
 			limit: command.limit,
 		});
 
-		const items = pagination.items.map((i) => {
+		const items = await Promise.all(pagination.items.map(async (i) => {
+			const totalLikes = (await this.likeRepository.findBy({
+				subject: LikableSubject.POST,
+				subjectId: i.id()
+			})).length;
+
+			const liked = (await this.likeRepository.findBy({
+				subject: LikableSubject.POST,
+				subjectId: i.id(),
+				userId: authenticatedUser.id()
+			})).at(0) !== undefined;
+
 			return new GetPostDto(
 				i.id(),
 				i.title(),
@@ -171,8 +186,10 @@ export class ListThreadsService implements ListThreadsUseCase {
 				i.group() ? i.group().id() : null,
 				[],
 				i.childrens().length,
+				totalLikes,
+				liked
 			);
-		});
+		}));
 
 		return new Pagination(items, pagination.total, pagination.current_page);
 	}

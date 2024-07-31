@@ -28,6 +28,8 @@ export class GetPostDto extends Dto {
 		readonly group_id: string,
 		readonly children_posts: GetPostDto[],
 		readonly total_childrens: number,
+		readonly total_likes: number,
+		readonly liked: boolean,
 	) {
 		super();
 	}

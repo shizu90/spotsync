@@ -12,6 +12,8 @@ import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
 } from 'src/group/application/ports/out/group-member.repository';
+import { LikeRepository, LikeRepositoryProvider } from 'src/like/application/ports/out/like.repository';
+import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import { Post } from 'src/post/domain/post.model';
 import { GetPostCommand } from '../ports/in/commands/get-post.command';
@@ -21,6 +23,7 @@ import {
 	PostRepository,
 	PostRepositoryProvider,
 } from '../ports/out/post.repository';
+import { PostNotFoundError } from './errors/post-not-found.error';
 
 @Injectable()
 export class GetPostService implements GetPostUseCase {
@@ -33,12 +36,18 @@ export class GetPostService implements GetPostUseCase {
 		protected groupMemberRepository: GroupMemberRepository,
 		@Inject(FollowRepositoryProvider)
 		protected followRepository: FollowRepository,
+		@Inject(LikeRepositoryProvider)
+		protected likeRepository: LikeRepository
 	) {}
 
 	public async execute(command: GetPostCommand): Promise<GetPostDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const post = await this.postRepository.findById(command.id);
+
+		if (post === null || post === undefined) {
+			throw new PostNotFoundError(`Post not found`);
+		}
 
 		switch (post.visibility()) {
 			case PostVisibility.PRIVATE:
@@ -80,6 +89,17 @@ export class GetPostService implements GetPostUseCase {
 			default:
 				break;
 		}
+
+		const totalLikes = (await this.likeRepository.findBy({
+			subject: LikableSubject.POST,
+			subjectId: post.id()
+		})).length;
+
+		const liked = (await this.likeRepository.findBy({
+			subject: LikableSubject.POST,
+			subjectId: post.id(),
+			userId: authenticatedUser.id()
+		})).at(0) !== undefined;
 
 		const toGetPostDto = (post: Post) => {
 			return new GetPostDto(
@@ -125,6 +145,8 @@ export class GetPostService implements GetPostUseCase {
 							return toGetPostDto(p);
 						}),
 				post.childrens().length,
+				totalLikes,
+				liked
 			);
 		};
 
