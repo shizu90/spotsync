@@ -69,13 +69,13 @@ export const mockPost = (parent?: Post): Post => {
 						[],
 						null,
 						[],
-						null
-					)
+						null,
+					),
 				],
-				null
-			)
+				null,
+			),
 		],
-		null
+		null,
 	);
 };
 

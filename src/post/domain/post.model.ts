@@ -45,12 +45,12 @@ export class Post extends Model {
 		this._attachments = attachments ?? [];
 		this._thread = thread
 			? thread
-			: parent 
-			? parent.thread() 
-			: PostThread.create(randomUUID(), 0);
+			: parent
+				? parent.thread()
+				: PostThread.create(randomUUID(), 0);
 		this._depthLevel = parent ? parent.depthLevel() + 1 : depthLevel ?? 0;
 		this._parent = parent;
-		this._childrens = childrens ?? [];		
+		this._childrens = childrens ?? [];
 		this._group = group ?? null;
 		this._createdAt = createdAt ?? null;
 		this._updatedAt = updatedAt ?? null;
@@ -116,13 +116,11 @@ export class Post extends Model {
 		return this._group;
 	}
 
-	public parent(): Post 
-	{
+	public parent(): Post {
 		return this._parent;
 	}
 
-	public childrens(): Post[] 
-	{
+	public childrens(): Post[] {
 		return this._childrens;
 	}
 
