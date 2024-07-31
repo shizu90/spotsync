@@ -159,6 +159,10 @@ export class Post extends Model {
 		this._updatedAt = new Date();
 	}
 
+	public findAttachment(id: string): PostAttachment {
+		return this._attachments.find((a) => a.id() === id);
+	}
+
 	public addAttachment(attachment: PostAttachment): void {
 		this._attachments.push(attachment);
 		this._updatedAt = new Date();
@@ -169,7 +173,12 @@ export class Post extends Model {
 			(a) => a.id() === attachmentId,
 		);
 
-		this._attachments = this._attachments.splice(index, 1);
+		this._attachments.splice(index, 1);
+		this._updatedAt = new Date();
+	}
+
+	public removeAllAttachments(): void {
+		this._attachments = [];
 		this._updatedAt = new Date();
 	}
 }
