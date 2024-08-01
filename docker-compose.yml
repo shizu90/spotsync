@@ -29,7 +29,7 @@ services:
     image: 'postgres:latest'
     container_name: 'spotsync_db'
     ports:
-      - 5436:5432
+      - 5432:5432
     volumes:
       - ./.docker/postgres:/var/lib/postgresql/data/
     networks:

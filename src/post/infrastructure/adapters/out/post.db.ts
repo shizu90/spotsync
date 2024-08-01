@@ -343,13 +343,13 @@ export class PostRepositoryImpl implements PostRepository {
 				title: model.title(),
 				content: model.content(),
 				visibility: model.visibility(),
-				group_id: model.group().id(),
+				group_id: model.group() ? model.group().id() : null,
 				user_id: model.creator().id(),
 				created_at: model.createdAt(),
 				updated_at: model.updatedAt(),
 				thread_id: model.thread().id(),
 				depth_level: model.depthLevel(),
-				parent_id: model.parent().id(),
+				parent_id: model.parent() ? model.parent().id() : null,
 			},
 			include: {
 				creator: {
@@ -366,6 +366,7 @@ export class PostRepositoryImpl implements PostRepository {
 				parent_post: true,
 				children_posts: true,
 				attachments: true,
+				thread: true
 			},
 		});
 
