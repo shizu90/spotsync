@@ -6,7 +6,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ErrorResponse } from 'src/common/web/common.error';
 
 export class LikeErrorHandler implements ExceptionFilter {
 	public catch(error: Error | HttpException, host: ArgumentsHost) {

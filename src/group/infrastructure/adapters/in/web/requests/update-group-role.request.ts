@@ -9,8 +9,9 @@ import {
 	MinLength,
 	ValidateNested,
 } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class UpdateGroupRoleRequest {
+export class UpdateGroupRoleRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString({ message: 'Group role name is invalid.' })

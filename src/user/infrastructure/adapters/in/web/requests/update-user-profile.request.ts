@@ -4,11 +4,11 @@ import {
 	IsHexColor,
 	IsOptional,
 	IsString,
-	IsUrl,
 	MaxLength,
 } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class UpdateUserProfileRequest {
+export class UpdateUserProfileRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsString({ message: 'First name is invalid' })
 	@MaxLength(255, {

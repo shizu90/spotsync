@@ -8,8 +8,9 @@ import {
 	IsUUID,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class ListGroupMembersQueryRequest {
+export class ListGroupMembersQueryRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()

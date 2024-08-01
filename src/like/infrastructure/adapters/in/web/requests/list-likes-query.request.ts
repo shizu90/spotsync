@@ -8,9 +8,10 @@ import {
 	IsUUID,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
+import { ApiRequest } from 'src/common/web/common.request';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 
-export class ListLikesQueryRequest {
+export class ListLikesQueryRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsEnum(LikableSubject)

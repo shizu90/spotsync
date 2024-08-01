@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsString, MaxLength, MinLength } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class CreateUserAddressRequest {
+export class CreateUserAddressRequest extends ApiRequest {
 	@ApiProperty()
 	@IsString({ message: 'Address name is invalid' })
 	@MaxLength(255, {

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class UpdateGroupRequest {
+export class UpdateGroupRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString({ message: 'Group name is invalid.' })

@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 
-export class UpdateGroupVisibilityRequest {
+export class UpdateGroupVisibilityRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsEnum(GroupVisibility, {

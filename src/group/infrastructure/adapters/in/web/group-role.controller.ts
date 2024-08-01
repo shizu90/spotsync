@@ -18,6 +18,7 @@ import {
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
+	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -29,7 +30,8 @@ import {
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { Pagination } from 'src/common/common.repository';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ApiController } from 'src/common/web/common.controller';
+import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	CreateGroupRoleUseCase,
 	CreateGroupRoleUseCaseProvider,
@@ -65,9 +67,12 @@ import { UpdateGroupRoleRequest } from './requests/update-group-role.request';
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
+@ApiForbiddenResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
-export class GroupRoleController {
+export class GroupRoleController extends ApiController {
 	constructor(
 		@Inject(CreateGroupRoleUseCaseProvider)
 		protected createGroupRoleUseCase: CreateGroupRoleUseCase,
@@ -79,7 +84,9 @@ export class GroupRoleController {
 		protected listGroupRolesUseCase: ListGroupRolesUseCase,
 		@Inject(GetGroupRoleUseCaseProvider)
 		protected getGroupRoleUseCase: GetGroupRoleUseCase,
-	) {}
+	) {
+		super();
+	}
 
 	@ApiOperation({ summary: 'List group roles' })
 	@ApiOkResponse({

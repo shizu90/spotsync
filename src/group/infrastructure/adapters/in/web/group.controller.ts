@@ -17,6 +17,7 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -28,7 +29,8 @@ import {
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { Pagination } from 'src/common/common.repository';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ApiController } from 'src/common/web/common.controller';
+import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	CreateGroupUseCase,
 	CreateGroupUseCaseProvider,
@@ -69,9 +71,12 @@ import { UpdateGroupRequest } from './requests/update-group.request';
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
+@ApiForbiddenResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
-export class GroupController {
+export class GroupController extends ApiController {
 	constructor(
 		@Inject(CreateGroupUseCaseProvider)
 		protected createGroupUseCase: CreateGroupUseCase,
@@ -85,7 +90,9 @@ export class GroupController {
 		protected listGroupsUseCase: ListGroupsUseCase,
 		@Inject(GetGroupUseCaseProvider)
 		protected getGroupUseCase: GetGroupUseCase,
-	) {}
+	) {
+		super();
+	}
 
 	@ApiOperation({ summary: 'List groups' })
 	@ApiOkResponse({

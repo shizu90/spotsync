@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 
-export class UpdateUserVisibilityConfigRequest {
+export class UpdateUserVisibilityConfigRequest extends ApiRequest {
 	@ApiProperty({ required: false, enum: UserVisibility })
 	@IsEnum(UserVisibility, {
 		message:

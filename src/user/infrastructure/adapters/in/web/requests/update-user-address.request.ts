@@ -6,8 +6,9 @@ import {
 	MaxLength,
 	MinLength,
 } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class UpdateUserAddressRequest {
+export class UpdateUserAddressRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsString({ message: 'Address name is invalid' })
 	@MaxLength(255, {

@@ -27,7 +27,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	AddPostAttachmentUseCase,
 	AddPostAttachmentUseCaseProvider,

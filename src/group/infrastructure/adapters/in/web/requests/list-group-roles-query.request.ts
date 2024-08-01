@@ -7,8 +7,9 @@ import {
 	IsString,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class ListGroupRolesQueryRequest {
+export class ListGroupRolesQueryRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()

@@ -7,9 +7,10 @@ import {
 	IsString,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
+import { ApiRequest } from 'src/common/web/common.request';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 
-export class ListGroupsQueryRequest {
+export class ListGroupsQueryRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()

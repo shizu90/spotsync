@@ -6,9 +6,10 @@ import {
 	IsUUID,
 	MaxLength,
 } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 
-export class CreatePostRequest {
+export class CreatePostRequest extends ApiRequest {
 	@ApiProperty()
 	@IsString({ message: 'Post title is invalid.' })
 	@MaxLength(400, {

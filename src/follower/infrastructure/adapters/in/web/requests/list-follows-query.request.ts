@@ -8,8 +8,9 @@ import {
 	IsUUID,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class ListFollowsQueryRequest {
+export class ListFollowsQueryRequest extends ApiRequest {
 	@ApiProperty({
 		required: false,
 	})

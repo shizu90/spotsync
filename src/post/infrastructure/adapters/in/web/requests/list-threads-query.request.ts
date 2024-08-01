@@ -8,9 +8,10 @@ import {
 	IsUUID,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
+import { ApiRequest } from 'src/common/web/common.request';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 
-export class ListThreadsQueryRequest {
+export class ListThreadsQueryRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsEnum(PostVisibility)

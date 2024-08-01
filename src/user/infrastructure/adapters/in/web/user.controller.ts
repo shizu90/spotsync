@@ -18,6 +18,7 @@ import {
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
+	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -29,7 +30,8 @@ import {
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { Pagination } from 'src/common/common.repository';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ApiController } from 'src/common/web/common.controller';
+import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	CreateUserUseCase,
 	CreateUserUseCaseProvider,
@@ -82,7 +84,7 @@ import { UpdateUserVisibilityConfigRequest } from './requests/update-user-visibi
 })
 @Controller('users')
 @UseFilters(new UserErrorHandler())
-export class UserController {
+export class UserController extends ApiController {
 	constructor(
 		@Inject(GetUserProfileUseCaseProvider)
 		protected readonly getUserProfileUseCase: GetUserProfileUseCase,
@@ -102,10 +104,15 @@ export class UserController {
 		protected readonly uploadBannerPictureUseCase: UploadBannerPictureUseCase,
 		@Inject(DeleteUserUseCaseProvider)
 		protected readonly deleteUserUseCase: DeleteUserUseCase,
-	) {}
+	) {
+		super();
+	}
 
 	@ApiOperation({ summary: 'List users' })
 	@ApiUnauthorizedResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiForbiddenResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiOkResponse({
@@ -176,6 +183,9 @@ export class UserController {
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiForbiddenResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiOkResponse({
@@ -296,6 +306,9 @@ export class UserController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
+	@ApiForbiddenResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -326,6 +339,9 @@ export class UserController {
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiConflictResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiForbiddenResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiOkResponse({ example: { data: {} } })
@@ -360,6 +376,9 @@ export class UserController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
+	@ApiForbiddenResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -387,6 +406,9 @@ export class UserController {
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiForbiddenResponse({
 		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 	})
 	@ApiOkResponse({ example: { data: {} } })

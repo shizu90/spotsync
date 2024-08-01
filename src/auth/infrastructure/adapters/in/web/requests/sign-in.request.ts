@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class SignInRequest {
+export class SignInRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsEmail({}, { message: 'Email is invalid' })
 	@IsOptional()

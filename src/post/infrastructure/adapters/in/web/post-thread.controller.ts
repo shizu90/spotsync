@@ -20,7 +20,7 @@ import {
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { Pagination } from 'src/common/common.repository';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	ListThreadsUseCase,
 	ListThreadsUseCaseProvider,

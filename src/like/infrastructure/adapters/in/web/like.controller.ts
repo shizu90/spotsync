@@ -27,7 +27,8 @@ import {
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { Pagination } from 'src/common/common.repository';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ApiController } from 'src/common/web/common.controller';
+import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	LikeUseCase,
 	LikeUseCaseProvider,
@@ -57,7 +58,7 @@ import { ListLikesQueryRequest } from './requests/list-likes-query.request';
 @ApiTags('Likes')
 @Controller('likes')
 @UseFilters(new LikeErrorHandler())
-export class LikeController {
+export class LikeController extends ApiController {
 	constructor(
 		@Inject(LikeUseCaseProvider)
 		protected likeUseCase: LikeUseCase,
@@ -65,7 +66,9 @@ export class LikeController {
 		protected unlikeUseCase: UnlikeUseCase,
 		@Inject(ListLikesUseCaseProvider)
 		protected listLikesUseCase: ListLikesUseCase,
-	) {}
+	) {
+		super();
+	}
 
 	@ApiOperation({ summary: 'List likes of a subject' })
 	@ApiOkResponse({

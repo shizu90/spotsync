@@ -17,6 +17,7 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -28,7 +29,8 @@ import {
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { Pagination } from 'src/common/common.repository';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ApiController } from 'src/common/web/common.controller';
+import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	CreateUserAddressUseCase,
 	CreateUserAddressUseCaseProvider,
@@ -64,9 +66,12 @@ import { UpdateUserAddressRequest } from './requests/update-user-address.request
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
+@ApiForbiddenResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @Controller('users')
 @UseFilters(new UserErrorHandler())
-export class UserAddressController {
+export class UserAddressController extends ApiController {
 	constructor(
 		@Inject(GetUserAddressUseCaseProvider)
 		protected getUserAddressUseCase: GetUserAddressUseCase,
@@ -78,7 +83,9 @@ export class UserAddressController {
 		protected updateUserAddressUseCase: UpdateUserAddressUseCase,
 		@Inject(DeleteUserAddressUseCaseProvider)
 		protected deleteUserAddressUseCase: DeleteUserAddressUseCase,
-	) {}
+	) {
+		super();
+	}
 
 	@ApiOperation({ summary: 'List user addresses' })
 	@ApiOkResponse({

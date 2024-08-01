@@ -1,7 +1,6 @@
 import {
 	Body,
 	Controller,
-	Get,
 	HttpStatus,
 	Inject,
 	Post,
@@ -13,7 +12,17 @@ import {
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiForbiddenResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { Request, Response } from 'express';
+import {
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
+} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import {
 	SignInUseCase,
 	SignInUseCaseProvider,
@@ -22,20 +31,17 @@ import {
 	SignOutUseCase,
 	SignOutUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/sign-out.use-case';
-import { SignInRequest } from './requests/sign-in.request';
+import { ApiController } from 'src/common/web/common.controller';
+import { ErrorResponse } from 'src/common/web/common.error';
 import { AuthRequestMapper } from './auth-request.mapper';
 import { AuthErrorHandler } from './handlers/auth-error.handler';
 import { AuthGuard } from './handlers/auth.guard';
-import { Request, Response } from 'express';
-import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
-} from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { SignInRequest } from './requests/sign-in.request';
 
 @ApiTags('Auth')
 @UseFilters(new AuthErrorHandler())
 @Controller('auth')
-export class AuthController {
+export class AuthController extends ApiController {
 	public constructor(
 		@Inject(SignInUseCaseProvider)
 		protected signInUseCase: SignInUseCase,
@@ -43,7 +49,9 @@ export class AuthController {
 		protected signOutUseCase: SignOutUseCase,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUserUseCase: GetAuthenticatedUserUseCase,
-	) {}
+	) {
+		super();
+	}
 
 	@ApiOperation({ summary: 'Login' })
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -59,6 +67,12 @@ export class AuthController {
 	}
 
 	@ApiOperation({ summary: 'Logout' })
+	@ApiForbiddenResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
+	@ApiUnauthorizedResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@UseGuards(AuthGuard)
 	@Put('logout')
 	public async logout(@Req() req: Request, @Res() res: Response) {

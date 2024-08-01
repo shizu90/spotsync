@@ -18,6 +18,7 @@ import {
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
+	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -29,7 +30,8 @@ import {
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { Pagination } from 'src/common/common.repository';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ApiController } from 'src/common/web/common.controller';
+import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	AcceptGroupRequestUseCase,
 	AcceptGroupRequestUseCaseProvider,
@@ -81,9 +83,12 @@ import { ListGroupMembersQueryRequest } from './requests/list-group-members-quer
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
+@ApiForbiddenResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
-export class GroupMemberController {
+export class GroupMemberController extends ApiController {
 	constructor(
 		@Inject(ListGroupMembersUseCaseProvider)
 		protected listGroupMembersUseCase: ListGroupMembersUseCase,
@@ -101,7 +106,9 @@ export class GroupMemberController {
 		protected refuseGroupRequestUseCase: RefuseGroupRequestUseCase,
 		@Inject(RemoveGroupMemberUseCaseProvider)
 		protected removeGroupMemberUseCase: RemoveGroupMemberUseCase,
-	) {}
+	) {
+		super();
+	}
 
 	@ApiOperation({ summary: 'List group members' })
 	@ApiOkResponse({

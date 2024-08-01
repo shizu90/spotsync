@@ -6,8 +6,9 @@ import {
 	MaxLength,
 	MinLength,
 } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 
-export class UpdateUserCredentialsRequest {
+export class UpdateUserCredentialsRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsString({ message: 'User name is invalid.' })
 	@MinLength(3, { message: 'User name must have at least 3 characters.' })

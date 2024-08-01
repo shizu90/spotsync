@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+import { ApiRequest } from 'src/common/web/common.request';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 
-export class UpdatePostRequest {
+export class UpdatePostRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString({ message: 'Post title is invalid.' })

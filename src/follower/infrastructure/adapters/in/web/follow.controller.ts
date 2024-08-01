@@ -17,6 +17,7 @@ import {
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
+	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -27,7 +28,8 @@ import {
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { Pagination } from 'src/common/common.repository';
-import { ErrorResponse } from 'src/common/web/common-error.response';
+import { ApiController } from 'src/common/web/common.controller';
+import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	AcceptFollowRequestUseCase,
 	AcceptFollowRequestUseCaseProvider,
@@ -67,9 +69,12 @@ import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
 })
+@ApiForbiddenResponse({
+	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+})
 @Controller('followers')
 @UseFilters(new FollowErrorHandler())
-export class FollowController {
+export class FollowController extends ApiController {
 	public constructor(
 		@Inject(FollowUseCaseProvider)
 		protected followUseCase: FollowUseCase,
@@ -83,7 +88,9 @@ export class FollowController {
 		protected listFollowsUseCase: ListFollowsUseCase,
 		@Inject(ListFollowRequestsUseCaseProvider)
 		protected listFollowRequestsUseCase: ListFollowRequestsUseCase,
-	) {}
+	) {
+		super();
+	}
 
 	@ApiOperation({ summary: 'List follows' })
 	@ApiOkResponse({
