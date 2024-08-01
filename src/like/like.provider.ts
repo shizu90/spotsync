@@ -24,5 +24,5 @@ export const Providers: Provider[] = [
 	{
 		provide: ListLikesUseCaseProvider,
 		useClass: ListLikesService,
-	}
+	},
 ];

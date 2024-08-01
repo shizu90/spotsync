@@ -366,7 +366,7 @@ export class PostRepositoryImpl implements PostRepository {
 				parent_post: true,
 				children_posts: true,
 				attachments: true,
-				thread: true
+				thread: true,
 			},
 		});
 

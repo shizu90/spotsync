@@ -14,7 +14,7 @@ import {
 	UseFilters,
 	UseGuards,
 	UsePipes,
-	ValidationPipe
+	ValidationPipe,
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,

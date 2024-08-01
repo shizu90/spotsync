@@ -11,12 +11,10 @@ import { User } from 'src/user/domain/user.model';
 export class LikeRepositoryImpl implements LikeRepository {
 	constructor(
 		@Inject(PrismaService)
-		protected prismaService: PrismaService
-	) 
-	{}
+		protected prismaService: PrismaService,
+	) {}
 
-	private mapLikeToDomain(prisma_model: any): Like 
-	{
+	private mapLikeToDomain(prisma_model: any): Like {
 		if (prisma_model === null || prisma_model === undefined) return null;
 
 		return Like.create(
@@ -38,22 +36,26 @@ export class LikeRepositoryImpl implements LikeRepository {
 					prisma_model.user.credentials.email,
 					prisma_model.user.credentials.password,
 					prisma_model.user.credentials.phone_number,
-					prisma_model.user.credentials.last_login
+					prisma_model.user.credentials.last_login,
 				),
 				UserVisibilityConfig.create(
 					prisma_model.user.id,
-					prisma_model.user.visibility_configuration.profile_visibility,
-					prisma_model.user.visibility_configuration.address_visibility,
-					prisma_model.user.visibility_configuration.poi_folder_visibility,
-					prisma_model.user.visibility_configuration.visited_poi_visibility,
+					prisma_model.user.visibility_configuration
+						.profile_visibility,
+					prisma_model.user.visibility_configuration
+						.address_visibility,
+					prisma_model.user.visibility_configuration
+						.poi_folder_visibility,
+					prisma_model.user.visibility_configuration
+						.visited_poi_visibility,
 					prisma_model.user.visibility_configuration.post_visibility,
 				),
 				prisma_model.user.created_at,
 				prisma_model.user.updated_at,
-				prisma_model.user.is_deleted
+				prisma_model.user.is_deleted,
 			),
-			prisma_model.created_at
-		)
+			prisma_model.created_at,
+		);
 	}
 
 	public async paginate(
@@ -61,11 +63,11 @@ export class LikeRepositoryImpl implements LikeRepository {
 	): Promise<Pagination<Like>> {
 		let query = `SELECT id FROM likes`;
 
-		if(params.filters) {
+		if (params.filters) {
 			if (typeof params.filters['subject'] === 'string') {
 				if (query.includes('WHERE')) {
 					query = `${query} AND likable_subject = '${params.filters['subject']}'`;
-				}else {
+				} else {
 					query = `${query} WHERE likable_subject = '${params.filters['subject']}'`;
 				}
 			}
@@ -73,7 +75,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			if (typeof params.filters['subjectId'] === 'string') {
 				if (query.includes('WHERE')) {
 					query = `${query} AND likable_id = '${params.filters['subjectId']}'`;
-				}else {
+				} else {
 					query = `${query} WHERE likable_id = '${params.filters['subjectId']}'`;
 				}
 			}
@@ -81,24 +83,25 @@ export class LikeRepositoryImpl implements LikeRepository {
 			if (typeof params.filters['userId'] === 'string') {
 				if (query.includes('WHERE')) {
 					query = `${query} AND user_id = '${params.filters['userId']}'`;
-				}else {
+				} else {
 					query = `${query} WHERE user_id = '${params.filters['userId']}'`;
 				}
 			}
 		}
 
-		const ids = await this.prismaService.$queryRawUnsafe<{id: string}[]>(query);
+		const ids =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
 
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
 
 		let orderBy = {};
 
-		switch(sort) {
+		switch (sort) {
 			case 'created_at':
 			case 'createdAt':
 			default:
-				orderBy = {created_at: sortDirection};
+				orderBy = { created_at: sortDirection };
 				break;
 		}
 
@@ -109,38 +112,38 @@ export class LikeRepositoryImpl implements LikeRepository {
 
 		let items = [];
 
-		if(paginate) {
+		if (paginate) {
 			items = await this.prismaService.like.findMany({
-				where: { id: {in: ids.map((row) => row.id)}},
+				where: { id: { in: ids.map((row) => row.id) } },
 				include: {
 					user: {
 						include: {
 							credentials: true,
-							visibility_configuration: true
-						}
-					}
+							visibility_configuration: true,
+						},
+					},
 				},
 				skip: limit * page,
-				take: limit
+				take: limit,
 			});
-		}else {
+		} else {
 			items = await this.prismaService.like.findMany({
-				where: { id: {in: ids.map((row) => row.id)}},
+				where: { id: { in: ids.map((row) => row.id) } },
 				include: {
 					user: {
 						include: {
 							credentials: true,
-							visibility_configuration: true
-						}
-					}
+							visibility_configuration: true,
+						},
+					},
 				},
 			});
 		}
-		
+
 		return new Pagination(
 			items.map((i) => this.mapLikeToDomain(i)),
 			total,
-			page
+			page,
 		);
 	}
 
@@ -169,10 +172,10 @@ export class LikeRepositoryImpl implements LikeRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true
-					}
-				}
-			}
+						visibility_configuration: true,
+					},
+				},
+			},
 		});
 
 		return likes.map((like) => this.mapLikeToDomain(like));
@@ -186,15 +189,15 @@ export class LikeRepositoryImpl implements LikeRepository {
 
 	public async findById(id: string): Promise<Like> {
 		const like = await this.prismaService.like.findFirst({
-			where: {id: id},
+			where: { id: id },
 			include: {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true
-					}
-				}
-			}
+						visibility_configuration: true,
+					},
+				},
+			},
 		});
 
 		return this.mapLikeToDomain(like);
@@ -207,16 +210,16 @@ export class LikeRepositoryImpl implements LikeRepository {
 				likable_id: model.likableSubjectId(),
 				likable_subject: model.likableSubject(),
 				created_at: model.createdAt(),
-				user_id: model.user().id()
+				user_id: model.user().id(),
 			},
 			include: {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true
-					}
-				}
-			}
+						visibility_configuration: true,
+					},
+				},
+			},
 		});
 
 		return this.mapLikeToDomain(like);
@@ -224,7 +227,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 
 	public async update(model: Like): Promise<Like> {
 		const like = await this.prismaService.like.update({
-			where: {id: model.id()},
+			where: { id: model.id() },
 			data: {
 				likable_id: model.likableSubjectId(),
 				likable_subject: model.likableSubject(),
@@ -233,10 +236,10 @@ export class LikeRepositoryImpl implements LikeRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true
-					}
-				}
-			}
+						visibility_configuration: true,
+					},
+				},
+			},
 		});
 
 		return this.mapLikeToDomain(like);
@@ -244,7 +247,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 
 	public async delete(id: string): Promise<void> {
 		await this.prismaService.like.delete({
-			where: {id: id}
+			where: { id: id },
 		});
 	}
 }
