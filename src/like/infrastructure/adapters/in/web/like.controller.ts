@@ -10,6 +10,7 @@ import {
 	Query,
 	Req,
 	Res,
+	UseFilters,
 	UseGuards,
 	UsePipes,
 	ValidationPipe,
@@ -17,6 +18,7 @@ import {
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
@@ -41,6 +43,7 @@ import {
 import { GetLikeDto } from 'src/like/application/ports/out/dto/get-like.dto';
 import { LikeDto } from 'src/like/application/ports/out/dto/like.dto';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
+import { LikeErrorHandler } from './handlers/like-error.handler';
 import { LikeRequestMapper } from './mappers/like-request.mapper';
 import { LikeRequest } from './requests/like.request';
 import { ListLikesQueryRequest } from './requests/list-likes-query.request';
@@ -53,6 +56,7 @@ import { ListLikesQueryRequest } from './requests/list-likes-query.request';
 })
 @ApiTags('Likes')
 @Controller('likes')
+@UseFilters(new LikeErrorHandler())
 export class LikeController {
 	constructor(
 		@Inject(LikeUseCaseProvider)
@@ -132,6 +136,9 @@ export class LikeController {
 	}
 
 	@ApiOperation({ summary: 'Unlike a subject' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	})
 	@ApiOkResponse({
 		example: {
 			data: {},
