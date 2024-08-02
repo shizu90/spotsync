@@ -8,6 +8,7 @@ import { LikeModule } from './like/like.module';
 import { loadEnvironment } from './load-environment';
 import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
+import { SpotModule } from './spot/spot.module';
 
 @Module({
 	imports: [
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
 		GeolocationModule,
 		PostModule,
 		LikeModule,
+		SpotModule,
 	],
 })
 export class AppModule {}
