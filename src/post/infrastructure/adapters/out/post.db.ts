@@ -213,7 +213,25 @@ export class PostRepositoryImpl implements PostRepository {
 						},
 					},
 					parent_post: true,
-					children_posts: true,
+					children_posts: {
+						include: {
+							creator: {
+								include: {
+									credentials: true,
+									visibility_configuration: true
+								}
+							},
+							group: {
+								include: {
+									visibility_configuration: true
+								}
+							},
+							thread: true,
+							attachments: true
+						}
+					},
+					attachments: true,
+					thread: true
 				},
 				skip: limit * page,
 				take: limit,
@@ -237,6 +255,7 @@ export class PostRepositoryImpl implements PostRepository {
 					parent_post: true,
 					children_posts: true,
 					attachments: true,
+					thread: true
 				},
 			});
 		}
@@ -287,6 +306,7 @@ export class PostRepositoryImpl implements PostRepository {
 				parent_post: true,
 				children_posts: true,
 				attachments: true,
+				thread: true
 			},
 		});
 
@@ -305,7 +325,25 @@ export class PostRepositoryImpl implements PostRepository {
 	}
 
 	public async findAll(): Promise<Array<Post>> {
-		const posts = await this.prismaService.post.findMany({});
+		const posts = await this.prismaService.post.findMany({
+			include: {
+				creator: {
+					include: {
+						credentials: true,
+						visibility_configuration: true,
+					},
+				},
+				group: {
+					include: {
+						visibility_configuration: true,
+					},
+				},
+				parent_post: true,
+				children_posts: true,
+				attachments: true,
+				thread: true
+			}
+		});
 
 		return posts.map((p) => this.mapPostToDomain(p));
 	}
@@ -330,6 +368,7 @@ export class PostRepositoryImpl implements PostRepository {
 				parent_post: true,
 				children_posts: true,
 				attachments: true,
+				thread: true
 			},
 		});
 
@@ -408,6 +447,7 @@ export class PostRepositoryImpl implements PostRepository {
 				parent_post: true,
 				children_posts: true,
 				attachments: true,
+				thread: true
 			},
 		});
 

@@ -52,8 +52,8 @@ export class Post extends Model {
 		this._parent = parent;
 		this._childrens = childrens ?? [];
 		this._group = group ?? null;
-		this._createdAt = createdAt ?? null;
-		this._updatedAt = updatedAt ?? null;
+		this._createdAt = createdAt ?? new Date();
+		this._updatedAt = updatedAt ?? new Date();
 
 		if (this._thread.maxDepthLevel() === this._depthLevel - 1) {
 			this._thread.changeMaxDepthLevel(this._depthLevel);
