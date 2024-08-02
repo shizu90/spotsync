@@ -53,6 +53,7 @@ describe('GetUserProfileService', () => {
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		userRepository.findById.mockResolvedValue(user);
 		followRepository.findBy.mockResolvedValue([]);
+		followRepository.countBy.mockResolvedValue(0);
 		userAddressRepository.findBy.mockResolvedValue([mockUserAddress()]);
 
 		const profile = await service.execute(command);

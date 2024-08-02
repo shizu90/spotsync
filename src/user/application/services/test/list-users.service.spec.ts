@@ -51,6 +51,7 @@ describe('ListUsersService', () => {
 		);
 		userAddressRepository.findBy.mockResolvedValue([]);
 		followRepository.findBy.mockResolvedValue([]);
+		followRepository.countBy.mockResolvedValue(0);
 
 		const users = await service.execute(command);
 
