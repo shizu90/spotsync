@@ -181,6 +181,32 @@ export class LikeRepositoryImpl implements LikeRepository {
 		return likes.map((like) => this.mapLikeToDomain(like));
 	}
 
+	public async countBy(values: Object): Promise<number> {
+		const subjectId = values['subjectId'] ?? null;
+		const subject = values['subject'] ?? null;
+		const userId = values['userId'] ?? null;
+
+		let query = {};
+
+		if (subjectId !== null) {
+			query['likable_id'] = subjectId;
+		}
+
+		if (subject !== null) {
+			query['likable_subject'] = subject;
+		}
+
+		if (userId !== null) {
+			query['user_id'] = userId;
+		}
+
+		const count = await this.prismaService.like.count({
+			where: query,
+		});
+
+		return count;
+	}
+
 	public async findAll(): Promise<Like[]> {
 		const likes = await this.prismaService.like.findMany({});
 
@@ -225,8 +251,8 @@ export class LikeRepositoryImpl implements LikeRepository {
 		return this.mapLikeToDomain(like);
 	}
 
-	public async update(model: Like): Promise<Like> {
-		const like = await this.prismaService.like.update({
+	public async update(model: Like): Promise<void> {
+		await this.prismaService.like.update({
 			where: { id: model.id() },
 			data: {
 				likable_id: model.likableSubjectId(),
@@ -241,8 +267,6 @@ export class LikeRepositoryImpl implements LikeRepository {
 				},
 			},
 		});
-
-		return this.mapLikeToDomain(like);
 	}
 
 	public async delete(id: string): Promise<void> {

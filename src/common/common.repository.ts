@@ -27,9 +27,10 @@ export class Pagination<T> {
 export interface Repository<M extends Model, I> {
 	paginate(params: PaginateParameters): Promise<Pagination<M>>;
 	findBy(values: Object): Promise<Array<M>>;
+	countBy(values: Object): Promise<number>;
 	findById(id: I): Promise<M>;
 	findAll(): Promise<Array<M>>;
 	store(model: M): Promise<M>;
-	update(model: M): Promise<M>;
+	update(model: M): Promise<void>;
 	delete(id: I): Promise<void>;
 }

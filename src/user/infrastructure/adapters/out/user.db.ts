@@ -210,6 +210,39 @@ export class UserRepositoryImpl implements UserRepository {
 		});
 	}
 
+	public async countBy(values: Object): Promise<number> {
+		const name = values['name'];
+		const isDeleted = values['isDeleted'] ?? false;
+
+		let query =
+			'SELECT users.id FROM users JOIN user_credentials ON user_credentials.user_id = users.id';
+
+		if (name) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+			} else {
+				query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+			}
+		}
+
+		if (isDeleted !== undefined) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND users.is_deleted = '${isDeleted}'`;
+			} else {
+				query = `${query} WHERE users.is_deleted = '${isDeleted}'`;
+			}
+		}
+
+		const userIds =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+
+		const count = await this.prismaService.user.count({
+			where: { id: { in: userIds.map((row) => row.id) } },
+		});
+
+		return count;
+	}
+
 	public async findAll(): Promise<Array<User>> {
 		const users = await this.prismaService.user.findMany({
 			include: {
@@ -318,8 +351,8 @@ export class UserRepositoryImpl implements UserRepository {
 		return this.mapUserToDomain(user);
 	}
 
-	public async update(model: User): Promise<User> {
-		const user = await this.prismaService.user.update({
+	public async update(model: User): Promise<void> {
+		await this.prismaService.user.update({
 			data: {
 				first_name: model.firstName(),
 				last_name: model.lastName(),
@@ -338,12 +371,10 @@ export class UserRepositoryImpl implements UserRepository {
 				visibility_configuration: true,
 			},
 		});
-
-		return this.mapUserToDomain(user);
 	}
 
-	public async updateCredentials(model: UserCredentials): Promise<User> {
-		const user = await this.prismaService.user.update({
+	public async updateCredentials(model: UserCredentials): Promise<void> {
+		await this.prismaService.user.update({
 			data: {
 				credentials: {
 					update: {
@@ -362,18 +393,12 @@ export class UserRepositoryImpl implements UserRepository {
 			where: {
 				id: model.id(),
 			},
-			include: {
-				credentials: true,
-				visibility_configuration: true,
-			},
 		});
-
-		return this.mapUserToDomain(user);
 	}
 
 	public async updateVisibilityConfig(
 		userVisibilityConfig: UserVisibilityConfig,
-	): Promise<User> {
+	): Promise<void> {
 		const user = await this.prismaService.user.update({
 			where: { id: userVisibilityConfig.id() },
 			data: {
@@ -394,13 +419,7 @@ export class UserRepositoryImpl implements UserRepository {
 					},
 				},
 			},
-			include: {
-				credentials: true,
-				visibility_configuration: true,
-			},
 		});
-
-		return this.mapUserToDomain(user);
 	}
 
 	public async delete(id: string): Promise<void> {

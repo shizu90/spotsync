@@ -456,6 +456,57 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		});
 	}
 
+	public async countBy(values: Object): Promise<number> {
+		const name = values['name'];
+		const roleId = values['roleId'];
+		const groupId = values['groupId'];
+		const userId = values['userId'];
+
+		let query =
+			'SELECT group_members.id FROM group_members JOIN users ON users.id = group_members.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false';
+
+		if (name) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+			} else {
+				query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+			}
+		}
+
+		if (roleId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND group_members.role_id = '${roleId}'`;
+			} else {
+				query = `${query} WHERE group_members.role_id = '${roleId}'`;
+			}
+		}
+
+		if (groupId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND group_members.group_id = '${groupId}'`;
+			} else {
+				query = `${query} WHERE group_members.group_id = '${groupId}'`;
+			}
+		}
+
+		if (userId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND group_members.user_id = '${userId}'`;
+			} else {
+				query = `${query} WHERE group_members.user_id = '${userId}'`;
+			}
+		}
+
+		const groupMemberIds =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+
+		const count = await this.prismaService.groupMember.count({
+			where: { id: { in: groupMemberIds.map((row) => row.id) } },
+		});
+
+		return count;
+	}
+
 	public async findAll(): Promise<Array<GroupMember>> {
 		const groupMembers = await this.prismaService.groupMember.findMany({
 			include: {
@@ -746,8 +797,8 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		return this.mapGroupMemberRequestToDomain(groupMemberRequest);
 	}
 
-	public async update(model: GroupMember): Promise<GroupMember> {
-		const groupMember = await this.prismaService.groupMember.update({
+	public async update(model: GroupMember): Promise<void> {
+		await this.prismaService.groupMember.update({
 			data: {
 				group_role_id: model.role().id(),
 			},
@@ -775,8 +826,6 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				},
 			},
 		});
-
-		return this.mapGroupMemberToDomain(groupMember);
 	}
 
 	public async delete(id: string): Promise<void> {

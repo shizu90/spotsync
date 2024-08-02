@@ -197,6 +197,48 @@ export class GroupRepositoryImpl implements GroupRepository {
 		});
 	}
 
+	public async countBy(values: Object): Promise<number> {
+		const name = values['name'];
+		const isDeleted = values['isDeleted'] ?? false;
+		const visibility = values['visibility'];
+
+		let query =
+			'SELECT groups.id FROM groups JOIN group_visibility_configs ON group_visibility_configs.group_id = groups.id';
+
+		if (name) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
+			} else {
+				query = `${query} WHERE LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
+			}
+		}
+
+		if (isDeleted !== undefined) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND groups.is_deleted = ${isDeleted}`;
+			} else {
+				query = `${query} WHERE groups.is_deleted = ${isDeleted}`;
+			}
+		}
+
+		if (visibility) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND LOWER(group_visibility_configs.group_visibility) = '${visibility.toLowerCase()}'`;
+			} else {
+				query = `${query} WHERE LOWER(group_visibility_configs.group_visibility) = '${visibility.toLowerCase()}'`;
+			}
+		}
+
+		const groupIds =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+
+		const count = await this.prismaService.group.count({
+			where: { id: { in: groupIds.map((row) => row.id) } },
+		});
+
+		return count;
+	}
+
 	public async paginateLog(
 		params: PaginateParameters,
 	): Promise<Pagination<GroupLog>> {
@@ -346,8 +388,8 @@ export class GroupRepositoryImpl implements GroupRepository {
 		return this.mapGroupLogToDomain(groupLog);
 	}
 
-	public async update(model: Group): Promise<Group> {
-		const group = await this.prismaService.group.update({
+	public async update(model: Group): Promise<void> {
+		await this.prismaService.group.update({
 			data: {
 				name: model.name(),
 				about: model.about(),
@@ -363,14 +405,12 @@ export class GroupRepositoryImpl implements GroupRepository {
 				visibility_configuration: true,
 			},
 		});
-
-		return this.mapGroupToDomain(group);
 	}
 
 	public async updateVisibilityConfiguration(
 		model: GroupVisibilityConfig,
-	): Promise<Group> {
-		const group = await this.prismaService.group.update({
+	): Promise<void> {
+		await this.prismaService.group.update({
 			data: {
 				visibility_configuration: {
 					update: {
@@ -385,8 +425,6 @@ export class GroupRepositoryImpl implements GroupRepository {
 				visibility_configuration: true,
 			},
 		});
-
-		return this.mapGroupToDomain(group);
 	}
 
 	public async delete(id: string): Promise<void> {

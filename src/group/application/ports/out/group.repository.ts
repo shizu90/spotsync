@@ -10,7 +10,7 @@ import { Group } from 'src/group/domain/group.model';
 export const GroupRepositoryProvider = 'GroupRepository';
 
 export interface GroupRepository extends Repository<Group, string> {
-	updateVisibilityConfiguration(model: GroupVisibilityConfig): Promise<Group>;
+	updateVisibilityConfiguration(model: GroupVisibilityConfig): Promise<void>;
 	storeLog(model: GroupLog): Promise<GroupLog>;
 	paginateLog(params: PaginateParameters): Promise<Pagination<GroupLog>>;
 }

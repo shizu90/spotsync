@@ -80,12 +80,12 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 			}
 		}
 
-		const totalFollowers = (
-			await this.followRepository.findBy({ toUserId: user.id() })
-		).length;
-		const totalFollowing = (
-			await this.followRepository.findBy({ fromUserId: user.id() })
-		).length;
+		const totalFollowers = await this.followRepository.countBy({
+			toUserId: user.id(),
+		});
+		const totalFollowing = await this.followRepository.countBy({
+			fromUserId: user.id(),
+		});
 
 		return new GetUserProfileDto(
 			user.id(),

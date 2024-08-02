@@ -86,12 +86,12 @@ export class ListUsersService implements ListUsersUseCase {
 					}
 				}
 
-				const totalFollowers = (
-					await this.followRepository.findBy({ toUserId: u.id() })
-				).length;
-				const totalFollowing = (
-					await this.followRepository.findBy({ fromUserId: u.id() })
-				).length;
+				const totalFollowers = await this.followRepository.countBy({
+					toUserId: u.id(),
+				});
+				const totalFollowing = await this.followRepository.countBy({
+					fromUserId: u.id(),
+				});
 
 				return new GetUserProfileDto(
 					u.id(),

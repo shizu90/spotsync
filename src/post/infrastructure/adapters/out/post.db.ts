@@ -77,9 +77,11 @@ export class PostRepositoryImpl implements PostRepository {
 			prisma_model.parent
 				? this.mapPostToDomain(prisma_model.parent)
 				: null,
-			prisma_model.children_posts.map((children_post) =>
-				this.mapPostToDomain(children_post),
-			),
+			prisma_model.children_posts
+				? prisma_model.children_posts.map((children_post) =>
+						this.mapPostToDomain(children_post),
+					)
+				: [],
 			prisma_model.group
 				? Group.create(
 						prisma_model.group.id,
@@ -112,6 +114,39 @@ export class PostRepositoryImpl implements PostRepository {
 			prisma_model.created_at,
 			prisma_model.updated_at,
 		);
+	}
+
+	private async getThreadMaxDepthLevel(post_id: string): Promise<number> {
+		const threadMaxDepthLevel = await this.prismaService.$queryRawUnsafe<{
+			max_depth_level: number;
+		}>(`
+			SELECT max_depth_level FROM post_threads WHERE id = (SELECT thread_id FROM posts WHERE id = '${post_id}')
+		`);
+
+		return threadMaxDepthLevel[0]?.max_depth_level;
+	}
+
+	private mountIncludeTree(maxDepthLevel: number): any {
+		return {
+			creator: {
+				include: {
+					credentials: true,
+					visibility_configuration: true,
+				},
+			},
+			group: {
+				include: {
+					visibility_configuration: true,
+				},
+			},
+			parent_post: true,
+			children_posts:
+				maxDepthLevel > 0
+					? { include: this.mountIncludeTree(maxDepthLevel - 1) }
+					: true,
+			attachments: true,
+			thread: true,
+		};
 	}
 
 	public async paginate(
@@ -164,6 +199,24 @@ export class PostRepositoryImpl implements PostRepository {
 					query = `${query} WHERE LOWER(p.title) LIKE '%${title.toLowerCase()}%'`;
 				}
 			}
+
+			if (typeof params.filters['depthLevel'] === 'number') {
+				const depthLevel = params.filters['depthLevel'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND p.depth_level = ${depthLevel}`;
+				} else {
+					query = `${query} WHERE p.depth_level = ${depthLevel}`;
+				}
+			}
+
+			if (typeof params.filters['visibility'] === 'string') {
+				const visibility = params.filters['visibility'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND p.visibility = '${visibility}'`;
+				} else {
+					query = `${query} WHERE p.visibility = '${visibility}'`;
+				}
+			}
 		}
 
 		const ids =
@@ -212,26 +265,25 @@ export class PostRepositoryImpl implements PostRepository {
 							visibility_configuration: true,
 						},
 					},
-					parent_post: true,
-					children_posts: {
+					parent_post: {
 						include: {
 							creator: {
 								include: {
 									credentials: true,
-									visibility_configuration: true
-								}
+									visibility_configuration: true,
+								},
 							},
 							group: {
 								include: {
-									visibility_configuration: true
-								}
+									visibility_configuration: true,
+								},
 							},
-							thread: true,
-							attachments: true
-						}
+							attachments: true,
+						},
 					},
+					children_posts: false,
 					attachments: true,
-					thread: true
+					thread: true,
 				},
 				skip: limit * page,
 				take: limit,
@@ -252,10 +304,25 @@ export class PostRepositoryImpl implements PostRepository {
 							visibility_configuration: true,
 						},
 					},
-					parent_post: true,
-					children_posts: true,
+					parent_post: {
+						include: {
+							creator: {
+								include: {
+									credentials: true,
+									visibility_configuration: true,
+								},
+							},
+							group: {
+								include: {
+									visibility_configuration: true,
+								},
+							},
+							attachments: true,
+						},
+					},
+					children_posts: false,
 					attachments: true,
-					thread: true
+					thread: true,
 				},
 			});
 		}
@@ -270,6 +337,7 @@ export class PostRepositoryImpl implements PostRepository {
 		const userId = values['userId'] ?? null;
 		const parentId = values['parentId'] ?? null;
 		const threadId = values['threadId'] ?? null;
+		const depthLevel = values['depthLevel'] ?? null;
 
 		let query = {};
 
@@ -289,6 +357,10 @@ export class PostRepositoryImpl implements PostRepository {
 			query['thread_id'] = threadId;
 		}
 
+		if (depthLevel !== null) {
+			query['depth_level'] = depthLevel;
+		}
+
 		const posts = await this.prismaService.post.findMany({
 			where: query,
 			include: {
@@ -303,14 +375,65 @@ export class PostRepositoryImpl implements PostRepository {
 						visibility_configuration: true,
 					},
 				},
-				parent_post: true,
-				children_posts: true,
+				parent_post: {
+					include: {
+						creator: {
+							include: {
+								credentials: true,
+								visibility_configuration: true,
+							},
+						},
+						group: {
+							include: {
+								visibility_configuration: true,
+							},
+						},
+						attachments: true,
+					},
+				},
+				children_posts: false,
 				attachments: true,
-				thread: true
+				thread: true,
 			},
 		});
 
 		return posts.map((p) => this.mapPostToDomain(p));
+	}
+
+	public async countBy(values: Object): Promise<number> {
+		const groupId = values['groupId'] ?? null;
+		const userId = values['userId'] ?? null;
+		const parentId = values['parentId'] ?? null;
+		const threadId = values['threadId'] ?? null;
+		const depthLevel = values['depthLevel'] ?? null;
+
+		let query = {};
+
+		if (groupId !== null) {
+			query['group_id'] = groupId;
+		}
+
+		if (userId !== null) {
+			query['user_id'] = userId;
+		}
+
+		if (parentId !== null) {
+			query['parent_id'] = parentId;
+		}
+
+		if (threadId !== null) {
+			query['thread_id'] = threadId;
+		}
+
+		if (depthLevel !== null) {
+			query['depth_level'] = depthLevel;
+		}
+
+		const count = await this.prismaService.post.count({
+			where: query,
+		});
+
+		return count;
 	}
 
 	public async findAttachmentById(id: string): Promise<PostAttachment> {
@@ -338,38 +461,41 @@ export class PostRepositoryImpl implements PostRepository {
 						visibility_configuration: true,
 					},
 				},
-				parent_post: true,
-				children_posts: true,
+				parent_post: {
+					include: {
+						creator: {
+							include: {
+								credentials: true,
+								visibility_configuration: true,
+							},
+						},
+						group: {
+							include: {
+								visibility_configuration: true,
+							},
+						},
+						attachments: true,
+					},
+				},
+				children_posts: false,
 				attachments: true,
-				thread: true
-			}
+				thread: true,
+			},
 		});
 
 		return posts.map((p) => this.mapPostToDomain(p));
 	}
 
 	public async findById(id: string): Promise<Post> {
+		const maxDepthLevel = await this.getThreadMaxDepthLevel(id);
+
+		const include = this.mountIncludeTree(maxDepthLevel);
+
 		const post = await this.prismaService.post.findFirst({
 			where: {
 				id: id,
 			},
-			include: {
-				creator: {
-					include: {
-						credentials: true,
-						visibility_configuration: true,
-					},
-				},
-				group: {
-					include: {
-						visibility_configuration: true,
-					},
-				},
-				parent_post: true,
-				children_posts: true,
-				attachments: true,
-				thread: true
-			},
+			include: include,
 		});
 
 		return this.mapPostToDomain(post);
@@ -423,31 +549,14 @@ export class PostRepositoryImpl implements PostRepository {
 		return this.mapPostToDomain(post);
 	}
 
-	public async update(model: Post): Promise<Post> {
-		const post = await this.prismaService.post.update({
+	public async update(model: Post): Promise<void> {
+		await this.prismaService.post.update({
 			where: { id: model.id() },
 			data: {
 				title: model.title(),
 				content: model.content(),
 				depth_level: model.depthLevel(),
 				updated_at: model.updatedAt(),
-			},
-			include: {
-				creator: {
-					include: {
-						credentials: true,
-						visibility_configuration: true,
-					},
-				},
-				group: {
-					include: {
-						visibility_configuration: true,
-					},
-				},
-				parent_post: true,
-				children_posts: true,
-				attachments: true,
-				thread: true
 			},
 		});
 
@@ -465,8 +574,6 @@ export class PostRepositoryImpl implements PostRepository {
 				},
 			});
 		});
-
-		return this.mapPostToDomain(post);
 	}
 
 	public async delete(id: string): Promise<void> {

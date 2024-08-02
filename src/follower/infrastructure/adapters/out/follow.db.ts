@@ -419,6 +419,38 @@ export class FollowRepositoryImpl implements FollowRepository {
 		});
 	}
 
+	public async countBy(values: Object) {
+		const fromUserId = values['fromUserId'];
+		const toUserId = values['toUserId'];
+
+		let query = 'SELECT id FROM follows';
+
+		if (fromUserId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND from_user_id = '${fromUserId}'`;
+			} else {
+				query = `${query} WHERE from_user_id = '${fromUserId}'`;
+			}
+		}
+
+		if (toUserId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND to_user_id = '${toUserId}'`;
+			} else {
+				query = `${query} WHERE to_user_id = '${toUserId}'`;
+			}
+		}
+
+		const followIds =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+
+		const count = await this.prismaService.follow.count({
+			where: { id: { in: followIds.map((row) => row.id) } },
+		});
+
+		return count;
+	}
+
 	public async findRequestBy(values: Object): Promise<Array<FollowRequest>> {
 		const fromUserId = values['fromUserId'];
 		const toUserId = values['toUserId'];
@@ -541,8 +573,8 @@ export class FollowRepositoryImpl implements FollowRepository {
 		return this.mapFollowToDomain(follow);
 	}
 
-	public async update(model: Follow): Promise<Follow> {
-		const follow = await this.prismaService.follow.update({
+	public async update(model: Follow): Promise<void> {
+		await this.prismaService.follow.update({
 			where: { id: model.id() },
 			data: {
 				from_user_id: model.from().id(),
@@ -563,8 +595,6 @@ export class FollowRepositoryImpl implements FollowRepository {
 				},
 			},
 		});
-
-		return this.mapFollowToDomain(follow);
 	}
 
 	public async delete(id: string): Promise<void> {

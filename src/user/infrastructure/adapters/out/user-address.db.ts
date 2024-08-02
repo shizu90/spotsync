@@ -236,6 +236,56 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		});
 	}
 
+	public async countBy(values: Object): Promise<number> {
+		const userId = values['userId'];
+		const main = values['main'];
+		const name = values['name'];
+		const isDeleted = values['isDeleted'] ?? false;
+
+		let query = `SELECT id FROM user_addresses`;
+
+		if (userId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND user_id = '${userId}'`;
+			} else {
+				query = `${query} WHERE user_id = '${userId}'`;
+			}
+		}
+
+		if (main) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND main = ${main}`;
+			} else {
+				query = `${query} WHERE main = ${main}`;
+			}
+		}
+
+		if (name) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+			} else {
+				query = `${query} WHERE LOWER(name) LIKE '%${name.toLowerCase()}%'`;
+			}
+		}
+
+		if (isDeleted !== undefined) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND is_deleted = ${isDeleted}`;
+			} else {
+				query = `${query} WHERE is_deleted = ${isDeleted}`;
+			}
+		}
+
+		const userAddressIds =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+
+		const count = await this.prismaService.userAddress.count({
+			where: { id: { in: userAddressIds.map((row) => row.id) } },
+		});
+
+		return count;
+	}
+
 	public async findAll(): Promise<Array<UserAddress>> {
 		const userAddresses = await this.prismaService.userAddress.findMany({
 			include: {
@@ -300,8 +350,8 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		return this.mapUserAddressToDomain(userAddress);
 	}
 
-	public async update(model: UserAddress): Promise<UserAddress> {
-		const userAddress = await this.prismaService.userAddress.update({
+	public async update(model: UserAddress): Promise<void> {
+		await this.prismaService.userAddress.update({
 			where: {
 				id: model.id(),
 			},
@@ -327,8 +377,6 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 				},
 			},
 		});
-
-		return this.mapUserAddressToDomain(userAddress);
 	}
 
 	public async delete(id: string): Promise<void> {

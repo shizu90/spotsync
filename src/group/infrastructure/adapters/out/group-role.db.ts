@@ -213,6 +213,47 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		});
 	}
 
+	public async countBy(values: Object): Promise<number> {
+		const name = values['name'];
+		const isImmutable = values['isImmutable'];
+		const groupId = values['groupId'];
+
+		let query = 'SELECT group_roles.id FROM group_roles';
+
+		if (name) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND LOWER(name) = '${name.toLowerCase()}'`;
+			} else {
+				query = `${query} WHERE LOWER(name) = '${name.toLowerCase()}'`;
+			}
+		}
+
+		if (isImmutable) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND is_immutable = ${isImmutable}`;
+			} else {
+				query = `${query} WHERE is_immutable = ${isImmutable}`;
+			}
+		}
+
+		if (groupId) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND (group_id = '${groupId}' OR group_id IS null)`;
+			} else {
+				query = `${query} WHERE (group_id = '${groupId}' OR group_id IS null)`;
+			}
+		}
+
+		const groupRoleIds =
+			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+
+		const count = await this.prismaService.groupRole.count({
+			where: { id: { in: groupRoleIds.map((row) => row.id) } },
+		});
+
+		return count;
+	}
+
 	public async findAll(): Promise<Array<GroupRole>> {
 		const groupRoles = await this.prismaService.groupRole.findMany({
 			include: {
@@ -302,8 +343,8 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		return this.mapGroupRoleToDomain(groupRole);
 	}
 
-	public async update(model: GroupRole): Promise<GroupRole> {
-		const groupRole = await this.prismaService.groupRole.update({
+	public async update(model: GroupRole): Promise<void> {
+		await this.prismaService.groupRole.update({
 			where: { id: model.id() },
 			data: {
 				name: model.name(),
@@ -319,8 +360,6 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				},
 			},
 		});
-
-		return this.mapGroupRoleToDomain(groupRole);
 	}
 
 	public async delete(id: string): Promise<void> {

@@ -97,6 +97,22 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 		return threads.map((thread) => this.mapThreadToDomain(thread));
 	}
 
+	public async countBy(values: Object): Promise<number> {
+		const maxDepthLevel = values['maxDepthLevel'] ?? null;
+
+		let query = {};
+
+		if (maxDepthLevel !== null) {
+			query['max_depth_level'] = maxDepthLevel;
+		}
+
+		const count = await this.prismaService.postThread.count({
+			where: query,
+		});
+
+		return count;
+	}
+
 	public async findAll(): Promise<PostThread[]> {
 		const threads = await this.prismaService.postThread.findMany();
 
@@ -122,7 +138,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 		return this.mapThreadToDomain(thread);
 	}
 
-	public async update(model: PostThread): Promise<PostThread> {
+	public async update(model: PostThread): Promise<void> {
 		const thread = await this.prismaService.postThread.update({
 			data: {
 				max_depth_level: model.maxDepthLevel(),
@@ -131,8 +147,6 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 				id: model.id(),
 			},
 		});
-
-		return this.mapThreadToDomain(thread);
 	}
 
 	public async delete(id: string): Promise<void> {

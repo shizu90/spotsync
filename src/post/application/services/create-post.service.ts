@@ -41,95 +41,102 @@ export class CreatePostService implements CreatePostUseCase {
 	) {}
 
 	public async execute(command: CreatePostCommand): Promise<CreatePostDto> {
-		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
+		try {
+			const authenticatedUser =
+				await this.getAuthenticatedUser.execute(null);
 
-		let visibility = command.visibility;
+			let visibility = command.visibility;
 
-		if (visibility === null || visibility === undefined) {
-			switch (
-				authenticatedUser.visibilityConfiguration().postVisibility()
-			) {
-				case UserVisibility.PUBLIC:
-					visibility = PostVisibility.PUBLIC;
-					break;
-				case UserVisibility.PRIVATE:
-					visibility = PostVisibility.PRIVATE;
-					break;
-				case UserVisibility.FOLLOWERS:
-					visibility = PostVisibility.FOLLOWERS;
-					break;
-				default:
-					visibility = PostVisibility.PUBLIC;
-					break;
-			}
-		}
-
-		let group: Group = null;
-
-		if (command.groupId !== null && command.groupId !== undefined) {
-			const g = await this.groupRepository.findById(command.groupId);
-
-			if (g === null || g === undefined || g.isDeleted()) {
-				throw new GroupNotFoundError(`Group not found`);
+			if (visibility === null || visibility === undefined) {
+				switch (
+					authenticatedUser.visibilityConfiguration().postVisibility()
+				) {
+					case UserVisibility.PUBLIC:
+						visibility = PostVisibility.PUBLIC;
+						break;
+					case UserVisibility.PRIVATE:
+						visibility = PostVisibility.PRIVATE;
+						break;
+					case UserVisibility.FOLLOWERS:
+						visibility = PostVisibility.FOLLOWERS;
+						break;
+					default:
+						visibility = PostVisibility.PUBLIC;
+						break;
+				}
 			}
 
-			group = g;
-			switch (g.visibilityConfiguration().postVisibility()) {
-				case GroupVisibility.PRIVATE:
-					visibility = PostVisibility.PRIVATE;
-					break;
-				case GroupVisibility.PUBLIC:
-					visibility = PostVisibility.PUBLIC;
-					break;
-				default:
-					visibility = PostVisibility.PUBLIC;
-					break;
+			let group: Group = null;
+
+			if (command.groupId !== null && command.groupId !== undefined) {
+				const g = await this.groupRepository.findById(command.groupId);
+
+				if (g === null || g === undefined || g.isDeleted()) {
+					throw new GroupNotFoundError(`Group not found`);
+				}
+
+				group = g;
+				switch (g.visibilityConfiguration().postVisibility()) {
+					case GroupVisibility.PRIVATE:
+						visibility = PostVisibility.PRIVATE;
+						break;
+					case GroupVisibility.PUBLIC:
+						visibility = PostVisibility.PUBLIC;
+						break;
+					default:
+						visibility = PostVisibility.PUBLIC;
+						break;
+				}
 			}
-		}
 
-		let parent: Post = null;
+			let parent: Post = null;
 
-		if (command.parentId !== null && command.parentId !== undefined) {
-			const post = await this.postRepository.findById(command.parentId);
+			if (command.parentId !== null && command.parentId !== undefined) {
+				const post = await this.postRepository.findById(
+					command.parentId,
+				);
 
-			if (post === null || post === undefined) {
-				throw new PostNotFoundError(`Parent post not found`);
+				if (post === null || post === undefined) {
+					throw new PostNotFoundError(`Parent post not found`);
+				}
+
+				parent = post;
+				visibility = parent.visibility();
 			}
 
-			parent = post;
-			visibility = parent.visibility();
+			const newPost = Post.create(
+				randomUUID(),
+				command.title,
+				command.content,
+				visibility,
+				authenticatedUser,
+				[],
+				parent,
+				[],
+				group,
+			);
+
+			if (newPost.thread().maxDepthLevel() === 0) {
+				await this.postThreadRepository.store(newPost.thread());
+			}
+
+			this.postRepository.store(newPost);
+			this.postThreadRepository.update(newPost.thread());
+
+			return new CreatePostDto(
+				newPost.id(),
+				newPost.title(),
+				newPost.content(),
+				newPost.visibility(),
+				[],
+				newPost.thread().id(),
+				newPost.depthLevel(),
+				parent ? parent.id() : null,
+				newPost.creator().id(),
+				newPost.group() ? newPost.group().id() : null,
+			);
+		} catch (e: any) {
+			console.log(e);
 		}
-
-		const newPost = Post.create(
-			randomUUID(),
-			command.title,
-			command.content,
-			visibility,
-			authenticatedUser,
-			[],
-			parent,
-			[],
-			group,
-		);
-
-		if (newPost.thread().maxDepthLevel() === 0) {
-			await this.postThreadRepository.store(newPost.thread());
-		}
-
-		this.postRepository.store(newPost);
-		this.postThreadRepository.update(newPost.thread());
-
-		return new CreatePostDto(
-			newPost.id(),
-			newPost.title(),
-			newPost.content(),
-			newPost.visibility(),
-			[],
-			newPost.thread().id(),
-			newPost.depthLevel(),
-			parent ? parent.id() : null,
-			newPost.creator().id(),
-			newPost.group() ? newPost.group().id() : null,
-		);
 	}
 }
