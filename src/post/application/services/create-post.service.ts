@@ -41,7 +41,6 @@ export class CreatePostService implements CreatePostUseCase {
 	) {}
 
 	public async execute(command: CreatePostCommand): Promise<CreatePostDto> {
-		try {
 			const authenticatedUser =
 				await this.getAuthenticatedUser.execute(null);
 
@@ -135,8 +134,5 @@ export class CreatePostService implements CreatePostUseCase {
 				newPost.creator().id(),
 				newPost.group() ? newPost.group().id() : null,
 			);
-		} catch (e: any) {
-			console.log(e);
-		}
 	}
 }
