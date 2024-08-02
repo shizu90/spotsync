@@ -1,0 +1,1766 @@
+{
+	"info": {
+		"_postman_id": "a4ca3610-779e-46f8-9980-ada3ed9c745a",
+		"name": "spotsync",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32665521"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "address",
+					"item": [
+						{
+							"name": "Create address",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Casa\",\r\n    \"area\": \"São Paulo\",\r\n    \"sub_area\": \"Jundiaí\",\r\n    \"locality\": \"Aglomeração Urbana\",\r\n    \"country_code\": \"BR\",\r\n    \"main\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/users/:id/addresses",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":id",
+										"addresses"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "bd71e9e6-39c1-45d3-92c5-a60b1f8f3acb"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update address",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Minha casa\",\r\n    \"area\": \"São Paulo\",\r\n    \"subArea\": \"Jundiaí\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/users/:id/addresses/:address_id",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":id",
+										"addresses",
+										":address_id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "bd71e9e6-39c1-45d3-92c5-a60b1f8f3acb"
+										},
+										{
+											"key": "address_id",
+											"value": "57bc1d31-93cf-4a1e-8a6b-663910ec375e"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get address by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/users/:id/addresses/:address_id",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":id",
+										"addresses",
+										":address_id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "bd71e9e6-39c1-45d3-92c5-a60b1f8f3acb"
+										},
+										{
+											"key": "address_id",
+											"value": "57bc1d31-93cf-4a1e-8a6b-663910ec375e"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get addresses by user id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/users/:id/addresses",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":id",
+										"addresses"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "minha",
+											"disabled": true
+										},
+										{
+											"key": "main",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "sort_direction",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "paginate",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": null,
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "bd71e9e6-39c1-45d3-92c5-a60b1f8f3acb"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete address",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/users/:user_id/addresses/:address_id",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":user_id",
+										"addresses",
+										":address_id"
+									],
+									"variable": [
+										{
+											"key": "user_id",
+											"value": "0c45afc5-873b-4116-8596-79f8074a1665"
+										},
+										{
+											"key": "address_id",
+											"value": "f38c04d9-87f9-4c27-becf-00c27ddb85b7"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get user profile by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZmY3ZGVlNS02NTk1LTRiZWQtOWUwYS02NTBmMGZjY2M0MjMiLCJuYW1lIjoiR2FicmllbCBNb3JldHRvIiwiaWF0IjoxNzIwNDAwNDMyLCJleHAiOjE3MjA0MDA1NTJ9.WvDgFpBns1tpmV6p3RBhW5HkI5Dpzn2EABzWvM40qKs",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/users/:user_id/profile",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								":user_id",
+								"profile"
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "bd71e9e6-39c1-45d3-92c5-a60b1f8f3acb"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"mizuki\",\n    \"email\": \"mizuki.teste@gmail.com\",\n    \"password\": \"Senha@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/users",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user profile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"biograph\": \"Hello World World Hello\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/users/:user_id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "0c45afc5-873b-4116-8596-79f8074a1665"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/users/:id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "0c45afc5-873b-4116-8596-79f8074a1665"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user credentials",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"gumiya.teste@gmail.com\",\r\n    \"phone_number\": \"11991112367\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/users/:id/credentials",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								":id",
+								"credentials"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "bd71e9e6-39c1-45d3-92c5-a60b1f8f3acb"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update visibility configuration",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"profile_visibility\": \"private\",\r\n    \"address_visibility\": \"private\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/users/:id/visibility-configuration",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								":id",
+								"visibility-configuration"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "0c45afc5-873b-4116-8596-79f8074a1665"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/users?full_name=mizuki",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Roger",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "name",
+									"disabled": true
+								},
+								{
+									"key": "sort_direction",
+									"value": "ASC",
+									"disabled": true
+								},
+								{
+									"key": "paginate",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "12",
+									"disabled": true
+								},
+								{
+									"key": "first_name",
+									"value": "gumiya",
+									"disabled": true
+								},
+								{
+									"key": "last_name",
+									"value": "gumiya",
+									"disabled": true
+								},
+								{
+									"key": "full_name",
+									"value": "mizuki"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {\r",
+									"    var responseBody = pm.response.text();\r",
+									"    var jsonData = JSON.parse(responseBody);\r",
+									"    var bearerToken = jsonData.data.bearer_token;\r",
+									"\r",
+									"    pm.collectionVariables.set(\"BEARER_TOKEN\", bearerToken);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"mizuki\",\r\n    \"password\": \"Senha@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/auth/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/auth/logout",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "follows",
+			"item": [
+				{
+					"name": "Follow user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/followers/:from_user_id/follow/:to_user_id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"followers",
+								":from_user_id",
+								"follow",
+								":to_user_id"
+							],
+							"variable": [
+								{
+									"key": "from_user_id",
+									"value": "bd71e9e6-39c1-45d3-92c5-a60b1f8f3acb"
+								},
+								{
+									"key": "to_user_id",
+									"value": "a8262d6b-8228-46f6-ba96-e6a590ef35ae"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfollow user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/followers/:from_user_id/unfollow/:to_user_id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"followers",
+								":from_user_id",
+								"unfollow",
+								":to_user_id"
+							],
+							"variable": [
+								{
+									"key": "from_user_id",
+									"value": "bd71e9e6-39c1-45d3-92c5-a60b1f8f3acb"
+								},
+								{
+									"key": "to_user_id",
+									"value": "a8262d6b-8228-46f6-ba96-e6a590ef35ae"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept follow request",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/followers/requests/:follow_request_id/accept",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"followers",
+								"requests",
+								":follow_request_id",
+								"accept"
+							],
+							"variable": [
+								{
+									"key": "follow_request_id",
+									"value": "ff49b01b-b98b-4e60-959f-77f89160462b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refuse follow request",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/followers/requests/:follow_request_id/refuse",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"followers",
+								"requests",
+								":follow_request_id",
+								"refuse"
+							],
+							"variable": [
+								{
+									"key": "follow_request_id",
+									"value": "f0c5c8c4-2799-4714-9d70-0df226e09b69"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List follows",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/followers?to_user_id=a8262d6b-8228-46f6-ba96-e6a590ef35ae",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"followers"
+							],
+							"query": [
+								{
+									"key": "from_user_id",
+									"value": "a8262d6b-8228-46f6-ba96-e6a590ef35ae",
+									"disabled": true
+								},
+								{
+									"key": "to_user_id",
+									"value": "a8262d6b-8228-46f6-ba96-e6a590ef35ae"
+								},
+								{
+									"key": "sort",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort_direction",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "paginate",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List follow requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/followers/requests",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"followers",
+								"requests"
+							],
+							"query": [
+								{
+									"key": "from_user_id",
+									"value": "a8262d6b-8228-46f6-ba96-e6a590ef35ae",
+									"disabled": true
+								},
+								{
+									"key": "to_user_id",
+									"value": "a8262d6b-8228-46f6-ba96-e6a590ef35ae",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort_direction",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "paginate",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "groups",
+			"item": [
+				{
+					"name": "roles",
+					"item": [
+						{
+							"name": "List group roles",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/roles",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"roles"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "is_immutable",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "sort_direction",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "paginate",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": null,
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Find group role by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/roles/:role_id",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"roles",
+										":role_id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										},
+										{
+											"key": "role_id",
+											"value": "1e0c6439-9ccc-4ff8-a89a-16052f79a35a"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create group role",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"teste\",\r\n    \"hex_color\": \"#000000\",\r\n    \"permissions\": [\r\n        \"9d603c86-477d-4f2e-84d9-fd88e4789778\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/roles",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"roles"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update group role",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Hello World\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/roles/:role_id",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"roles",
+										":role_id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										},
+										{
+											"key": "role_id",
+											"value": "1e0c6439-9ccc-4ff8-a89a-16052f79a35a"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete group role",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/roles/:role_id",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"roles",
+										":role_id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										},
+										{
+											"key": "role_id",
+											"value": "1e0c6439-9ccc-4ff8-a89a-16052f79a35a"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "members",
+					"item": [
+						{
+							"name": "Join group",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/join",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"join"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5b078486-b8e2-40a7-8d26-7ba21edd82f7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Accept join request",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/join-requests/:join_request_id/accept",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"join-requests",
+										":join_request_id",
+										"accept"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										},
+										{
+											"key": "join_request_id",
+											"value": "121a5aa1-15ee-4f11-a66b-e99d09d71348"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Refuse join request",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/join-requests/:join_request_id/refuse",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"join-requests",
+										":join_request_id",
+										"refuse"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										},
+										{
+											"key": "join_request_id",
+											"value": "4010ef18-eb69-4e97-904d-32a0200d62d9"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Leave group",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/leave",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"leave"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List members",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/members",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"members"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "roger",
+											"disabled": true
+										},
+										{
+											"key": "role_id",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": "name",
+											"disabled": true
+										},
+										{
+											"key": "sort_direction",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "paginate",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "",
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5b078486-b8e2-40a7-8d26-7ba21edd82f7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change member role",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"role_id\": \"26a3b1f5-1a69-44ba-962c-dc90cea688c6\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/members/:member_id/change-role",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"members",
+										":member_id",
+										"change-role"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										},
+										{
+											"key": "member_id",
+											"value": "caa05b45-2c3c-455a-bd3e-2e6dd176b212"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List join requests",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/join-requests",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"join-requests"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "sort_direction",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "paginate",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": null,
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove group member",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v1/groups/:id/members/:member_id",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"groups",
+										":id",
+										"members",
+										":member_id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+										},
+										{
+											"key": "member_id",
+											"value": "caa05b45-2c3c-455a-bd3e-2e6dd176b212"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create group",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Grupo legal\",\r\n    \"about\": \"Grupo legal\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/groups",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update group",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Grupo Top\",\r\n    \"about\": \"Legal\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/groups/:id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"groups",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5b078486-b8e2-40a7-8d26-7ba21edd82f7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update visibility",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"group_visibility\": \"private\"   \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/groups/:id/visibility",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"groups",
+								":id",
+								"visibility"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2ec19632-6ec1-4442-903e-0d1fef088b4d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete group",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/groups/:id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"groups",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5c97f0e3-4020-4210-a4f9-566d937b23d1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List groups",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/groups",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"groups"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "world",
+									"disabled": true
+								},
+								{
+									"key": "group_visibility",
+									"value": "private",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort_direction",
+									"value": "DESC",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "paginate",
+									"value": "false",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "25",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find group by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/groups/:id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"groups",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5b078486-b8e2-40a7-8d26-7ba21edd82f7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "posts",
+			"item": [
+				{
+					"name": "List threads",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/threads",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"threads"
+							],
+							"query": [
+								{
+									"key": "visibility",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "group_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "user_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "sort_direction",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "paginate",
+									"value": "false",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get post by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/posts/:id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "ffa36788-7be7-4849-9a93-fe8de65098ea"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Post children\",\r\n    \"content\": \"Content children\",\r\n    \"visibility\": \"public\",\r\n    \"parent_id\": \"ffa36788-7be7-4849-9a93-fe8de65098ea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/posts",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"New Title\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/posts/:id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "02797adc-c7a1-4da6-9862-684d1730985e"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/posts/:id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "02797adc-c7a1-4da6-9862-684d1730985e"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{BEARER_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BEARER_TOKEN",
+			"value": ""
+		}
+	]
+}
