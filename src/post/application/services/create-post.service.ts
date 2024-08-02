@@ -117,6 +117,7 @@ export class CreatePostService implements CreatePostUseCase {
 		}
 
 		this.postRepository.store(newPost);
+		this.postThreadRepository.update(newPost.thread());
 
 		return new CreatePostDto(
 			newPost.id(),
