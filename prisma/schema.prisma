@@ -56,11 +56,14 @@ model UserCredentials {
 
 model UserVisibilityConfig {
     user_id                         String                      @id
-    profile_visibility              String
-    address_visibility              String
-    poi_folder_visibility           String
-    visited_poi_visibility          String
-    post_visibility                 String
+    profile                         String
+    addresses                       String
+    spot_folders                    String
+    visited_spots                   String
+    favorite_spots                  String
+    favorite_spot_folders           String
+    favorite_spot_events            String
+    posts                           String
     user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
     @@map("user_visibility_configs")
@@ -128,9 +131,9 @@ model Group {
 
 model GroupVisibilityConfig {
     group_id                        String                      @id
-    post_visibility                 String
-    event_visibility                String
-    group_visibility                String
+    posts                           String
+    spot_events                     String
+    groups                          String
     group                           Group                       @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
     @@map("group_visibility_configs")

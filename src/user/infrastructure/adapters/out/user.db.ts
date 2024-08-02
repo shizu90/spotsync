@@ -38,15 +38,16 @@ export class UserRepositoryImpl implements UserRepository {
 			prisma_model.visibility_configuration
 				? UserVisibilityConfig.create(
 						prisma_model.id,
+						prisma_model.visibility_configuration.profile,
+						prisma_model.visibility_configuration.addresses,
+						prisma_model.visibility_configuration.spot_folders,
+						prisma_model.visibility_configuration.visited_spots,
+						prisma_model.visibility_configuration.posts,
+						prisma_model.visibility_configuration.favorite_spots,
 						prisma_model.visibility_configuration
-							.profile_visibility,
+							.favorite_spot_folders,
 						prisma_model.visibility_configuration
-							.address_visibility,
-						prisma_model.visibility_configuration
-							.poi_folder_visibility,
-						prisma_model.visibility_configuration
-							.visited_poi_visibility,
-						prisma_model.visibility_configuration.post_visibility,
+							.favorite_spot_events,
 					)
 				: null,
 			prisma_model.created_at,
@@ -324,21 +325,24 @@ export class UserRepositoryImpl implements UserRepository {
 				},
 				visibility_configuration: {
 					create: {
-						profile_visibility: model
+						profile: model.visibilityConfiguration().profile(),
+						addresses: model.visibilityConfiguration().addresses(),
+						spot_folders: model
 							.visibilityConfiguration()
-							.profileVisibility(),
-						address_visibility: model
+							.spotFolders(),
+						visited_spots: model
 							.visibilityConfiguration()
-							.addressVisibility(),
-						poi_folder_visibility: model
+							.visitedSpots(),
+						posts: model.visibilityConfiguration().posts(),
+						favorite_spots: model
 							.visibilityConfiguration()
-							.poiFolderVisibility(),
-						visited_poi_visibility: model
+							.favoriteSpots(),
+						favorite_spot_folders: model
 							.visibilityConfiguration()
-							.visitedPoiVisibility(),
-						post_visibility: model
+							.favoriteSpotFolders(),
+						favorite_spot_events: model
 							.visibilityConfiguration()
-							.postVisibility(),
+							.favoriteSpotEvents(),
 					},
 				},
 			},
@@ -397,24 +401,22 @@ export class UserRepositoryImpl implements UserRepository {
 	}
 
 	public async updateVisibilityConfig(
-		userVisibilityConfig: UserVisibilityConfig,
+		model: UserVisibilityConfig,
 	): Promise<void> {
 		const user = await this.prismaService.user.update({
-			where: { id: userVisibilityConfig.id() },
+			where: { id: model.id() },
 			data: {
 				visibility_configuration: {
 					update: {
 						data: {
-							profile_visibility:
-								userVisibilityConfig.profileVisibility(),
-							address_visibility:
-								userVisibilityConfig.addressVisibility(),
-							poi_folder_visibility:
-								userVisibilityConfig.poiFolderVisibility(),
-							visited_poi_visibility:
-								userVisibilityConfig.visitedPoiVisibility(),
-							post_visibility:
-								userVisibilityConfig.postVisibility(),
+							profile: model.profile(),
+							addresses: model.addresses(),
+							spot_folders: model.spotFolders(),
+							visited_spots: model.visitedSpots(),
+							posts: model.posts(),
+							favorite_spots: model.favoriteSpots(),
+							favorite_spot_folders: model.favoriteSpotFolders(),
+							favorite_spot_events: model.favoriteSpotEvents(),
 						},
 					},
 				},

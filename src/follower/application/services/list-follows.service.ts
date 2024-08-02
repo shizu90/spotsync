@@ -56,7 +56,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 				).at(0) !== undefined;
 
 			if (
-				user.visibilityConfiguration().profileVisibility() ===
+				user.visibilityConfiguration().profile() ===
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
@@ -64,7 +64,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			}
 
 			if (
-				user.visibilityConfiguration().profileVisibility() ===
+				user.visibilityConfiguration().profile() ===
 					UserVisibility.FOLLOWERS &&
 				authenticatedUser.id() !== user.id() &&
 				!isFollowingUser
@@ -91,7 +91,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 				).at(0) !== undefined;
 
 			if (
-				user.visibilityConfiguration().profileVisibility() ===
+				user.visibilityConfiguration().profile() ===
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
@@ -99,7 +99,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			}
 
 			if (
-				user.visibilityConfiguration().profileVisibility() ===
+				user.visibilityConfiguration().profile() ===
 					UserVisibility.FOLLOWERS &&
 				authenticatedUser.id() !== user.id() &&
 				!isFollowingUser
@@ -132,28 +132,6 @@ export class ListFollowsService implements ListFollowsUseCase {
 					banner_picture: i.from().bannerPicture(),
 					birth_date: i.from().birthDate(),
 					credentials: { name: i.from().credentials().name() },
-					visibility_config: {
-						profile_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.profileVisibility(),
-						poi_folder_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.poiFolderVisibility(),
-						visited_poi_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.visitedPoiVisibility(),
-						address_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.addressVisibility(),
-						post_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.postVisibility(),
-					},
 				},
 				{
 					id: i.to().id(),
@@ -164,28 +142,6 @@ export class ListFollowsService implements ListFollowsUseCase {
 					banner_picture: i.to().bannerPicture(),
 					birth_date: i.to().birthDate(),
 					credentials: { name: i.to().credentials().name() },
-					visibility_config: {
-						profile_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.profileVisibility(),
-						poi_folder_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.poiFolderVisibility(),
-						visited_poi_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.visitedPoiVisibility(),
-						address_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.addressVisibility(),
-						post_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.postVisibility(),
-					},
 				},
 				i.followedAt(),
 			);

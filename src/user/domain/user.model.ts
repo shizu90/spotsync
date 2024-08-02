@@ -208,19 +208,25 @@ export class User extends Model {
 	}
 
 	public createVisibilityConfig(
-		profileVisibility: UserVisibility,
-		addressVisibility: UserVisibility,
-		postVisibility: UserVisibility,
-		poiFolderVisibility: UserVisibility,
-		visitedPoiVisibility: UserVisibility,
+		profile: UserVisibility,
+		addresses: UserVisibility,
+		spotFolders: UserVisibility,
+		visitedSpots: UserVisibility,
+		posts: UserVisibility,
+		favoriteSpots: UserVisibility,
+		favoriteSpotFolders: UserVisibility,
+		favoriteSpotEvents: UserVisibility,
 	): UserVisibilityConfig {
 		const visibilityConfig = UserVisibilityConfig.create(
 			this._id,
-			profileVisibility,
-			addressVisibility,
-			poiFolderVisibility,
-			visitedPoiVisibility,
-			postVisibility,
+			profile,
+			addresses,
+			spotFolders,
+			visitedSpots,
+			posts,
+			favoriteSpots,
+			favoriteSpotFolders,
+			favoriteSpotEvents,
 		);
 		this._visibilityConfiguration = visibilityConfig;
 

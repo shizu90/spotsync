@@ -9,19 +9,19 @@ export class UpdateGroupVisibilityRequest extends ApiRequest {
 	@IsEnum(GroupVisibility, {
 		message: 'Group visibility must be PUBLIC or PRIVATE.',
 	})
-	public group_visibility?: GroupVisibility;
+	public groups?: GroupVisibility;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsEnum(GroupVisibility, {
-		message: 'Group post visibility must be PUBLIC or PRIVATE.',
+		message: 'Group posts visibility must be PUBLIC or PRIVATE.',
 	})
-	public post_visibility?: GroupVisibility;
+	public posts?: GroupVisibility;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsEnum(GroupVisibility, {
-		message: 'Group event visibility must be PUBLIC or PRIVATE.',
+		message: 'Group spot events visibility must be PUBLIC or PRIVATE.',
 	})
-	public event_visibility?: GroupVisibility;
+	public spot_events?: GroupVisibility;
 }

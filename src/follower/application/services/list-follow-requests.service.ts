@@ -56,7 +56,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 				).at(0) !== undefined;
 
 			if (
-				user.visibilityConfiguration().profileVisibility() ===
+				user.visibilityConfiguration().profile() ===
 					UserVisibility.FOLLOWERS &&
 				authenticatedUser.id() !== user.id() &&
 				!isFollowing
@@ -65,7 +65,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			}
 
 			if (
-				user.visibilityConfiguration().profileVisibility() ===
+				user.visibilityConfiguration().profile() ===
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
@@ -89,7 +89,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 				).at(0) !== undefined;
 
 			if (
-				user.visibilityConfiguration().profileVisibility() ===
+				user.visibilityConfiguration().profile() ===
 					UserVisibility.FOLLOWERS &&
 				authenticatedUser.id() !== user.id() &&
 				!isFollowing
@@ -98,7 +98,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			}
 
 			if (
-				user.visibilityConfiguration().profileVisibility() ===
+				user.visibilityConfiguration().profile() ===
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
@@ -130,28 +130,6 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 					banner_picture: i.from().bannerPicture(),
 					birth_date: i.from().birthDate(),
 					credentials: { name: i.from().credentials().name() },
-					visibility_config: {
-						address_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.addressVisibility(),
-						poi_folder_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.poiFolderVisibility(),
-						post_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.postVisibility(),
-						profile_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.profileVisibility(),
-						visited_poi_visibility: i
-							.from()
-							.visibilityConfiguration()
-							.visitedPoiVisibility(),
-					},
 				},
 				{
 					id: i.to().id(),
@@ -162,28 +140,6 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 					banner_picture: i.to().bannerPicture(),
 					birth_date: i.to().birthDate(),
 					credentials: { name: i.to().credentials().name() },
-					visibility_config: {
-						address_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.addressVisibility(),
-						poi_folder_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.poiFolderVisibility(),
-						post_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.postVisibility(),
-						profile_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.profileVisibility(),
-						visited_poi_visibility: i
-							.to()
-							.visibilityConfiguration()
-							.visitedPoiVisibility(),
-					},
 				},
 				i.requestedOn(),
 			);

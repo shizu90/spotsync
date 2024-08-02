@@ -130,13 +130,6 @@ export class UserController extends ApiController {
 						'string',
 						'string',
 						{
-							address_visibility: 'public',
-							poi_folder_visibility: 'public',
-							post_visibility: 'public',
-							profile_visibility: 'public',
-							visited_poi_visibility: 'public',
-						},
-						{
 							name: 'string',
 						},
 						0,
@@ -201,13 +194,6 @@ export class UserController extends ApiController {
 				'string',
 				'string',
 				{
-					address_visibility: 'public',
-					poi_folder_visibility: 'public',
-					post_visibility: 'public',
-					profile_visibility: 'public',
-					visited_poi_visibility: 'public',
-				},
-				{
 					name: 'string',
 				},
 				0,
@@ -266,11 +252,14 @@ export class UserController extends ApiController {
 				new Date(),
 				new Date(),
 				{
-					address_visibility: 'public',
-					poi_folder_visibility: 'public',
-					post_visibility: 'public',
-					profile_visibility: 'public',
-					visited_poi_visibility: 'public',
+					profile: 'public',
+					addresses: 'public',
+					posts: 'public',
+					visited_spots: 'public',
+					spot_folders: 'public',
+					favorite_spots: 'public',
+					favorite_spot_folders: 'public',
+					favorite_spot_events: 'public',
 				},
 				{
 					name: '',

@@ -44,11 +44,9 @@ describe('UpdateUserVisibilityConfigService', () => {
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 
 		await expect(service.execute(command)).resolves.not.toThrow();
-		expect(user.visibilityConfiguration().profileVisibility()).toBe(
-			command.profileVisibility,
-		);
-		expect(user.visibilityConfiguration().poiFolderVisibility()).toBe(
-			command.poiFolderVisibility,
+		expect(user.visibilityConfiguration().profile()).toBe(command.profile);
+		expect(user.visibilityConfiguration().spotFolders()).toBe(
+			command.spotFolders,
 		);
 	});
 

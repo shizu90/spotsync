@@ -1,12 +1,12 @@
-import { Model } from 'src/common/common.model';
-import { GroupVisibilityConfig } from './group-visibility-config.model';
-import { GroupMember } from './group-member.model';
-import { User } from 'src/user/domain/user.model';
-import { GroupRole } from './group-role.model';
 import { randomUUID } from 'crypto';
-import { GroupVisibility } from './group-visibility.enum';
-import { GroupMemberRequest } from './group-member-request.model';
+import { Model } from 'src/common/common.model';
+import { User } from 'src/user/domain/user.model';
 import { GroupLog } from './group-log.model';
+import { GroupMemberRequest } from './group-member-request.model';
+import { GroupMember } from './group-member.model';
+import { GroupRole } from './group-role.model';
+import { GroupVisibilityConfig } from './group-visibility-config.model';
+import { GroupVisibility } from './group-visibility.enum';
 
 export class Group extends Model {
 	private _id: string;
@@ -135,15 +135,15 @@ export class Group extends Model {
 	}
 
 	public createVisibilityConfig(
-		groupVisibility: GroupVisibility,
-		postVisibility: GroupVisibility,
-		eventVisibility: GroupVisibility,
+		groups: GroupVisibility,
+		posts: GroupVisibility,
+		spotEvents: GroupVisibility,
 	): GroupVisibilityConfig {
 		const groupVisibilityConfig = GroupVisibilityConfig.create(
 			this._id,
-			groupVisibility,
-			postVisibility,
-			eventVisibility,
+			groups,
+			posts,
+			spotEvents,
 		);
 
 		this._visibilityConfiguration = groupVisibilityConfig;
@@ -158,8 +158,7 @@ export class Group extends Model {
 	): GroupMember | GroupMemberRequest {
 		if (
 			!isCreator &&
-			this._visibilityConfiguration.groupVisibility() ===
-				GroupVisibility.PRIVATE
+			this._visibilityConfiguration.groups() === GroupVisibility.PRIVATE
 		) {
 			return this.requestMembership(user);
 		} else {

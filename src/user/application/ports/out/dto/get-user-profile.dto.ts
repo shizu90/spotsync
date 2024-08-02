@@ -11,13 +11,6 @@ export class GetUserProfileDto extends Dto {
 		readonly updated_at: Date,
 		readonly profile_picture: string,
 		readonly banner_picture: string,
-		readonly visibility_configuration: {
-			profile_visibility: string;
-			address_visibility: string;
-			poi_folder_visibility: string;
-			visited_poi_visibility: string;
-			post_visibility: string;
-		},
 		readonly credentials: {
 			name: string;
 		},

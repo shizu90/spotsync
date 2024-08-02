@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { FollowerModule } from './follower/follower.module';
 import { GeolocationModule } from './geolocation/geolocation.module';
@@ -13,7 +13,7 @@ import { UserModule } from './user/user.module';
 	imports: [
 		ConfigModule.forRoot({
 			envFilePath: loadEnvironment(),
-			isGlobal: true
+			isGlobal: true,
 		}),
 		UserModule,
 		AuthModule,

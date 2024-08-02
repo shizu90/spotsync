@@ -1,19 +1,19 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { User } from 'src/user/domain/user.model';
 import { CreateUserCommand } from '../ports/in/commands/create-user.command';
 import { CreateUserUseCase } from '../ports/in/use-cases/create-user.use-case';
-import { randomUUID } from 'crypto';
-import { User } from 'src/user/domain/user.model';
+import { CreateUserDto } from '../ports/out/dto/create-user.dto';
+import {
+	EncryptPasswordService,
+	EncryptPasswordServiceProvider,
+} from '../ports/out/encrypt-password.service';
 import {
 	UserRepository,
 	UserRepositoryProvider,
 } from '../ports/out/user.repository';
 import { UserAlreadyExistsError } from './errors/user-already-exists.error';
-import { Inject, Injectable } from '@nestjs/common';
-import {
-	EncryptPasswordService,
-	EncryptPasswordServiceProvider,
-} from '../ports/out/encrypt-password.service';
-import { CreateUserDto } from '../ports/out/dto/create-user.dto';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 
 @Injectable()
 export class CreateUserService implements CreateUserUseCase {
@@ -63,6 +63,9 @@ export class CreateUserService implements CreateUserUseCase {
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
+			UserVisibility.PUBLIC,
+			UserVisibility.PUBLIC,
+			UserVisibility.PUBLIC,
 		);
 
 		this.userRepository.store(user);
@@ -80,21 +83,18 @@ export class CreateUserService implements CreateUserUseCase {
 			user.createdAt(),
 			user.updatedAt(),
 			{
-				profile_visibility: user
+				profile: user.visibilityConfiguration().profile(),
+				addresses: user.visibilityConfiguration().addresses(),
+				spot_folders: user.visibilityConfiguration().spotFolders(),
+				visited_spots: user.visibilityConfiguration().visitedSpots(),
+				posts: user.visibilityConfiguration().posts(),
+				favorite_spots: user.visibilityConfiguration().favoriteSpots(),
+				favorite_spot_folders: user
 					.visibilityConfiguration()
-					.profileVisibility(),
-				address_visibility: user
+					.favoriteSpotFolders(),
+				favorite_spot_events: user
 					.visibilityConfiguration()
-					.addressVisibility(),
-				poi_folder_visibility: user
-					.visibilityConfiguration()
-					.poiFolderVisibility(),
-				visited_poi_visibility: user
-					.visibilityConfiguration()
-					.visitedPoiVisibility(),
-				post_visibility: user
-					.visibilityConfiguration()
-					.postVisibility(),
+					.favoriteSpotEvents(),
 			},
 			{
 				name: user.credentials().name(),

@@ -25,9 +25,9 @@ export class GroupRepositoryImpl implements GroupRepository {
 			prisma_model.banner_picture,
 			GroupVisibilityConfig.create(
 				prisma_model.id,
-				prisma_model.visibility_configuration.post_visibility,
-				prisma_model.visibility_configuration.event_visibility,
-				prisma_model.visibility_configuration.group_visibility,
+				prisma_model.visibility_configuration.posts,
+				prisma_model.visibility_configuration.spot_events,
+				prisma_model.visibility_configuration.groups,
 			),
 			prisma_model.created_at,
 			prisma_model.updated_at,
@@ -345,15 +345,11 @@ export class GroupRepositoryImpl implements GroupRepository {
 				banner_picture: model.bannerPicture(),
 				visibility_configuration: {
 					create: {
-						event_visibility: model
+						spot_events: model
 							.visibilityConfiguration()
-							.eventVisibility(),
-						post_visibility: model
-							.visibilityConfiguration()
-							.postVisibility(),
-						group_visibility: model
-							.visibilityConfiguration()
-							.groupVisibility(),
+							.spotEvents(),
+						posts: model.visibilityConfiguration().posts(),
+						groups: model.visibilityConfiguration().groups(),
 					},
 				},
 				created_at: model.createdAt(),
@@ -414,9 +410,9 @@ export class GroupRepositoryImpl implements GroupRepository {
 			data: {
 				visibility_configuration: {
 					update: {
-						event_visibility: model.eventVisibility(),
-						group_visibility: model.groupVisibility(),
-						post_visibility: model.postVisibility(),
+						spot_events: model.spotEvents(),
+						groups: model.groups(),
+						posts: model.posts(),
 					},
 				},
 			},

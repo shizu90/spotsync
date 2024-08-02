@@ -1,12 +1,12 @@
 import { randomUUID } from 'crypto';
 import { GroupMemberRequest } from 'src/group/domain/group-member-request.model';
 import { GroupMember } from 'src/group/domain/group-member.model';
+import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
 import { GroupRole } from 'src/group/domain/group-role.model';
 import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
-import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
 import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
@@ -33,6 +33,9 @@ export const mockUser = (): User => {
 		),
 		UserVisibilityConfig.create(
 			id,
+			UserVisibility.PUBLIC,
+			UserVisibility.PUBLIC,
+			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,

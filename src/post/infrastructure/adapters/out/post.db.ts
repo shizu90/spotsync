@@ -56,16 +56,17 @@ export class PostRepositoryImpl implements PostRepository {
 				),
 				UserVisibilityConfig.create(
 					prisma_model.creator.id,
+					prisma_model.creator.visibility_configuration.profile,
+					prisma_model.creator.visibility_configuration.addresses,
+					prisma_model.creator.visibility_configuration.spot_folders,
+					prisma_model.creator.visibility_configuration.visited_spots,
+					prisma_model.creator.visibility_configuration.posts,
 					prisma_model.creator.visibility_configuration
-						.profile_visibility,
+						.favorite_spots,
 					prisma_model.creator.visibility_configuration
-						.address_visibility,
+						.favorite_spot_folders,
 					prisma_model.creator.visibility_configuration
-						.poi_folder_visibility,
-					prisma_model.creator.visibility_configuration
-						.visited_poi_visibility,
-					prisma_model.creator.visibility_configuration
-						.post_visibility,
+						.favorite_spot_events,
 				),
 				prisma_model.creator.created_at,
 				prisma_model.creator.updated_at,

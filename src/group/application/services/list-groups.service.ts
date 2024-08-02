@@ -62,15 +62,11 @@ export class ListGroupsService implements ListGroupsUseCase {
 					g.groupPicture(),
 					g.bannerPicture(),
 					{
-						group_visibility: g
-							.visibilityConfiguration()
-							.groupVisibility(),
-						post_visibility: g
-							.visibilityConfiguration()
-							.postVisibility(),
+						group_visibility: g.visibilityConfiguration().groups(),
+						post_visibility: g.visibilityConfiguration().posts(),
 						event_visibility: g
 							.visibilityConfiguration()
-							.eventVisibility(),
+							.spotEvents(),
 					},
 					g.createdAt(),
 					g.updatedAt(),

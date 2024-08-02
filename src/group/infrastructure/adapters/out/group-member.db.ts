@@ -33,11 +33,9 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				prisma_model.group.banner_picture,
 				GroupVisibilityConfig.create(
 					prisma_model.group.id,
-					prisma_model.group.visibility_configuration.post_visibility,
-					prisma_model.group.visibility_configuration
-						.event_visibility,
-					prisma_model.group.visibility_configuration
-						.group_visibility,
+					prisma_model.group.visibility_configuration.posts,
+					prisma_model.group.visibility_configuration.spot_events,
+					prisma_model.group.visibility_configuration.groups,
 				),
 				prisma_model.group.created_at,
 				prisma_model.group.updated_at,
@@ -63,15 +61,16 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				),
 				UserVisibilityConfig.create(
 					prisma_model.user.id,
+					prisma_model.user.visibility_configuration.profile,
+					prisma_model.user.visibility_configuration.addresses,
+					prisma_model.user.visibility_configuration.spot_folders,
+					prisma_model.user.visibility_configuration.visited_spots,
+					prisma_model.user.visibility_configuration.posts,
+					prisma_model.user.visibility_configuration.favorite_spots,
 					prisma_model.user.visibility_configuration
-						.profile_visibility,
+						.favorite_spot_folders,
 					prisma_model.user.visibility_configuration
-						.address_visibility,
-					prisma_model.user.visibility_configuration
-						.poi_folder_visibility,
-					prisma_model.user.visibility_configuration
-						.visited_poi_visibility,
-					prisma_model.user.visibility_configuration.post_visibility,
+						.favorite_spot_events,
 				),
 				prisma_model.user.created_at,
 				prisma_model.user.updated_at,
@@ -109,11 +108,9 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				prisma_model.group.banner_picture,
 				GroupVisibilityConfig.create(
 					prisma_model.group.id,
-					prisma_model.group.visibility_configuration.post_visibility,
-					prisma_model.group.visibility_configuration
-						.event_visibility,
-					prisma_model.group.visibility_configuration
-						.group_visibility,
+					prisma_model.group.visibility_configuration.posts,
+					prisma_model.group.visibility_configuration.spot_events,
+					prisma_model.group.visibility_configuration.groups,
 				),
 				prisma_model.group.created_at,
 				prisma_model.group.updated_at,
@@ -139,15 +136,16 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				),
 				UserVisibilityConfig.create(
 					prisma_model.user.id,
+					prisma_model.user.visibility_configuration.profile,
+					prisma_model.user.visibility_configuration.addresses,
+					prisma_model.user.visibility_configuration.spot_folders,
+					prisma_model.user.visibility_configuration.visited_spots,
+					prisma_model.user.visibility_configuration.posts,
+					prisma_model.user.visibility_configuration.favorite_spots,
 					prisma_model.user.visibility_configuration
-						.profile_visibility,
+						.favorite_spot_folders,
 					prisma_model.user.visibility_configuration
-						.address_visibility,
-					prisma_model.user.visibility_configuration
-						.poi_folder_visibility,
-					prisma_model.user.visibility_configuration
-						.visited_poi_visibility,
-					prisma_model.user.visibility_configuration.post_visibility,
+						.favorite_spot_events,
 				),
 				prisma_model.user.created_at,
 				prisma_model.user.updated_at,

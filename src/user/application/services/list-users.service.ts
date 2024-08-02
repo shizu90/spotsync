@@ -72,13 +72,13 @@ export class ListUsersService implements ListUsersUseCase {
 
 				if (authenticatedUser.id() !== u.id()) {
 					if (
-						u.visibilityConfiguration().addressVisibility() ===
+						u.visibilityConfiguration().addresses() ===
 						UserVisibility.PRIVATE
 					) {
 						userMainAddress = undefined;
 					}
 					if (
-						u.visibilityConfiguration().addressVisibility() ===
+						u.visibilityConfiguration().addresses() ===
 							UserVisibility.FOLLOWERS &&
 						!isFollowing
 					) {
@@ -103,23 +103,6 @@ export class ListUsersService implements ListUsersUseCase {
 					u.updatedAt(),
 					u.profilePicture(),
 					u.bannerPicture(),
-					{
-						profile_visibility: u
-							.visibilityConfiguration()
-							.profileVisibility(),
-						address_visibility: u
-							.visibilityConfiguration()
-							.addressVisibility(),
-						poi_folder_visibility: u
-							.visibilityConfiguration()
-							.poiFolderVisibility(),
-						visited_poi_visibility: u
-							.visibilityConfiguration()
-							.visitedPoiVisibility(),
-						post_visibility: u
-							.visibilityConfiguration()
-							.postVisibility(),
-					},
 					{ name: u.credentials().name() },
 					totalFollowers,
 					totalFollowing,

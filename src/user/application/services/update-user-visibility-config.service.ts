@@ -33,38 +33,43 @@ export class UpdateUserVisibilityConfigService
 
 		const userVisibilityConfig = user.visibilityConfiguration();
 
-		if (command.profileVisibility && command.profileVisibility !== null) {
-			userVisibilityConfig.changeProfileVisibility(
-				command.profileVisibility,
-			);
+		if (command.profile && command.profile !== null) {
+			userVisibilityConfig.changeProfile(command.profile);
 		}
 
-		if (command.addressVisibility && command.addressVisibility !== null) {
-			userVisibilityConfig.changeAddressVisibility(
-				command.addressVisibility,
-			);
+		if (command.addresses && command.addresses !== null) {
+			userVisibilityConfig.changeAddresses(command.addresses);
+		}
+
+		if (command.spotFolders && command.spotFolders !== null) {
+			userVisibilityConfig.changeSpotFolders(command.spotFolders);
+		}
+
+		if (command.visitedSpots && command.visitedSpots !== null) {
+			userVisibilityConfig.changeVisitedSpots(command.visitedSpots);
+		}
+
+		if (command.posts && command.posts !== null) {
+			userVisibilityConfig.changePosts(command.posts);
+		}
+
+		if (command.favoriteSpots && command.favoriteSpots !== null) {
+			userVisibilityConfig.changeFavoriteSpots(command.favoriteSpots);
 		}
 
 		if (
-			command.poiFolderVisibility &&
-			command.poiFolderVisibility !== null
+			command.favoriteSpotFolders &&
+			command.favoriteSpotFolders !== null
 		) {
-			userVisibilityConfig.changePoiFolderVisibility(
-				command.poiFolderVisibility,
+			userVisibilityConfig.changeFavoriteSpotFolders(
+				command.favoriteSpotFolders,
 			);
 		}
 
-		if (
-			command.visitedPoiVisibility &&
-			command.visitedPoiVisibility !== null
-		) {
-			userVisibilityConfig.changeVisitedPoiVisibility(
-				command.visitedPoiVisibility,
+		if (command.favoriteSpotEvents && command.favoriteSpotEvents !== null) {
+			userVisibilityConfig.changeFavoriteSpotEvents(
+				command.favoriteSpotEvents,
 			);
-		}
-
-		if (command.postVisibility && command.postVisibility !== null) {
-			userVisibilityConfig.changePostVisibility(command.postVisibility);
 		}
 
 		user.changeVisibilityConfig(userVisibilityConfig);

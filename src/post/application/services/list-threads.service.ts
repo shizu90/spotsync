@@ -72,7 +72,7 @@ export class ListThreadsService implements ListThreadsUseCase {
 				throw new GroupNotFoundError(`Group not found`);
 			}
 
-			switch (group.visibilityConfiguration().postVisibility()) {
+			switch (group.visibilityConfiguration().posts()) {
 				case GroupVisibility.PRIVATE:
 					const groupMember = await this.groupMemberRepository.findBy(
 						{
@@ -107,7 +107,7 @@ export class ListThreadsService implements ListThreadsUseCase {
 				throw new UserNotFoundError(`User not found`);
 			}
 
-			switch (user.visibilityConfiguration().postVisibility()) {
+			switch (user.visibilityConfiguration().posts()) {
 				case UserVisibility.FOLLOWERS:
 					const follow = (
 						await this.followRepository.findBy({

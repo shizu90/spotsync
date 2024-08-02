@@ -14,11 +14,14 @@ export class CreateUserDto extends Dto {
 		readonly created_at: Date,
 		readonly updated_at: Date,
 		readonly visibility_configuration: {
-			profile_visibility: string;
-			address_visibility: string;
-			poi_folder_visibility: string;
-			visited_poi_visibility: string;
-			post_visibility: string;
+			profile: string;
+			addresses: string;
+			spot_folders: string;
+			visited_spots: string;
+			posts: string;
+			favorite_spots: string;
+			favorite_spot_folders: string;
+			favorite_spot_events: string;
 		},
 		readonly credentials: {
 			name: string;

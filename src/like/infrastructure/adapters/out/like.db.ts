@@ -40,15 +40,16 @@ export class LikeRepositoryImpl implements LikeRepository {
 				),
 				UserVisibilityConfig.create(
 					prisma_model.user.id,
+					prisma_model.user.visibility_configuration.profile,
+					prisma_model.user.visibility_configuration.addresses,
+					prisma_model.user.visibility_configuration.spot_folders,
+					prisma_model.user.visibility_configuration.visited_spots,
+					prisma_model.user.visibility_configuration.posts,
+					prisma_model.user.visibility_configuration.favorite_spots,
 					prisma_model.user.visibility_configuration
-						.profile_visibility,
+						.favorite_spot_folders,
 					prisma_model.user.visibility_configuration
-						.address_visibility,
-					prisma_model.user.visibility_configuration
-						.poi_folder_visibility,
-					prisma_model.user.visibility_configuration
-						.visited_poi_visibility,
-					prisma_model.user.visibility_configuration.post_visibility,
+						.favorite_spot_events,
 				),
 				prisma_model.user.created_at,
 				prisma_model.user.updated_at,

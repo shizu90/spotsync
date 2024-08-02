@@ -57,15 +57,9 @@ export class GetGroupService implements GetGroupUseCase {
 			group.groupPicture(),
 			group.bannerPicture(),
 			{
-				group_visibility: group
-					.visibilityConfiguration()
-					.groupVisibility(),
-				post_visibility: group
-					.visibilityConfiguration()
-					.postVisibility(),
-				event_visibility: group
-					.visibilityConfiguration()
-					.eventVisibility(),
+				group_visibility: group.visibilityConfiguration().groups(),
+				post_visibility: group.visibilityConfiguration().posts(),
+				event_visibility: group.visibilityConfiguration().spotEvents(),
 			},
 			group.createdAt(),
 			group.updatedAt(),

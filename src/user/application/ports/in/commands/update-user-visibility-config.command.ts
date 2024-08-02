@@ -4,11 +4,14 @@ import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 export class UpdateUserVisibilityConfigCommand extends Command {
 	constructor(
 		readonly userId: string,
-		readonly profileVisibility?: UserVisibility,
-		readonly poiFolderVisibility?: UserVisibility,
-		readonly visitedPoiVisibility?: UserVisibility,
-		readonly addressVisibility?: UserVisibility,
-		readonly postVisibility?: UserVisibility,
+		readonly profile?: UserVisibility,
+		readonly spotFolders?: UserVisibility,
+		readonly visitedSpots?: UserVisibility,
+		readonly addresses?: UserVisibility,
+		readonly posts?: UserVisibility,
+		readonly favoriteSpots?: UserVisibility,
+		readonly favoriteSpotFolders?: UserVisibility,
+		readonly favoriteSpotEvents?: UserVisibility,
 	) {
 		super();
 	}

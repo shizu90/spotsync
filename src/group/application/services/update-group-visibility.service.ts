@@ -66,33 +66,29 @@ export class UpdateGroupVisibilityService
 		}
 
 		if (
-			command.eventVisibility &&
-			command.eventVisibility !== null &&
-			command.eventVisibility.length > 0
+			command.spotEvents &&
+			command.spotEvents !== null &&
+			command.spotEvents.length > 0
 		) {
 			group
 				.visibilityConfiguration()
-				.changeEventVisibility(command.eventVisibility);
+				.changeSpotEvents(command.spotEvents);
 		}
 
 		if (
-			command.postVisibility &&
-			command.postVisibility !== null &&
-			command.postVisibility.length > 0
+			command.posts &&
+			command.posts !== null &&
+			command.posts.length > 0
 		) {
-			group
-				.visibilityConfiguration()
-				.changePostVisibility(command.postVisibility);
+			group.visibilityConfiguration().changePosts(command.posts);
 		}
 
 		if (
-			command.groupVisibility &&
-			command.groupVisibility !== null &&
-			command.groupVisibility.length > 0
+			command.groups &&
+			command.groups !== null &&
+			command.groups.length > 0
 		) {
-			group
-				.visibilityConfiguration()
-				.changeGroupVisibility(command.groupVisibility);
+			group.visibilityConfiguration().changeGroups(command.groups);
 		}
 
 		this.groupRepository.updateVisibilityConfiguration(

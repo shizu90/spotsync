@@ -3,62 +3,57 @@ import { GroupVisibility } from './group-visibility.enum';
 
 export class GroupVisibilityConfig extends Model {
 	private _id: string;
-	private _postVisibility: string;
-	private _eventVisibility: string;
-	private _groupVisibility: string;
+	private _posts: string;
+	private _spotEvents: string;
+	private _groups: string;
 
 	private constructor(
 		id: string,
-		postVisibility: string,
-		eventVisibility: string,
-		groupVisibility: string,
+		posts: string,
+		spotEvents: string,
+		groups: string,
 	) {
 		super();
 		this._id = id;
-		this._postVisibility = postVisibility;
-		this._eventVisibility = eventVisibility;
-		this._groupVisibility = groupVisibility;
+		this._posts = posts;
+		this._spotEvents = spotEvents;
+		this._groups = groups;
 	}
 
 	public static create(
 		id: string,
-		postVisibility: string,
-		eventVisibility: string,
-		groupVisibility: string,
+		posts: string,
+		spotEvents: string,
+		groups: string,
 	): GroupVisibilityConfig {
-		return new GroupVisibilityConfig(
-			id,
-			postVisibility,
-			eventVisibility,
-			groupVisibility,
-		);
+		return new GroupVisibilityConfig(id, posts, spotEvents, groups);
 	}
 
 	public id(): string {
 		return this._id;
 	}
 
-	public postVisibility(): string {
-		return this._postVisibility;
+	public posts(): string {
+		return this._posts;
 	}
 
-	public eventVisibility(): string {
-		return this._eventVisibility;
+	public spotEvents(): string {
+		return this._spotEvents;
 	}
 
-	public groupVisibility(): string {
-		return this._groupVisibility;
+	public groups(): string {
+		return this._groups;
 	}
 
-	public changePostVisibility(postVisibility: GroupVisibility): void {
-		this._postVisibility = postVisibility;
+	public changePosts(posts: GroupVisibility): void {
+		this._posts = posts;
 	}
 
-	public changeEventVisibility(eventVisibility: GroupVisibility): void {
-		this._eventVisibility = eventVisibility;
+	public changeSpotEvents(spotEvents: GroupVisibility): void {
+		this._spotEvents = spotEvents;
 	}
 
-	public changeGroupVisibility(groupVisibility: GroupVisibility): void {
-		this._groupVisibility = groupVisibility;
+	public changeGroups(groups: GroupVisibility): void {
+		this._groups = groups;
 	}
 }

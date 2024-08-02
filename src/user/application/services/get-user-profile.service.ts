@@ -66,13 +66,13 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 
 		if (authenticatedUser.id() !== user.id()) {
 			if (
-				user.visibilityConfiguration().addressVisibility() ===
+				user.visibilityConfiguration().addresses() ===
 				UserVisibility.PRIVATE
 			) {
 				userMainAddress = undefined;
 			}
 			if (
-				user.visibilityConfiguration().addressVisibility() ===
+				user.visibilityConfiguration().addresses() ===
 					UserVisibility.FOLLOWERS &&
 				!isFollowing
 			) {
@@ -97,23 +97,6 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 			user.updatedAt(),
 			user.profilePicture(),
 			user.bannerPicture(),
-			{
-				profile_visibility: user
-					.visibilityConfiguration()
-					.profileVisibility(),
-				address_visibility: user
-					.visibilityConfiguration()
-					.addressVisibility(),
-				poi_folder_visibility: user
-					.visibilityConfiguration()
-					.poiFolderVisibility(),
-				visited_poi_visibility: user
-					.visibilityConfiguration()
-					.visitedPoiVisibility(),
-				post_visibility: user
-					.visibilityConfiguration()
-					.postVisibility(),
-			},
 			{
 				name: user.credentials().name(),
 			},

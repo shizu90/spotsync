@@ -38,12 +38,10 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 						prisma_model.group.banner_picture,
 						GroupVisibilityConfig.create(
 							prisma_model.group.id,
+							prisma_model.group.visibility_configuration.posts,
 							prisma_model.group.visibility_configuration
-								.post_visibility,
-							prisma_model.group.visibility_configuration
-								.event_visibility,
-							prisma_model.group.visibility_configuration
-								.group_visibility,
+								.spot_events,
+							prisma_model.group.visibility_configuration.groups,
 						),
 						prisma_model.group.created_at,
 						prisma_model.group.updated_at,

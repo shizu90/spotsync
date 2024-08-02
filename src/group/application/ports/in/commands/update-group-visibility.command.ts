@@ -4,9 +4,9 @@ import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 export class UpdateGroupVisibilityCommand extends Command {
 	constructor(
 		readonly id: string,
-		readonly groupVisibility?: GroupVisibility,
-		readonly postVisibility?: GroupVisibility,
-		readonly eventVisibility?: GroupVisibility,
+		readonly groups?: GroupVisibility,
+		readonly posts?: GroupVisibility,
+		readonly spotEvents?: GroupVisibility,
 	) {
 		super();
 	}

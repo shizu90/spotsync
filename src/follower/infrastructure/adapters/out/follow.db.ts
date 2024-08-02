@@ -40,16 +40,19 @@ export class FollowRepositoryImpl implements FollowRepository {
 				),
 				UserVisibilityConfig.create(
 					prisma_model.from_user.id,
+					prisma_model.from_user.visibility_configuration.profile,
+					prisma_model.from_user.visibility_configuration.addresses,
 					prisma_model.from_user.visibility_configuration
-						.profile_visibility,
+						.spot_folders,
 					prisma_model.from_user.visibility_configuration
-						.address_visiblity,
+						.visited_spots,
+					prisma_model.from_user.visibility_configuration.posts,
 					prisma_model.from_user.visibility_configuration
-						.poi_folder_visibility,
+						.favorite_spots,
 					prisma_model.from_user.visibility_configuration
-						.visited_poi_visibility,
+						.favorite_spot_folders,
 					prisma_model.from_user.visibility_configuration
-						.post_visibility,
+						.favorite_spot_events,
 				),
 				prisma_model.from_user.created_at,
 				prisma_model.from_user.updated_at,
@@ -75,16 +78,17 @@ export class FollowRepositoryImpl implements FollowRepository {
 				),
 				UserVisibilityConfig.create(
 					prisma_model.to_user.id,
+					prisma_model.to_user.visibility_configuration.profile,
+					prisma_model.to_user.visibility_configuration.addresses,
+					prisma_model.to_user.visibility_configuration.spot_folders,
+					prisma_model.to_user.visibility_configuration.visited_spots,
+					prisma_model.to_user.visibility_configuration.posts,
 					prisma_model.to_user.visibility_configuration
-						.profile_visibility,
+						.favorite_spots,
 					prisma_model.to_user.visibility_configuration
-						.address_visiblity,
+						.favorite_spot_folders,
 					prisma_model.to_user.visibility_configuration
-						.poi_folder_visibility,
-					prisma_model.to_user.visibility_configuration
-						.visited_poi_visibility,
-					prisma_model.to_user.visibility_configuration
-						.post_visibility,
+						.favorite_spot_events,
 				),
 				prisma_model.to_user.created_at,
 				prisma_model.to_user.updated_at,
@@ -119,16 +123,19 @@ export class FollowRepositoryImpl implements FollowRepository {
 				),
 				UserVisibilityConfig.create(
 					prisma_model.from_user.id,
+					prisma_model.from_user.visibility_configuration.profile,
+					prisma_model.from_user.visibility_configuration.addresses,
 					prisma_model.from_user.visibility_configuration
-						.profile_visibility,
+						.spot_folders,
 					prisma_model.from_user.visibility_configuration
-						.address_visiblity,
+						.visited_spots,
+					prisma_model.from_user.visibility_configuration.posts,
 					prisma_model.from_user.visibility_configuration
-						.poi_folder_visibility,
+						.favorite_spots,
 					prisma_model.from_user.visibility_configuration
-						.visited_poi_visibility,
+						.favorite_spot_folders,
 					prisma_model.from_user.visibility_configuration
-						.post_visibility,
+						.favorite_spot_events,
 				),
 				prisma_model.from_user.created_at,
 				prisma_model.from_user.updated_at,
@@ -154,16 +161,17 @@ export class FollowRepositoryImpl implements FollowRepository {
 				),
 				UserVisibilityConfig.create(
 					prisma_model.to_user.id,
+					prisma_model.to_user.visibility_configuration.profile,
+					prisma_model.to_user.visibility_configuration.addresses,
+					prisma_model.to_user.visibility_configuration.spot_folders,
+					prisma_model.to_user.visibility_configuration.visited_spots,
+					prisma_model.to_user.visibility_configuration.posts,
 					prisma_model.to_user.visibility_configuration
-						.profile_visibility,
+						.favorite_spots,
 					prisma_model.to_user.visibility_configuration
-						.address_visiblity,
+						.favorite_spot_folders,
 					prisma_model.to_user.visibility_configuration
-						.poi_folder_visibility,
-					prisma_model.to_user.visibility_configuration
-						.visited_poi_visibility,
-					prisma_model.to_user.visibility_configuration
-						.post_visibility,
+						.favorite_spot_events,
 				),
 				prisma_model.to_user.created_at,
 				prisma_model.to_user.updated_at,
