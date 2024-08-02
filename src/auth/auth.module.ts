@@ -11,7 +11,7 @@ import { AuthController } from './infrastructure/adapters/in/web/auth.controller
 		JwtModule.register({
 			global: true,
 			secret: env.JWT_SECRET,
-			signOptions: { expiresIn: '240S' },
+			signOptions: { expiresIn: env.JWT_EXPIRATION_TIME },
 		}),
 	],
 	providers: [...Providers],
