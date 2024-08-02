@@ -50,6 +50,7 @@
     "@automock/adapters.nestjs": "^2.1.0",
     "@automock/jest": "^2.1.0",
     "@nestjs/cli": "^10.3.1",
+    "@nestjs/config": "^3.2.3",
     "@nestjs/schematics": "^10.1.0",
     "@nestjs/testing": "^10.3.2",
     "@swc/cli": "^0.3.9",

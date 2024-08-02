@@ -9,12 +9,8 @@ services:
       - 3000:3000
     depends_on:
       - db
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRATION_TIME=${JWT_EXPIRATION_TIME}
-      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
-      - GOOGLE_MAPS_API_SECRET=${GOOGLE_MAPS_API_SECRET}
-      - DATABASE_URL=${DATABASE_DRIVER}://${DATABASE_USER}:${DATABASE_PASSWORD}@db:${DATABASE_PORT}/${DATABASE_NAME}
+    env_file:
+      - .development.env
     volumes:
       - './src:/app/src'
       - './test:/app/test'
