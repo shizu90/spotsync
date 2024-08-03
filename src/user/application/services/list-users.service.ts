@@ -104,6 +104,16 @@ export class ListUsersService implements ListUsersUseCase {
 					u.profilePicture(),
 					u.bannerPicture(),
 					{ name: u.credentials().name() },
+					{
+						profile: u.visibilityConfiguration().profile(),
+						addresses: u.visibilityConfiguration().addresses(),
+						favorite_spot_events: u.visibilityConfiguration().favoriteSpotEvents(),
+						favorite_spot_folders: u.visibilityConfiguration().favoriteSpotFolders(),
+						favorite_spots: u.visibilityConfiguration().favoriteSpots(),
+						posts: u.visibilityConfiguration().posts(),
+						spot_folders: u.visibilityConfiguration().spotFolders(),
+						visited_spots: u.visibilityConfiguration().visitedSpots(),
+					},
 					totalFollowers,
 					totalFollowing,
 					userMainAddress

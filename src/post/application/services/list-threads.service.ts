@@ -166,6 +166,10 @@ export class ListThreadsService implements ListThreadsUseCase {
 						})
 					).at(0) !== undefined;
 
+				const totalChildrens = await this.postRepository.countBy({
+					parentId: i.id()
+				});
+
 				return new GetPostDto(
 					i.id(),
 					i.title(),
@@ -194,7 +198,7 @@ export class ListThreadsService implements ListThreadsUseCase {
 					i.parent() ? i.parent().id() : null,
 					i.group() ? i.group().id() : null,
 					[],
-					i.childrens().length,
+					totalChildrens,
 					totalLikes,
 					liked,
 				);

@@ -3,15 +3,15 @@ import { GroupVisibility } from './group-visibility.enum';
 
 export class GroupVisibilityConfig extends Model {
 	private _id: string;
-	private _posts: string;
-	private _spotEvents: string;
-	private _groups: string;
+	private _posts: GroupVisibility;
+	private _spotEvents: GroupVisibility;
+	private _groups: GroupVisibility;
 
 	private constructor(
 		id: string,
-		posts: string,
-		spotEvents: string,
-		groups: string,
+		posts: GroupVisibility,
+		spotEvents: GroupVisibility,
+		groups: GroupVisibility,
 	) {
 		super();
 		this._id = id;
@@ -22,9 +22,9 @@ export class GroupVisibilityConfig extends Model {
 
 	public static create(
 		id: string,
-		posts: string,
-		spotEvents: string,
-		groups: string,
+		posts: GroupVisibility,
+		spotEvents: GroupVisibility,
+		groups: GroupVisibility,
 	): GroupVisibilityConfig {
 		return new GroupVisibilityConfig(id, posts, spotEvents, groups);
 	}
@@ -33,15 +33,15 @@ export class GroupVisibilityConfig extends Model {
 		return this._id;
 	}
 
-	public posts(): string {
+	public posts(): GroupVisibility {
 		return this._posts;
 	}
 
-	public spotEvents(): string {
+	public spotEvents(): GroupVisibility {
 		return this._spotEvents;
 	}
 
-	public groups(): string {
+	public groups(): GroupVisibility {
 		return this._groups;
 	}
 

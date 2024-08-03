@@ -14,6 +14,16 @@ export class GetUserProfileDto extends Dto {
 		readonly credentials: {
 			name: string;
 		},
+		readonly visibility_configuration: {
+			profile: string,
+			addresses: string,
+			visited_spots: string,
+			posts: string,
+			favorite_spots: string,
+			favorite_spot_events: string,
+			favorite_spot_folders: string,
+			spot_folders: string,
+		},
 		readonly total_followers: number,
 		readonly total_following: number,
 		readonly address?: {

@@ -3,25 +3,25 @@ import { UserVisibility } from './user-visibility.enum';
 
 export class UserVisibilityConfig extends Model {
 	private _id: string;
-	private _profile: string;
-	private _addresses: string;
-	private _spotFolders: string;
-	private _visitedSpots: string;
-	private _posts: string;
-	private _favoriteSpots: string;
-	private _favoriteSpotFolders: string;
-	private _favoriteSpotEvents: string;
+	private _profile: UserVisibility;
+	private _addresses: UserVisibility;
+	private _spotFolders: UserVisibility;
+	private _visitedSpots: UserVisibility;
+	private _posts: UserVisibility;
+	private _favoriteSpots: UserVisibility;
+	private _favoriteSpotFolders: UserVisibility;
+	private _favoriteSpotEvents: UserVisibility;
 
 	private constructor(
 		id: string,
-		profile: string,
-		addresses: string,
-		spotFolders: string,
-		visitedSpots: string,
-		posts: string,
-		favoriteSpots: string,
-		favoriteSpotFolders: string,
-		favoriteSpotEvents: string,
+		profile: UserVisibility,
+		addresses: UserVisibility,
+		spotFolders: UserVisibility,
+		visitedSpots: UserVisibility,
+		posts: UserVisibility,
+		favoriteSpots: UserVisibility,
+		favoriteSpotFolders: UserVisibility,
+		favoriteSpotEvents: UserVisibility,
 	) {
 		super();
 		this._id = id;
@@ -37,14 +37,14 @@ export class UserVisibilityConfig extends Model {
 
 	public static create(
 		id: string,
-		profile: string,
-		addresses: string,
-		spotFolders: string,
-		visitedSpots: string,
-		posts: string,
-		favoriteSpots: string,
-		favoriteSpotFolders: string,
-		favoriteSpotEvents: string,
+		profile: UserVisibility,
+		addresses: UserVisibility,
+		spotFolders: UserVisibility,
+		visitedSpots: UserVisibility,
+		posts: UserVisibility,
+		favoriteSpots: UserVisibility,
+		favoriteSpotFolders: UserVisibility,
+		favoriteSpotEvents: UserVisibility,
 	): UserVisibilityConfig {
 		return new UserVisibilityConfig(
 			id,
@@ -63,35 +63,35 @@ export class UserVisibilityConfig extends Model {
 		return this._id;
 	}
 
-	public profile(): string {
+	public profile(): UserVisibility {
 		return this._profile;
 	}
 
-	public addresses(): string {
+	public addresses(): UserVisibility {
 		return this._addresses;
 	}
 
-	public spotFolders(): string {
+	public spotFolders(): UserVisibility {
 		return this._spotFolders;
 	}
 
-	public visitedSpots(): string {
+	public visitedSpots(): UserVisibility {
 		return this._visitedSpots;
 	}
 
-	public posts(): string {
+	public posts(): UserVisibility {
 		return this._posts;
 	}
 
-	public favoriteSpots(): string {
+	public favoriteSpots(): UserVisibility {
 		return this._favoriteSpots;
 	}
 
-	public favoriteSpotFolders(): string {
+	public favoriteSpotFolders(): UserVisibility {
 		return this._favoriteSpotFolders;
 	}
 
-	public favoriteSpotEvents(): string {
+	public favoriteSpotEvents(): UserVisibility {
 		return this._favoriteSpotEvents;
 	}
 

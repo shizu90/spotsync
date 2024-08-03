@@ -2,13 +2,14 @@ import { Model } from "src/common/common.model";
 import { User } from "src/user/domain/user.model";
 import { SpotAddress } from "./spot-address.model";
 import { SpotPhoto } from "./spot-photo.model";
+import { SpotType } from "./spot-type.enum";
 
 export class Spot extends Model 
 {
     private _id: string;
     private _name: string;
     private _description: string;
-    private _type: string;
+    private _type: SpotType;
     private _address: SpotAddress;
     private _photos: SpotPhoto[];
     private _creator: User;
@@ -19,7 +20,7 @@ export class Spot extends Model
         id: string,
         name: string,
         description: string,
-        type: string,
+        type: SpotType,
         address: SpotAddress,
         photos: SpotPhoto[],
         creator: User,
@@ -42,7 +43,7 @@ export class Spot extends Model
         id: string,
         name: string,
         description: string,
-        type: string,
+        type: SpotType,
         address: SpotAddress,
         photos: SpotPhoto[],
         creator: User,
@@ -64,7 +65,7 @@ export class Spot extends Model
         return this._description;
     }
 
-    public type(): string {
+    public type(): SpotType {
         return this._type;
     }
 
@@ -98,7 +99,7 @@ export class Spot extends Model
         this._updatedAt = new Date();
     }
 
-    public changeType(type: string): void {
+    public changeType(type: SpotType): void {
         this._type = type;
         this._updatedAt = new Date();
     }

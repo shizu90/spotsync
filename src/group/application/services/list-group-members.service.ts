@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/common.repository';
+import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { ListGroupMembersCommand } from '../ports/in/commands/list-group-members.command';
 import { ListGroupMembersUseCase } from '../ports/in/use-cases/list-group-members.use-case';
 import { GetGroupMemberDto } from '../ports/out/dto/get-group-member.dto';
@@ -32,7 +33,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 			throw new GroupNotFoundError(`Group not found`);
 		}
 
-		if (group.visibilityConfiguration().groups() === 'PRIVATE') {
+		if (group.visibilityConfiguration().groups() === GroupVisibility.PRIVATE) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		} else {
 			const pagination = await this.groupMemberRepository.paginate({

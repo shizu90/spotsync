@@ -5,7 +5,7 @@ export class SpotAddress extends Model
     private _id: string;
     private _area: string;
     private _subArea: string;
-    private _locality: string;
+    private _locality?: string;
     private _latitude: number;
     private _longitude: number;
     private _countryCode: string;
@@ -14,10 +14,10 @@ export class SpotAddress extends Model
         id: string,
         area: string,
         subArea: string,
-        locality: string,
         latitude: number,
         longitude: number,
         countryCode: string,
+        locality?: string,
     ) {
         super();
         this._id = id;
@@ -33,12 +33,12 @@ export class SpotAddress extends Model
         id: string,
         area: string,
         subArea: string,
-        locality: string,
         latitude: number,
         longitude: number,
         countryCode: string,
+        locality?: string,
     ) {
-        return new SpotAddress(id, area, subArea, locality, latitude, longitude, countryCode);
+        return new SpotAddress(id, area, subArea, latitude, longitude, countryCode, locality);
     }
 
     public id(): string {

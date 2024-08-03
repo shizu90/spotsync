@@ -132,6 +132,16 @@ export class UserController extends ApiController {
 						{
 							name: 'string',
 						},
+						{
+							profile: 'public',
+							addresses: 'public',
+							favorite_spot_events: 'public',
+							favorite_spot_folders: 'public',
+							favorite_spots: 'public',
+							posts: 'public',
+							spot_folders: 'public',
+							visited_spots: 'public',
+						},
 						0,
 						0,
 						{
@@ -195,6 +205,16 @@ export class UserController extends ApiController {
 				'string',
 				{
 					name: 'string',
+				},
+				{
+					profile: 'public',
+					addresses: 'public',
+					favorite_spot_events: 'public',
+					favorite_spot_folders: 'public',
+					favorite_spots: 'public',
+					posts: 'public',
+					spot_folders: 'public',
+					visited_spots: 'public',
 				},
 				0,
 				0,
