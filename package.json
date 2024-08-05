@@ -19,6 +19,7 @@
     "test:unit:group": "jest --config ./test/unit/jest-unit-group.json",
     "test:unit:post": "jest --config ./test/unit/jest-unit-post.json",
     "test:unit:like": "jest --config ./test/unit/jest-unit-like.json",
+    "test:unit:spot": "jest --config ./test/unit/jest-unit-spot.json",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",

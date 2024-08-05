@@ -9,6 +9,7 @@ import { CreateSpotCommand } from "../ports/in/commands/create-spot.command";
 import { CreateSpotUseCase } from "../ports/in/use-cases/create-spot.use-case";
 import { CreateSpotDto } from "../ports/out/dto/create-spot.dto";
 import { SpotRepository, SpotRepositoryProvider } from "../ports/out/spot.repository";
+import { SpotAlreadyExistsError } from "./errors/spot-already-exists.error";
 
 @Injectable()
 export class CreateSpotService implements CreateSpotUseCase 
@@ -26,6 +27,10 @@ export class CreateSpotService implements CreateSpotUseCase
     public async execute(command: CreateSpotCommand): Promise<CreateSpotDto> 
     {
         const authenticatedUser = await this.getAuthenticatedUser.execute(null);
+
+        if (await this.spotRepository.findByName(command.name) !== null) {
+            throw new SpotAlreadyExistsError(`Spot with name ${command.name} already exists.`);
+        }
 
         let latitude = command.address.latitude;
         let longitude = command.address.longitude;
