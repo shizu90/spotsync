@@ -1,6 +1,6 @@
-import { UseCase } from 'src/common/common.use-case';
-import { GetGroupCommand } from '../commands/get-group.command';
+import { UseCase } from 'src/common/core/common.use-case';
 import { GetGroupDto } from '../../out/dto/get-group.dto';
+import { GetGroupCommand } from '../commands/get-group.command';
 
 export const GetGroupUseCaseProvider = 'GetGroupUseCase';
 

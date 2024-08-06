@@ -1,4 +1,4 @@
-import { Repository } from 'src/common/common.repository';
+import { Repository } from 'src/common/core/common.repository';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
 import { GroupRole } from 'src/group/domain/group-role.model';
 

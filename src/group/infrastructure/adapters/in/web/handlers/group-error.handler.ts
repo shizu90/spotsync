@@ -25,6 +25,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 				break;
@@ -36,6 +37,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 				break;
@@ -48,6 +50,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -60,6 +63,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -72,6 +76,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -84,6 +89,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -97,6 +103,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.getResponse()['message'],
+								error.constructor.name,
 							),
 						);
 				} else {
@@ -107,6 +114,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.message,
+								error.constructor.name,
 							),
 						);
 				}

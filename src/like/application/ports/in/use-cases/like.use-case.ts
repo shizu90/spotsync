@@ -1,4 +1,4 @@
-import { UseCase } from 'src/common/common.use-case';
+import { UseCase } from 'src/common/core/common.use-case';
 import { LikeDto } from '../../out/dto/like.dto';
 import { LikeCommand } from '../commands/like.command';
 

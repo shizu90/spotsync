@@ -1,4 +1,4 @@
-import { UseCase } from 'src/common/common.use-case';
+import { UseCase } from 'src/common/core/common.use-case';
 import { SignOutCommand } from '../commands/sign-out.command';
 
 export const SignOutUseCaseProvider = 'SignOutUseCase';

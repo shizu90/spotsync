@@ -3,7 +3,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
@@ -107,12 +107,20 @@ export class ListUsersService implements ListUsersUseCase {
 					{
 						profile: u.visibilityConfiguration().profile(),
 						addresses: u.visibilityConfiguration().addresses(),
-						favorite_spot_events: u.visibilityConfiguration().favoriteSpotEvents(),
-						favorite_spot_folders: u.visibilityConfiguration().favoriteSpotFolders(),
-						favorite_spots: u.visibilityConfiguration().favoriteSpots(),
+						favorite_spot_events: u
+							.visibilityConfiguration()
+							.favoriteSpotEvents(),
+						favorite_spot_folders: u
+							.visibilityConfiguration()
+							.favoriteSpotFolders(),
+						favorite_spots: u
+							.visibilityConfiguration()
+							.favoriteSpots(),
 						posts: u.visibilityConfiguration().posts(),
 						spot_folders: u.visibilityConfiguration().spotFolders(),
-						visited_spots: u.visibilityConfiguration().visitedSpots(),
+						visited_spots: u
+							.visibilityConfiguration()
+							.visitedSpots(),
 					},
 					totalFollowers,
 					totalFollowing,

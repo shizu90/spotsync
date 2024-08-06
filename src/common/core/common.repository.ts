@@ -1,5 +1,5 @@
+import { SortDirection } from '../enums/sort-direction.enum';
 import { Model } from './common.model';
-import { SortDirection } from './enums/sort-direction.enum';
 
 export interface PaginateParameters {
 	filters?: Object;
@@ -14,13 +14,15 @@ export class Pagination<T> {
 	public items: Array<T>;
 	public total: number;
 	public current_page: number;
-	public next_page: boolean;
+	public last_page: number;
+	public has_next_page: boolean;
 
 	constructor(items: Array<T>, total: number, current_page: number) {
 		this.items = items;
 		this.total = total;
 		this.current_page = current_page;
-		this.next_page = items.length * (current_page + 1) < total;
+		this.last_page = Math.ceil(total / items.length);
+		this.has_next_page = this.current_page < this.last_page;
 	}
 }
 

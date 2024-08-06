@@ -23,6 +23,7 @@ export class AuthErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 				break;
@@ -34,6 +35,7 @@ export class AuthErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 				break;
@@ -45,6 +47,7 @@ export class AuthErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 				break;
@@ -57,6 +60,7 @@ export class AuthErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 				break;
@@ -69,6 +73,7 @@ export class AuthErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.getResponse()['message'],
+								error.constructor.name,
 							),
 						);
 				} else {
@@ -79,6 +84,7 @@ export class AuthErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.message,
+								error.constructor.name,
 							),
 						);
 				}

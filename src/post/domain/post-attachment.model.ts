@@ -1,4 +1,4 @@
-import { Model } from 'src/common/common.model';
+import { Model } from 'src/common/core/common.model';
 
 export class PostAttachment extends Model {
 	private _id: string;

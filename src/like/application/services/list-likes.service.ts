@@ -3,7 +3,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import { ListLikesCommand } from '../ports/in/commands/list-likes.command';
 import { ListLikesUseCase } from '../ports/in/use-cases/list-likes.use-case';
 import { GetLikeDto } from '../ports/out/dto/get-like.dto';

@@ -29,7 +29,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -80,7 +80,12 @@ import { UpdateUserVisibilityConfigRequest } from './requests/update-user-visibi
 
 @ApiTags('Users')
 @ApiInternalServerErrorResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	example: new ErrorResponse(
+		'string',
+		'2024-07-24 12:00:00',
+		'string',
+		'string',
+	),
 })
 @Controller('users')
 @UseFilters(new UserErrorHandler())
@@ -110,10 +115,20 @@ export class UserController extends ApiController {
 
 	@ApiOperation({ summary: 'List users' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiForbiddenResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({
 		example: {
@@ -183,13 +198,28 @@ export class UserController extends ApiController {
 
 	@ApiOperation({ summary: 'Get user by id' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiForbiddenResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({
 		example: {
@@ -252,10 +282,20 @@ export class UserController extends ApiController {
 
 	@ApiOperation({ summary: 'Create user' })
 	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiConflictResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({
 		example: {
@@ -307,16 +347,36 @@ export class UserController extends ApiController {
 
 	@ApiOperation({ summary: 'Update user profile' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiForbiddenResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
@@ -339,19 +399,44 @@ export class UserController extends ApiController {
 
 	@ApiOperation({ summary: 'Update user credentials' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiConflictResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiForbiddenResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
@@ -377,16 +462,36 @@ export class UserController extends ApiController {
 
 	@ApiOperation({ summary: 'Update user visibility configurations' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiForbiddenResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
@@ -412,13 +517,28 @@ export class UserController extends ApiController {
 
 	@ApiOperation({ summary: 'Delete user by id' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiForbiddenResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)

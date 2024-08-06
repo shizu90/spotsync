@@ -3,7 +3,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import { ListUserAddressesCommand } from '../../ports/in/commands/list-user-addresses.command';
 import { GetUserAddressDto } from '../../ports/out/dto/get-user-address.dto';
 import {
@@ -52,6 +52,6 @@ describe('ListUserAddressesService', () => {
 		expect(addresses.total).toBe(3);
 		expect(addresses.current_page).toBe(0);
 		expect(addresses.items).toHaveLength(3);
-		expect(addresses.next_page).toBeFalsy();
+		expect(addresses.has_next_page).toBeFalsy();
 	});
 });

@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { Model } from 'src/common/common.model';
+import { Model } from 'src/common/core/common.model';
 import { User } from 'src/user/domain/user.model';
 import { GroupLog } from './group-log.model';
 import { GroupMemberRequest } from './group-member-request.model';

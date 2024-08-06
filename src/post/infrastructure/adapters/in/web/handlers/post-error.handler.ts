@@ -25,6 +25,7 @@ export class PostErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -37,6 +38,7 @@ export class PostErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -49,6 +51,7 @@ export class PostErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -62,6 +65,7 @@ export class PostErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.getResponse()['message'],
+								error.constructor.name,
 							),
 						);
 				} else {
@@ -72,6 +76,7 @@ export class PostErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.message,
+								error.constructor.name,
 							),
 						);
 				}

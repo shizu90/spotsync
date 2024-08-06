@@ -3,5 +3,6 @@ export class ErrorResponse {
 		readonly path: string,
 		readonly timestamp: string,
 		readonly message: string,
+		readonly error_name: string,
 	) {}
 }

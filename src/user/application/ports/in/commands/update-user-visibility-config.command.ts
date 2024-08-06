@@ -1,4 +1,4 @@
-import { Command } from 'src/common/common.command';
+import { Command } from 'src/common/core/common.command';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 
 export class UpdateUserVisibilityConfigCommand extends Command {

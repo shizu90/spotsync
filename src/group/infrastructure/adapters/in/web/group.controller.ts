@@ -28,7 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -66,13 +66,28 @@ import { UpdateGroupRequest } from './requests/update-group.request';
 
 @ApiTags('Groups')
 @ApiUnauthorizedResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	example: new ErrorResponse(
+		'string',
+		'2024-07-24 12:00:00',
+		'string',
+		'string',
+	),
 })
 @ApiInternalServerErrorResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	example: new ErrorResponse(
+		'string',
+		'2024-07-24 12:00:00',
+		'string',
+		'string',
+	),
 })
 @ApiForbiddenResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	example: new ErrorResponse(
+		'string',
+		'2024-07-24 12:00:00',
+		'string',
+		'string',
+	),
 })
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
@@ -151,7 +166,12 @@ export class GroupController extends ApiController {
 
 	@ApiOperation({ summary: 'Find group by id' })
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({
 		example: {
@@ -202,7 +222,12 @@ export class GroupController extends ApiController {
 
 	@ApiOperation({ summary: 'Create group' })
 	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({
 		example: {
@@ -241,10 +266,20 @@ export class GroupController extends ApiController {
 
 	@ApiOperation({ summary: 'Update group' })
 	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
@@ -267,10 +302,20 @@ export class GroupController extends ApiController {
 
 	@ApiOperation({ summary: 'Update group visibility' })
 	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
@@ -296,7 +341,12 @@ export class GroupController extends ApiController {
 
 	@ApiOperation({ summary: 'Delete group' })
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)

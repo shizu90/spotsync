@@ -1,4 +1,4 @@
-import { Model } from 'src/common/common.model';
+import { Model } from 'src/common/core/common.model';
 import { GroupPermissionName } from './group-permission-name.enum';
 
 export class GroupPermission extends Model {

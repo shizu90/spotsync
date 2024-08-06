@@ -1,4 +1,4 @@
-import { Dto } from 'src/common/common.dto';
+import { Dto } from 'src/common/core/common.dto';
 
 export class GetUserProfileDto extends Dto {
 	constructor(
@@ -15,14 +15,14 @@ export class GetUserProfileDto extends Dto {
 			name: string;
 		},
 		readonly visibility_configuration: {
-			profile: string,
-			addresses: string,
-			visited_spots: string,
-			posts: string,
-			favorite_spots: string,
-			favorite_spot_events: string,
-			favorite_spot_folders: string,
-			spot_folders: string,
+			profile: string;
+			addresses: string;
+			visited_spots: string;
+			posts: string;
+			favorite_spots: string;
+			favorite_spot_events: string;
+			favorite_spot_folders: string;
+			spot_folders: string;
 		},
 		readonly total_followers: number,
 		readonly total_following: number,

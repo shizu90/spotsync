@@ -1,4 +1,4 @@
-import { Command } from 'src/common/common.command';
+import { Command } from 'src/common/core/common.command';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 

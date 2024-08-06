@@ -3,7 +3,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import { ListGroupRequestsCommand } from '../../ports/in/commands/list-group-requests.command';
 import { GetGroupRequestDto } from '../../ports/out/dto/get-group-request.dto';
 import {
@@ -60,6 +60,6 @@ describe('ListGroupRequestsService', () => {
 		expect(requests.items).toHaveLength(2);
 		expect(requests.total).toBe(2);
 		expect(requests.current_page).toBe(0);
-		expect(requests.next_page).toBeFalsy();
+		expect(requests.has_next_page).toBeFalsy();
 	});
 });

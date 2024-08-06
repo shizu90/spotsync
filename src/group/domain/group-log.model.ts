@@ -1,4 +1,4 @@
-import { Model } from 'src/common/common.model';
+import { Model } from 'src/common/core/common.model';
 import { Group } from './group.model';
 
 export class GroupLog extends Model {

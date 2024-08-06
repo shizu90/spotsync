@@ -2,7 +2,7 @@ import {
 	PaginateParameters,
 	Pagination,
 	Repository,
-} from 'src/common/common.repository';
+} from 'src/common/core/common.repository';
 import { GroupMemberRequest } from 'src/group/domain/group-member-request.model';
 import { GroupMember } from 'src/group/domain/group-member.model';
 

@@ -1,4 +1,4 @@
-import { Repository } from 'src/common/common.repository';
+import { Repository } from 'src/common/core/common.repository';
 import { PostThread } from 'src/post/domain/post-thread.model';
 
 export const PostThreadRepositoryProvider = 'PostThreadRepository';

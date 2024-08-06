@@ -103,8 +103,12 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 			{
 				profile: user.visibilityConfiguration().profile(),
 				addresses: user.visibilityConfiguration().addresses(),
-				favorite_spot_events: user.visibilityConfiguration().favoriteSpotEvents(),
-				favorite_spot_folders: user.visibilityConfiguration().favoriteSpotFolders(),
+				favorite_spot_events: user
+					.visibilityConfiguration()
+					.favoriteSpotEvents(),
+				favorite_spot_folders: user
+					.visibilityConfiguration()
+					.favoriteSpotFolders(),
 				favorite_spots: user.visibilityConfiguration().favoriteSpots(),
 				posts: user.visibilityConfiguration().posts(),
 				spot_folders: user.visibilityConfiguration().spotFolders(),

@@ -1,4 +1,4 @@
-import { UseCase } from 'src/common/common.use-case';
+import { UseCase } from 'src/common/core/common.use-case';
 import { RemoveGroupRoleCommand } from '../commands/remove-group-role.command';
 
 export const RemoveGroupRoleUseCaseProvider = 'RemoveGroupRoleUseCase';

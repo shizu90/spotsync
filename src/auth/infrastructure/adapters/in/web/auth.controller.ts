@@ -68,10 +68,20 @@ export class AuthController extends ApiController {
 
 	@ApiOperation({ summary: 'Logout' })
 	@ApiForbiddenResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@UseGuards(AuthGuard)
 	@Put('logout')

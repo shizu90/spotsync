@@ -1,4 +1,4 @@
-import { Command } from 'src/common/common.command';
+import { Command } from 'src/common/core/common.command';
 
 export class RefuseFollowRequestCommand extends Command {
 	constructor(readonly followRequestId: string) {

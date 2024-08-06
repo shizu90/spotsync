@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
 	ListThreadsUseCase,
@@ -32,10 +32,20 @@ import { ListThreadsQueryRequest } from './requests/list-threads-query.request';
 
 @ApiTags('Posts')
 @ApiInternalServerErrorResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	example: new ErrorResponse(
+		'string',
+		'2024-07-24 12:00:00',
+		'string',
+		'string',
+	),
 })
 @ApiForbiddenResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	example: new ErrorResponse(
+		'string',
+		'2024-07-24 12:00:00',
+		'string',
+		'string',
+	),
 })
 @Controller('threads')
 @UseFilters(new PostErrorHandler())
@@ -47,7 +57,12 @@ export class PostThreadController {
 
 	@ApiOperation({ summary: 'List threads' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({
 		example: {

@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { PaginateParameters, Pagination } from 'src/common/common.repository';
+import {
+	PaginateParameters,
+	Pagination,
+} from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupRepository } from 'src/group/application/ports/out/group.repository';
 import { GroupLog } from 'src/group/domain/group-log.model';

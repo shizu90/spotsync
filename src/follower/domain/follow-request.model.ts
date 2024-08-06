@@ -1,7 +1,7 @@
-import { Model } from 'src/common/common.model';
+import { randomUUID } from 'crypto';
+import { Model } from 'src/common/core/common.model';
 import { User } from 'src/user/domain/user.model';
 import { Follow } from './follow.model';
-import { randomUUID } from 'crypto';
 
 export class FollowRequest extends Model {
 	private _id: string;

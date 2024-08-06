@@ -1,5 +1,5 @@
-import { Pagination } from 'src/common/common.repository';
-import { UseCase } from 'src/common/common.use-case';
+import { Pagination } from 'src/common/core/common.repository';
+import { UseCase } from 'src/common/core/common.use-case';
 import { GetLikeDto } from '../../out/dto/get-like.dto';
 import { ListLikesCommand } from '../commands/list-likes.command';
 

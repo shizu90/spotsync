@@ -1,4 +1,4 @@
-import { Dto } from 'src/common/common.dto';
+import { Dto } from 'src/common/core/common.dto';
 
 export class AcceptGroupRequestDto extends Dto {
 	constructor(

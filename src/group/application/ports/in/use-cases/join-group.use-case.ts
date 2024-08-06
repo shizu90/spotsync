@@ -1,7 +1,7 @@
-import { UseCase } from 'src/common/common.use-case';
-import { JoinGroupCommand } from '../commands/join-group.command';
-import { JoinGroupDto } from '../../out/dto/join-group.dto';
+import { UseCase } from 'src/common/core/common.use-case';
 import { AcceptGroupRequestDto } from '../../out/dto/accept-group-request.dto';
+import { JoinGroupDto } from '../../out/dto/join-group.dto';
+import { JoinGroupCommand } from '../commands/join-group.command';
 
 export const JoinGroupUseCaseProvider = 'JoinGroupUseCase';
 

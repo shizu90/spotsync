@@ -22,6 +22,7 @@ export class FollowErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -34,6 +35,7 @@ export class FollowErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -46,6 +48,7 @@ export class FollowErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -59,6 +62,7 @@ export class FollowErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -71,6 +75,7 @@ export class FollowErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -83,6 +88,7 @@ export class FollowErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 

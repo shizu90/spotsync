@@ -1,4 +1,4 @@
-import { Model } from 'src/common/common.model';
+import { Model } from 'src/common/core/common.model';
 import { UserVisibility } from './user-visibility.enum';
 
 export class UserVisibilityConfig extends Model {

@@ -1,7 +1,7 @@
-import { UseCase } from 'src/common/common.use-case';
-import { ListGroupsCommand } from '../commands/list-groups.command';
+import { Pagination } from 'src/common/core/common.repository';
+import { UseCase } from 'src/common/core/common.use-case';
 import { GetGroupDto } from '../../out/dto/get-group.dto';
-import { Pagination } from 'src/common/common.repository';
+import { ListGroupsCommand } from '../commands/list-groups.command';
 
 export const ListGroupsUseCaseProvider = 'ListGroupsUseCase';
 

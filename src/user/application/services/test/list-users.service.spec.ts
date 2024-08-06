@@ -3,7 +3,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
@@ -59,6 +59,6 @@ describe('ListUsersService', () => {
 		expect(users.total).toBe(3);
 		expect(users.current_page).toBe(0);
 		expect(users.items).toHaveLength(3);
-		expect(users.next_page).toBeFalsy();
+		expect(users.has_next_page).toBeFalsy();
 	});
 });

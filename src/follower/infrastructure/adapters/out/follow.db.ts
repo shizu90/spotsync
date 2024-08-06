@@ -1,5 +1,8 @@
 import { Inject } from '@nestjs/common';
-import { PaginateParameters, Pagination } from 'src/common/common.repository';
+import {
+	PaginateParameters,
+	Pagination,
+} from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { FollowRepository } from 'src/follower/application/ports/out/follow.repository';
 import { FollowRequest } from 'src/follower/domain/follow-request.model';

@@ -1,4 +1,4 @@
-import { Command } from 'src/common/common.command';
+import { Command } from 'src/common/core/common.command';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 
 export class UpdateGroupVisibilityCommand extends Command {

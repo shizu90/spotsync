@@ -1,4 +1,4 @@
-import { UseCase } from 'src/common/common.use-case';
+import { UseCase } from 'src/common/core/common.use-case';
 import { UpdateUserCredentialsCommand } from '../commands/update-user-credentials.command';
 
 export const UpdateUserCredentialsUseCaseProvider =

@@ -1,4 +1,4 @@
-import { Model } from 'src/common/common.model';
+import { Model } from 'src/common/core/common.model';
 import { GroupVisibility } from './group-visibility.enum';
 
 export class GroupVisibilityConfig extends Model {

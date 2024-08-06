@@ -60,10 +60,20 @@ import { CreatePostRequest } from './requests/create-post.request';
 
 @ApiTags('Posts')
 @ApiInternalServerErrorResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	example: new ErrorResponse(
+		'string',
+		'2024-07-24 12:00:00',
+		'string',
+		'string',
+	),
 })
 @ApiForbiddenResponse({
-	example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+	example: new ErrorResponse(
+		'string',
+		'2024-07-24 12:00:00',
+		'string',
+		'string',
+	),
 })
 @Controller('posts')
 @UseFilters(new PostErrorHandler())
@@ -85,10 +95,20 @@ export class PostController {
 
 	@ApiOperation({ summary: 'Get post by id' })
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({
 		example: {
@@ -177,7 +197,12 @@ export class PostController {
 
 	@ApiOperation({ summary: 'Create post' })
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiOkResponse({
 		example: {
@@ -214,10 +239,20 @@ export class PostController {
 
 	@ApiOperation({ summary: 'Update post' })
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNoContentResponse({
 		example: {
@@ -244,10 +279,20 @@ export class PostController {
 
 	@ApiOperation({ summary: 'Delete post' })
 	@ApiNotFoundResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiUnauthorizedResponse({
-		example: new ErrorResponse('string', '2024-07-24 12:00:00', 'string'),
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
 	})
 	@ApiNoContentResponse({
 		example: {

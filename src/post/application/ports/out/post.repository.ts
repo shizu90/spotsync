@@ -1,4 +1,4 @@
-import { Repository } from 'src/common/common.repository';
+import { Repository } from 'src/common/core/common.repository';
 import { PostAttachment } from 'src/post/domain/post-attachment.model';
 import { Post } from 'src/post/domain/post.model';
 

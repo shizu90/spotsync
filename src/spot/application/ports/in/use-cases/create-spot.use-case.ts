@@ -1,7 +1,8 @@
-import { UseCase } from "src/common/common.use-case";
-import { CreateSpotDto } from "../../out/dto/create-spot.dto";
-import { CreateSpotCommand } from "../commands/create-spot.command";
+import { UseCase } from 'src/common/core/common.use-case';
+import { CreateSpotDto } from '../../out/dto/create-spot.dto';
+import { CreateSpotCommand } from '../commands/create-spot.command';
 
-export const CreateSpotUseCaseProvider = "CreateSpotUseCase";
+export const CreateSpotUseCaseProvider = 'CreateSpotUseCase';
 
-export interface CreateSpotUseCase extends UseCase<CreateSpotCommand, Promise<CreateSpotDto>> {}
+export interface CreateSpotUseCase
+	extends UseCase<CreateSpotCommand, Promise<CreateSpotDto>> {}

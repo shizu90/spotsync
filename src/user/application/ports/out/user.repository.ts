@@ -1,4 +1,4 @@
-import { Repository } from 'src/common/common.repository';
+import { Repository } from 'src/common/core/common.repository';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
 import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
 import { User } from 'src/user/domain/user.model';

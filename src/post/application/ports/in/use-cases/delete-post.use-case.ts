@@ -1,4 +1,4 @@
-import { UseCase } from 'src/common/common.use-case';
+import { UseCase } from 'src/common/core/common.use-case';
 import { DeletePostCommand } from '../commands/delete-post.command';
 
 export const DeletePostUseCaseProvider = 'DeletePostUseCase';

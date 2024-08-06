@@ -1,6 +1,6 @@
-import { UseCase } from 'src/common/common.use-case';
-import { CreateGroupRoleCommand } from '../commands/create-group-role.command';
+import { UseCase } from 'src/common/core/common.use-case';
 import { CreateGroupRoleDto } from '../../out/dto/create-group-role.dto';
+import { CreateGroupRoleCommand } from '../commands/create-group-role.command';
 
 export const CreateGroupRoleUseCaseProvider = 'CreateGroupRoleUseCase';
 

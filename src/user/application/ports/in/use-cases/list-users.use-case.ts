@@ -1,7 +1,7 @@
-import { UseCase } from 'src/common/common.use-case';
-import { ListUsersCommand } from '../commands/list-users.command';
+import { Pagination } from 'src/common/core/common.repository';
+import { UseCase } from 'src/common/core/common.use-case';
 import { GetUserProfileDto } from '../../out/dto/get-user-profile.dto';
-import { Pagination } from 'src/common/common.repository';
+import { ListUsersCommand } from '../commands/list-users.command';
 
 export const ListUsersUseCaseProvider = 'ListUsersUseCase';
 

@@ -1,5 +1,8 @@
 import { Inject } from '@nestjs/common';
-import { PaginateParameters, Pagination } from 'src/common/common.repository';
+import {
+	PaginateParameters,
+	Pagination,
+} from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserRepository } from 'src/user/application/ports/out/user.repository';

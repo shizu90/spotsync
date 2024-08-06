@@ -2,7 +2,7 @@ import {
 	PaginateParameters,
 	Pagination,
 	Repository,
-} from 'src/common/common.repository';
+} from 'src/common/core/common.repository';
 import { GroupLog } from 'src/group/domain/group-log.model';
 import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
 import { Group } from 'src/group/domain/group.model';

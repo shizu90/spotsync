@@ -1,4 +1,4 @@
-import { UseCase } from 'src/common/common.use-case';
+import { UseCase } from 'src/common/core/common.use-case';
 import { UpdateUserVisibilityConfigCommand } from '../commands/update-user-visibility-config.command';
 
 export const UpdateUserVisibilityConfigUseCaseProvider =

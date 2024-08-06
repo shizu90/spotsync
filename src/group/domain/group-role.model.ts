@@ -1,7 +1,7 @@
-import { Model } from 'src/common/common.model';
+import { Model } from 'src/common/core/common.model';
+import { GroupPermissionName } from './group-permission-name.enum';
 import { GroupPermission } from './group-permission.model';
 import { Group } from './group.model';
-import { GroupPermissionName } from './group-permission-name.enum';
 
 export class GroupRole extends Model {
 	private _id: string;

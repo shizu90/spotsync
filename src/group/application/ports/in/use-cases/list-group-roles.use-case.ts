@@ -1,7 +1,7 @@
-import { UseCase } from 'src/common/common.use-case';
+import { Pagination } from 'src/common/core/common.repository';
+import { UseCase } from 'src/common/core/common.use-case';
 import { GetGroupRoleDto } from '../../out/dto/get-group-role.dto';
 import { ListGroupRolesCommand } from '../commands/list-group-roles.command';
-import { Pagination } from 'src/common/common.repository';
 
 export const ListGroupRolesUseCaseProvider = 'ListGroupRolesUseCase';
 

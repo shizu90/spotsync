@@ -4,7 +4,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { ListLikesCommand } from '../../ports/in/commands/list-likes.command';
 import { GetLikeDto } from '../../ports/out/dto/get-like.dto';
@@ -47,7 +47,7 @@ describe('ListLikesService', () => {
 		expect(likes).toBeInstanceOf(Pagination<GetLikeDto>);
 		expect(likes.items).toHaveLength(3);
 		expect(likes.current_page).toBe(0);
-		expect(likes.next_page).toBeFalsy();
+		expect(likes.has_next_page).toBeFalsy();
 		expect(likes.total).toBe(3);
 	});
 });

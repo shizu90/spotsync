@@ -1,5 +1,5 @@
 import { TestBed } from '@automock/jest';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import { ListGroupMembersCommand } from '../../ports/in/commands/list-group-members.command';
 import { GetGroupMemberDto } from '../../ports/out/dto/get-group-member.dto';
 import {
@@ -52,6 +52,6 @@ describe('ListGroupMembersService', () => {
 		expect(members.items).toHaveLength(3);
 		expect(members.total).toBe(3);
 		expect(members.current_page).toBe(0);
-		expect(members.next_page).toBeFalsy();
+		expect(members.has_next_page).toBeFalsy();
 	});
 });

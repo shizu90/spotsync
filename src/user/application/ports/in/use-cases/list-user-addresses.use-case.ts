@@ -1,7 +1,7 @@
-import { UseCase } from 'src/common/common.use-case';
-import { ListUserAddressesCommand } from '../commands/list-user-addresses.command';
+import { Pagination } from 'src/common/core/common.repository';
+import { UseCase } from 'src/common/core/common.use-case';
 import { GetUserAddressDto } from '../../out/dto/get-user-address.dto';
-import { Pagination } from 'src/common/common.repository';
+import { ListUserAddressesCommand } from '../commands/list-user-addresses.command';
 
 export const ListUserAddressesUseCaseProvider = 'ListUserAddressesUseCase';
 

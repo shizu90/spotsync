@@ -1,7 +1,7 @@
-import { UseCase } from 'src/common/common.use-case';
-import { GetGroupHistoryCommand } from '../commands/get-group-history.command';
+import { Pagination } from 'src/common/core/common.repository';
+import { UseCase } from 'src/common/core/common.use-case';
 import { GetGroupLogDto } from '../../out/dto/get-group-log.dto';
-import { Pagination } from 'src/common/common.repository';
+import { GetGroupHistoryCommand } from '../commands/get-group-history.command';
 
 export const GetGroupHistoryUseCaseProvider = 'GetGroupHistoryUseCase';
 

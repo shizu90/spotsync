@@ -1,6 +1,6 @@
-import { UseCase } from 'src/common/common.use-case';
-import { FollowCommand } from '../commands/follow.command';
+import { UseCase } from 'src/common/core/common.use-case';
 import { FollowDto } from '../../out/dto/follow.dto';
+import { FollowCommand } from '../commands/follow.command';
 
 export const FollowUseCaseProvider = 'FollowUseCase';
 

@@ -23,6 +23,7 @@ export class LikeErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 				break;
@@ -34,6 +35,7 @@ export class LikeErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -46,6 +48,7 @@ export class LikeErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -59,6 +62,7 @@ export class LikeErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.getResponse()['message'],
+								error.constructor.name,
 							),
 						);
 				} else {
@@ -69,6 +73,7 @@ export class LikeErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.message,
+								error.constructor.name,
 							),
 						);
 				}

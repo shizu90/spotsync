@@ -1,11 +1,11 @@
-import { randomUUID } from "crypto";
-import { SpotAddress } from "src/spot/domain/spot-address.model";
-import { SpotType } from "src/spot/domain/spot-type.enum";
-import { Spot } from "src/spot/domain/spot.model";
-import { UserCredentials } from "src/user/domain/user-credentials.model";
-import { UserVisibilityConfig } from "src/user/domain/user-visibility-config.model";
-import { UserVisibility } from "src/user/domain/user-visibility.enum";
-import { User } from "src/user/domain/user.model";
+import { randomUUID } from 'crypto';
+import { SpotAddress } from 'src/spot/domain/spot-address.model';
+import { SpotType } from 'src/spot/domain/spot-type.enum';
+import { Spot } from 'src/spot/domain/spot.model';
+import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserVisibility } from 'src/user/domain/user-visibility.enum';
+import { User } from 'src/user/domain/user.model';
 
 export const mockUser = (): User => {
 	const id = randomUUID();
@@ -52,11 +52,12 @@ export const mockSpot = (): Spot => {
 			randomUUID(),
 			'Area',
 			'Sub area',
-			0,0,
+			0,
+			0,
 			'BR',
-			'Locality'
+			'Locality',
 		),
 		[],
 		mockUser(),
 	);
-}
+};

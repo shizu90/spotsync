@@ -24,6 +24,7 @@ export class UserErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 				break;
@@ -35,6 +36,7 @@ export class UserErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -47,6 +49,7 @@ export class UserErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -59,6 +62,7 @@ export class UserErrorHandler implements ExceptionFilter {
 							request.url,
 							new Date().toISOString(),
 							error.message,
+							error.constructor.name,
 						),
 					);
 
@@ -72,6 +76,7 @@ export class UserErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.getResponse()['message'],
+								error.constructor.name,
 							),
 						);
 				} else {
@@ -82,6 +87,7 @@ export class UserErrorHandler implements ExceptionFilter {
 								request.url,
 								new Date().toISOString(),
 								error.message,
+								error.constructor.name,
 							),
 						);
 				}

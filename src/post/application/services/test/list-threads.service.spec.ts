@@ -3,7 +3,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
@@ -77,7 +77,7 @@ describe('ListThreadsService', () => {
 		expect(threads).toBeInstanceOf(Pagination<GetPostDto>);
 		expect(threads.items).toHaveLength(2);
 		expect(threads.current_page).toBe(0);
-		expect(threads.next_page).toBeFalsy();
+		expect(threads.has_next_page).toBeFalsy();
 		expect(threads.total).toBe(2);
 	});
 });

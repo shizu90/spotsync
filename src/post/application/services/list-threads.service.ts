@@ -4,7 +4,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { Pagination } from 'src/common/common.repository';
+import { Pagination } from 'src/common/core/common.repository';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
@@ -167,7 +167,7 @@ export class ListThreadsService implements ListThreadsUseCase {
 					).at(0) !== undefined;
 
 				const totalChildrens = await this.postRepository.countBy({
-					parentId: i.id()
+					parentId: i.id(),
 				});
 
 				return new GetPostDto(

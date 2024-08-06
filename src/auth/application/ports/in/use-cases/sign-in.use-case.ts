@@ -1,6 +1,6 @@
-import { UseCase } from 'src/common/common.use-case';
-import { SignInCommand } from '../commands/sign-in.command';
+import { UseCase } from 'src/common/core/common.use-case';
 import { SignInDto } from '../../out/dto/sign-in.dto';
+import { SignInCommand } from '../commands/sign-in.command';
 
 export const SignInUseCaseProvider = 'SignInUseCase';
 

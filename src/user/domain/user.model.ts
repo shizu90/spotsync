@@ -1,4 +1,4 @@
-import { Model } from 'src/common/common.model';
+import { Model } from 'src/common/core/common.model';
 import { UserCredentials } from './user-credentials.model';
 import { UserVisibilityConfig } from './user-visibility-config.model';
 import { UserVisibility } from './user-visibility.enum';
