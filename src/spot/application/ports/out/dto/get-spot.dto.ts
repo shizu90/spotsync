@@ -25,6 +25,7 @@ export class GetSpotDto extends Dto {
 		readonly average_rating: number,
 		readonly total_ratings: number,
 		readonly total_spot_visits: number,
+		readonly total_favorites: number,
 		readonly total_events: number,
 		readonly created_at: Date,
 		readonly updated_at: Date,
