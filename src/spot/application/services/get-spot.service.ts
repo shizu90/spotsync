@@ -43,15 +43,15 @@ export class GetSpotService implements GetSpotUseCase
             spotId: spot.id()
         });
         
-        const visited = await this.spotRepository.findVisitedSpotBy({
+        const visited = (await this.spotRepository.findVisitedSpotBy({
             userId: authenticatedUser.id(),
             spotId: spot.id()
-        }) !== null;
+        })).at(0);
 
-        const favorited = await this.spotRepository.findFavoritedSpotBy({
+        const favorited = (await this.spotRepository.findFavoritedSpotBy({
             userId: authenticatedUser.id(),
             spotId: spot.id()
-        }) !== null;
+        })).at(0);
 
         let distance = 0;
 
@@ -78,8 +78,8 @@ export class GetSpotService implements GetSpotUseCase
             spot.photos().map((p) => {return {id: p.id(), file_path: p.filePath()}}),
             spot.creator().id(),
             distance,
-            visited,
-            favorited,
+            visited !== null && visited !== undefined,
+            favorited !== null && favorited !== undefined,
             0,
             0,
             totalSpotVisits,
