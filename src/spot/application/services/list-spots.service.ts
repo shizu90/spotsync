@@ -129,6 +129,7 @@ export class ListSpotsService implements ListSpotsUseCase {
 				creatorId: command.creatorId,
 				favoritedById: command.favoritedById,
 				visitedById: command.visitedById,
+				isDeleted: false,
 			},
 			sort: command.sort,
 			sortDirection: command.sortDirection,
@@ -197,9 +198,13 @@ export class ListSpotsService implements ListSpotsUseCase {
 					s.creator().id(),
 					distance,
 					visited !== null && visited !== undefined,
-					visited.visitedAt() || null,
+					visited !== null && visited !== undefined
+						? visited.visitedAt()
+						: null,
 					favorited !== null && favorited !== undefined,
-					favorited.favoritedAt() || null,
+					favorited !== null && favorited !== undefined
+						? favorited.favoritedAt()
+						: null,
 					0,
 					0,
 					totalSpotVisits,

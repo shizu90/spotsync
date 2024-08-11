@@ -30,54 +30,72 @@ export class SpotRepositoryImpl implements SpotRepository {
 			prisma_model.name,
 			prisma_model.description,
 			prisma_model.type,
-			SpotAddress.create(
-				prisma_model.address.id,
-				prisma_model.address.area,
-				prisma_model.address.sub_area,
-				prisma_model.address.latitude,
-				prisma_model.address.longitude,
-				prisma_model.address.country_code,
-				prisma_model.address.locality,
-			),
+			prisma_model.address
+				? SpotAddress.create(
+						prisma_model.address.id,
+						prisma_model.address.area,
+						prisma_model.address.sub_area,
+						prisma_model.address.latitude,
+						prisma_model.address.longitude,
+						prisma_model.address.country_code,
+						prisma_model.address.locality,
+					)
+				: null,
 			prisma_model.photos.map((p) => {
 				return SpotPhoto.create(p.id, p.file_path);
 			}),
-			User.create(
-				prisma_model.creator.id,
-				prisma_model.creator.first_name,
-				prisma_model.creator.last_name,
-				prisma_model.creator.profile_theme_color,
-				prisma_model.creator.profile_picture,
-				prisma_model.creator.banner_picture,
-				prisma_model.creator.biograph,
-				prisma_model.creator.birth_date,
-				UserCredentials.create(
-					prisma_model.creator.id,
-					prisma_model.creator.credentials.name,
-					prisma_model.creator.credentials.email,
-					prisma_model.creator.credentials.password,
-					prisma_model.creator.credentials.phone_number,
-					prisma_model.creator.credentials.last_login,
-					prisma_model.creator.credentials.last_logout,
-				),
-				UserVisibilityConfig.create(
-					prisma_model.creator.visibility_configuration.id,
-					prisma_model.creator.visibility_configuration.profile,
-					prisma_model.creator.visibility_configuration.addresses,
-					prisma_model.creator.visibility_configuration.spot_folders,
-					prisma_model.creator.visibility_configuration.visited_spots,
-					prisma_model.creator.visibility_configuration.posts,
-					prisma_model.creator.visibility_configuration
-						.favorite_spots,
-					prisma_model.creator.visibility_configuration
-						.favorite_spot_folders,
-					prisma_model.creator.visibility_configuration
-						.favorite_spot_events,
-				),
-				prisma_model.creator.created_at,
-				prisma_model.creator.updated_at,
-				prisma_model.creator.is_deleted,
-			),
+			prisma_model.creator
+				? User.create(
+						prisma_model.creator.id,
+						prisma_model.creator.first_name,
+						prisma_model.creator.last_name,
+						prisma_model.creator.profile_theme_color,
+						prisma_model.creator.profile_picture,
+						prisma_model.creator.banner_picture,
+						prisma_model.creator.biograph,
+						prisma_model.creator.birth_date,
+						prisma_model.creator.credentials
+							? UserCredentials.create(
+									prisma_model.creator.id,
+									prisma_model.creator.credentials.name,
+									prisma_model.creator.credentials.email,
+									prisma_model.creator.credentials.password,
+									prisma_model.creator.credentials
+										.phone_number,
+									prisma_model.creator.credentials.last_login,
+									prisma_model.creator.credentials
+										.last_logout,
+								)
+							: null,
+						prisma_model.creator.visibility_configuration
+							? UserVisibilityConfig.create(
+									prisma_model.creator.id,
+									prisma_model.creator
+										.visibility_configuration.profile,
+									prisma_model.creator
+										.visibility_configuration.addresses,
+									prisma_model.creator
+										.visibility_configuration.spot_folders,
+									prisma_model.creator
+										.visibility_configuration.visited_spots,
+									prisma_model.creator
+										.visibility_configuration.posts,
+									prisma_model.creator
+										.visibility_configuration
+										.favorite_spots,
+									prisma_model.creator
+										.visibility_configuration
+										.favorite_spot_folders,
+									prisma_model.creator
+										.visibility_configuration
+										.favorite_spot_events,
+								)
+							: null,
+						prisma_model.creator.created_at,
+						prisma_model.creator.updated_at,
+						prisma_model.creator.is_deleted,
+					)
+				: null,
 			prisma_model.created_at,
 			prisma_model.updated_at,
 			prisma_model.is_deleted,
@@ -89,43 +107,55 @@ export class SpotRepositoryImpl implements SpotRepository {
 
 		return FavoritedSpot.create(
 			prisma_model.id,
-			this.mapSpotToDomain(prisma_model.spot),
-			User.create(
-				prisma_model.creator.id,
-				prisma_model.creator.first_name,
-				prisma_model.creator.last_name,
-				prisma_model.creator.profile_theme_color,
-				prisma_model.creator.profile_picture,
-				prisma_model.creator.banner_picture,
-				prisma_model.creator.biograph,
-				prisma_model.creator.birth_date,
-				UserCredentials.create(
-					prisma_model.creator.id,
-					prisma_model.creator.credentials.name,
-					prisma_model.creator.credentials.email,
-					prisma_model.creator.credentials.password,
-					prisma_model.creator.credentials.phone_number,
-					prisma_model.creator.credentials.last_login,
-					prisma_model.creator.credentials.last_logout,
-				),
-				UserVisibilityConfig.create(
-					prisma_model.creator.visibility_configuration.id,
-					prisma_model.creator.visibility_configuration.profile,
-					prisma_model.creator.visibility_configuration.addresses,
-					prisma_model.creator.visibility_configuration.spot_folders,
-					prisma_model.creator.visibility_configuration.visited_spots,
-					prisma_model.creator.visibility_configuration.posts,
-					prisma_model.creator.visibility_configuration
-						.favorite_spots,
-					prisma_model.creator.visibility_configuration
-						.favorite_spot_folders,
-					prisma_model.creator.visibility_configuration
-						.favorite_spot_events,
-				),
-				prisma_model.creator.created_at,
-				prisma_model.creator.updated_at,
-				prisma_model.creator.is_deleted,
-			),
+			prisma_model.spot ? this.mapSpotToDomain(prisma_model.spot) : null,
+			prisma_model.user
+				? User.create(
+						prisma_model.user.id,
+						prisma_model.user.first_name,
+						prisma_model.user.last_name,
+						prisma_model.user.profile_theme_color,
+						prisma_model.user.profile_picture,
+						prisma_model.user.banner_picture,
+						prisma_model.user.biograph,
+						prisma_model.user.birth_date,
+						prisma_model.user.credentials
+							? UserCredentials.create(
+									prisma_model.user.id,
+									prisma_model.user.credentials.name,
+									prisma_model.user.credentials.email,
+									prisma_model.user.credentials.password,
+									prisma_model.user.credentials.phone_number,
+									prisma_model.user.credentials.last_login,
+									prisma_model.user.credentials.last_logout,
+								)
+							: null,
+						prisma_model.user.visibility_configuration
+							? UserVisibilityConfig.create(
+									prisma_model.user.visibility_configuration
+										.id,
+									prisma_model.user.visibility_configuration
+										.profile,
+									prisma_model.user.visibility_configuration
+										.addresses,
+									prisma_model.user.visibility_configuration
+										.spot_folders,
+									prisma_model.user.visibility_configuration
+										.visited_spots,
+									prisma_model.user.visibility_configuration
+										.posts,
+									prisma_model.user.visibility_configuration
+										.favorite_spots,
+									prisma_model.user.visibility_configuration
+										.favorite_spot_folders,
+									prisma_model.user.visibility_configuration
+										.favorite_spot_events,
+								)
+							: null,
+						prisma_model.user.created_at,
+						prisma_model.user.updated_at,
+						prisma_model.user.is_deleted,
+					)
+				: null,
 			prisma_model.favorited_at,
 		);
 	}
@@ -135,43 +165,55 @@ export class SpotRepositoryImpl implements SpotRepository {
 
 		return VisitedSpot.create(
 			prisma_model.id,
-			this.mapSpotToDomain(prisma_model.spot),
-			User.create(
-				prisma_model.creator.id,
-				prisma_model.creator.first_name,
-				prisma_model.creator.last_name,
-				prisma_model.creator.profile_theme_color,
-				prisma_model.creator.profile_picture,
-				prisma_model.creator.banner_picture,
-				prisma_model.creator.biograph,
-				prisma_model.creator.birth_date,
-				UserCredentials.create(
-					prisma_model.creator.id,
-					prisma_model.creator.credentials.name,
-					prisma_model.creator.credentials.email,
-					prisma_model.creator.credentials.password,
-					prisma_model.creator.credentials.phone_number,
-					prisma_model.creator.credentials.last_login,
-					prisma_model.creator.credentials.last_logout,
-				),
-				UserVisibilityConfig.create(
-					prisma_model.creator.visibility_configuration.id,
-					prisma_model.creator.visibility_configuration.profile,
-					prisma_model.creator.visibility_configuration.addresses,
-					prisma_model.creator.visibility_configuration.spot_folders,
-					prisma_model.creator.visibility_configuration.visited_spots,
-					prisma_model.creator.visibility_configuration.posts,
-					prisma_model.creator.visibility_configuration
-						.favorite_spots,
-					prisma_model.creator.visibility_configuration
-						.favorite_spot_folders,
-					prisma_model.creator.visibility_configuration
-						.favorite_spot_events,
-				),
-				prisma_model.creator.created_at,
-				prisma_model.creator.updated_at,
-				prisma_model.creator.is_deleted,
-			),
+			prisma_model.spot ? this.mapSpotToDomain(prisma_model.spot) : null,
+			prisma_model.user
+				? User.create(
+						prisma_model.user.id,
+						prisma_model.user.first_name,
+						prisma_model.user.last_name,
+						prisma_model.user.profile_theme_color,
+						prisma_model.user.profile_picture,
+						prisma_model.user.banner_picture,
+						prisma_model.user.biograph,
+						prisma_model.user.birth_date,
+						prisma_model.user.credentials
+							? UserCredentials.create(
+									prisma_model.user.id,
+									prisma_model.user.credentials.name,
+									prisma_model.user.credentials.email,
+									prisma_model.user.credentials.password,
+									prisma_model.user.credentials.phone_number,
+									prisma_model.user.credentials.last_login,
+									prisma_model.user.credentials.last_logout,
+								)
+							: null,
+						prisma_model.user.visibility_configuration
+							? UserVisibilityConfig.create(
+									prisma_model.user.visibility_configuration
+										.id,
+									prisma_model.user.visibility_configuration
+										.profile,
+									prisma_model.user.visibility_configuration
+										.addresses,
+									prisma_model.user.visibility_configuration
+										.spot_folders,
+									prisma_model.user.visibility_configuration
+										.visited_spots,
+									prisma_model.user.visibility_configuration
+										.posts,
+									prisma_model.user.visibility_configuration
+										.favorite_spots,
+									prisma_model.user.visibility_configuration
+										.favorite_spot_folders,
+									prisma_model.user.visibility_configuration
+										.favorite_spot_events,
+								)
+							: null,
+						prisma_model.user.created_at,
+						prisma_model.user.updated_at,
+						prisma_model.user.is_deleted,
+					)
+				: null,
 			prisma_model.visited_at,
 		);
 	}
@@ -179,17 +221,17 @@ export class SpotRepositoryImpl implements SpotRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Spot>> {
-		let query = `SELECT spot.id FROM spot`;
+		let query = `SELECT spots.id FROM spots`;
 
 		if (params.filters) {
 			if (typeof params.filters['favoritedById'] === 'string') {
 				const favoritedById = params.filters['favoritedById'];
-				query = `${query} INNER JOIN favorited_spot ON spot.id = favorited_spot.spot_id AND favorited_spot.user_id = '${favoritedById}'`;
+				query = `${query} INNER JOIN favorited_spots ON spots.id = favorited_spots.spot_id AND favorited_spots.user_id = '${favoritedById}'`;
 			}
 
 			if (typeof params.filters['visitedById'] === 'string') {
 				const visitedById = params.filters['visitedById'];
-				query = `${query} INNER JOIN visited_spot ON spot.id = visited_spot.spot_id AND visited_spot.user_id = '${visitedById}'`;
+				query = `${query} INNER JOIN visited_spots ON spots.id = visited_spots.spot_id AND visited_spots.user_id = '${visitedById}'`;
 			}
 
 			if (typeof params.filters['name'] === 'string') {
@@ -231,9 +273,9 @@ export class SpotRepositoryImpl implements SpotRepository {
 			if (typeof params.filters['spotId'] === 'string') {
 				const spotId = params.filters['spotId'];
 				if (query.includes('WHERE')) {
-					query = `${query} AND spot.id = '${spotId}'`;
+					query = `${query} AND spots.id = '${spotId}'`;
 				} else {
-					query = `${query} WHERE spot.id = '${spotId}'`;
+					query = `${query} WHERE spots.id = '${spotId}'`;
 				}
 			}
 
@@ -315,8 +357,14 @@ export class SpotRepositoryImpl implements SpotRepository {
 	}
 
 	public async findByName(name: string): Promise<Spot> {
+		let query = `SELECT spots.id FROM spots WHERE lower(name) = lower('${name}');`;
+
+		const id = await this.prismaService.$queryRawUnsafe<{ id: string }>(
+			query,
+		);
+
 		const spot = await this.prismaService.spot.findFirst({
-			where: { name: name.toLowerCase() },
+			where: { id: id.id },
 			include: {
 				address: true,
 				photos: true,
@@ -341,14 +389,14 @@ export class SpotRepositoryImpl implements SpotRepository {
 		const visitedById = values['visitedById'] ?? null;
 		const spotId = values['spotId'] ?? null;
 
-		let query = `SELECT spot.id FROM spot`;
+		let query = `SELECT spots.id FROM spots`;
 
 		if (favoritedById !== null) {
-			query = `${query} INNER JOIN favorited_spot ON spot.id = favorited_spot.spot_id AND favorited_spot.user_id = '${favoritedById}'`;
+			query = `${query} INNER JOIN favorited_spots ON spots.id = favorited_spots.spot_id AND favorited_spots.user_id = '${favoritedById}'`;
 		}
 
 		if (visitedById !== null) {
-			query = `${query} INNER JOIN visited_spot ON spot.id = visited_spot.spot_id AND visited_spot.user_id = '${visitedById}'`;
+			query = `${query} INNER JOIN visited_spots ON spots.id = visited_spots.spot_id AND visited_spots.user_id = '${visitedById}'`;
 		}
 
 		if (name !== null) {
@@ -385,9 +433,9 @@ export class SpotRepositoryImpl implements SpotRepository {
 
 		if (spotId !== null) {
 			if (query.includes('WHERE')) {
-				query = `${query} AND spot.id = '${spotId}'`;
+				query = `${query} AND spots.id = '${spotId}'`;
 			} else {
-				query = `${query} WHERE spot.id = '${spotId}'`;
+				query = `${query} WHERE spots.id = '${spotId}'`;
 			}
 		}
 
@@ -434,6 +482,12 @@ export class SpotRepositoryImpl implements SpotRepository {
 					include: {
 						address: true,
 						photos: true,
+						creator: {
+							include: {
+								credentials: true,
+								visibility_configuration: true,
+							},
+						},
 					},
 				},
 				user: {
@@ -471,6 +525,12 @@ export class SpotRepositoryImpl implements SpotRepository {
 					include: {
 						address: true,
 						photos: true,
+						creator: {
+							include: {
+								credentials: true,
+								visibility_configuration: true,
+							},
+						},
 					},
 				},
 				user: {
@@ -494,14 +554,14 @@ export class SpotRepositoryImpl implements SpotRepository {
 		const visitedById = values['visitedById'] ?? null;
 		const spotId = values['spotId'] ?? null;
 
-		let query = `SELECT count(spot.id) FROM spot`;
+		let query = `SELECT count(spots.id) FROM spots`;
 
 		if (favoritedById !== null) {
-			query = `${query} INNER JOIN favorited_spot ON spot.id = favorited_spot.spot_id AND favorited_spot.user_id = '${favoritedById}'`;
+			query = `${query} INNER JOIN favorited_spots ON spots.id = favorited_spots.spot_id AND favorited_spots.user_id = '${favoritedById}'`;
 		}
 
 		if (visitedById !== null) {
-			query = `${query} INNER JOIN visited_spot ON spot.id = visited_spot.spot_id AND visited_spot.user_id = '${visitedById}'`;
+			query = `${query} INNER JOIN visited_spots ON spots.id = visited_spots.spot_id AND visited_spots.user_id = '${visitedById}'`;
 		}
 
 		if (name !== null) {
@@ -538,9 +598,9 @@ export class SpotRepositoryImpl implements SpotRepository {
 
 		if (spotId !== null) {
 			if (query.includes('WHERE')) {
-				query = `${query} AND spot.id = '${spotId}'`;
+				query = `${query} AND spots.id = '${spotId}'`;
 			} else {
-				query = `${query} WHERE spot.id = '${spotId}'`;
+				query = `${query} WHERE spots.id = '${spotId}'`;
 			}
 		}
 

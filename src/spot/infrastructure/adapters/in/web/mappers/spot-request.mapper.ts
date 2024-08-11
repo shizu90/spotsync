@@ -58,14 +58,16 @@ export class SpotRequestMapper {
 			body.name,
 			body.description,
 			body.type,
-			{
-				area: body.address.area,
-				subArea: body.address.sub_area,
-				countryCode: body.address.country_code,
-				locality: body.address.locality,
-				latitude: body.address.latitude,
-				longitude: body.address.longitude,
-			},
+			body.address
+				? {
+						area: body.address.area,
+						subArea: body.address.sub_area,
+						countryCode: body.address.country_code,
+						locality: body.address.locality,
+						latitude: body.address.latitude,
+						longitude: body.address.longitude,
+					}
+				: null,
 		);
 	}
 

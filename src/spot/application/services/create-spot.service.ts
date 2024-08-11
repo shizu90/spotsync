@@ -82,6 +82,8 @@ export class CreateSpotService implements CreateSpotUseCase {
 			authenticatedUser,
 		);
 
+		await this.spotRepository.store(spot);
+
 		return new CreateSpotDto(
 			spot.id(),
 			spot.name(),

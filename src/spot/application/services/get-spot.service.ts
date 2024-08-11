@@ -96,9 +96,13 @@ export class GetSpotService implements GetSpotUseCase {
 			spot.creator().id(),
 			distance,
 			visited !== null && visited !== undefined,
-			visited.visitedAt() || null,
+			visited !== null && visited !== undefined
+				? visited.visitedAt()
+				: null,
 			favorited !== null && favorited !== undefined,
-			favorited.favoritedAt() || null,
+			favorited !== null && favorited !== undefined
+				? favorited.favoritedAt()
+				: null,
 			0,
 			0,
 			totalSpotVisits,

@@ -5,6 +5,7 @@ import {
 	IsNotEmptyObject,
 	IsNumber,
 	IsObject,
+	IsOptional,
 	IsString,
 	MaxLength,
 	MinLength,
@@ -35,12 +36,14 @@ class Address {
 	@ApiProperty({
 		required: false,
 	})
+	@IsOptional()
 	@IsString()
 	public locality?: string;
 
 	@ApiProperty({
 		required: false,
 	})
+	@IsOptional()
 	@IsNumber()
 	public latitude?: number;
 
@@ -48,6 +51,7 @@ class Address {
 		required: false,
 	})
 	@IsNumber()
+	@IsOptional()
 	public longitude?: number;
 }
 
