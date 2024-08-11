@@ -7,6 +7,8 @@ export class ListSpotsCommand extends Command {
 		readonly name?: string,
 		readonly type?: SpotType,
 		readonly creatorId?: string,
+		readonly favoritedById?: string,
+		readonly visitedById?: string,
 		readonly sort?: string,
 		readonly sortDirection?: SortDirection,
 		readonly page?: number,

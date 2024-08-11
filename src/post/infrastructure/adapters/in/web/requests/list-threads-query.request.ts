@@ -12,7 +12,7 @@ import { ApiRequest } from 'src/common/web/common.request';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 
 export class ListThreadsQueryRequest extends ApiRequest {
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: PostVisibility })
 	@IsOptional()
 	@IsEnum(PostVisibility)
 	public visibility?: PostVisibility;
@@ -32,7 +32,7 @@ export class ListThreadsQueryRequest extends ApiRequest {
 	@IsString()
 	public sort?: string;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: SortDirection })
 	@IsOptional()
 	@IsEnum(SortDirection)
 	public sort_direction?: SortDirection;

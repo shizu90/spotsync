@@ -9,22 +9,20 @@ import {
 import { ApiRequest } from 'src/common/web/common.request';
 
 export class CreateUserRequest extends ApiRequest {
-	@ApiProperty()
-	@IsString({ message: 'User name is invalid.' })
-	@MinLength(3, { message: 'User name must have at least 3 characters.' })
-	@MaxLength(255, {
-		message: 'User name must have less than 255 characters.',
-	})
+	@ApiProperty({ required: true })
+	@IsString()
+	@MinLength(3)
+	@MaxLength(255)
 	public name: string;
 
-	@ApiProperty()
-	@IsEmail({}, { message: 'E-mail is invalid.' })
+	@ApiProperty({ required: true })
+	@IsEmail()
 	public email: string;
 
-	@ApiProperty()
-	@IsString({ message: 'Password is invalid.' })
-	@MinLength(6, { message: 'Password must have at least 6 characters.' })
-	@MaxLength(32, { message: 'Password must have less than 32 characters.' })
+	@ApiProperty({ required: true })
+	@IsString()
+	@MinLength(6)
+	@MaxLength(32)
 	public password: string;
 
 	@ApiProperty({ required: false })

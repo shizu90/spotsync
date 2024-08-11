@@ -18,7 +18,7 @@ export class ListGroupMembersQueryRequest extends ApiRequest {
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsUUID('4')
+	@IsUUID(4)
 	public role_id?: string;
 
 	@ApiProperty({ required: false })
@@ -26,7 +26,7 @@ export class ListGroupMembersQueryRequest extends ApiRequest {
 	@IsString()
 	public sort?: string;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: SortDirection })
 	@IsOptional()
 	@IsEnum(SortDirection)
 	public sort_direction?: SortDirection;

@@ -5,18 +5,14 @@ import { ApiRequest } from 'src/common/web/common.request';
 export class UpdateGroupRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsString({ message: 'Group name is invalid.' })
-	@MinLength(6, { message: 'Group name must have at least 6 characters.' })
-	@MaxLength(255, {
-		message: 'Group name must have less than 255 characters.',
-	})
+	@IsString()
+	@MinLength(6)
+	@MaxLength(255)
 	public name?: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsString({ message: 'Group about is invalid.' })
-	@MaxLength(400, {
-		message: 'Group about must have less than 400 characters.',
-	})
+	@IsString()
+	@MaxLength(400)
 	public about?: string;
 }

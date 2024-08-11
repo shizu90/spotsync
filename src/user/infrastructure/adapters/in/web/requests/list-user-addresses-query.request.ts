@@ -33,6 +33,7 @@ export class ListUserAddressesQueryRequest extends ApiRequest {
 
 	@ApiProperty({
 		required: false,
+		enum: SortDirection,
 	})
 	@IsOptional()
 	@IsEnum(SortDirection)

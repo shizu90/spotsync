@@ -14,29 +14,20 @@ import { ApiRequest } from 'src/common/web/common.request';
 export class UpdateGroupRoleRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsString({ message: 'Group role name is invalid.' })
-	@MinLength(1, {
-		message: 'Group role name must have at least 1 character.',
-	})
-	@MaxLength(255, {
-		message: 'Group role name must have less than 255 characters.',
-	})
+	@IsString()
+	@MinLength(1)
+	@MaxLength(255)
 	public name?: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsHexColor({
-		message: 'Group role hex color is not a valid hexadecimal color.',
-	})
+	@IsHexColor()
 	public hex_color?: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsArray({ message: 'Group role permissions is invalid.' })
-	@ValidateNested({
-		each: true,
-		message: 'Permission id is not a valid UUIDv4.',
-	})
-	@IsUUID('4', { message: 'Permission id is not a valid UUIDv4.' })
+	@IsArray()
+	@ValidateNested()
+	@IsUUID(4)
 	public permissions?: string[];
 }

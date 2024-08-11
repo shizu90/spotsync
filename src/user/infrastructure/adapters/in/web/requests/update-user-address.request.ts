@@ -10,42 +10,36 @@ import { ApiRequest } from 'src/common/web/common.request';
 
 export class UpdateUserAddressRequest extends ApiRequest {
 	@ApiProperty({ required: false })
-	@IsString({ message: 'Address name is invalid' })
-	@MaxLength(255, {
-		message: 'Address name must have less than 256 characters.',
-	})
-	@MinLength(3, { message: 'Address name must have at least 3 characters' })
+	@IsString()
+	@MaxLength(255)
+	@MinLength(3)
 	@IsOptional()
 	public name?: string;
 
 	@ApiProperty({ required: false })
-	@IsString({ message: 'Address area is invalid' })
+	@IsString()
 	@IsOptional()
 	public area?: string;
 
 	@ApiProperty({ required: false })
-	@IsString({ message: 'Address sub area is invalid' })
+	@IsString()
 	@IsOptional()
 	public sub_area?: string;
 
 	@ApiProperty({ required: false })
-	@IsString({ message: 'Address locality is invalid' })
+	@IsString()
 	@IsOptional()
 	public locality?: string;
 
 	@ApiProperty({ required: false })
-	@IsString({ message: 'Address country code is invalid' })
-	@MaxLength(2, {
-		message: 'Address country code must have less than 3 characters',
-	})
-	@MinLength(2, {
-		message: 'Address country code must have at least 2 characters',
-	})
+	@IsString()
+	@MaxLength(2)
+	@MinLength(2)
 	@IsOptional()
 	public country_code?: string;
 
 	@ApiProperty({ required: false })
-	@IsBoolean({ message: 'Address main flag is invalid' })
+	@IsBoolean()
 	@IsOptional()
 	public main?: boolean;
 }

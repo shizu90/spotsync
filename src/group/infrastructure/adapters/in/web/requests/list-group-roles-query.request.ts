@@ -25,7 +25,7 @@ export class ListGroupRolesQueryRequest extends ApiRequest {
 	@IsString()
 	public sort?: string;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: SortDirection })
 	@IsOptional()
 	@IsEnum(SortDirection)
 	public sort_direction?: SortDirection;

@@ -6,22 +6,18 @@ import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 export class UpdatePostRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsString({ message: 'Post title is invalid.' })
-	@MaxLength(400, {
-		message: 'Post title must have less than 400 characters.',
-	})
+	@IsString()
+	@MaxLength(400)
 	public title: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsString({ message: 'Post content is invalid.' })
-	@MaxLength(1255, {
-		message: 'Post content must have less than 1255 characters.',
-	})
+	@IsString()
+	@MaxLength(1255)
 	public content: string;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: PostVisibility })
 	@IsOptional()
-	@IsEnum(PostVisibility, { message: 'Post visibility is invalid.' })
+	@IsEnum(PostVisibility)
 	public visibility?: PostVisibility;
 }

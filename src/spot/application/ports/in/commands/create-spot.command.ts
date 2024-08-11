@@ -4,7 +4,6 @@ import { SpotType } from 'src/spot/domain/spot-type.enum';
 export class CreateSpotCommand extends Command {
 	constructor(
 		readonly name: string,
-		readonly description: string,
 		readonly type: SpotType,
 		readonly address: {
 			area: string;
@@ -14,6 +13,7 @@ export class CreateSpotCommand extends Command {
 			latitude?: number;
 			longitude?: number;
 		},
+		readonly description?: string,
 	) {
 		super();
 	}

@@ -5,65 +5,42 @@ import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 
 export class UpdateUserVisibilityConfigRequest extends ApiRequest {
 	@ApiProperty({ required: false, enum: UserVisibility })
-	@IsEnum(UserVisibility, {
-		message:
-			'User profile visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
-	})
+	@IsEnum(UserVisibility)
 	@IsOptional()
 	public profile?: UserVisibility;
 
 	@ApiProperty({ required: false, enum: UserVisibility })
-	@IsEnum(UserVisibility, {
-		message:
-			'User address visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
-	})
+	@IsEnum(UserVisibility)
 	@IsOptional()
 	public addresses?: UserVisibility;
 
 	@ApiProperty({ required: false, enum: UserVisibility })
-	@IsEnum(UserVisibility, {
-		message:
-			'User spot folders visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
-	})
+	@IsEnum(UserVisibility)
 	@IsOptional()
 	public spot_folders?: UserVisibility;
 
 	@ApiProperty({ required: false, enum: UserVisibility })
-	@IsEnum(UserVisibility, {
-		message:
-			'User visited spots visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
-	})
+	@IsEnum(UserVisibility)
 	@IsOptional()
 	public visited_spots?: UserVisibility;
 
 	@ApiProperty({ required: false, enum: UserVisibility })
-	@IsEnum(UserVisibility, {
-		message: 'User posts visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
-	})
+	@IsEnum(UserVisibility)
 	@IsOptional()
 	public posts?: UserVisibility;
 
 	@ApiProperty({ required: false, enum: UserVisibility })
-	@IsEnum(UserVisibility, {
-		message:
-			'User favorite spots visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
-	})
+	@IsEnum(UserVisibility)
 	@IsOptional()
 	public favorite_spots?: UserVisibility;
 
 	@ApiProperty({ required: false, enum: UserVisibility })
-	@IsEnum(UserVisibility, {
-		message:
-			'User favorite spot folders visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
-	})
+	@IsEnum(UserVisibility)
 	@IsOptional()
 	public favorite_spot_folders?: UserVisibility;
 
 	@ApiProperty({ required: false, enum: UserVisibility })
-	@IsEnum(UserVisibility, {
-		message:
-			'User favorite spot events visibility must be PUBLIC, FOLLOWERS or PRIVATE.',
-	})
+	@IsEnum(UserVisibility)
 	@IsOptional()
 	public favorite_spot_events?: UserVisibility;
 }

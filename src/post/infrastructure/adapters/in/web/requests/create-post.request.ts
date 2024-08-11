@@ -10,32 +10,28 @@ import { ApiRequest } from 'src/common/web/common.request';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 
 export class CreatePostRequest extends ApiRequest {
-	@ApiProperty()
-	@IsString({ message: 'Post title is invalid.' })
-	@MaxLength(400, {
-		message: 'Post title must have less than 400 characters.',
-	})
+	@ApiProperty({ required: true })
+	@IsString()
+	@MaxLength(400)
 	public title: string;
 
 	@ApiProperty()
-	@IsString({ message: 'Post content is invalid.' })
-	@MaxLength(1255, {
-		message: 'Post content must have less than 1255 characters.',
-	})
+	@IsString()
+	@MaxLength(1255)
 	public content: string;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: PostVisibility })
 	@IsOptional()
-	@IsEnum(PostVisibility, { message: 'Post visibility is invalid.' })
+	@IsEnum(PostVisibility)
 	public visibility?: PostVisibility;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsUUID(4, { message: 'Parent id is invalid.' })
+	@IsUUID(4)
 	public parent_id?: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsUUID(4, { message: 'Group id is invalid.' })
+	@IsUUID(4)
 	public group_id?: string;
 }

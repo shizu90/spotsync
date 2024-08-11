@@ -47,6 +47,7 @@ export class ListUsersQueryRequest extends ApiRequest {
 
 	@ApiProperty({
 		required: false,
+		enum: SortDirection,
 	})
 	@IsOptional()
 	@IsEnum(SortDirection)

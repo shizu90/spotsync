@@ -34,6 +34,7 @@ export class ListFollowRequestsQueryRequest extends ApiRequest {
 
 	@ApiProperty({
 		required: false,
+		enum: SortDirection,
 	})
 	@IsOptional()
 	@IsEnum(SortDirection)

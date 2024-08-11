@@ -3,37 +3,31 @@ import { IsBoolean, IsString, MaxLength, MinLength } from 'class-validator';
 import { ApiRequest } from 'src/common/web/common.request';
 
 export class CreateUserAddressRequest extends ApiRequest {
-	@ApiProperty()
-	@IsString({ message: 'Address name is invalid' })
-	@MaxLength(255, {
-		message: 'Address name must have less than 256 characters',
-	})
-	@MinLength(3, { message: 'Address name must have at least 3 characters' })
+	@ApiProperty({ required: true })
+	@IsString()
+	@MaxLength(255)
+	@MinLength(3)
 	public name: string;
 
-	@ApiProperty()
-	@IsString({ message: 'Address area is invalid' })
+	@ApiProperty({ required: true })
+	@IsString()
 	public area: string;
 
-	@ApiProperty()
-	@IsString({ message: 'Address sub area is invalid' })
+	@ApiProperty({ required: true })
+	@IsString()
 	public sub_area: string;
 
-	@ApiProperty()
-	@IsString({ message: 'Address locality is invalid' })
+	@ApiProperty({ required: true })
+	@IsString()
 	public locality: string;
 
-	@ApiProperty()
-	@IsString({ message: 'Address country code is invalid' })
-	@MaxLength(2, {
-		message: 'Address country code must have less than 3 characters',
-	})
-	@MinLength(2, {
-		message: 'Address country code must have at least 2 characters',
-	})
+	@ApiProperty({ required: true })
+	@IsString()
+	@MaxLength(2)
+	@MinLength(2)
 	public country_code: string;
 
-	@ApiProperty()
-	@IsBoolean({ message: 'Address main flag is invalid' })
+	@ApiProperty({ required: true })
+	@IsBoolean()
 	public main: boolean;
 }

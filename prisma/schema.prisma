@@ -1,11 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "prismaSchemaFolder"]
 }
 
@@ -15,244 +9,310 @@ datasource db {
 }
 
 model User {
-    id                              String                      @id @default(uuid())
-    first_name                      String
-    last_name                       String?
-    profile_theme_color             String?
-    profile_picture                 String?    
-    banner_picture                  String?
-    biograph                        String?
-    birth_date                      DateTime?                    @db.Date
-    created_at                      DateTime                    @default(now())
-    updated_at                      DateTime                    @default(now())
-    is_deleted                      Boolean                     @default(false)
-    credentials                     UserCredentials?
-    visibility_configuration        UserVisibilityConfig?
-    addresses                       UserAddress[]
-    followers                       Follow[]                    @relation("from_user")
-    following                       Follow[]                    @relation("to_user")
-    from_follow_requests            FollowRequest[]             @relation("from_user")
-    to_follow_requests              FollowRequest[]             @relation("to_user")
-    member_of                       GroupMember[]
-    group_join_requests             GroupMemberRequest[]
-    posts                           Post[]
-    likes                           Like[]
+  id                       String                @id @default(uuid())
+  profile_picture          String?               @db.VarChar(400)
+  banner_picture           String?               @db.VarChar(400)
+  biograph                 String?
+  birth_date               DateTime?             @db.Date
+  created_at               DateTime              @default(now())
+  updated_at               DateTime              @default(now())
+  is_deleted               Boolean               @default(false)
+  first_name               String                @db.VarChar(255)
+  last_name                String?               @db.VarChar(255)
+  profile_theme_color      String?               @db.VarChar(7)
+  favorited_spots          FavoritedSpot[]
+  from_follow_requests     FollowRequest[]       @relation("from_user")
+  to_follow_requests       FollowRequest[]       @relation("to_user")
+  followers                Follow[]              @relation("from_user")
+  following                Follow[]              @relation("to_user")
+  group_join_requests      GroupMemberRequest[]
+  member_of                GroupMember[]
+  likes                    Like[]
+  posts                    Post[]
+  spots                    Spot[]
+  addresses                UserAddress[]
+  credentials              UserCredentials?
+  visibility_configuration UserVisibilityConfig?
+  visited_spots            VisitedSpot[]
 
-    @@map("users")
+  @@map("users")
 }
 
 model UserCredentials {
-    user_id                         String                      @id
-    name                            String
-    email                           String                      @unique
-    password                        String
-    phone_number                    String?
-    last_login                      DateTime?   
-    last_logout                     DateTime?
-    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id      String    @id
+  name         String    @unique @db.VarChar(255)
+  email        String    @unique
+  password     String    @db.VarChar(400)
+  last_login   DateTime?
+  last_logout  DateTime?
+  phone_number String?   @db.VarChar(20)
+  user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@map("user_credentials")
+  @@map("user_credentials")
 }
 
 model UserVisibilityConfig {
-    user_id                         String                      @id
-    profile                         String
-    addresses                       String
-    spot_folders                    String
-    visited_spots                   String
-    favorite_spots                  String
-    favorite_spot_folders           String
-    favorite_spot_events            String
-    posts                           String
-    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id               String @id
+  addresses             String @db.VarChar(12)
+  favorite_spot_events  String @db.VarChar(12)
+  favorite_spot_folders String @db.VarChar(12)
+  favorite_spots        String @db.VarChar(12)
+  posts                 String @db.VarChar(12)
+  profile               String @db.VarChar(12)
+  spot_folders          String @db.VarChar(12)
+  visited_spots         String @db.VarChar(12)
+  user                  User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@map("user_visibility_configs")
+  @@map("user_visibility_configs")
 }
 
 model UserAddress {
-    id                              String                      @id @default(uuid())
-    name                            String
-    area                            String
-    sub_area                        String
-    locality                        String
-    latitude                        Decimal
-    longitude                       Decimal
-    country_code                    String
-    main                            Boolean
-    created_at                      DateTime                    @default(now())
-    updated_at                      DateTime                    @default(now())
-    is_deleted                      Boolean                     @default(false)
-    user_id                         String
-    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id           String   @id @default(uuid())
+  name         String   @db.VarChar(255)
+  area         String   @db.VarChar(255)
+  sub_area     String   @db.VarChar(255)
+  locality     String   @db.VarChar(255)
+  latitude     Decimal  @db.Decimal(9, 6)
+  longitude    Decimal  @db.Decimal(9, 6)
+  country_code String   @db.Char(2)
+  main         Boolean
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  user_id      String
+  is_deleted   Boolean  @default(false)
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@map("user_addresses")
+  @@map("user_addresses")
 }
 
 model Follow {
-    id                              String                      @id @default(uuid())
-    from_user_id                    String
-    to_user_id                      String
-    followed_at                     DateTime                    @default(now())
-    from_user                       User                        @relation("from_user", fields: [from_user_id], references: [id], onDelete: Cascade)
-    to_user                         User                        @relation("to_user", fields: [to_user_id], references: [id], onDelete: Cascade)
+  id           String   @id @default(uuid())
+  from_user_id String
+  to_user_id   String
+  followed_at  DateTime @default(now())
+  from_user    User     @relation("from_user", fields: [from_user_id], references: [id], onDelete: Cascade)
+  to_user      User     @relation("to_user", fields: [to_user_id], references: [id], onDelete: Cascade)
 
-    @@map("follows")
+  @@map("follows")
 }
 
 model FollowRequest {
-    id                              String                      @id @default(uuid())
-    from_user_id                    String
-    to_user_id                      String
-    requested_on                    DateTime                    @default(now())
-    from_user                       User                        @relation("from_user", fields: [from_user_id], references: [id], onDelete: Cascade)
-    to_user                         User                        @relation("to_user", fields: [to_user_id], references: [id], onDelete: Cascade)
+  id           String   @id @default(uuid())
+  from_user_id String
+  to_user_id   String
+  requested_on DateTime @default(now())
+  from_user    User     @relation("from_user", fields: [from_user_id], references: [id], onDelete: Cascade)
+  to_user      User     @relation("to_user", fields: [to_user_id], references: [id], onDelete: Cascade)
 
-    @@map("follow_requests")
+  @@map("follow_requests")
 }
 
 model Group {
-    id                              String                      @id @default(uuid())
-    name                            String
-    about                           String?
-    group_picture                   String?
-    banner_picture                  String?
-    created_at                      DateTime                    @default(now())
-    updated_at                      DateTime                    @default(now())
-    is_deleted                      Boolean                     @default(false)
-    visibility_configuration        GroupVisibilityConfig?
-    members                         GroupMember[]
-    join_requests                   GroupMemberRequest[]
-    roles                           GroupRole[]
-    history                         GroupLog[]
-    posts                           Post[]
+  id                       String                 @id @default(uuid())
+  name                     String                 @db.VarChar(255)
+  about                    String?                @db.VarChar(400)
+  group_picture            String?                @db.VarChar(400)
+  banner_picture           String?                @db.VarChar(400)
+  created_at               DateTime               @default(now())
+  updated_at               DateTime               @default(now())
+  is_deleted               Boolean                @default(false)
+  history                  GroupLog[]
+  join_requests            GroupMemberRequest[]
+  members                  GroupMember[]
+  roles                    GroupRole[]
+  visibility_configuration GroupVisibilityConfig?
+  posts                    Post[]
 
-    @@map("groups")
+  @@map("groups")
 }
 
 model GroupVisibilityConfig {
-    group_id                        String                      @id
-    posts                           String
-    spot_events                     String
-    groups                          String
-    group                           Group                       @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  group_id    String @id
+  groups      String @db.VarChar(12)
+  posts       String @db.VarChar(12)
+  spot_events String @db.VarChar(12)
+  group       Group  @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
-    @@map("group_visibility_configs")
+  @@map("group_visibility_configs")
 }
 
 model GroupMember {
-    id                              String                      @id @default(uuid())
-    is_creator                      Boolean
-    joined_at                       DateTime                    @default(now())
-    group_id                        String
-    user_id                         String
-    group_role_id                   String?
-    group                           Group                       @relation(fields: [group_id], references: [id], onDelete: Cascade)
-    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    group_role                      GroupRole?                  @relation(fields: [group_role_id], references: [id], onDelete: SetNull)
+  id            String     @id @default(uuid())
+  is_creator    Boolean
+  joined_at     DateTime   @default(now())
+  group_id      String
+  user_id       String
+  group_role_id String?
+  group         Group      @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  group_role    GroupRole? @relation(fields: [group_role_id], references: [id])
+  user          User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@map("group_members")
+  @@map("group_members")
 }
 
 model GroupMemberRequest {
-    id                              String                      @id @default(uuid())
-    group_id                        String
-    user_id                         String
-    requested_on                    DateTime                    @default(now())
-    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    group                           Group                       @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  id           String   @id @default(uuid())
+  group_id     String
+  user_id      String
+  requested_on DateTime @default(now())
+  group        Group    @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@map("group_member_requests")
+  @@map("group_member_requests")
 }
 
 model GroupRole {
-    id                              String                      @id @default(uuid())
-    name                            String
-    hex_color                       String
-    created_at                      DateTime                    @default(now())
-    updated_at                      DateTime                    @default(now())
-    is_immutable                    Boolean                     @default(false)
-    group_id                        String?                     
-    permissions                     GroupRolePermission[]
-    group_members                   GroupMember[]
-    group                           Group?                      @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  id            String                @id @default(uuid())
+  name          String                @db.VarChar(255)
+  hex_color     String                @db.VarChar(7)
+  created_at    DateTime              @default(now())
+  updated_at    DateTime              @default(now())
+  is_immutable  Boolean               @default(false)
+  group_id      String?
+  group_members GroupMember[]
+  permissions   GroupRolePermission[]
+  group         Group?                @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
-    @@map("group_roles")
+  @@map("group_roles")
 }
 
 model GroupRolePermission {
-    group_role_id                   String
-    group_permission_id             String
-    group_role                      GroupRole                   @relation(fields: [group_role_id], references: [id], onDelete: Cascade)
-    group_permission                GroupPermission             @relation(fields: [group_permission_id], references: [id])
+  group_role_id       String
+  group_permission_id String
+  group_permission    GroupPermission @relation(fields: [group_permission_id], references: [id])
+  group_role          GroupRole       @relation(fields: [group_role_id], references: [id], onDelete: Cascade)
 
-    @@id(fields: [group_permission_id, group_role_id])
-    @@map("group_role_permissions")
+  @@id([group_permission_id, group_role_id])
+  @@map("group_role_permissions")
 }
 
 model GroupPermission {
-    id                              String                      @id @default(uuid())
-    name                            String
-    group_role_permission           GroupRolePermission[]
+  id                    String                @id @default(uuid())
+  name                  String                @db.VarChar(255)
+  group_role_permission GroupRolePermission[]
 
-    @@map("group_permissions")
+  @@map("group_permissions")
 }
 
 model GroupLog {
-    id                              String                      @id @default(uuid())
-    group_id                        String
-    text                            String
-    occurred_at                     DateTime                    @default(now())
-    group                           Group                       @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  group_id    String
+  text        String   @db.VarChar(400)
+  occurred_at DateTime @default(now())
+  group       Group    @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
-    @@map("group_logs")
+  @@map("group_logs")
 }
 
 model Post {
-    id                              String                      @id @default(uuid())
-    title                           String
-    content                         String
-    visibility                      String
-    thread_id                       String
-    depth_level                     Int                         @default(0)
-    user_id                         String
-    group_id                        String?
-    parent_id                       String?
-    created_at                      DateTime                    @default(now())
-    updated_at                      DateTime                    @default(now())
-    attachments                     PostAttachment[]
-    thread                          PostThread                  @relation("posts", fields: [thread_id], references: [id], onDelete: Cascade)
-    creator                         User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    group                           Group?                      @relation(fields: [group_id], references: [id], onDelete: Cascade)
-    children_posts                  Post[]                      @relation("parent_post")
-    parent_post                     Post?                       @relation("parent_post", fields: [parent_id], references: [id], onDelete: Cascade)
+  id             String           @id @default(uuid())
+  title          String           @db.VarChar(255)
+  content        String
+  visibility     String           @db.VarChar(12)
+  user_id        String
+  group_id       String?
+  parent_id      String?
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @default(now())
+  depth_level    Int              @default(0)
+  thread_id      String
+  attachments    PostAttachment[]
+  group          Group?           @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  parent_post    Post?            @relation("parent_post", fields: [parent_id], references: [id], onDelete: Cascade)
+  children_posts Post[]           @relation("parent_post")
+  thread         PostThread       @relation("posts", fields: [thread_id], references: [id], onDelete: Cascade)
+  creator        User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@map("posts")
+  @@map("posts")
 }
 
 model PostAttachment {
-    id                              String                      @id @default(uuid())
-    file_path                       String
-    file_type                       String
-    post_id                         String                      
-    post                            Post                        @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  id        String @id @default(uuid())
+  post_id   String
+  file_path String @db.VarChar(400)
+  file_type String @db.VarChar(12)
+  post      Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
-    @@map("post_attachments")
+  @@map("post_attachments")
 }
 
 model PostThread {
-    id                              String                      @id @default(uuid())
-    max_depth_level                 Int                         @default(0)
-    posts                           Post[]                      @relation("posts")
+  id              String @id @default(uuid())
+  max_depth_level Int    @default(0)
+  posts           Post[] @relation("posts")
 
-    @@map("post_threads")
+  @@map("post_threads")
 }
 
 model Like {
-    id                              String                      @id @default(uuid())
-    likable_subject                 String
-    likable_id                      String
-    created_at                      DateTime                    @default(now())
-    user_id                         String
-    user                            User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    @@map("likes")
+  id              String   @id @default(uuid())
+  likable_subject String   @db.VarChar(12)
+  likable_id      String
+  created_at      DateTime @default(now())
+  user_id         String
+  user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("likes")
+}
+
+model Spot {
+  id           String          @id @default(uuid())
+  name         String          @db.VarChar(255)
+  description  String?         @db.VarChar(400)
+  type         String          @db.VarChar(120)
+  is_deleted   Boolean         @default(false)
+  creator_id   String
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @default(now())
+  favorited_by FavoritedSpot[]
+  address      SpotAddress?
+  photos       SpotPhoto[]
+  creator      User            @relation(fields: [creator_id], references: [id], onDelete: Cascade)
+  visited_by   VisitedSpot[]
+
+  @@map("spots")
+}
+
+model SpotPhoto {
+  id        String @id @default(uuid())
+  spot_id   String
+  file_path String @db.VarChar(400)
+  spot      Spot   @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+
+  @@map("spot_photos")
+}
+
+model SpotAddress {
+  spot_id      String  @id
+  area         String  @db.VarChar(255)
+  sub_area     String  @db.VarChar(255)
+  locality     String? @db.VarChar(255)
+  latitude     Decimal @db.Decimal(9, 6)
+  longitude    Decimal @db.Decimal(9, 6)
+  country_code String  @db.Char(2)
+  spot         Spot    @relation(fields: [spot_id], references: [id])
+
+  @@map("spot_addresses")
+}
+
+model FavoritedSpot {
+  id           String   @id @default(uuid())
+  user_id      String
+  spot_id      String
+  favorited_at DateTime @default(now())
+  spot         Spot     @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("favorited_spots")
+}
+
+model VisitedSpot {
+  id         String   @id @default(uuid())
+  user_id    String
+  spot_id    String
+  visited_at DateTime @default(now())
+  spot       Spot     @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("visited_spots")
 }

@@ -12,7 +12,7 @@ import { ApiRequest } from 'src/common/web/common.request';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 
 export class ListLikesQueryRequest extends ApiRequest {
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: LikableSubject })
 	@IsOptional()
 	@IsEnum(LikableSubject)
 	public subject?: LikableSubject;
@@ -32,7 +32,7 @@ export class ListLikesQueryRequest extends ApiRequest {
 	@IsNumberString()
 	public page?: number;
 
-	@ApiProperty({ required: false })
+	@ApiProperty({ required: false, enum: SortDirection })
 	@IsOptional()
 	@IsEnum(SortDirection)
 	public sort_direction?: SortDirection;
