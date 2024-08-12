@@ -26,12 +26,14 @@ export class GroupRepositoryImpl implements GroupRepository {
 			prisma_model.about,
 			prisma_model.group_picture,
 			prisma_model.banner_picture,
-			GroupVisibilityConfig.create(
-				prisma_model.id,
-				prisma_model.visibility_configuration.posts,
-				prisma_model.visibility_configuration.spot_events,
-				prisma_model.visibility_configuration.groups,
-			),
+			prisma_model.visibility_configuration
+				? GroupVisibilityConfig.create(
+						prisma_model.id,
+						prisma_model.visibility_configuration.posts,
+						prisma_model.visibility_configuration.spot_events,
+						prisma_model.visibility_configuration.groups,
+					)
+				: null,
 			prisma_model.created_at,
 			prisma_model.updated_at,
 			prisma_model.is_deleted,
@@ -43,24 +45,9 @@ export class GroupRepositoryImpl implements GroupRepository {
 
 		return GroupLog.create(
 			prisma_model.id,
-			Group.create(
-				prisma_model.group.id,
-				prisma_model.group.name,
-				prisma_model.group.about,
-				prisma_model.group.group_picture,
-				prisma_model.group.banner_picture,
-				GroupVisibilityConfig.create(
-					prisma_model.group.id,
-					prisma_model.group.visibility_configuration.post_visibility,
-					prisma_model.group.visibility_configuration
-						.event_visibility,
-					prisma_model.group.visibility_configuration
-						.group_visibility,
-				),
-				prisma_model.group.created_at,
-				prisma_model.group.updated_at,
-				prisma_model.group.is_deleted,
-			),
+			prisma_model.group
+				? this.mapGroupToDomain(prisma_model.group)
+				: null,
 			prisma_model.text,
 			prisma_model.occurred_at,
 		);

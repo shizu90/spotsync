@@ -28,57 +28,76 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 
 		return GroupMember.create(
 			prisma_model.id,
-			Group.create(
-				prisma_model.group.id,
-				prisma_model.group.name,
-				prisma_model.group.about,
-				prisma_model.group.group_picture,
-				prisma_model.group.banner_picture,
-				GroupVisibilityConfig.create(
-					prisma_model.group.id,
-					prisma_model.group.visibility_configuration.posts,
-					prisma_model.group.visibility_configuration.spot_events,
-					prisma_model.group.visibility_configuration.groups,
-				),
-				prisma_model.group.created_at,
-				prisma_model.group.updated_at,
-				prisma_model.group.is_deleted,
-			),
-			User.create(
-				prisma_model.user.id,
-				prisma_model.user.first_name,
-				prisma_model.user.last_name,
-				prisma_model.user.profile_theme_color,
-				prisma_model.user.profile_picture,
-				prisma_model.user.banner_picture,
-				prisma_model.user.biograph,
-				prisma_model.user.birth_date,
-				UserCredentials.create(
-					prisma_model.user.id,
-					prisma_model.user.credentials.name,
-					prisma_model.user.credentials.email,
-					prisma_model.user.credentials.password,
-					prisma_model.user.credentials.phone_number,
-					prisma_model.user.credentials.last_login,
-					prisma_model.user.credentials.last_logout,
-				),
-				UserVisibilityConfig.create(
-					prisma_model.user.id,
-					prisma_model.user.visibility_configuration.profile,
-					prisma_model.user.visibility_configuration.addresses,
-					prisma_model.user.visibility_configuration.spot_folders,
-					prisma_model.user.visibility_configuration.visited_spots,
-					prisma_model.user.visibility_configuration.posts,
-					prisma_model.user.visibility_configuration.favorite_spots,
-					prisma_model.user.visibility_configuration
-						.favorite_spot_folders,
-					prisma_model.user.visibility_configuration
-						.favorite_spot_events,
-				),
-				prisma_model.user.created_at,
-				prisma_model.user.updated_at,
-				prisma_model.user.is_deleted,
-			),
+			prisma_model.group
+				? Group.create(
+						prisma_model.group.id,
+						prisma_model.group.name,
+						prisma_model.group.about,
+						prisma_model.group.group_picture,
+						prisma_model.group.banner_picture,
+						prisma_model.group.visibility_configuration
+							? GroupVisibilityConfig.create(
+									prisma_model.group.id,
+									prisma_model.group.visibility_configuration
+										.posts,
+									prisma_model.group.visibility_configuration
+										.spot_events,
+									prisma_model.group.visibility_configuration
+										.groups,
+								)
+							: null,
+						prisma_model.group.created_at,
+						prisma_model.group.updated_at,
+						prisma_model.group.is_deleted,
+					)
+				: null,
+			prisma_model.user
+				? User.create(
+						prisma_model.user.id,
+						prisma_model.user.first_name,
+						prisma_model.user.last_name,
+						prisma_model.user.profile_theme_color,
+						prisma_model.user.profile_picture,
+						prisma_model.user.banner_picture,
+						prisma_model.user.biograph,
+						prisma_model.user.birth_date,
+						prisma_model.user.credentials
+							? UserCredentials.create(
+									prisma_model.user.id,
+									prisma_model.user.credentials.name,
+									prisma_model.user.credentials.email,
+									prisma_model.user.credentials.password,
+									prisma_model.user.credentials.phone_number,
+									prisma_model.user.credentials.last_login,
+									prisma_model.user.credentials.last_logout,
+								)
+							: null,
+						prisma_model.user.visibility_configuration
+							? UserVisibilityConfig.create(
+									prisma_model.user.id,
+									prisma_model.user.visibility_configuration
+										.profile,
+									prisma_model.user.visibility_configuration
+										.addresses,
+									prisma_model.user.visibility_configuration
+										.spot_folders,
+									prisma_model.user.visibility_configuration
+										.visited_spots,
+									prisma_model.user.visibility_configuration
+										.posts,
+									prisma_model.user.visibility_configuration
+										.favorite_spots,
+									prisma_model.user.visibility_configuration
+										.favorite_spot_folders,
+									prisma_model.user.visibility_configuration
+										.favorite_spot_events,
+								)
+							: null,
+						prisma_model.user.created_at,
+						prisma_model.user.updated_at,
+						prisma_model.user.is_deleted,
+					)
+				: null,
 			GroupRole.create(
 				prisma_model.group_role.id,
 				prisma_model.group_role.name,

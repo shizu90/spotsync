@@ -42,7 +42,6 @@ describe('CreateSpotService', () => {
 
 		const command = new CreateSpotCommand(
 			'Spot name',
-			'Spot description',
 			SpotType.MALL,
 			{
 				area: 'State',
@@ -50,6 +49,7 @@ describe('CreateSpotService', () => {
 				locality: 'Neighborhood',
 				countryCode: 'BR',
 			},
+			'Spot description',
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
