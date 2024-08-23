@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { Model } from 'src/common/core/common.model';
 import { Spot } from 'src/spot/domain/spot.model';
 import { User } from 'src/user/domain/user.model';
+import { FavoritedSpotFolder } from './favorited-spot-folder.model';
 import { SpotFolderItem } from './spot-folder-item.model';
 import { SpotFolderVisibility } from './spot-folder-visibility.enum';
 
@@ -156,5 +157,9 @@ export class SpotFolder extends Model {
 		);
 		this._items = this._items.splice(idx, 1);
 		this._updatedAt = new Date();
+	}
+
+	public favorite(user: User): FavoritedSpotFolder {
+		return FavoritedSpotFolder.create(randomUUID(), this, user);
 	}
 }
