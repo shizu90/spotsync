@@ -9,6 +9,7 @@ import { SpotModule } from './spot/spot.module';
 import { UserModule } from './user/user.module';
 import { SpotFolderModule } from './spot-folder/spot-folder.module';
 import { SpotEventModule } from './spot-event/spot-event.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
 	imports: [
@@ -22,6 +23,7 @@ import { SpotEventModule } from './spot-event/spot-event.module';
 		SpotModule,
 		SpotFolderModule,
 		SpotEventModule,
+		MailModule,
 	],
 })
 export class AppModule {}

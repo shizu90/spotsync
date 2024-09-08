@@ -1,11 +1,12 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { Providers } from './user.providers';
-import { UserController } from './infrastructure/adapters/in/web/user.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { FollowerModule } from 'src/follower/follower.module';
-import { UserAddressController } from './infrastructure/adapters/in/web/user-address.controller';
 import { GeolocationModule } from 'src/geolocation/geolocation.module';
+import { MailModule } from 'src/mail/mail.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
+import { UserAddressController } from './infrastructure/adapters/in/web/user-address.controller';
+import { UserController } from './infrastructure/adapters/in/web/user.controller';
+import { Providers } from './user.providers';
 
 @Module({
 	imports: [
@@ -13,6 +14,7 @@ import { GeolocationModule } from 'src/geolocation/geolocation.module';
 		forwardRef(() => AuthModule),
 		forwardRef(() => FollowerModule),
 		GeolocationModule,
+		MailModule
 	],
 	controllers: [UserController, UserAddressController],
 	providers: [...Providers],

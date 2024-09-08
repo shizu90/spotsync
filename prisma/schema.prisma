@@ -34,6 +34,7 @@ model User {
   credentials              UserCredentials?
   visibility_configuration UserVisibilityConfig?
   visited_spots            VisitedSpot[]
+  password_recoveries      PasswordRecovery[]
 
   @@map("users")
 }
@@ -315,4 +316,16 @@ model VisitedSpot {
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("visited_spots")
+}
+
+model PasswordRecovery {
+  id         String   @id @default(uuid())
+  user_id    String
+  status     String   @db.VarChar(3)
+  token      String   @db.VarChar(32)
+  created_at DateTime @default(now())
+  expires_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("password_recoveries")
 }

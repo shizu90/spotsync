@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { GeoLocatorInput, GeoLocatorProvider } from 'src/geolocation/geolocator';
 import { GeoLocatorService } from 'src/geolocation/geolocator.service';
+import { Mail, MailProvider } from 'src/mail/mail';
+import { NewUserMailTemplate } from 'src/mail/templates/new-user-mail.template';
 import { UserAddress } from 'src/user/domain/user-address.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { User } from 'src/user/domain/user.model';
@@ -30,6 +32,8 @@ export class CreateUserService implements CreateUserUseCase {
 		protected geoLocatorService: GeoLocatorService,
 		@Inject(EncryptPasswordServiceProvider)
 		protected encryptPasswordService: EncryptPasswordService,
+		@Inject(MailProvider)
+		protected mail: Mail
 	) {}
 
 	public async execute(command: CreateUserCommand): Promise<CreateUserDto> {
@@ -109,6 +113,8 @@ export class CreateUserService implements CreateUserUseCase {
 
 			this.userAddressRepository.store(address);
 		}
+
+		this.mail.setReceiver(user.credentials().email()).setTemplate(new NewUserMailTemplate()).send();
 
 		return new CreateUserDto(
 			user.id(),
