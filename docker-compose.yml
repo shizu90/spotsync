@@ -1,4 +1,3 @@
-version: '3'
 services:
   app:
     build:
@@ -11,15 +10,8 @@ services:
       - db
     env_file: ".env"
     volumes:
-      - './src:/app/src'
-      - './test:/app/test'
-      - './prisma:/app/prisma'
-      - './nest-cli.json:/app/nest-cli.json'
-      - './tsconfig.json:/app/tsconfig.json'
-      - './tsconfig.build.json:/app/tsconfig.build.json'
-      - './package.json:/app/package.json'
-      - './.prettierrc:/app/.prettierrc'
-      - './.eslintrc.js:/app/.eslintrc.js'
+      - '.:/app'
+      - '/app/node_modules'
     networks:
       - net
   db:

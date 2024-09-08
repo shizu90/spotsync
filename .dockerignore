@@ -1,4 +1,4 @@
-.docker
+.docker/postgres
 node_modules
 dist
 .vscode

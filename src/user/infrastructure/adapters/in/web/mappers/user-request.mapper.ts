@@ -43,6 +43,14 @@ export class UserRequestMapper {
 			request.email,
 			request.password,
 			request.phone_number,
+			request.address ? {
+				area: request.address.area,
+				subArea: request.address.sub_area,
+				countryCode: request.address.country_code,
+				locality: request.address.locality,
+				latitude: request.address.latitude,
+				longitude: request.address.longitude,
+			} : null
 		);
 	}
 

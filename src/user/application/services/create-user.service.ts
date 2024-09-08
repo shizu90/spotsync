@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { GeoLocatorInput, GeoLocatorProvider } from 'src/geolocation/geolocator';
+import { GeoLocatorService } from 'src/geolocation/geolocator.service';
+import { UserAddress } from 'src/user/domain/user-address.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { User } from 'src/user/domain/user.model';
 import { CreateUserCommand } from '../ports/in/commands/create-user.command';
@@ -9,6 +12,7 @@ import {
 	EncryptPasswordService,
 	EncryptPasswordServiceProvider,
 } from '../ports/out/encrypt-password.service';
+import { UserAddressRepository, UserAddressRepositoryProvider } from '../ports/out/user-address.repository';
 import {
 	UserRepository,
 	UserRepositoryProvider,
@@ -20,6 +24,10 @@ export class CreateUserService implements CreateUserUseCase {
 	constructor(
 		@Inject(UserRepositoryProvider)
 		protected userRepository: UserRepository,
+		@Inject(UserAddressRepositoryProvider)
+		protected userAddressRepository: UserAddressRepository,
+		@Inject(GeoLocatorProvider)
+		protected geoLocatorService: GeoLocatorService,
 		@Inject(EncryptPasswordServiceProvider)
 		protected encryptPasswordService: EncryptPasswordService,
 	) {}
@@ -69,6 +77,38 @@ export class CreateUserService implements CreateUserUseCase {
 		);
 
 		this.userRepository.store(user);
+
+		if (command.address !== null && command.address !== undefined) {
+			let latitude = command.address.latitude;
+			let longitude = command.address.longitude;
+
+			if ((latitude === null || latitude === undefined) || (longitude === null || longitude === undefined)) {
+				const coordinates = await this.geoLocatorService.coordinates(new GeoLocatorInput(
+					command.address.area,
+					command.address.subArea,
+					command.address.locality,
+					command.address.countryCode,
+				));
+
+				latitude = coordinates.latitude;
+				longitude = coordinates.longitude;
+			} 
+			
+			const address = UserAddress.create(
+				randomUUID(),
+				'Main',
+				command.address.area,
+				command.address.subArea,
+				command.address.locality,
+				latitude,
+				longitude,
+				command.address.countryCode,
+				true,
+				user,
+			);
+
+			this.userAddressRepository.store(address);
+		}
 
 		return new CreateUserDto(
 			user.id(),

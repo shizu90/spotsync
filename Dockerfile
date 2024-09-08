@@ -2,17 +2,21 @@ FROM node:alpine
 
 RUN apk upgrade --no-cache && \
     apk add curl && \
-    apk add nano
+    apk add nano && \
+    apk add openssl && \
+    apk add git
 
 WORKDIR /app
 
-RUN addgroup -S dev
-RUN adduser -S dev -s /bin/bash -h /app -D -G dev
-RUN chmod 755 -R /app
-RUN chown -R dev:dev /app
+COPY --chown=node:node package.json yarn.lock /app/
 
-USER dev
+RUN yarn cache clean && \ 
+    yarn install --frozen-lockfile
 
-CMD yarn && yarn start:dev
+COPY . /app
 
-EXPOSE 3000
+RUN chown -R node:node /app
+
+USER node
+
+CMD ["tail", "-f", "/dev/null"]
