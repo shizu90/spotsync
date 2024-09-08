@@ -4,7 +4,9 @@ RUN apk upgrade --no-cache && \
     apk add curl && \
     apk add nano && \
     apk add openssl && \
-    apk add git
+    apk add git && \
+    apk add openssh && \
+    apk add bash
 
 WORKDIR /app
 
