@@ -22,7 +22,7 @@ export class Pagination<T> {
 		this.total = total;
 		this.current_page = current_page;
 		this.last_page = Math.ceil(total / items.length);
-		this.has_next_page = this.current_page < this.last_page;
+		this.has_next_page = (this.current_page+1) < this.last_page;
 	}
 }
 

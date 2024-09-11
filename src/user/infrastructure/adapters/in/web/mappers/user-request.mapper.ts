@@ -1,11 +1,15 @@
+import { ChangePasswordCommand } from 'src/user/application/ports/in/commands/change-password.command';
 import { CreateUserCommand } from 'src/user/application/ports/in/commands/create-user.command';
 import { DeleteUserCommand } from 'src/user/application/ports/in/commands/delete-user.command';
+import { ForgotPasswordCommand } from 'src/user/application/ports/in/commands/forgot-password.command';
 import { GetUserProfileCommand } from 'src/user/application/ports/in/commands/get-user-profile.command';
 import { ListUsersCommand } from 'src/user/application/ports/in/commands/list-users.command';
 import { UpdateUserCredentialsCommand } from 'src/user/application/ports/in/commands/update-user-credentials.command';
 import { UpdateUserProfileCommand } from 'src/user/application/ports/in/commands/update-user-profile.command';
 import { UpdateUserVisibilityConfigCommand } from 'src/user/application/ports/in/commands/update-user-visibility-config.command';
+import { ChangePasswordRequest } from '../requests/change-password.request';
 import { CreateUserRequest } from '../requests/create-user.request';
+import { ForgotPasswordRequest } from '../requests/forgot-password.request';
 import { ListUsersQueryRequest } from '../requests/list-users-query.request';
 import { UpdateUserCredentialsRequest } from '../requests/update-user-credentials.request';
 import { UpdateUserProfileRequest } from '../requests/update-user-profile.request';
@@ -100,5 +104,13 @@ export class UserRequestMapper {
 
 	public static deleteUserCommand(id: string): DeleteUserCommand {
 		return new DeleteUserCommand(id);
+	}
+
+	public static forgotPasswordCommand(body: ForgotPasswordRequest): ForgotPasswordCommand {
+		return new ForgotPasswordCommand(body.email);
+	}
+
+	public static changePasswordCommand(body: ChangePasswordRequest): ChangePasswordCommand {
+		return new ChangePasswordCommand(body.password, body.token);
 	}
 }

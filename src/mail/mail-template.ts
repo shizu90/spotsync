@@ -1,4 +1,6 @@
 export abstract class MailTemplate {
-    abstract subject(): string
-    abstract html(): string
+    protected params: Object;
+
+    abstract subject(params?: Object): string
+    abstract html(params?: Object): string
 }

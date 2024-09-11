@@ -80,7 +80,7 @@ export class CreateUserService implements CreateUserUseCase {
 			UserVisibility.PUBLIC,
 		);
 
-		this.userRepository.store(user);
+		await this.userRepository.store(user);
 
 		if (command.address !== null && command.address !== undefined) {
 			let latitude = command.address.latitude;
@@ -114,7 +114,9 @@ export class CreateUserService implements CreateUserUseCase {
 			this.userAddressRepository.store(address);
 		}
 
-		this.mail.setReceiver(user.credentials().email()).setTemplate(new NewUserMailTemplate()).send();
+		this.mail.setReceiver(user.credentials().email()).setTemplate(new NewUserMailTemplate({
+			userName: user.credentials().name(),
+		})).send();
 
 		return new CreateUserDto(
 			user.id(),

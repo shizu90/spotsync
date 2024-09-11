@@ -1,13 +1,14 @@
 import { MailTemplate } from "../mail-template";
 
-export class NewUserMailTemplate extends MailTemplate {
-    public constructor(params: {userName?: string}) 
+export class ForgotPasswordMailTemplate extends MailTemplate {
+    public constructor(
+        params: {email?: string, token?: string, userName?: string}
+    ) 
     {
         super();
-
         this.params = params;
     }
-    
+
     public subject(): string {
         return '';
     }
