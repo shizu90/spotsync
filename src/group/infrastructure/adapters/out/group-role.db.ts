@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	PaginateParameters,
-	Pagination,
+    PaginateParameters,
+    Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupRoleRepository } from 'src/group/application/ports/out/group-role.repository';
@@ -160,7 +160,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			return this.mapGroupRoleToDomain(i);
 		});
 
-		return new Pagination(items, total, page);
+		return new Pagination(items, total, page, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<GroupRole>> {

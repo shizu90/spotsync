@@ -17,11 +17,11 @@ export class Pagination<T> {
 	public last_page: number;
 	public has_next_page: boolean;
 
-	constructor(items: Array<T>, total: number, current_page: number) {
+	constructor(items: Array<T>, total: number, current_page: number, limit: number) {
 		this.items = items;
 		this.total = total;
 		this.current_page = current_page;
-		this.last_page = Math.ceil(total / items.length);
+		this.last_page = Math.ceil(total / limit);
 		this.has_next_page = (this.current_page+1) < this.last_page;
 	}
 }

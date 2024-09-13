@@ -1,5 +1,6 @@
 import { Model } from 'src/common/core/common.model';
 import { UserCredentials } from './user-credentials.model';
+import { UserStatus } from './user-status.enum';
 import { UserVisibilityConfig } from './user-visibility-config.model';
 import { UserVisibility } from './user-visibility.enum';
 
@@ -14,6 +15,7 @@ export class User extends Model {
 	private _birthDate: Date;
 	private _credentials: UserCredentials;
 	private _visibilityConfiguration: UserVisibilityConfig;
+	private _status: UserStatus;
 	private _createdAt: Date;
 	private _updatedAt: Date;
 	private _isDeleted: boolean;
@@ -29,6 +31,7 @@ export class User extends Model {
 		birthDate?: Date,
 		credentials?: UserCredentials,
 		visibilityConfiguration?: UserVisibilityConfig,
+		status?: UserStatus,
 		createdAt?: Date,
 		updatedAt?: Date,
 		isDeleted?: boolean,
@@ -44,6 +47,7 @@ export class User extends Model {
 		this._birthDate = birthDate ?? null;
 		this._credentials = credentials ?? null;
 		this._visibilityConfiguration = visibilityConfiguration ?? null;
+		this._status = status ?? UserStatus.INACTIVE;
 		this._createdAt = createdAt ?? new Date();
 		this._updatedAt = updatedAt ?? new Date();
 		this._isDeleted = isDeleted ?? false;
@@ -60,6 +64,7 @@ export class User extends Model {
 		birthDate?: Date,
 		credentials?: UserCredentials,
 		visibilityConfiguration?: UserVisibilityConfig,
+		status?: UserStatus,
 		createdAt?: Date,
 		updatedAt?: Date,
 		isDeleted?: boolean,
@@ -75,6 +80,7 @@ export class User extends Model {
 			birthDate,
 			credentials,
 			visibilityConfiguration,
+			status,
 			createdAt,
 			updatedAt,
 			isDeleted,
@@ -123,6 +129,10 @@ export class User extends Model {
 
 	public visibilityConfiguration(): UserVisibilityConfig {
 		return this._visibilityConfiguration;
+	}
+
+	public status(): UserStatus {
+		return this._status;
 	}
 
 	public createdAt(): Date {
@@ -232,4 +242,19 @@ export class User extends Model {
 
 		return visibilityConfig;
 	}
+
+	public activate(): void {
+		if (this._status == UserStatus.INACTIVE) {
+			this._status = UserStatus.ACTIVE;
+			this._updatedAt = new Date();
+		}
+	}
+
+	public deactivate(): void {
+		if (this._status == UserStatus.ACTIVE) {
+			this._status = UserStatus.INACTIVE;
+			this._updatedAt = new Date();
+		}
+	}
 }
+ 

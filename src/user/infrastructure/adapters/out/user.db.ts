@@ -53,6 +53,7 @@ export class UserRepositoryImpl implements UserRepository {
 							.favorite_spot_events,
 					)
 				: null,
+			prisma_model.status,
 			prisma_model.created_at,
 			prisma_model.updated_at,
 			prisma_model.is_deleted,
@@ -99,6 +100,15 @@ export class UserRepositoryImpl implements UserRepository {
 					query = `${query} AND LOWER((users.first_name || COALESCE(users.last_name, ''))) LIKE '%${fullName.trim().toLowerCase()}%'`;
 				} else {
 					query = `${query} WHERE LOWER((users.first_name || COALESCE(users.last_name, ''))) LIKE '%${fullName.trim().toLowerCase()}%'`;
+				}
+			}
+
+			if (typeof params.filters['status'] === 'string') {
+				const status = params.filters['status'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND users.status = '${status}'`;
+				} else {
+					query = `${query} WHERE users.status = '${status}'`;
 				}
 			}
 
@@ -173,11 +183,12 @@ export class UserRepositoryImpl implements UserRepository {
 			return this.mapUserToDomain(i);
 		});
 
-		return new Pagination(items, total, page);
+		return new Pagination(items, total, page, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<User>> {
 		const name = values['name'];
+		const status = values['status'];
 		const isDeleted = values['isDeleted'] ?? false;
 
 		let query =
@@ -188,6 +199,14 @@ export class UserRepositoryImpl implements UserRepository {
 				query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
 			} else {
 				query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+			}
+		}
+
+		if (status) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND users.status = '${status}'`;
+			} else {
+				query = `${query} WHERE users.status = '${status}'`;
 			}
 		}
 
@@ -216,6 +235,7 @@ export class UserRepositoryImpl implements UserRepository {
 
 	public async countBy(values: Object): Promise<number> {
 		const name = values['name'];
+		const status = values['status'];
 		const isDeleted = values['isDeleted'] ?? false;
 
 		let query =
@@ -226,6 +246,14 @@ export class UserRepositoryImpl implements UserRepository {
 				query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
 			} else {
 				query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
+			}
+		}
+
+		if (status) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND users.status = '${status}'`;
+			} else {
+				query = `${query} WHERE users.status = '${status}'`;
 			}
 		}
 
@@ -316,6 +344,7 @@ export class UserRepositoryImpl implements UserRepository {
 				profile_picture: model.profilePicture(),
 				biograph: model.biograph(),
 				birth_date: model.birthDate(),
+				status: model.status(),
 				is_deleted: model.isDeleted(),
 				created_at: model.createdAt(),
 				updated_at: model.updatedAt(),
@@ -367,6 +396,7 @@ export class UserRepositoryImpl implements UserRepository {
 				banner_picture: model.bannerPicture(),
 				profile_picture: model.profilePicture(),
 				birth_date: model.birthDate(),
+				status: model.status(),
 				is_deleted: model.isDeleted(),
 				updated_at: model.updatedAt(),
 			},

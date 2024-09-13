@@ -91,6 +91,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 										.favorite_spot_events,
 								)
 							: null,
+						prisma_model.creator.status,
 						prisma_model.creator.created_at,
 						prisma_model.creator.updated_at,
 						prisma_model.creator.is_deleted,
@@ -151,6 +152,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 										.favorite_spot_events,
 								)
 							: null,
+						prisma_model.user.status,
 						prisma_model.user.created_at,
 						prisma_model.user.updated_at,
 						prisma_model.user.is_deleted,
@@ -209,6 +211,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 										.favorite_spot_events,
 								)
 							: null,
+						prisma_model.user.status,
 						prisma_model.user.created_at,
 						prisma_model.user.updated_at,
 						prisma_model.user.is_deleted,
@@ -352,6 +355,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				items.map((s) => this.mapSpotToDomain(s)),
 				total,
 				page,
+				limit,
 			);
 		}
 	}

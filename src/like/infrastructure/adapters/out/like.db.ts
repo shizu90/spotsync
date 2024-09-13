@@ -54,6 +54,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 					prisma_model.user.visibility_configuration
 						.favorite_spot_events,
 				),
+				prisma_model.user.status,
 				prisma_model.user.created_at,
 				prisma_model.user.updated_at,
 				prisma_model.user.is_deleted,

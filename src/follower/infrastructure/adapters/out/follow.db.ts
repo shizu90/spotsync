@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import {
-	PaginateParameters,
-	Pagination,
+    PaginateParameters,
+    Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { FollowRepository } from 'src/follower/application/ports/out/follow.repository';
@@ -57,6 +57,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 					prisma_model.from_user.visibility_configuration
 						.favorite_spot_events,
 				),
+				prisma_model.from_user.status,
 				prisma_model.from_user.created_at,
 				prisma_model.from_user.updated_at,
 				prisma_model.from_user.is_deleted,
@@ -93,6 +94,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 					prisma_model.to_user.visibility_configuration
 						.favorite_spot_events,
 				),
+				prisma_model.to_user.status,
 				prisma_model.to_user.created_at,
 				prisma_model.to_user.updated_at,
 				prisma_model.to_user.is_deleted,
@@ -140,6 +142,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 					prisma_model.from_user.visibility_configuration
 						.favorite_spot_events,
 				),
+				prisma_model.from_user.status,
 				prisma_model.from_user.created_at,
 				prisma_model.from_user.updated_at,
 				prisma_model.from_user.is_deleted,
@@ -176,6 +179,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 					prisma_model.to_user.visibility_configuration
 						.favorite_spot_events,
 				),
+				prisma_model.to_user.status,
 				prisma_model.to_user.created_at,
 				prisma_model.to_user.updated_at,
 				prisma_model.to_user.is_deleted,
@@ -280,7 +284,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			return this.mapFollowToDomain(i);
 		});
 
-		return new Pagination(items, total, page);
+		return new Pagination(items, total, page, limit);
 	}
 
 	public async paginateRequest(
@@ -377,7 +381,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			return this.mapFollowRequestToDomain(i);
 		});
 
-		return new Pagination(items, total, page);
+		return new Pagination(items, total, page, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<Follow>> {

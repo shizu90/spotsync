@@ -75,7 +75,7 @@ describe('JoinGroupService', () => {
 
 		group
 			.visibilityConfiguration()
-			.changeGroupVisibility(GroupVisibility.PRIVATE);
+			.changeGroups(GroupVisibility.PRIVATE);
 
 		const groupRole = mockGroupRole();
 
@@ -116,7 +116,7 @@ describe('JoinGroupService', () => {
 
 		group
 			.visibilityConfiguration()
-			.changeGroupVisibility(GroupVisibility.PRIVATE);
+			.changeGroups(GroupVisibility.PRIVATE);
 
 		const command = new JoinGroupCommand(group.id());
 
@@ -140,7 +140,7 @@ describe('JoinGroupService', () => {
 
 		group
 			.visibilityConfiguration()
-			.changeGroupVisibility(GroupVisibility.PRIVATE);
+			.changeGroups(GroupVisibility.PRIVATE);
 
 		const command = new JoinGroupCommand(group.id());
 

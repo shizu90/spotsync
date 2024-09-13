@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import {
-	PaginateParameters,
-	Pagination,
+    PaginateParameters,
+    Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PostThreadRepository } from 'src/post/application/ports/out/post-thread.repository';
@@ -81,7 +81,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 			});
 		}
 
-		return new Pagination<PostThread>(items, total, page);
+		return new Pagination<PostThread>(items, total, page, limit);
 	}
 
 	public async findBy(values: Object): Promise<PostThread[]> {

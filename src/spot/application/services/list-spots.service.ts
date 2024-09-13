@@ -1,30 +1,30 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
 import {
-	FollowRepository,
-	FollowRepositoryProvider,
+    FollowRepository,
+    FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import {
-	UserAddressRepository,
-	UserAddressRepositoryProvider,
+    UserAddressRepository,
+    UserAddressRepositoryProvider,
 } from 'src/user/application/ports/out/user-address.repository';
 import {
-	UserRepository,
-	UserRepositoryProvider,
+    UserRepository,
+    UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { ListSpotsCommand } from '../ports/in/commands/list-spots.command';
 import { ListSpotsUseCase } from '../ports/in/use-cases/list-spots.use-case';
 import { GetSpotDto } from '../ports/out/dto/get-spot.dto';
 import {
-	SpotRepository,
-	SpotRepositoryProvider,
+    SpotRepository,
+    SpotRepositoryProvider,
 } from '../ports/out/spot.repository';
 
 @Injectable()
@@ -216,6 +216,6 @@ export class ListSpotsService implements ListSpotsUseCase {
 			}),
 		);
 
-		return new Pagination(items, spots.total, spots.current_page);
+		return new Pagination(items, spots.total, spots.current_page, pagination.limit);
 	}
 }

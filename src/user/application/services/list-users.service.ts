@@ -1,24 +1,24 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { Pagination } from 'src/common/core/common.repository';
 import {
-	FollowRepository,
-	FollowRepositoryProvider,
+    FollowRepository,
+    FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { ListUsersCommand } from '../ports/in/commands/list-users.command';
 import { ListUsersUseCase } from '../ports/in/use-cases/list-users.use-case';
 import { GetUserProfileDto } from '../ports/out/dto/get-user-profile.dto';
 import {
-	UserAddressRepository,
-	UserAddressRepositoryProvider,
+    UserAddressRepository,
+    UserAddressRepositoryProvider,
 } from '../ports/out/user-address.repository';
 import {
-	UserRepository,
-	UserRepositoryProvider,
+    UserRepository,
+    UserRepositoryProvider,
 } from '../ports/out/user.repository';
 
 @Injectable()
@@ -143,6 +143,6 @@ export class ListUsersService implements ListUsersUseCase {
 			}),
 		);
 
-		return new Pagination(items, pagination.total, pagination.current_page);
+		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
 	}
 }

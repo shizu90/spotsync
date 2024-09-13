@@ -1,19 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { Pagination } from 'src/common/core/common.repository';
 import { ListGroupsCommand } from '../ports/in/commands/list-groups.command';
 import { ListGroupsUseCase } from '../ports/in/use-cases/list-groups.use-case';
 import { GetGroupDto } from '../ports/out/dto/get-group.dto';
 import {
-	GroupMemberRepository,
-	GroupMemberRepositoryProvider,
+    GroupMemberRepository,
+    GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
 import {
-	GroupRepository,
-	GroupRepositoryProvider,
+    GroupRepository,
+    GroupRepositoryProvider,
 } from '../ports/out/group.repository';
 
 @Injectable()
@@ -96,6 +96,6 @@ export class ListGroupsService implements ListGroupsUseCase {
 			}),
 		);
 
-		return new Pagination(items, pagination.total, pagination.current_page);
+		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
 	}
 }

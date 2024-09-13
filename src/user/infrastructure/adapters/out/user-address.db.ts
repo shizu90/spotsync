@@ -60,6 +60,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 					prisma_model.user.visibility_configuration
 						.favorite_spot_events,
 				),
+				prisma_model.status,
 				prisma_model.user.created_at,
 				prisma_model.user.updated_at,
 				prisma_model.is_deleted,
@@ -177,7 +178,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			return this.mapUserAddressToDomain(i);
 		});
 
-		return new Pagination(items, total, page);
+		return new Pagination(items, total, page, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<UserAddress>> {

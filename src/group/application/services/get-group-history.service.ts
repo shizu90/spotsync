@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
@@ -9,12 +9,12 @@ import { GetGroupHistoryCommand } from '../ports/in/commands/get-group-history.c
 import { GetGroupHistoryUseCase } from '../ports/in/use-cases/get-group-history.use-case';
 import { GetGroupLogDto } from '../ports/out/dto/get-group-log.dto';
 import {
-	GroupMemberRepository,
-	GroupMemberRepositoryProvider,
+    GroupMemberRepository,
+    GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
 import {
-	GroupRepository,
-	GroupRepositoryProvider,
+    GroupRepository,
+    GroupRepositoryProvider,
 } from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
 
@@ -74,6 +74,6 @@ export class GetGroupHistoryService implements GetGroupHistoryUseCase {
 			);
 		});
 
-		return new Pagination(items, pagination.total, pagination.current_page);
+		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
 	}
 }

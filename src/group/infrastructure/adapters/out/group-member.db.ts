@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	PaginateParameters,
-	Pagination,
+    PaginateParameters,
+    Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupMemberRepository } from 'src/group/application/ports/out/group-member.repository';
@@ -93,6 +93,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 										.favorite_spot_events,
 								)
 							: null,
+						prisma_model.user.status,
 						prisma_model.user.created_at,
 						prisma_model.user.updated_at,
 						prisma_model.user.is_deleted,
@@ -299,7 +300,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			return this.mapGroupMemberToDomain(i);
 		});
 
-		return new Pagination(items, total, page);
+		return new Pagination(items, total, page, limit);
 	}
 
 	public async paginateRequest(
@@ -398,7 +399,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			return this.mapGroupMemberRequestToDomain(i);
 		});
 
-		return new Pagination(items, total, page);
+		return new Pagination(items, total, page, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<GroupMember>> {

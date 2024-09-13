@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
@@ -9,16 +9,16 @@ import { ListGroupRolesCommand } from '../ports/in/commands/list-group-roles.com
 import { ListGroupRolesUseCase } from '../ports/in/use-cases/list-group-roles.use-case';
 import { GetGroupRoleDto } from '../ports/out/dto/get-group-role.dto';
 import {
-	GroupMemberRepository,
-	GroupMemberRepositoryProvider,
+    GroupMemberRepository,
+    GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
 import {
-	GroupRoleRepository,
-	GroupRoleRepositoryProvider,
+    GroupRoleRepository,
+    GroupRoleRepositoryProvider,
 } from '../ports/out/group-role.repository';
 import {
-	GroupRepository,
-	GroupRepositoryProvider,
+    GroupRepository,
+    GroupRepositoryProvider,
 } from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
 
@@ -90,6 +90,6 @@ export class ListGroupRolesService implements ListGroupRolesUseCase {
 			);
 		});
 
-		return new Pagination(items, pagination.total, pagination.current_page);
+		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
 	}
 }

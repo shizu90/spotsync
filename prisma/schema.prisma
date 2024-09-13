@@ -20,6 +20,7 @@ model User {
   first_name               String                @db.VarChar(255)
   last_name                String?               @db.VarChar(255)
   profile_theme_color      String?               @db.VarChar(7)
+  status                   String?               @db.VarChar(3) 
   favorited_spots          FavoritedSpot[]
   from_follow_requests     FollowRequest[]       @relation("from_user")
   to_follow_requests       FollowRequest[]       @relation("to_user")
@@ -35,6 +36,7 @@ model User {
   visibility_configuration UserVisibilityConfig?
   visited_spots            VisitedSpot[]
   password_recoveries      PasswordRecovery[]
+  activation_requests      ActivationRequest[]
 
   @@map("users")
 }
@@ -328,4 +330,16 @@ model PasswordRecovery {
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("password_recoveries")
+}
+
+model ActivationRequest {
+  id              String   @id @default(uuid())
+  user_id         String
+  code            String?  @db.VarChar(8)
+  status          String   @db.VarChar(3)
+  subject         String   @db.VarChar(20)
+  requested_at    DateTime @default(now())
+  user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("activation_request")
 }

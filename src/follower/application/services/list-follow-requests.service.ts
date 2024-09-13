@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
 import {
-	UserRepository,
-	UserRepositoryProvider,
+    UserRepository,
+    UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
@@ -15,8 +15,8 @@ import { ListFollowRequestsCommand } from '../ports/in/commands/list-follow-requ
 import { ListFollowRequestsUseCase } from '../ports/in/use-cases/list-follow-requests.use-case';
 import { GetFollowRequestDto } from '../ports/out/dto/get-follow-request.dto';
 import {
-	FollowRepository,
-	FollowRepositoryProvider,
+    FollowRepository,
+    FollowRepositoryProvider,
 } from '../ports/out/follow.repository';
 
 @Injectable()
@@ -145,6 +145,6 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			);
 		});
 
-		return new Pagination(items, pagination.total, pagination.current_page);
+		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
 	}
 }

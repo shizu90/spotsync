@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import {
-	PaginateParameters,
-	Pagination,
+    PaginateParameters,
+    Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
@@ -71,6 +71,7 @@ export class PostRepositoryImpl implements PostRepository {
 					prisma_model.creator.visibility_configuration
 						.favorite_spot_events,
 				),
+				prisma_model.creator.status,
 				prisma_model.creator.created_at,
 				prisma_model.creator.updated_at,
 				prisma_model.creator.is_deleted,
@@ -333,7 +334,7 @@ export class PostRepositoryImpl implements PostRepository {
 
 		items = items.map((i) => this.mapPostToDomain(i));
 
-		return new Pagination(items, total, page);
+		return new Pagination(items, total, page, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<Post>> {
