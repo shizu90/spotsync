@@ -6,4 +6,4 @@ import { ListFollowsCommand } from '../commands/list-follows.command';
 export const ListFollowsUseCaseProvider = 'ListFollowsUseCase';
 
 export interface ListFollowsUseCase
-	extends UseCase<ListFollowsCommand, Promise<Pagination<GetFollowDto>>> {}
+	extends UseCase<ListFollowsCommand, Promise<Pagination<GetFollowDto> | Array<GetFollowDto>>> {}

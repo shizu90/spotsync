@@ -35,7 +35,14 @@ describe('ListUserAddressesService', () => {
 	it('should list user addresses', async () => {
 		const user = mockUser();
 
-		const command = new ListUserAddressesCommand(user.id());
+		const command = new ListUserAddressesCommand(
+			user.id(),
+			null,
+			null,
+			null,
+			null,
+			true
+		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		userAddressRepository.paginate.mockResolvedValue(
@@ -49,9 +56,12 @@ describe('ListUserAddressesService', () => {
 		const addresses = await service.execute(command);
 
 		expect(addresses).toBeInstanceOf(Pagination<GetUserAddressDto>);
-		expect(addresses.total).toBe(3);
-		expect(addresses.current_page).toBe(0);
-		expect(addresses.items).toHaveLength(3);
-		expect(addresses.has_next_page).toBeFalsy();
+
+		if (addresses instanceof Pagination) {
+			expect(addresses.total).toBe(3);
+			expect(addresses.current_page).toBe(0);
+			expect(addresses.items).toHaveLength(3);
+			expect(addresses.has_next_page).toBeFalsy();
+		}
 	});
 });

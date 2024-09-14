@@ -8,5 +8,5 @@ export const ListGroupRequestsUseCaseProvider = 'ListGroupRequestsUseCase';
 export interface ListGroupRequestsUseCase
 	extends UseCase<
 		ListGroupRequestsCommand,
-		Promise<Pagination<GetGroupRequestDto>>
+		Promise<Pagination<GetGroupRequestDto> | Array<GetGroupRequestDto>>
 	> {}

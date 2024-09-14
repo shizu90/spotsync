@@ -47,21 +47,33 @@ describe('ListGroupRolesService', () => {
 	it('should list group roles', async () => {
 		const groupMember = mockGroupMember(true, true, 'administrator');
 
-		const command = new ListGroupRolesCommand(groupMember.group().id());
+		const command = new ListGroupRolesCommand(
+			groupMember.group().id(),
+			null,
+			null,
+			null,
+			null,
+			1,
+			true,
+			10,
+		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());
 		groupRepository.findById.mockResolvedValue(groupMember.group());
 		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
 		groupRoleRepository.paginate.mockResolvedValue(
-			new Pagination([mockGroupRole(), mockGroupRole()], 2, 0),
+			new Pagination([mockGroupRole(), mockGroupRole()], 2, 0, 10),
 		);
 
 		const roles = await service.execute(command);
 
 		expect(roles).toBeInstanceOf(Pagination<GetGroupRoleDto>);
-		expect(roles.items).toHaveLength(2);
-		expect(roles.total).toBe(2);
-		expect(roles.current_page).toBe(0);
-		expect(roles.has_next_page).toBeFalsy();
+
+		if (roles instanceof Pagination) {
+			expect(roles.total).toBe(2);
+			expect(roles.items).toHaveLength(2);
+			expect(roles.current_page).toBe(0);
+			expect(roles.has_next_page).toBeFalsy();
+		}
 	});
 });

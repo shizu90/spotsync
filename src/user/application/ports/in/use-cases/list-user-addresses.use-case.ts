@@ -8,5 +8,5 @@ export const ListUserAddressesUseCaseProvider = 'ListUserAddressesUseCase';
 export interface ListUserAddressesUseCase
 	extends UseCase<
 		ListUserAddressesCommand,
-		Promise<Pagination<GetUserAddressDto>>
+		Promise<Pagination<GetUserAddressDto> | Array<GetUserAddressDto>>
 	> {}

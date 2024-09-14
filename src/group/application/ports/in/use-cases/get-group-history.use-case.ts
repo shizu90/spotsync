@@ -8,5 +8,5 @@ export const GetGroupHistoryUseCaseProvider = 'GetGroupHistoryUseCase';
 export interface GetGroupHistoryUseCase
 	extends UseCase<
 		GetGroupHistoryCommand,
-		Promise<Pagination<GetGroupLogDto>>
+		Promise<Pagination<GetGroupLogDto> | Array<GetGroupLogDto>>
 	> {}

@@ -139,6 +139,7 @@ export class FollowController extends ApiController {
 				],
 				1,
 				0,
+				10,
 			),
 		},
 	})
@@ -191,6 +192,7 @@ export class FollowController extends ApiController {
 				],
 				1,
 				0,
+				10,
 			),
 		},
 	})

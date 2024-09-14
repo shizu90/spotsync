@@ -4,6 +4,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { Pagination } from 'src/common/core/common.repository';
+import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
@@ -51,12 +52,23 @@ describe('ListSpotsService', () => {
 	it('should list spots', async () => {
 		const user = mockUser();
 
-		const command = new ListSpotsCommand();
+		const command = new ListSpotsCommand(
+			null,
+			null,
+			null,
+			null,
+			null,
+			'created_at',
+			SortDirection.DESC,
+			1,
+			10,
+			true,
+		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		userAddressRepository.findBy.mockResolvedValue([]);
 		spotRepository.paginate.mockResolvedValue(
-			new Pagination([mockSpot(), mockSpot(), mockSpot()], 3, 0),
+			new Pagination([mockSpot(), mockSpot(), mockSpot()], 3, 0, 10),
 		);
 		spotRepository.countVisitedSpotBy.mockResolvedValue(0);
 		spotRepository.countFavoritedSpotBy.mockResolvedValue(0);

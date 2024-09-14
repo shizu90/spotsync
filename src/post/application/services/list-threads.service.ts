@@ -1,33 +1,33 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
 import {
-    FollowRepository,
-    FollowRepositoryProvider,
+	FollowRepository,
+	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import {
-    GroupMemberRepository,
-    GroupMemberRepositoryProvider,
+	GroupMemberRepository,
+	GroupMemberRepositoryProvider,
 } from 'src/group/application/ports/out/group-member.repository';
 import {
-    GroupRepository,
-    GroupRepositoryProvider,
+	GroupRepository,
+	GroupRepositoryProvider,
 } from 'src/group/application/ports/out/group.repository';
 import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import {
-    LikeRepository,
-    LikeRepositoryProvider,
+	LikeRepository,
+	LikeRepositoryProvider,
 } from 'src/like/application/ports/out/like.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import {
-    UserRepository,
-    UserRepositoryProvider,
+	UserRepository,
+	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
@@ -35,8 +35,8 @@ import { ListThreadsCommand } from '../ports/in/commands/list-threads.command';
 import { ListThreadsUseCase } from '../ports/in/use-cases/list-threads.use-case';
 import { GetPostDto } from '../ports/out/dto/get-post.dto';
 import {
-    PostRepository,
-    PostRepositoryProvider,
+	PostRepository,
+	PostRepositoryProvider,
 } from '../ports/out/post.repository';
 
 @Injectable()
@@ -60,7 +60,7 @@ export class ListThreadsService implements ListThreadsUseCase {
 
 	public async execute(
 		command: ListThreadsCommand,
-	): Promise<Pagination<GetPostDto>> {
+	): Promise<Pagination<GetPostDto> | Array<GetPostDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		let visibilitiesToFilter = [PostVisibility.PUBLIC];
@@ -204,6 +204,10 @@ export class ListThreadsService implements ListThreadsUseCase {
 				);
 			}),
 		);
+
+		if (!command.paginate) {
+			return items;
+		}
 
 		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
 	}

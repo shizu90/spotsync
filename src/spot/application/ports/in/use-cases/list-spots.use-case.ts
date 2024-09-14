@@ -6,4 +6,4 @@ import { ListSpotsCommand } from '../commands/list-spots.command';
 export const ListSpotsUseCaseProvider = 'ListSPotsUseCase';
 
 export interface ListSpotsUseCase
-	extends UseCase<ListSpotsCommand, Promise<Pagination<GetSpotDto>>> {}
+	extends UseCase<ListSpotsCommand, Promise<Pagination<GetSpotDto> | Array<GetSpotDto>>> {}

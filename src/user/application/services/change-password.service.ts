@@ -20,7 +20,7 @@ export class ChangePasswordService implements ChangePasswordUseCase
     ) 
     {}
 
-    public async execute(command: ChangePasswordCommand): Promise<any> {
+    public async execute(command: ChangePasswordCommand): Promise<void> {
         const passwordRecovery = (await this.passwordRecoveryRepository.findBy({
             token: command.token,
             status: PasswordRecoveryStatus.NEW

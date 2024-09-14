@@ -26,7 +26,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 
 	public async execute(
 		command: ListGroupMembersCommand,
-	): Promise<Pagination<GetGroupMemberDto>> {
+	): Promise<Pagination<GetGroupMemberDto> | Array<GetGroupMemberDto>> {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
@@ -79,10 +79,15 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 				);
 			});
 
+			if (!command.paginate) {
+				return items;
+			}
+
 			return new Pagination(
 				items,
 				pagination.total,
 				pagination.current_page,
+				pagination.limit,
 			);
 		}
 	}

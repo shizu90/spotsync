@@ -1,19 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SignInUseCase } from '../ports/in/use-cases/sign-in.use-case';
-import {
-	UserRepository,
-	UserRepositoryProvider,
-} from 'src/user/application/ports/out/user.repository';
-import { SignInCommand } from '../ports/in/commands/sign-in.command';
-import { SignInDto } from '../ports/out/dto/sign-in.dto';
-import { User } from 'src/user/domain/user.model';
-import { UserInvalidCredentialsError } from 'src/user/application/services/errors/user-invalid-credentials.error';
-import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { JwtService } from '@nestjs/jwt';
 import {
 	EncryptPasswordService,
 	EncryptPasswordServiceProvider,
 } from 'src/user/application/ports/out/encrypt-password.service';
+import {
+	UserRepository,
+	UserRepositoryProvider,
+} from 'src/user/application/ports/out/user.repository';
+import { UserInvalidCredentialsError } from 'src/user/application/services/errors/user-invalid-credentials.error';
+import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
+import { UserStatus } from 'src/user/domain/user-status.enum';
+import { User } from 'src/user/domain/user.model';
+import { SignInCommand } from '../ports/in/commands/sign-in.command';
+import { SignInUseCase } from '../ports/in/use-cases/sign-in.use-case';
+import { SignInDto } from '../ports/out/dto/sign-in.dto';
 
 @Injectable()
 export class SignInService implements SignInUseCase {
@@ -37,7 +38,7 @@ export class SignInService implements SignInUseCase {
 			user = await this.userRepository.findByEmail(command.email);
 		}
 
-		if (user === null || user === undefined || user.isDeleted()) {
+		if (user === null || user === undefined || user.isDeleted() || user.status() === UserStatus.INACTIVE) {
 			throw new UserNotFoundError(`User not found`);
 		}
 

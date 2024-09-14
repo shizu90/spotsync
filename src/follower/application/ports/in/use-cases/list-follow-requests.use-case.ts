@@ -8,5 +8,5 @@ export const ListFollowRequestsUseCaseProvider = 'ListFollowRequestsUseCase';
 export interface ListFollowRequestsUseCase
 	extends UseCase<
 		ListFollowRequestsCommand,
-		Promise<Pagination<GetFollowRequestDto>>
+		Promise<Pagination<GetFollowRequestDto> | Array<GetFollowRequestDto>>
 	> {}

@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { UserAddress } from 'src/user/domain/user-address.model';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserStatus } from 'src/user/domain/user-status.enum';
 import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { User } from 'src/user/domain/user.model';
@@ -34,6 +35,7 @@ export const mockUser = (): User => {
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
 		),
+		UserStatus.ACTIVE,
 		new Date(),
 		new Date(),
 		false,

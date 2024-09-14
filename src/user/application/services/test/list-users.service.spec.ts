@@ -4,6 +4,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { Pagination } from 'src/common/core/common.repository';
+import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
@@ -43,11 +44,21 @@ describe('ListUsersService', () => {
 	});
 
 	it('should list users', async () => {
-		const command = new ListUsersCommand();
+		const command = new ListUsersCommand(
+			null,
+			null,
+			null,
+			null,
+			'created_at',
+			SortDirection.DESC,
+			1,
+			true,
+			10,
+		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(mockUser());
 		userRepository.paginate.mockResolvedValue(
-			new Pagination([mockUser(), mockUser(), mockUser()], 3, 0),
+			new Pagination([mockUser(), mockUser(), mockUser()], 3, 0, 10),
 		);
 		userAddressRepository.findBy.mockResolvedValue([]);
 		followRepository.findBy.mockResolvedValue([]);
@@ -56,9 +67,12 @@ describe('ListUsersService', () => {
 		const users = await service.execute(command);
 
 		expect(users).toBeInstanceOf(Pagination<GetUserProfileDto>);
-		expect(users.total).toBe(3);
-		expect(users.current_page).toBe(0);
-		expect(users.items).toHaveLength(3);
-		expect(users.has_next_page).toBeFalsy();
+
+		if (users instanceof Pagination) {
+			expect(users.total).toBe(3);
+			expect(users.current_page).toBe(0);
+			expect(users.items).toHaveLength(3);
+			expect(users.has_next_page).toBeFalsy();
+		}
 	});
 });

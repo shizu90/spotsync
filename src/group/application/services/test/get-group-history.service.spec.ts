@@ -41,7 +41,12 @@ describe('GetGroupHistoryService', () => {
 	it('should get group history', async () => {
 		const groupMember = mockGroupMember(true, true, 'administrator');
 
-		const command = new GetGroupHistoryCommand(groupMember.group().id());
+		const command = new GetGroupHistoryCommand(
+			groupMember.group().id(),
+			null,
+			null,
+			true
+		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());
 		groupRepository.findById.mockResolvedValue(groupMember.group());
@@ -51,9 +56,12 @@ describe('GetGroupHistoryService', () => {
 		const history = await service.execute(command);
 
 		expect(history).toBeInstanceOf(Pagination<GetGroupLogDto>);
-		expect(history.items).toHaveLength(0);
-		expect(history.total).toBe(0);
-		expect(history.current_page).toBe(0);
-		expect(history.has_next_page).toBeFalsy();
+
+		if (history instanceof Pagination) {
+			expect(history.items).toHaveLength(0);
+			expect(history.total).toBe(0);
+			expect(history.current_page).toBe(0);
+			expect(history.has_next_page).toBeFalsy();
+		}
 	});
 });

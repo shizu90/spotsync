@@ -1,15 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { Pagination } from 'src/common/core/common.repository';
 import { ListLikesCommand } from '../ports/in/commands/list-likes.command';
 import { ListLikesUseCase } from '../ports/in/use-cases/list-likes.use-case';
 import { GetLikeDto } from '../ports/out/dto/get-like.dto';
 import {
-    LikeRepository,
-    LikeRepositoryProvider,
+	LikeRepository,
+	LikeRepositoryProvider,
 } from '../ports/out/like.repository';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class ListLikesService implements ListLikesUseCase {
 
 	public async execute(
 		command: ListLikesCommand,
-	): Promise<Pagination<GetLikeDto>> {
+	): Promise<Pagination<GetLikeDto> | Array<GetLikeDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const pagination = await this.likeRepository.paginate({
@@ -55,6 +55,10 @@ export class ListLikesService implements ListLikesUseCase {
 				i.createdAt(),
 			);
 		});
+
+		if (!command.paginate) {
+			return items;
+		}
 
 		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
 	}

@@ -76,7 +76,7 @@ export class PasswordRecoveryController extends ApiController {
 
         await this.changePasswordUseCase.execute(command);
 
-        res.status(HttpStatus.OK).json({
+        res.status(HttpStatus.NO_CONTENT).json({
             data: {}
         });
     }

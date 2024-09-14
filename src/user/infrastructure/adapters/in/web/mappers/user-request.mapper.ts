@@ -1,3 +1,4 @@
+import { ActivateUserCommand } from 'src/user/application/ports/in/commands/activate-user.command';
 import { ChangePasswordCommand } from 'src/user/application/ports/in/commands/change-password.command';
 import { CreateUserCommand } from 'src/user/application/ports/in/commands/create-user.command';
 import { DeleteUserCommand } from 'src/user/application/ports/in/commands/delete-user.command';
@@ -7,6 +8,7 @@ import { ListUsersCommand } from 'src/user/application/ports/in/commands/list-us
 import { UpdateUserCredentialsCommand } from 'src/user/application/ports/in/commands/update-user-credentials.command';
 import { UpdateUserProfileCommand } from 'src/user/application/ports/in/commands/update-user-profile.command';
 import { UpdateUserVisibilityConfigCommand } from 'src/user/application/ports/in/commands/update-user-visibility-config.command';
+import { ActivateUserRequest } from '../requests/activate-user.request';
 import { ChangePasswordRequest } from '../requests/change-password.request';
 import { CreateUserRequest } from '../requests/create-user.request';
 import { ForgotPasswordRequest } from '../requests/forgot-password.request';
@@ -112,5 +114,9 @@ export class UserRequestMapper {
 
 	public static changePasswordCommand(body: ChangePasswordRequest): ChangePasswordCommand {
 		return new ChangePasswordCommand(body.password, body.token);
+	}
+
+	public static activateUserCommand(id: string, body: ActivateUserRequest): ActivateUserCommand {
+		return new ActivateUserCommand(id, body.code, body.auto_login ?? false)
 	}
 }

@@ -6,4 +6,4 @@ import { ListThreadsCommand } from '../commands/list-threads.command';
 export const ListThreadsUseCaseProvider = 'ListThreadsUseCase';
 
 export interface ListThreadsUseCase
-	extends UseCase<ListThreadsCommand, Promise<Pagination<GetPostDto>>> {}
+	extends UseCase<ListThreadsCommand, Promise<Pagination<GetPostDto> | Array<GetPostDto>>> {}

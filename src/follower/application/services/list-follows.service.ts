@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
 import {
-    UserRepository,
-    UserRepositoryProvider,
+	UserRepository,
+	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
@@ -15,8 +15,8 @@ import { ListFollowsCommand } from '../ports/in/commands/list-follows.command';
 import { ListFollowsUseCase } from '../ports/in/use-cases/list-follows.use-case';
 import { GetFollowDto } from '../ports/out/dto/get-follow.dto';
 import {
-    FollowRepository,
-    FollowRepositoryProvider,
+	FollowRepository,
+	FollowRepositoryProvider,
 } from '../ports/out/follow.repository';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 
 	public async execute(
 		command: ListFollowsCommand,
-	): Promise<Pagination<GetFollowDto>> {
+	): Promise<Pagination<GetFollowDto> | Array<GetFollowDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		if (
@@ -73,9 +73,9 @@ export class ListFollowsService implements ListFollowsUseCase {
 			}
 		}
 
-		if (command.tro_user_id !== undefined && command.tro_user_id !== null) {
+		if (command.to_user_id !== undefined && command.to_user_id !== null) {
 			const user = await this.userRepository.findById(
-				command.tro_user_id,
+				command.to_user_id,
 			);
 
 			if (user === null || user === undefined || user.isDeleted()) {
@@ -111,7 +111,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 		const pagination = await this.followRepository.paginate({
 			filters: {
 				fromUserId: command.from_user_id,
-				toUserId: command.tro_user_id,
+				toUserId: command.to_user_id,
 			},
 			sort: command.sort,
 			sortDirection: command.sortDirection,
@@ -146,6 +146,10 @@ export class ListFollowsService implements ListFollowsUseCase {
 				i.followedAt(),
 			);
 		});
+
+		if (!command.paginate) {
+			return items;
+		}
 
 		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
 	}

@@ -35,7 +35,16 @@ describe('ListGroupMembersService', () => {
 	it('should list group members', async () => {
 		const group = mockGroup();
 
-		const command = new ListGroupMembersCommand(group.id());
+		const command = new ListGroupMembersCommand(
+			group.id(),
+			null,
+			null,
+			null,
+			null,
+			1,
+			true,
+			10,
+		);
 
 		groupRepository.findById.mockResolvedValue(group);
 		groupMemberRepository.paginate.mockResolvedValue(
@@ -43,15 +52,19 @@ describe('ListGroupMembersService', () => {
 				[mockGroupMember(), mockGroupMember(), mockGroupMember()],
 				3,
 				0,
+				10,
 			),
 		);
 
 		const members = await service.execute(command);
 
 		expect(members).toBeInstanceOf(Pagination<GetGroupMemberDto>);
-		expect(members.items).toHaveLength(3);
-		expect(members.total).toBe(3);
-		expect(members.current_page).toBe(0);
-		expect(members.has_next_page).toBeFalsy();
+
+		if (members instanceof Pagination) {
+			expect(members.items).toHaveLength(3);
+			expect(members.total).toBe(3);
+			expect(members.current_page).toBe(0);
+			expect(members.has_next_page).toBeFalsy();
+		}
 	});
 });

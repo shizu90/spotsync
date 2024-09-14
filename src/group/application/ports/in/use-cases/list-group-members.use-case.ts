@@ -8,5 +8,5 @@ export const ListGroupMembersUseCaseProvider = 'ListGroupMembersUseCase';
 export interface ListGroupMembersUseCase
 	extends UseCase<
 		ListGroupMembersCommand,
-		Promise<Pagination<GetGroupMemberDto>>
+		Promise<Pagination<GetGroupMemberDto> | Array<GetGroupMemberDto>>
 	> {}

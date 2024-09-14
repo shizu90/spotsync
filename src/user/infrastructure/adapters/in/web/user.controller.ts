@@ -32,6 +32,7 @@ import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth
 import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
+import { ActivateUserUseCase, ActivateUserUseCaseProvider } from 'src/user/application/ports/in/use-cases/activate-user.use-case';
 import {
 	CreateUserUseCase,
 	CreateUserUseCaseProvider,
@@ -72,6 +73,7 @@ import { CreateUserDto } from 'src/user/application/ports/out/dto/create-user.dt
 import { GetUserProfileDto } from 'src/user/application/ports/out/dto/get-user-profile.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
 import { UserRequestMapper } from './mappers/user-request.mapper';
+import { ActivateUserRequest } from './requests/activate-user.request';
 import { CreateUserRequest } from './requests/create-user.request';
 import { ListUsersQueryRequest } from './requests/list-users-query.request';
 import { UpdateUserCredentialsRequest } from './requests/update-user-credentials.request';
@@ -109,6 +111,8 @@ export class UserController extends ApiController {
 		protected readonly uploadBannerPictureUseCase: UploadBannerPictureUseCase,
 		@Inject(DeleteUserUseCaseProvider)
 		protected readonly deleteUserUseCase: DeleteUserUseCase,
+		@Inject(ActivateUserUseCaseProvider)
+		protected readonly activateUserUseCase: ActivateUserUseCase,
 	) {
 		super();
 	}
@@ -176,6 +180,7 @@ export class UserController extends ApiController {
 				],
 				1,
 				0,
+				10,
 			),
 		},
 	})
@@ -554,6 +559,32 @@ export class UserController extends ApiController {
 
 		res.status(HttpStatus.NO_CONTENT).json({
 			data: {},
+		});
+	}
+
+	@ApiOperation({ summary: 'Activate user' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	@Post(':id/activate')
+	public async activate(
+		@Param('id') id: string,
+		@Body() body: ActivateUserRequest,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = UserRequestMapper.activateUserCommand(id, body);
+
+		await this.activateUserUseCase.execute(command);
+
+		res.status(HttpStatus.OK).json({
+			data: await this.activateUserUseCase.execute(command),
 		});
 	}
 }

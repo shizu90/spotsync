@@ -15,7 +15,7 @@ import { Providers } from './user.providers';
 		forwardRef(() => AuthModule),
 		forwardRef(() => FollowerModule),
 		GeolocationModule,
-		MailModule
+		MailModule,
 	],
 	controllers: [UserController, UserAddressController, PasswordRecoveryController],
 	providers: [...Providers],

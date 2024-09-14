@@ -4,11 +4,14 @@ import { GeoLocatorInput, GeoLocatorProvider } from 'src/geolocation/geolocator'
 import { GeoLocatorService } from 'src/geolocation/geolocator.service';
 import { Mail, MailProvider } from 'src/mail/mail';
 import { NewUserMailTemplate } from 'src/mail/templates/new-user-mail.template';
+import { ActivationRequestSubject } from 'src/user/domain/activation-request-subject.enum';
+import { ActivationRequest } from 'src/user/domain/activation-request.model';
 import { UserAddress } from 'src/user/domain/user-address.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { User } from 'src/user/domain/user.model';
 import { CreateUserCommand } from '../ports/in/commands/create-user.command';
 import { CreateUserUseCase } from '../ports/in/use-cases/create-user.use-case';
+import { ActivationRequestRepository, ActivationRequestRepositoryProvider } from '../ports/out/activation-request.repository';
 import { CreateUserDto } from '../ports/out/dto/create-user.dto';
 import {
 	EncryptPasswordService,
@@ -32,6 +35,8 @@ export class CreateUserService implements CreateUserUseCase {
 		protected geoLocatorService: GeoLocatorService,
 		@Inject(EncryptPasswordServiceProvider)
 		protected encryptPasswordService: EncryptPasswordService,
+		@Inject(ActivationRequestRepositoryProvider)
+		protected activationRequestRepository: ActivationRequestRepository,
 		@Inject(MailProvider)
 		protected mail: Mail
 	) {}
@@ -111,11 +116,20 @@ export class CreateUserService implements CreateUserUseCase {
 				user,
 			);
 
-			this.userAddressRepository.store(address);
+			await this.userAddressRepository.store(address);
 		}
+
+		const activationRequest = ActivationRequest.create(
+			randomUUID(),
+			user,
+			ActivationRequestSubject.NEW_USER,
+		);
+
+		await this.activationRequestRepository.store(activationRequest);
 
 		this.mail.setReceiver(user.credentials().email()).setTemplate(new NewUserMailTemplate({
 			userName: user.credentials().name(),
+			activationCode: activationRequest.code(),
 		})).send();
 
 		return new CreateUserDto(

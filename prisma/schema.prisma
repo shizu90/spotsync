@@ -341,5 +341,5 @@ model ActivationRequest {
   requested_at    DateTime @default(now())
   user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@map("activation_request")
+  @@map("activation_requests")
 }

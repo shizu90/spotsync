@@ -35,7 +35,13 @@ describe('ListLikesService', () => {
 	it('should list likes', async () => {
 		const user = mockUser();
 
-		const command = new ListLikesCommand(LikableSubject.POST, randomUUID());
+		const command = new ListLikesCommand(
+			LikableSubject.POST, randomUUID(),
+			null,
+			null,
+			1,
+			true
+		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		likeRepository.paginate.mockResolvedValue(
@@ -45,9 +51,11 @@ describe('ListLikesService', () => {
 		const likes = await service.execute(command);
 
 		expect(likes).toBeInstanceOf(Pagination<GetLikeDto>);
-		expect(likes.items).toHaveLength(3);
-		expect(likes.current_page).toBe(0);
-		expect(likes.has_next_page).toBeFalsy();
-		expect(likes.total).toBe(3);
+		if (likes instanceof Pagination) {
+			expect(likes.items).toHaveLength(3);
+			expect(likes.current_page).toBe(0);
+			expect(likes.has_next_page).toBeFalsy();
+			expect(likes.total).toBe(3);
+		}
 	});
 });

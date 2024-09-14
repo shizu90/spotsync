@@ -149,6 +149,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			items.map((i) => this.mapLikeToDomain(i)),
 			total,
 			page,
+			limit,
 		);
 	}
 

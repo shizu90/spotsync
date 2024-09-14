@@ -41,21 +41,32 @@ describe('ListFollowRequestsService', () => {
 	it('should list follow requests', async () => {
 		const user = mockUser();
 
-		const command = new ListFollowRequestsCommand(user.id());
+		const command = new ListFollowRequestsCommand(
+			user.id(),
+			null,
+			null,
+			null,
+			true,
+			1,
+			10,
+		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		userRepository.findById.mockResolvedValue(user);
 		followRepository.findBy.mockResolvedValue([]);
 		followRepository.paginateRequest.mockResolvedValue(
-			new Pagination([mockFollowRequest(), mockFollowRequest()], 2, 0),
+			new Pagination([mockFollowRequest(), mockFollowRequest()], 2, 0, 10),
 		);
 
 		const requests = await service.execute(command);
 
 		expect(requests).toBeInstanceOf(Pagination<GetFollowRequestDto>);
-		expect(requests.total).toBe(2);
-		expect(requests.items).toHaveLength(2);
-		expect(requests.current_page).toBe(0);
-		expect(requests.has_next_page).toBeFalsy();
+
+		if (requests instanceof Pagination) {
+			expect(requests.total).toBe(2);
+			expect(requests.items).toHaveLength(2);
+			expect(requests.current_page).toBe(0);
+			expect(requests.has_next_page).toBeFalsy();
+		}
 	});
 });

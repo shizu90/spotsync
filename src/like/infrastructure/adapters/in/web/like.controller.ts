@@ -103,6 +103,7 @@ export class LikeController extends ApiController {
 				],
 				1,
 				0,
+				10,
 			),
 		},
 	})

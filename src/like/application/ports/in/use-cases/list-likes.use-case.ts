@@ -6,4 +6,4 @@ import { ListLikesCommand } from '../commands/list-likes.command';
 export const ListLikesUseCaseProvider = 'ListLikesUseCase';
 
 export interface ListLikesUseCase
-	extends UseCase<ListLikesCommand, Promise<Pagination<GetLikeDto>>> {}
+	extends UseCase<ListLikesCommand, Promise<Pagination<GetLikeDto> | Array<GetLikeDto>>> {}

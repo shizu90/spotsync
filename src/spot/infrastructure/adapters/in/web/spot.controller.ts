@@ -152,6 +152,7 @@ export class SpotController extends ApiController {
 				],
 				0,
 				0,
+				10,
 			),
 		},
 	})

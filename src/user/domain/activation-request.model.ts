@@ -22,7 +22,7 @@ export class ActivationRequest extends Model {
         super();
         this._id = id;
         this._user = user;
-        this._code = code;
+        this._code = code || this.generateCode();
         this._status = status || ActivationRequestStatus.PENDING;
         this._subject = subject;
         this._requestedAt = requestedAt || new Date();
@@ -83,5 +83,7 @@ export class ActivationRequest extends Model {
         return this._status === ActivationRequestStatus.REJECTED;
     }
 
-    
+    public generateCode(): string {
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }    
 }

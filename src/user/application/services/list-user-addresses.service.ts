@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
@@ -9,8 +9,8 @@ import { ListUserAddressesCommand } from '../ports/in/commands/list-user-address
 import { ListUserAddressesUseCase } from '../ports/in/use-cases/list-user-addresses.use-case';
 import { GetUserAddressDto } from '../ports/out/dto/get-user-address.dto';
 import {
-    UserAddressRepository,
-    UserAddressRepositoryProvider,
+	UserAddressRepository,
+	UserAddressRepositoryProvider,
 } from '../ports/out/user-address.repository';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class ListUserAddressesService implements ListUserAddressesUseCase {
 
 	public async execute(
 		command: ListUserAddressesCommand,
-	): Promise<Pagination<GetUserAddressDto>> {
+	): Promise<Pagination<GetUserAddressDto> | Array<GetUserAddressDto>> {
 		const user = await this.getAuthenticatedUser.execute(null);
 
 		if (command.userId !== user.id()) {
@@ -62,6 +62,10 @@ export class ListUserAddressesService implements ListUserAddressesUseCase {
 				);
 			}),
 		);
+
+		if (!command.paginate) {
+			return items;
+		}
 
 		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
 	}

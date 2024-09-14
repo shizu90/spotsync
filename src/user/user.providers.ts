@@ -1,4 +1,5 @@
 import { Provider } from '@nestjs/common';
+import { ActivateUserUseCaseProvider } from './application/ports/in/use-cases/activate-user.use-case';
 import { ChangePasswordUseCaseProvider } from './application/ports/in/use-cases/change-password.use-case';
 import { CreateUserAddressUseCaseProvider } from './application/ports/in/use-cases/create-user-address.use-case';
 import { CreateUserUseCaseProvider } from './application/ports/in/use-cases/create-user.use-case';
@@ -15,10 +16,12 @@ import { UpdateUserProfileUseCaseProvider } from './application/ports/in/use-cas
 import { UpdateUserVisibilityConfigUseCaseProvider } from './application/ports/in/use-cases/update-user-visibility-config.use-case';
 import { UploadBannerPictureUseCaseProvider } from './application/ports/in/use-cases/upload-banner-picture.use-case';
 import { UploadProfilePictureUseCaseProvider } from './application/ports/in/use-cases/upload-profile-picture.use-case';
+import { ActivationRequestRepositoryProvider } from './application/ports/out/activation-request.repository';
 import { EncryptPasswordServiceProvider } from './application/ports/out/encrypt-password.service';
 import { PasswordRecoveryRepositoryProvider } from './application/ports/out/password-recovery.repository';
 import { UserAddressRepositoryProvider } from './application/ports/out/user-address.repository';
 import { UserRepositoryProvider } from './application/ports/out/user.repository';
+import { ActivateUserService } from './application/services/activate-user.service';
 import { ChangePasswordService } from './application/services/change-password.service';
 import { CreateUserAddressService } from './application/services/create-user-address.service';
 import { CreateUserService } from './application/services/create-user.service';
@@ -35,6 +38,7 @@ import { UpdateUserProfileService } from './application/services/update-user-pro
 import { UpdateUserVisibilityConfigService } from './application/services/update-user-visibility-config.service';
 import { UploadBannerPictureService } from './application/services/upload-banner-picture.service';
 import { UploadProfilePictureService } from './application/services/upload-profile-picture.service';
+import { ActivationRequestRepositoryImpl } from './infrastructure/adapters/out/activation-request.db';
 import { EncryptPasswordServiceImpl } from './infrastructure/adapters/out/encrypt-password';
 import { PasswordRecoveryRepositoryImpl } from './infrastructure/adapters/out/password-recovery.db';
 import { UserAddressRepositoryImpl } from './infrastructure/adapters/out/user-address.db';
@@ -106,6 +110,10 @@ export const Providers: Provider[] = [
 		useClass: ChangePasswordService,
 	},
 	{
+		provide: ActivateUserUseCaseProvider,
+		useClass: ActivateUserService,
+	},
+	{
 		provide: UserRepositoryProvider,
 		useClass: UserRepositoryImpl,
 	},
@@ -121,4 +129,8 @@ export const Providers: Provider[] = [
 		provide: EncryptPasswordServiceProvider,
 		useClass: EncryptPasswordServiceImpl,
 	},
+	{
+		provide: ActivationRequestRepositoryProvider,
+		useClass: ActivationRequestRepositoryImpl,
+	}
 ];

@@ -1,7 +1,7 @@
 import { MailTemplate } from "../mail-template";
 
 export class NewUserMailTemplate extends MailTemplate {
-    public constructor(params: {userName?: string}) 
+    public constructor(params: {userName?: string, activationCode?: string}) 
     {
         super();
 

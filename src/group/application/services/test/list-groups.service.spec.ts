@@ -39,7 +39,14 @@ describe('ListGroupsService', () => {
 	it('should list groups', async () => {
 		const user = mockUser();
 
-		const command = new ListGroupsCommand();
+		const command = new ListGroupsCommand(
+			null,
+			null,
+			null,
+			null,
+			1,
+			true,
+		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		groupRepository.paginate.mockResolvedValue(
@@ -50,9 +57,12 @@ describe('ListGroupsService', () => {
 		const groups = await service.execute(command);
 
 		expect(groups).toBeInstanceOf(Pagination<GetGroupDto>);
-		expect(groups.items).toHaveLength(2);
-		expect(groups.total).toBe(2);
-		expect(groups.current_page).toBe(0);
-		expect(groups.has_next_page).toBeFalsy();
+
+		if (groups instanceof Pagination) {
+			expect(groups.items).toHaveLength(2);
+			expect(groups.total).toBe(2);
+			expect(groups.current_page).toBe(0);
+			expect(groups.has_next_page).toBeFalsy();
+		}
 	});
 });

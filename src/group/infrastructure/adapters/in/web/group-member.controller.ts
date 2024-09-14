@@ -158,6 +158,7 @@ export class GroupMemberController extends ApiController {
 				],
 				1,
 				0,
+				10,
 			),
 		},
 	})
@@ -203,6 +204,7 @@ export class GroupMemberController extends ApiController {
 				],
 				1,
 				0,
+				10,
 			),
 		},
 	})

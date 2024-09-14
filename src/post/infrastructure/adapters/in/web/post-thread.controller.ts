@@ -103,6 +103,7 @@ export class PostThreadController {
 				],
 				1,
 				0,
+				10,
 			),
 		},
 	})

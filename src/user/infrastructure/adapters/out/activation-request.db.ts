@@ -301,6 +301,14 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
                 subject: model.subject(),
                 code: model.code(),
                 requested_at: model.requestedAt(),
+            },
+            include: {
+                user: {
+                    include: {
+                        credentials: true,
+                        visibility_configuration: true
+                    }
+                }
             }
         });
 

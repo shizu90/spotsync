@@ -4,6 +4,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { Pagination } from 'src/common/core/common.repository';
+import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
@@ -63,21 +64,34 @@ describe('ListThreadsService', () => {
 	it('should list threads', async () => {
 		const user = mockUser();
 
-		const command = new ListThreadsCommand(null, user.id());
+		const command = new ListThreadsCommand(
+			null, 
+			user.id(),
+			null,
+			'created_at',
+			SortDirection.DESC,
+			true,
+			1,
+			10,
+		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		userRepository.findById.mockResolvedValue(user);
 		postRepository.paginate.mockResolvedValue(
-			new Pagination([mockPost(), mockPost()], 2, 0),
+			new Pagination([mockPost(), mockPost()], 2, 0, 10),
 		);
 		likeRepository.findBy.mockResolvedValue([]);
 
 		const threads = await service.execute(command);
 
 		expect(threads).toBeInstanceOf(Pagination<GetPostDto>);
-		expect(threads.items).toHaveLength(2);
-		expect(threads.current_page).toBe(0);
-		expect(threads.has_next_page).toBeFalsy();
-		expect(threads.total).toBe(2);
+
+		if (threads instanceof Pagination) {			
+			expect(threads.items).toHaveLength(2);
+			expect(threads.current_page).toBe(0);
+			expect(threads.has_next_page).toBeFalsy();
+			expect(threads.total).toBe(2);
+			expect(threads.limit).toBe(10);
+		}
 	});
 });

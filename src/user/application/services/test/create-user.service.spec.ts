@@ -1,4 +1,5 @@
 import { TestBed } from '@automock/jest';
+import { Mail, MailProvider } from 'src/mail/mail';
 import { CreateUserCommand } from '../../ports/in/commands/create-user.command';
 import { CreateUserDto } from '../../ports/out/dto/create-user.dto';
 import {
@@ -12,12 +13,14 @@ import { mockUser } from './user-mock.helper';
 describe('CreateUserService', () => {
 	let service: CreateUserService;
 	let userRepository: jest.Mocked<UserRepository>;
+	let mail: jest.Mocked<Mail>;
 
 	beforeAll(() => {
 		const { unit, unitRef } = TestBed.create(CreateUserService).compile();
 
 		service = unit;
 		userRepository = unitRef.get(UserRepositoryProvider);
+		mail = unitRef.get(MailProvider);
 	});
 
 	it('should be defined', () => {
@@ -34,6 +37,8 @@ describe('CreateUserService', () => {
 
 		userRepository.findByEmail.mockResolvedValue(null);
 		userRepository.findByName.mockResolvedValue(null);
+		mail.setReceiver.mockReturnValue(mail);
+		mail.setTemplate.mockReturnValue(mail);
 
 		const user = await service.execute(command);
 

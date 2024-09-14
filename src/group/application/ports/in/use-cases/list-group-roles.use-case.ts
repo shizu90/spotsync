@@ -8,5 +8,5 @@ export const ListGroupRolesUseCaseProvider = 'ListGroupRolesUseCase';
 export interface ListGroupRolesUseCase
 	extends UseCase<
 		ListGroupRolesCommand,
-		Promise<Pagination<GetGroupRoleDto>>
+		Promise<Pagination<GetGroupRoleDto> | Array<GetGroupRoleDto>>
 	> {}
