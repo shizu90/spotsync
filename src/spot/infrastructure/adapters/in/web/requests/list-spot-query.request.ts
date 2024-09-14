@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-	IsBooleanString,
+	IsBoolean,
 	IsEnum,
-	IsNumberString,
+	IsNumber,
 	IsOptional,
 	IsString,
 	IsUUID,
@@ -65,20 +65,20 @@ export class ListSpotsQueryRequest extends ApiRequest {
 		required: false,
 	})
 	@IsOptional()
-	@IsNumberString()
-	public page?: number;
+	@IsNumber()
+	public page?: number = 1;
 
 	@ApiProperty({
 		required: false,
 	})
 	@IsOptional()
-	@IsNumberString()
-	public limit?: number;
+	@IsNumber()
+	public limit?: number = 12;
 
 	@ApiProperty({
 		required: false,
 	})
 	@IsOptional()
-	@IsBooleanString()
+	@IsBoolean()
 	public paginate?: boolean;
 }

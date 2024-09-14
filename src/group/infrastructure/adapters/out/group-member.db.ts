@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    PaginateParameters,
-    Pagination,
+	PaginateParameters,
+	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupMemberRepository } from 'src/group/application/ports/out/group-member.repository';
@@ -234,7 +234,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = params.page ?? 0;
+		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
 		const total = ids.length;
 
@@ -300,7 +300,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			return this.mapGroupMemberToDomain(i);
 		});
 
-		return new Pagination(items, total, page, limit);
+		return new Pagination(items, total, page+1, limit);
 	}
 
 	public async paginateRequest(
@@ -355,7 +355,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = params.page ?? 0;
+		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
 		const total = ids.length;
 
@@ -399,7 +399,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			return this.mapGroupMemberRequestToDomain(i);
 		});
 
-		return new Pagination(items, total, page, limit);
+		return new Pagination(items, total, page+1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<GroupMember>> {

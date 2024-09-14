@@ -1,35 +1,35 @@
 import {
-	Body,
-	Controller,
-	HttpStatus,
-	Inject,
-	Post,
-	Put,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    HttpStatus,
+    Inject,
+    Post,
+    Put,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiForbiddenResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
+    ApiForbiddenResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import {
-	SignInUseCase,
-	SignInUseCaseProvider,
+    SignInUseCase,
+    SignInUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/sign-in.use-case';
 import {
-	SignOutUseCase,
-	SignOutUseCaseProvider,
+    SignOutUseCase,
+    SignOutUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/sign-out.use-case';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
@@ -54,7 +54,7 @@ export class AuthController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Login' })
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Post('login')
 	public async login(@Body() request: SignInRequest, @Res() res: Response) {
 		const command = AuthRequestMapper.signInCommand(request);

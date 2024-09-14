@@ -43,7 +43,7 @@ export class PasswordRecoveryController extends ApiController {
             )
         }
     })
-    @UsePipes(new ValidationPipe({ transform: true }))
+    @UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
     @Post()
     public async forgotPassword(
         @Body() body: ForgotPasswordRequest,
@@ -65,7 +65,7 @@ export class PasswordRecoveryController extends ApiController {
             data: {}
         }
     })
-    @UsePipes(new ValidationPipe({ transform: true }))
+    @UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
     @Put('change-password')
     public async changePassword(
         @Body() body: ChangePasswordRequest,

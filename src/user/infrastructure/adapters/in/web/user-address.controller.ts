@@ -1,30 +1,30 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Put,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
+    ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -32,24 +32,24 @@ import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	CreateUserAddressUseCase,
-	CreateUserAddressUseCaseProvider,
+    CreateUserAddressUseCase,
+    CreateUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/create-user-address.use-case';
 import {
-	DeleteUserAddressUseCase,
-	DeleteUserAddressUseCaseProvider,
+    DeleteUserAddressUseCase,
+    DeleteUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/delete-user-address.use-case';
 import {
-	GetUserAddressUseCase,
-	GetUserAddressUseCaseProvider,
+    GetUserAddressUseCase,
+    GetUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/get-user-address.use-case';
 import {
-	ListUserAddressesUseCase,
-	ListUserAddressesUseCaseProvider,
+    ListUserAddressesUseCase,
+    ListUserAddressesUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/list-user-addresses.use-case';
 import {
-	UpdateUserAddressUseCase,
-	UpdateUserAddressUseCaseProvider,
+    UpdateUserAddressUseCase,
+    UpdateUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/update-user-address.use-case';
 import { CreateUserAddressDto } from 'src/user/application/ports/out/dto/create-user-address.dto';
 import { GetUserAddressDto } from 'src/user/application/ports/out/dto/get-user-address.dto';
@@ -128,7 +128,7 @@ export class UserAddressController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get(':id/addresses')
 	public async list(
 		@Param('id') id: string,
@@ -229,7 +229,7 @@ export class UserAddressController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Post(':id/addresses')
 	public async createAddress(
 		@Param('id') id: string,
@@ -268,7 +268,7 @@ export class UserAddressController extends ApiController {
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id/addresses/:address_id')
 	public async updateAddress(
 		@Param('id') id: string,

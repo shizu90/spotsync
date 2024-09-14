@@ -1,29 +1,29 @@
 import {
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Put,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiConflictResponse,
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
+    ApiConflictResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -31,28 +31,28 @@ import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	AcceptFollowRequestUseCase,
-	AcceptFollowRequestUseCaseProvider,
+    AcceptFollowRequestUseCase,
+    AcceptFollowRequestUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/accept-follow-request.use-case';
 import {
-	FollowUseCase,
-	FollowUseCaseProvider,
+    FollowUseCase,
+    FollowUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/follow.use-case';
 import {
-	ListFollowRequestsUseCase,
-	ListFollowRequestsUseCaseProvider,
+    ListFollowRequestsUseCase,
+    ListFollowRequestsUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/list-follow-requests.use-case';
 import {
-	ListFollowsUseCase,
-	ListFollowsUseCaseProvider,
+    ListFollowsUseCase,
+    ListFollowsUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/list-follows.use-case';
 import {
-	RefuseFollowRequestUseCaseProvider,
-	RefusseFollowRequestUseCase,
+    RefuseFollowRequestUseCaseProvider,
+    RefusseFollowRequestUseCase,
 } from 'src/follower/application/ports/in/use-cases/refuse-follow-request.use-case';
 import {
-	UnfollowUseCase,
-	UnfollowUseCaseProvider,
+    UnfollowUseCase,
+    UnfollowUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/unfollow.use-case';
 import { FollowDto } from 'src/follower/application/ports/out/dto/follow.dto';
 import { GetFollowRequestDto } from 'src/follower/application/ports/out/dto/get-follow-request.dto';
@@ -144,7 +144,7 @@ export class FollowController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get()
 	public async list(
 		@Query() query: ListFollowsQueryRequest,
@@ -197,7 +197,7 @@ export class FollowController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get('requests')
 	public async listRequests(
 		@Query() query: ListFollowRequestsQueryRequest,

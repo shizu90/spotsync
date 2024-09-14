@@ -25,6 +25,7 @@ import {
 } from '../ports/out/group.repository';
 import { AlreadyMemberOfGroup } from './errors/already-member-of-group.error';
 import { AlreadyRequestedToJoinError } from './errors/already-requested-to-join.error';
+import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
 
 @Injectable()
 export class JoinGroupService implements JoinGroupUseCase {
@@ -49,6 +50,12 @@ export class JoinGroupService implements JoinGroupUseCase {
 		const memberRole = await this.groupRoleRepository.findByName(
 			DefaultGroupRole.MEMBER,
 		);
+
+		if (memberRole === null || memberRole === undefined) {
+			throw new GroupRoleNotFoundError(
+				`Group role ${DefaultGroupRole.MEMBER} not found`,
+			);
+		}
 
 		const groupMember = group.joinGroup(
 			authenticatedUser,

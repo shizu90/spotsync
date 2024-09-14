@@ -313,7 +313,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			let items = [];
 
 			const paginate = params.paginate ?? false;
-			const page = params.page ?? 0;
+			const page = (params.page ?? 1)-1;
 			const limit = params.limit ?? 12;
 			const total = ids.length;
 
@@ -354,7 +354,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			return new Pagination(
 				items.map((s) => this.mapSpotToDomain(s)),
 				total,
-				page,
+				page+1,
 				limit,
 			);
 		}

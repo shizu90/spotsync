@@ -163,7 +163,7 @@ export class GroupMemberController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get(':id/members')
 	public async list(
 		@Param('id') groupId: string,
@@ -209,7 +209,7 @@ export class GroupMemberController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get(':id/join-requests')
 	public async listRequests(
 		@Param('id') groupId: string,

@@ -115,7 +115,7 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
         let items = [];
 
         const paginate = params.paginate ?? false;
-        const page = params.page ?? 0;
+        const page = (params.page ?? 1)-1;
         const limit = params.limit ?? 12;
         const total = ids.length;
 
@@ -149,7 +149,7 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
             return this.mapActivationRequestToDomain(i);
         });
 
-        return new Pagination(items, total, page, limit);
+        return new Pagination(items, total, page+1, limit);
     }
     
     public async findBy(values: Object): Promise<ActivationRequest[]> {

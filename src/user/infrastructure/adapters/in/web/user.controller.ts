@@ -185,7 +185,7 @@ export class UserController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get()
 	public async list(
 		@Query() query: ListUsersQueryRequest,
@@ -334,7 +334,7 @@ export class UserController extends ApiController {
 			),
 		},
 	})
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Post()
 	public async create(
 		@Body() body: CreateUserRequest,
@@ -385,7 +385,7 @@ export class UserController extends ApiController {
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id')
 	public async updateProfile(
 		@Param('id') id: string,
@@ -445,7 +445,7 @@ export class UserController extends ApiController {
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id/credentials')
 	public async updateCredentials(
 		@Param('id') id: string,
@@ -500,7 +500,7 @@ export class UserController extends ApiController {
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id/visibility-configuration')
 	public async udpateVisibilityConfiguration(
 		@Param('id') id: string,
@@ -571,7 +571,7 @@ export class UserController extends ApiController {
 			'string',
 		),
 	})
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Post(':id/activate')
 	public async activate(
 		@Param('id') id: string,

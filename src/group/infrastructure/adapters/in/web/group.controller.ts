@@ -149,7 +149,7 @@ export class GroupController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get()
 	public async list(
 		@Query() query: ListGroupsQueryRequest,
@@ -249,7 +249,7 @@ export class GroupController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Post()
 	public async create(
 		@Body() request: CreateGroupRequest,
@@ -284,7 +284,7 @@ export class GroupController extends ApiController {
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id')
 	public async update(
 		@Param('id') id: string,
@@ -320,7 +320,7 @@ export class GroupController extends ApiController {
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id/visibility')
 	public async updateVisibility(
 		@Param('id') id: string,

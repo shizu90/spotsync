@@ -1,10 +1,10 @@
 import { AcceptFollowRequestCommand } from 'src/follower/application/ports/in/commands/accept-follow-request.command';
 import { FollowCommand } from 'src/follower/application/ports/in/commands/follow.command';
+import { ListFollowRequestsCommand } from 'src/follower/application/ports/in/commands/list-follow-requests.command';
+import { ListFollowsCommand } from 'src/follower/application/ports/in/commands/list-follows.command';
 import { RefuseFollowRequestCommand } from 'src/follower/application/ports/in/commands/refuse-follow-request.command';
 import { UnfollowCommand } from 'src/follower/application/ports/in/commands/unfollow.command';
-import { ListFollowsCommand } from 'src/follower/application/ports/in/commands/list-follows.command';
 import { ListFollowRequestsQueryRequest } from '../requests/list-follow-requests-query.request';
-import { ListFollowRequestsCommand } from 'src/follower/application/ports/in/commands/list-follow-requests.command';
 import { ListFollowsQueryRequest } from '../requests/list-follows-query.request';
 
 export class FollowRequestMapper {

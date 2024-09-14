@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-	IsBooleanString,
-	IsEnum,
-	IsNumberString,
-	IsOptional,
-	IsString,
-	IsUUID,
+    IsBoolean,
+    IsEnum,
+    IsNumber,
+    IsOptional,
+    IsString,
+    IsUUID,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { ApiRequest } from 'src/common/web/common.request';
@@ -29,8 +29,8 @@ export class ListLikesQueryRequest extends ApiRequest {
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsNumberString()
-	public page?: number;
+	@IsNumber()
+	public page?: number = 1;
 
 	@ApiProperty({ required: false, enum: SortDirection })
 	@IsOptional()
@@ -44,11 +44,11 @@ export class ListLikesQueryRequest extends ApiRequest {
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsNumberString()
-	public limit?: number;
+	@IsNumber()
+	public limit?: number = 12;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	@IsBooleanString()
+	@IsBoolean()
 	public paginate?: boolean;
 }

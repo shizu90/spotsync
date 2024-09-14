@@ -234,7 +234,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = params.page ?? 0;
+		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
 		const total = ids.length;
 
@@ -284,7 +284,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			return this.mapFollowToDomain(i);
 		});
 
-		return new Pagination(items, total, page, limit);
+		return new Pagination(items, total, page+1, limit);
 	}
 
 	public async paginateRequest(
@@ -331,7 +331,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = params.page ?? 0;
+		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
 		const total = ids.length;
 
@@ -381,7 +381,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			return this.mapFollowRequestToDomain(i);
 		});
 
-		return new Pagination(items, total, page, limit);
+		return new Pagination(items, total, page+1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<Follow>> {

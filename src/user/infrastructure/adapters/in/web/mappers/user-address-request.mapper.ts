@@ -1,11 +1,11 @@
+import { CreateUserAddressCommand } from 'src/user/application/ports/in/commands/create-user-address.command';
+import { DeleteUserAddressCommand } from 'src/user/application/ports/in/commands/delete-user-address.command';
 import { GetUserAddressCommand } from 'src/user/application/ports/in/commands/get-user-address.command';
 import { ListUserAddressesCommand } from 'src/user/application/ports/in/commands/list-user-addresses.command';
-import { CreateUserAddressRequest } from '../requests/create-user-address.request';
-import { CreateUserAddressCommand } from 'src/user/application/ports/in/commands/create-user-address.command';
-import { UpdateUserAddressRequest } from '../requests/update-user-address.request';
 import { UpdateUserAddressCommand } from 'src/user/application/ports/in/commands/update-user-address.command';
-import { DeleteUserAddressCommand } from 'src/user/application/ports/in/commands/delete-user-address.command';
+import { CreateUserAddressRequest } from '../requests/create-user-address.request';
 import { ListUserAddressesQueryRequest } from '../requests/list-user-addresses-query.request';
+import { UpdateUserAddressRequest } from '../requests/update-user-address.request';
 
 export class UserAddressRequestMapper {
 	public static getUserAddressCommand(
@@ -25,9 +25,9 @@ export class UserAddressRequestMapper {
 			query.main,
 			query.sort,
 			query.sort_direction,
-			Boolean(query.paginate),
-			Number.isNaN(Number(query.page)) ? 0 : Number(query.page),
-			Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit),
+			query.paginate,
+			query.page,
+			query.limit,
 		);
 	}
 

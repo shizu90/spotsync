@@ -18,9 +18,9 @@ export class GroupRequestMapper {
 			query.group_visibility,
 			query.sort,
 			query.sort_direction,
-			Number.isNaN(Number(query.page)) ? 0 : Number(query.page),
-			Boolean(query.paginate),
-			Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit),
+			query.page,
+			query.paginate,
+			query.limit,
 		);
 	}
 

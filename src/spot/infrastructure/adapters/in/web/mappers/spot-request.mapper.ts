@@ -24,6 +24,8 @@ export class SpotRequestMapper {
 			query.sort,
 			query.sort_direction,
 			query.page,
+			query.limit,
+			query.paginate
 		);
 	}
 

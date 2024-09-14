@@ -112,7 +112,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 
 		const paginate = params.paginate ?? false;
 		const limit = params.limit ?? 12;
-		const page = params.page ?? 0;
+		const page = (params.page ?? 1)-1;
 		const total = ids.length;
 
 		let items = [];
@@ -148,7 +148,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 		return new Pagination(
 			items.map((i) => this.mapLikeToDomain(i)),
 			total,
-			page,
+			page+1,
 			limit,
 		);
 	}

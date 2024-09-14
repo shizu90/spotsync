@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import {
-    PaginateParameters,
-    Pagination,
+	PaginateParameters,
+	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
@@ -250,7 +250,7 @@ export class PostRepositoryImpl implements PostRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = params.page ?? 0;
+		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
 		const total = ids.length;
 
@@ -334,7 +334,7 @@ export class PostRepositoryImpl implements PostRepository {
 
 		items = items.map((i) => this.mapPostToDomain(i));
 
-		return new Pagination(items, total, page, limit);
+		return new Pagination(items, total, page+1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<Post>> {

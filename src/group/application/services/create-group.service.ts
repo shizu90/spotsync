@@ -24,6 +24,7 @@ import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from '../ports/out/group.repository';
+import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
 
 @Injectable()
 export class CreateGroupService implements CreateGroupUseCase {
@@ -44,6 +45,10 @@ export class CreateGroupService implements CreateGroupUseCase {
 		const adminRole = await this.groupRoleRepository.findByName(
 			DefaultGroupRole.ADMINISTRATOR,
 		);
+
+		if (adminRole === null || adminRole === undefined) {
+			throw new GroupRoleNotFoundError(`Group role ${DefaultGroupRole.ADMINISTRATOR} not found`);
+		}
 
 		const groupId = randomUUID();
 

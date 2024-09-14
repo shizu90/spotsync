@@ -1,13 +1,13 @@
-import { ListGroupMembersCommand } from 'src/group/application/ports/in/commands/list-group-members.command';
-import { ListGroupMembersQueryRequest } from '../requests/list-group-members-query.request';
+import { AcceptGroupRequestCommand } from 'src/group/application/ports/in/commands/accept-group-request.command';
+import { ChangeMemberRoleCommand } from 'src/group/application/ports/in/commands/change-member-role.command';
 import { JoinGroupCommand } from 'src/group/application/ports/in/commands/join-group.command';
 import { LeaveGroupCommand } from 'src/group/application/ports/in/commands/leave-group.command';
-import { ChangeMemberRoleRequest } from '../requests/change-member-role.request';
-import { ChangeMemberRoleCommand } from 'src/group/application/ports/in/commands/change-member-role.command';
-import { AcceptGroupRequestCommand } from 'src/group/application/ports/in/commands/accept-group-request.command';
+import { ListGroupMembersCommand } from 'src/group/application/ports/in/commands/list-group-members.command';
+import { ListGroupRequestsCommand } from 'src/group/application/ports/in/commands/list-group-requests.command';
 import { RefuseGroupRequestCommand } from 'src/group/application/ports/in/commands/refuse-group-request.command';
 import { RemoveGroupMemberCommand } from 'src/group/application/ports/in/commands/remove-group-member.command';
-import { ListGroupRequestsCommand } from 'src/group/application/ports/in/commands/list-group-requests.command';
+import { ChangeMemberRoleRequest } from '../requests/change-member-role.request';
+import { ListGroupMembersQueryRequest } from '../requests/list-group-members-query.request';
 import { ListGroupRequestsQueryRequest } from '../requests/list-group-requests-query.request';
 
 export class GroupMemberRequestMapper {
@@ -21,9 +21,9 @@ export class GroupMemberRequestMapper {
 			query.role_id,
 			query.sort,
 			query.sort_direction,
-			Number.isNaN(Number(query.page)) ? 0 : Number(query.page),
-			Boolean(query.paginate),
-			Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit),
+			query.page,
+			query.paginate,
+			query.limit,
 		);
 	}
 
@@ -36,9 +36,9 @@ export class GroupMemberRequestMapper {
 			query.name,
 			query.sort,
 			query.sort_direction,
-			Boolean(query.paginate),
-			Number.isNaN(Number(query.page)) ? 0 : Number(query.page),
-			Number.isNaN(Number(query.limit)) ? 0 : Number(query.limit),
+			query.paginate,
+			query.page,
+			query.limit,
 		);
 	}
 

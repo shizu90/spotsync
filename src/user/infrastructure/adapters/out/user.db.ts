@@ -159,7 +159,7 @@ export class UserRepositoryImpl implements UserRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = params.page ?? 0;
+		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
 		const total = ids.length;
 
@@ -183,7 +183,7 @@ export class UserRepositoryImpl implements UserRepository {
 			return this.mapUserToDomain(i);
 		});
 
-		return new Pagination(items, total, page, limit);
+		return new Pagination(items, total, page+1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<User>> {

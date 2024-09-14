@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import {
-    PaginateParameters,
-    Pagination,
+	PaginateParameters,
+	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PostThreadRepository } from 'src/post/application/ports/out/post-thread.repository';
@@ -63,7 +63,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = params.page ?? 0;
+		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
 		const total = ids.length;
 
@@ -81,7 +81,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 			});
 		}
 
-		return new Pagination<PostThread>(items, total, page, limit);
+		return new Pagination<PostThread>(items, total, page+1, limit);
 	}
 
 	public async findBy(values: Object): Promise<PostThread[]> {

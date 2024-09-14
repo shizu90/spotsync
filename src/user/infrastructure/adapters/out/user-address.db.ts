@@ -140,7 +140,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = params.page ?? 0;
+		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
 		const total = ids.length;
 
@@ -178,7 +178,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			return this.mapUserAddressToDomain(i);
 		});
 
-		return new Pagination(items, total, page, limit);
+		return new Pagination(items, total, page+1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<UserAddress>> {

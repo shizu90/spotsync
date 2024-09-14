@@ -1,28 +1,28 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -30,16 +30,16 @@ import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	LikeUseCase,
-	LikeUseCaseProvider,
+    LikeUseCase,
+    LikeUseCaseProvider,
 } from 'src/like/application/ports/in/use-cases/like.use-case';
 import {
-	ListLikesUseCase,
-	ListLikesUseCaseProvider,
+    ListLikesUseCase,
+    ListLikesUseCaseProvider,
 } from 'src/like/application/ports/in/use-cases/list-likes.use-case';
 import {
-	UnlikeUseCase,
-	UnlikeUseCaseProvider,
+    UnlikeUseCase,
+    UnlikeUseCaseProvider,
 } from 'src/like/application/ports/in/use-cases/unlike.use-case';
 import { GetLikeDto } from 'src/like/application/ports/out/dto/get-like.dto';
 import { LikeDto } from 'src/like/application/ports/out/dto/like.dto';
@@ -139,7 +139,7 @@ export class LikeController extends ApiController {
 	})
 	@UseGuards(AuthGuard)
 	@Post()
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	public async like(
 		@Body() body: LikeRequest,
 		@Req() req: Request,

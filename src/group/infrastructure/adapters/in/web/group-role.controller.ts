@@ -1,31 +1,31 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Put,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiConflictResponse,
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+    ApiConflictResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
+    ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -33,24 +33,24 @@ import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	CreateGroupRoleUseCase,
-	CreateGroupRoleUseCaseProvider,
+    CreateGroupRoleUseCase,
+    CreateGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/create-group-role.use-case';
 import {
-	GetGroupRoleUseCase,
-	GetGroupRoleUseCaseProvider,
+    GetGroupRoleUseCase,
+    GetGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/get-group-role.use-case';
 import {
-	ListGroupRolesUseCase,
-	ListGroupRolesUseCaseProvider,
+    ListGroupRolesUseCase,
+    ListGroupRolesUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/list-group-roles.use-case';
 import {
-	RemoveGroupRoleUseCase,
-	RemoveGroupRoleUseCaseProvider,
+    RemoveGroupRoleUseCase,
+    RemoveGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/remove-group-role.use-case';
 import {
-	UpdateGroupRoleUseCase,
-	UpdateGroupRoleUseCaseProvider,
+    UpdateGroupRoleUseCase,
+    UpdateGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group-role.use-case';
 import { CreateGroupRoleDto } from 'src/group/application/ports/out/dto/create-group-role.dto';
 import { GetGroupRoleDto } from 'src/group/application/ports/out/dto/get-group-role.dto';
@@ -126,7 +126,7 @@ export class GroupRoleController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get(':id/roles')
 	public async list(
 		@Param('id') groupId: string,
@@ -228,7 +228,7 @@ export class GroupRoleController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Post(':id/roles')
 	public async create(
 		@Param('id') groupId: string,
@@ -275,7 +275,7 @@ export class GroupRoleController extends ApiController {
 	})
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true }))
+	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id/roles/:role_id')
 	public async update(
 		@Param('id') groupId: string,
