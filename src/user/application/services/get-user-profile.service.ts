@@ -66,13 +66,13 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 
 		if (authenticatedUser.id() !== user.id()) {
 			if (
-				user.visibilityConfiguration().addresses() ===
+				user.visibilitySettings().addresses() ===
 				UserVisibility.PRIVATE
 			) {
 				userMainAddress = undefined;
 			}
 			if (
-				user.visibilityConfiguration().addresses() ===
+				user.visibilitySettings().addresses() ===
 					UserVisibility.FOLLOWERS &&
 				!isFollowing
 			) {
@@ -89,48 +89,44 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 
 		return new GetUserProfileDto(
 			user.id(),
-			user.firstName(),
-			user.lastName(),
-			user.profileThemeColor(),
-			user.biograph(),
+			user.birthDate(),
 			user.createdAt(),
 			user.updatedAt(),
-			user.profilePicture(),
-			user.bannerPicture(),
 			{
 				name: user.credentials().name(),
 			},
 			{
-				profile: user.visibilityConfiguration().profile(),
-				addresses: user.visibilityConfiguration().addresses(),
-				favorite_spot_events: user
-					.visibilityConfiguration()
-					.favoriteSpotEvents(),
-				favorite_spot_folders: user
-					.visibilityConfiguration()
-					.favoriteSpotFolders(),
-				favorite_spots: user.visibilityConfiguration().favoriteSpots(),
-				posts: user.visibilityConfiguration().posts(),
-				spot_folders: user.visibilityConfiguration().spotFolders(),
-				visited_spots: user.visibilityConfiguration().visitedSpots(),
+				display_name: user.profile().displayName(),
+				theme_color: user.profile().themeColor(),
+				biograph: user.profile().biograph(),
+				profile_picture: user.profile().profilePicture(),
+				banner_picture: user.profile().bannerPicture(),
+				visibility: user.profile().visibility(),
+			},
+			{
+				profile: user.visibilitySettings().profile(),
+				addresses: user.visibilitySettings().addresses(),
+				visited_spots: user.visibilitySettings().visitedSpots(),
+				posts: user.visibilitySettings().posts(),
+				favorite_spots: user.visibilitySettings().favoriteSpots(),
+				favorite_spot_events: user.visibilitySettings().favoriteSpotEvents(),
+				favorite_spot_folders: user.visibilitySettings().favoriteSpotFolders(),
+				spot_folders: user.visibilitySettings().spotFolders(),
 			},
 			totalFollowers,
 			totalFollowing,
-			userMainAddress
-				? {
-						id: userMainAddress.id(),
-						name: userMainAddress.name(),
-						area: userMainAddress.area(),
-						country_code: userMainAddress.countryCode(),
-						latitude: userMainAddress.latitude(),
-						longitude: userMainAddress.longitude(),
-						locality: userMainAddress.locality(),
-						sub_area: userMainAddress.subArea(),
-						created_at: userMainAddress.createdAt(),
-						updated_at: userMainAddress.updatedAt(),
-					}
-				: null,
-			isFollowing,
+			userMainAddress && {
+				id: userMainAddress.id(),
+				name: userMainAddress.name(),
+				area: userMainAddress.area(),
+				sub_area: userMainAddress.subArea(),
+				locality: userMainAddress.locality(),
+				latitude: userMainAddress.latitude(),
+				longitude: userMainAddress.longitude(),
+				country_code: userMainAddress.countryCode(),
+				created_at: userMainAddress.createdAt(),
+				updated_at: userMainAddress.updatedAt(),
+			}
 		);
 	}
 }

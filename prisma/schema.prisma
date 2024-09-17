@@ -10,33 +10,25 @@ datasource db {
 
 model User {
   id                       String                @id @default(uuid())
-  profile_picture          String?               @db.VarChar(400)
-  banner_picture           String?               @db.VarChar(400)
-  biograph                 String?
-  birth_date               DateTime?             @db.Date
   created_at               DateTime              @default(now())
   updated_at               DateTime              @default(now())
   is_deleted               Boolean               @default(false)
-  first_name               String                @db.VarChar(255)
-  last_name                String?               @db.VarChar(255)
-  profile_theme_color      String?               @db.VarChar(7)
   status                   String?               @db.VarChar(3) 
   favorited_spots          FavoritedSpot[]
-  from_follow_requests     FollowRequest[]       @relation("from_user")
-  to_follow_requests       FollowRequest[]       @relation("to_user")
   followers                Follow[]              @relation("from_user")
   following                Follow[]              @relation("to_user")
-  group_join_requests      GroupMemberRequest[]
   member_of                GroupMember[]
   likes                    Like[]
   posts                    Post[]
   spots                    Spot[]
   addresses                UserAddress[]
   credentials              UserCredentials?
-  visibility_configuration UserVisibilityConfig?
+  visibility_settings      UserVisibilitySettings?
+  profile                  UserProfile?
   visited_spots            VisitedSpot[]
   password_recoveries      PasswordRecovery[]
   activation_requests      ActivationRequest[]
+  comments                 Comment[]
 
   @@map("users")
 }
@@ -54,7 +46,7 @@ model UserCredentials {
   @@map("user_credentials")
 }
 
-model UserVisibilityConfig {
+model UserVisibilitySettings {
   user_id               String @id
   addresses             String @db.VarChar(12)
   favorite_spot_events  String @db.VarChar(12)
@@ -66,7 +58,21 @@ model UserVisibilityConfig {
   visited_spots         String @db.VarChar(12)
   user                  User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@map("user_visibility_configs")
+  @@map("user_visibility_settings")
+}
+
+model UserProfile {
+  user_id               String   @id
+  profile_picture       String?  @db.Text
+  banner_picture        String?  @db.Text
+  biograph              String?  @db.VarChar(400)
+  birth_date            DateTime?
+  display_name          String?  @db.VarChar(255)
+  theme_color           String?  @db.VarChar(7)
+  visibility            String   @db.VarChar(12)
+  user                  User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
 }
 
 model UserAddress {
@@ -92,22 +98,12 @@ model Follow {
   id           String   @id @default(uuid())
   from_user_id String
   to_user_id   String
+  status       String   @db.VarChar(3)
   followed_at  DateTime @default(now())
   from_user    User     @relation("from_user", fields: [from_user_id], references: [id], onDelete: Cascade)
   to_user      User     @relation("to_user", fields: [to_user_id], references: [id], onDelete: Cascade)
 
   @@map("follows")
-}
-
-model FollowRequest {
-  id           String   @id @default(uuid())
-  from_user_id String
-  to_user_id   String
-  requested_on DateTime @default(now())
-  from_user    User     @relation("from_user", fields: [from_user_id], references: [id], onDelete: Cascade)
-  to_user      User     @relation("to_user", fields: [to_user_id], references: [id], onDelete: Cascade)
-
-  @@map("follow_requests")
 }
 
 model Group {
@@ -120,48 +116,38 @@ model Group {
   updated_at               DateTime               @default(now())
   is_deleted               Boolean                @default(false)
   history                  GroupLog[]
-  join_requests            GroupMemberRequest[]
   members                  GroupMember[]
   roles                    GroupRole[]
-  visibility_configuration GroupVisibilityConfig?
+  visibility_settings      GroupVisibilitySettings?
   posts                    Post[]
 
   @@map("groups")
 }
 
-model GroupVisibilityConfig {
+model GroupVisibilitySettings {
   group_id    String @id
   groups      String @db.VarChar(12)
   posts       String @db.VarChar(12)
   spot_events String @db.VarChar(12)
   group       Group  @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
-  @@map("group_visibility_configs")
+  @@map("group_visibility_settings")
 }
 
 model GroupMember {
   id            String     @id @default(uuid())
   is_creator    Boolean
-  joined_at     DateTime   @default(now())
+  joined_at     DateTime?
+  requested_at  DateTime?
   group_id      String
   user_id       String
   group_role_id String?
+  status        String     @db.VarChar(3)
   group         Group      @relation(fields: [group_id], references: [id], onDelete: Cascade)
   group_role    GroupRole? @relation(fields: [group_role_id], references: [id])
   user          User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("group_members")
-}
-
-model GroupMemberRequest {
-  id           String   @id @default(uuid())
-  group_id     String
-  user_id      String
-  requested_on DateTime @default(now())
-  group        Group    @relation(fields: [group_id], references: [id], onDelete: Cascade)
-  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("group_member_requests")
 }
 
 model GroupRole {
@@ -296,6 +282,19 @@ model SpotAddress {
   spot         Spot    @relation(fields: [spot_id], references: [id])
 
   @@map("spot_addresses")
+}
+
+model Comment {
+  id           String   @id @default(uuid())
+  text         String   @db.VarChar(400)
+  subject      String   @db.VarChar(20)
+  user_id      String
+  subject_id   String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("comments")
 }
 
 model FavoritedSpot {

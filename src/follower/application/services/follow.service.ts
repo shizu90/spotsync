@@ -65,7 +65,7 @@ export class FollowService implements FollowUseCase {
 		}
 
 		if (
-			toUser.visibilityConfiguration().profile() !== UserVisibility.PUBLIC
+			toUser.visibilitySettings().profile() !== UserVisibility.PUBLIC
 		) {
 			const request = (
 				await this.followRepository.findRequestBy({

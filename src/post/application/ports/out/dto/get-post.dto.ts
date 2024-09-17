@@ -12,8 +12,7 @@ export class GetPostDto extends Dto {
 		}[],
 		readonly creator: {
 			id: string;
-			first_name: string;
-			last_name: string;
+			display_name: string;
 			profile_theme_color: string;
 			profile_picture: string;
 			banner_picture: string;

@@ -6,7 +6,7 @@ import {
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupRepository } from 'src/group/application/ports/out/group.repository';
 import { GroupLog } from 'src/group/domain/group-log.model';
-import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
 import { Group } from 'src/group/domain/group.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -26,12 +26,12 @@ export class GroupRepositoryImpl implements GroupRepository {
 			prisma_model.about,
 			prisma_model.group_picture,
 			prisma_model.banner_picture,
-			prisma_model.visibility_configuration
-				? GroupVisibilityConfig.create(
+			prisma_model.visibility_settings
+				? GroupVisibilitySettings.create(
 						prisma_model.id,
-						prisma_model.visibility_configuration.posts,
-						prisma_model.visibility_configuration.spot_events,
-						prisma_model.visibility_configuration.groups,
+						prisma_model.visibility_settings.posts,
+						prisma_model.visibility_settings.spot_events,
+						prisma_model.visibility_settings.groups,
 					)
 				: null,
 			prisma_model.created_at,
@@ -120,7 +120,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		if (paginate) {
 			items = await this.prismaService.group.findMany({
 				where: { id: { in: ids.map((row) => row.id) } },
-				include: { visibility_configuration: true },
+				include: { visibility_settings: true },
 				orderBy: orderBy,
 				skip: limit * page,
 				take: limit,
@@ -128,7 +128,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		} else {
 			items = await this.prismaService.group.findMany({
 				where: { id: { in: ids.map((row) => row.id) } },
-				include: { visibility_configuration: true },
+				include: { visibility_settings: true },
 				orderBy: orderBy,
 			});
 		}
@@ -179,7 +179,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			where: {
 				id: { in: groupIds.map((row) => row.id) },
 			},
-			include: { visibility_configuration: true },
+			include: { visibility_settings: true },
 		});
 
 		return groups.map((group) => {
@@ -278,7 +278,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 				include: {
 					group: {
 						include: {
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 				},
@@ -292,7 +292,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 				include: {
 					group: {
 						include: {
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 				},
@@ -308,7 +308,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 
 	public async findAll(): Promise<Array<Group>> {
 		const groups = await this.prismaService.group.findMany({
-			include: { visibility_configuration: true },
+			include: { visibility_settings: true },
 		});
 
 		return groups.map((group) => {
@@ -319,7 +319,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 	public async findById(id: string): Promise<Group> {
 		const group = await this.prismaService.group.findFirst({
 			where: { id: id },
-			include: { visibility_configuration: true },
+			include: { visibility_settings: true },
 		});
 
 		return this.mapGroupToDomain(group);
@@ -333,13 +333,13 @@ export class GroupRepositoryImpl implements GroupRepository {
 				about: model.about(),
 				group_picture: model.groupPicture(),
 				banner_picture: model.bannerPicture(),
-				visibility_configuration: {
+				visibility_settings: {
 					create: {
 						spot_events: model
-							.visibilityConfiguration()
+							.visibilitySettings()
 							.spotEvents(),
-						posts: model.visibilityConfiguration().posts(),
-						groups: model.visibilityConfiguration().groups(),
+						posts: model.visibilitySettings().posts(),
+						groups: model.visibilitySettings().groups(),
 					},
 				},
 				created_at: model.createdAt(),
@@ -347,7 +347,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 				is_deleted: model.isDeleted(),
 			},
 			include: {
-				visibility_configuration: true,
+				visibility_settings: true,
 			},
 		});
 
@@ -365,7 +365,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			include: {
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -388,17 +388,17 @@ export class GroupRepositoryImpl implements GroupRepository {
 				id: model.id(),
 			},
 			include: {
-				visibility_configuration: true,
+				visibility_settings: true,
 			},
 		});
 	}
 
 	public async updateVisibilityConfiguration(
-		model: GroupVisibilityConfig,
+		model: GroupVisibilitySettings,
 	): Promise<void> {
 		await this.prismaService.group.update({
 			data: {
-				visibility_configuration: {
+				visibility_settings: {
 					update: {
 						spot_events: model.spotEvents(),
 						groups: model.groups(),
@@ -408,7 +408,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			},
 			where: { id: model.id() },
 			include: {
-				visibility_configuration: true,
+				visibility_settings: true,
 			},
 		});
 	}
@@ -416,11 +416,6 @@ export class GroupRepositoryImpl implements GroupRepository {
 	public async delete(id: string): Promise<void> {
 		await this.prismaService.group.delete({
 			where: { id: id },
-			include: {
-				visibility_configuration: true,
-				join_requests: true,
-				members: true,
-			},
 		});
 	}
 }

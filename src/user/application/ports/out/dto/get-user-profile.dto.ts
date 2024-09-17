@@ -3,18 +3,21 @@ import { Dto } from 'src/common/core/common.dto';
 export class GetUserProfileDto extends Dto {
 	constructor(
 		readonly id: string,
-		readonly first_name: string,
-		readonly last_name: string,
-		readonly profile_theme_color: string,
-		readonly biograph: string,
+		readonly birth_date: Date,
 		readonly created_at: Date,
 		readonly updated_at: Date,
-		readonly profile_picture: string,
-		readonly banner_picture: string,
 		readonly credentials: {
 			name: string;
 		},
-		readonly visibility_configuration: {
+		readonly profile: {
+			display_name: string;
+			theme_color: string;
+			biograph: string;
+			profile_picture: string;
+			banner_picture: string;
+			visibility: string;
+		},
+		readonly visibility_settings: {
 			profile: string;
 			addresses: string;
 			visited_spots: string;

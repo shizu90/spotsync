@@ -5,15 +5,15 @@ import {
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupMemberRepository } from 'src/group/application/ports/out/group-member.repository';
-import { GroupMemberRequest } from 'src/group/domain/group-member-request.model';
 import { GroupMember } from 'src/group/domain/group-member.model';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
 import { GroupRole } from 'src/group/domain/group-role.model';
-import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
 import { Group } from 'src/group/domain/group.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserProfile } from 'src/user/domain/user-profile.model';
+import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { User } from 'src/user/domain/user.model';
 
 @Injectable()
@@ -35,14 +35,14 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 						prisma_model.group.about,
 						prisma_model.group.group_picture,
 						prisma_model.group.banner_picture,
-						prisma_model.group.visibility_configuration
-							? GroupVisibilityConfig.create(
+						prisma_model.group.visibility_settings
+							? GroupVisibilitySettings.create(
 									prisma_model.group.id,
-									prisma_model.group.visibility_configuration
+									prisma_model.group.visibility_settings
 										.posts,
-									prisma_model.group.visibility_configuration
+									prisma_model.group.visibility_settings
 										.spot_events,
-									prisma_model.group.visibility_configuration
+									prisma_model.group.visibility_settings
 										.groups,
 								)
 							: null,
@@ -53,50 +53,41 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				: null,
 			prisma_model.user
 				? User.create(
+					prisma_model.user.id,
+					UserProfile.create(
 						prisma_model.user.id,
-						prisma_model.user.first_name,
-						prisma_model.user.last_name,
-						prisma_model.user.profile_theme_color,
-						prisma_model.user.profile_picture,
-						prisma_model.user.banner_picture,
-						prisma_model.user.biograph,
-						prisma_model.user.birth_date,
-						prisma_model.user.credentials
-							? UserCredentials.create(
-									prisma_model.user.id,
-									prisma_model.user.credentials.name,
-									prisma_model.user.credentials.email,
-									prisma_model.user.credentials.password,
-									prisma_model.user.credentials.phone_number,
-									prisma_model.user.credentials.last_login,
-									prisma_model.user.credentials.last_logout,
-								)
-							: null,
-						prisma_model.user.visibility_configuration
-							? UserVisibilityConfig.create(
-									prisma_model.user.id,
-									prisma_model.user.visibility_configuration
-										.profile,
-									prisma_model.user.visibility_configuration
-										.addresses,
-									prisma_model.user.visibility_configuration
-										.spot_folders,
-									prisma_model.user.visibility_configuration
-										.visited_spots,
-									prisma_model.user.visibility_configuration
-										.posts,
-									prisma_model.user.visibility_configuration
-										.favorite_spots,
-									prisma_model.user.visibility_configuration
-										.favorite_spot_folders,
-									prisma_model.user.visibility_configuration
-										.favorite_spot_events,
-								)
-							: null,
-						prisma_model.user.status,
-						prisma_model.user.created_at,
-						prisma_model.user.updated_at,
-						prisma_model.user.is_deleted,
+						prisma_model.user.profile.birth_date,
+						prisma_model.user.profile.display_name,
+						prisma_model.user.profile.theme_color,
+						prisma_model.user.profile.profile_picture,
+						prisma_model.user.profile.banner_picture,
+						prisma_model.user.profile.biograph,
+						prisma_model.user.profile.visibility
+					),
+					UserCredentials.create(
+						prisma_model.user.id,
+						prisma_model.user.credentials.name,
+						prisma_model.user.credentials.email,
+						prisma_model.user.credentials.password,
+						prisma_model.user.credentials.phone_number,
+						prisma_model.user.credentials.last_login,
+						prisma_model.user.credentials.last_logout,
+					),
+					UserVisibilitySettings.create(
+						prisma_model.user.id,
+						prisma_model.user.visibility_settings.profile,
+						prisma_model.user.visibility_settings.addresses,
+						prisma_model.user.visibility_settings.spot_folders,
+						prisma_model.user.visibility_settings.visited_spots,
+						prisma_model.user.visibility_settings.posts,
+						prisma_model.user.visibility_settings.favorite_spots,
+						prisma_model.user.visibility_settings.favorite_spot_folders,
+						prisma_model.user.visibility_settings.favorite_spot_events,
+					),
+					prisma_model.user.status,
+					prisma_model.user.created_at,
+					prisma_model.user.updated_at,
+					prisma_model.user.is_deleted
 					)
 				: null,
 			GroupRole.create(
@@ -112,69 +103,8 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				prisma_model.group_role.is_immutable,
 			),
 			prisma_model.is_creator,
+			prisma_model.status,
 			prisma_model.joined_at,
-		);
-	}
-
-	private mapGroupMemberRequestToDomain(
-		prisma_model: any,
-	): GroupMemberRequest {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return GroupMemberRequest.create(
-			prisma_model.id,
-			Group.create(
-				prisma_model.group.id,
-				prisma_model.group.name,
-				prisma_model.group.about,
-				prisma_model.group.group_picture,
-				prisma_model.group.banner_picture,
-				GroupVisibilityConfig.create(
-					prisma_model.group.id,
-					prisma_model.group.visibility_configuration.posts,
-					prisma_model.group.visibility_configuration.spot_events,
-					prisma_model.group.visibility_configuration.groups,
-				),
-				prisma_model.group.created_at,
-				prisma_model.group.updated_at,
-				prisma_model.group.is_deleted,
-			),
-			User.create(
-				prisma_model.user.id,
-				prisma_model.user.first_name,
-				prisma_model.user.last_name,
-				prisma_model.user.profile_theme_color,
-				prisma_model.user.profile_picture,
-				prisma_model.user.banner_picture,
-				prisma_model.user.biograph,
-				prisma_model.user.birth_date,
-				UserCredentials.create(
-					prisma_model.user.id,
-					prisma_model.user.credentials.name,
-					prisma_model.user.credentials.email,
-					prisma_model.user.credentials.password,
-					prisma_model.user.credentials.phone_number,
-					prisma_model.user.credentials.last_login,
-					prisma_model.user.credentials.last_logout,
-				),
-				UserVisibilityConfig.create(
-					prisma_model.user.id,
-					prisma_model.user.visibility_configuration.profile,
-					prisma_model.user.visibility_configuration.addresses,
-					prisma_model.user.visibility_configuration.spot_folders,
-					prisma_model.user.visibility_configuration.visited_spots,
-					prisma_model.user.visibility_configuration.posts,
-					prisma_model.user.visibility_configuration.favorite_spots,
-					prisma_model.user.visibility_configuration
-						.favorite_spot_folders,
-					prisma_model.user.visibility_configuration
-						.favorite_spot_events,
-				),
-				prisma_model.user.created_at,
-				prisma_model.user.updated_at,
-				prisma_model.user.is_deleted,
-			),
-			prisma_model.requested_on,
 		);
 	}
 
@@ -246,7 +176,8 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 					user: {
 						include: {
 							credentials: true,
-							visibility_configuration: true,
+							visibility_settings: true,
+							profile: true,
 						},
 					},
 					group_role: {
@@ -260,7 +191,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 					},
 					group: {
 						include: {
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 				},
@@ -275,7 +206,8 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 					user: {
 						include: {
 							credentials: true,
-							visibility_configuration: true,
+							visibility_settings: true,
+							profile: true,
 						},
 					},
 					group_role: {
@@ -289,7 +221,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 					},
 					group: {
 						include: {
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 				},
@@ -303,106 +235,9 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		return new Pagination(items, total, page+1, limit);
 	}
 
-	public async paginateRequest(
-		params: PaginateParameters,
-	): Promise<Pagination<GroupMemberRequest>> {
-		let query = `SELECT group_member_requests.id FROM group_member_requests JOIN users ON users.id = group_member_requests.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false`;
-
-		if (params.filters) {
-			if (typeof params.filters['name'] === 'string') {
-				const name = params.filters['name'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-				} else {
-					query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-				}
-			}
-
-			if (typeof params.filters['roleId'] === 'string') {
-				const roleId = params.filters['roleId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND group_members.role_id = '${roleId}'`;
-				} else {
-					query = `${query} WHERE group_members.role_id = '${roleId}'`;
-				}
-			}
-
-			if (typeof params.filters['groupId'] === 'string') {
-				const groupId = params.filters['groupId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND group_members.group_id = '${groupId}'`;
-				} else {
-					query = `${query} WHERE group_members.group_id = '${groupId}'`;
-				}
-			}
-		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
-		const sort = params.sort ?? 'name';
-		const sortDirection = params.sortDirection ?? SortDirection.ASC;
-
-		let orderBy = {};
-
-		switch (sort) {
-			case 'name':
-			default:
-				orderBy = { user: { credentials: { name: sortDirection } } };
-				break;
-		}
-
-		let items = [];
-
-		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
-		const limit = params.limit ?? 12;
-		const total = ids.length;
-
-		if (paginate) {
-			items = await this.prismaService.groupMemberRequest.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
-				orderBy: orderBy,
-				skip: limit * page,
-				take: limit,
-				include: {
-					user: {
-						include: {
-							credentials: true,
-							visibility_configuration: true,
-						},
-					},
-					group: {
-						include: { visibility_configuration: true },
-					},
-				},
-			});
-		} else {
-			items = await this.prismaService.groupMemberRequest.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
-				orderBy: orderBy,
-				include: {
-					user: {
-						include: {
-							credentials: true,
-							visibility_configuration: true,
-						},
-					},
-					group: {
-						include: { visibility_configuration: true },
-					},
-				},
-			});
-		}
-
-		items = items.map((i) => {
-			return this.mapGroupMemberRequestToDomain(i);
-		});
-
-		return new Pagination(items, total, page+1, limit);
-	}
-
 	public async findBy(values: Object): Promise<Array<GroupMember>> {
+		const id = values['id'];
+		const status = values['status'];
 		const name = values['name'];
 		const roleId = values['roleId'];
 		const groupId = values['groupId'];
@@ -410,6 +245,22 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 
 		let query =
 			'SELECT group_members.id FROM group_members JOIN users ON users.id = group_members.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false';
+
+		if (id) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND group_members.id = '${id}'`;
+			} else {
+				query = `${query} WHERE group_members.id = '${id}'`;
+			}
+		}
+
+		if (status) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND group_members.status = '${status}'`;
+			} else {
+				query = `${query} WHERE group_members.status = '${status}'`;
+			}
+		}
 
 		if (name) {
 			if (query.includes('WHERE')) {
@@ -452,7 +303,8 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
+						profile: true,
 					},
 				},
 				group_role: {
@@ -466,7 +318,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				},
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -534,7 +386,8 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
+						profile: true,
 					},
 				},
 				group_role: {
@@ -548,7 +401,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				},
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -566,7 +419,8 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
+						profile: true,
 					},
 				},
 				group_role: {
@@ -580,176 +434,13 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				},
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
 		});
 
 		return this.mapGroupMemberToDomain(groupMember);
-	}
-
-	public async findRequestBy(
-		values: Object,
-	): Promise<Array<GroupMemberRequest>> {
-		const name = values['name'];
-		const groupId = values['groupId'];
-		const userId = values['userId'];
-
-		const sort = String(values['sort'] ?? 'name').toLowerCase();
-		const sortDirection = String(
-			values['sortDirection'] ?? 'asc',
-		).toLowerCase();
-		const paginate = values['paginate'] ?? false;
-		const page = values['page'] ?? 0;
-		const limit = values['limit'] ?? 12;
-
-		let query =
-			'SELECT group_member_requests.id FROM group_member_requests JOIN users ON users.id = group_member_requests.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false';
-
-		if (name) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			} else {
-				query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			}
-		}
-
-		if (groupId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_member_requests.group_id = '${groupId}'`;
-			} else {
-				query = `${query} WHERE group_member_requests.group_id = '${groupId}'`;
-			}
-		}
-
-		if (userId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_member_requests.user_id = '${userId}'`;
-			} else {
-				query = `${query} WHERE group_member_requests.user_id = '${userId}'`;
-			}
-		}
-
-		const groupMemberRequestIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
-		let orderBy = {};
-
-		switch (sort) {
-			case 'name':
-				orderBy = {
-					user: {
-						credentials: {
-							name: sortDirection,
-						},
-					},
-				};
-
-				break;
-			case 'id':
-			default:
-				orderBy = {
-					id: sortDirection,
-				};
-
-				break;
-		}
-
-		let groupMemberRequests = [];
-
-		if (paginate) {
-			groupMemberRequests =
-				await this.prismaService.groupMemberRequest.findMany({
-					where: {
-						id: { in: groupMemberRequestIds.map((row) => row.id) },
-					},
-					orderBy: orderBy,
-					skip: limit * page,
-					take: limit,
-					include: {
-						user: {
-							include: {
-								credentials: true,
-								visibility_configuration: true,
-							},
-						},
-						group: {
-							include: { visibility_configuration: true },
-						},
-					},
-				});
-		} else {
-			groupMemberRequests =
-				await this.prismaService.groupMemberRequest.findMany({
-					where: {
-						id: { in: groupMemberRequestIds.map((row) => row.id) },
-					},
-					orderBy: orderBy,
-					include: {
-						user: {
-							include: {
-								credentials: true,
-								visibility_configuration: true,
-							},
-						},
-						group: {
-							include: { visibility_configuration: true },
-						},
-					},
-				});
-		}
-
-		return groupMemberRequests.map((groupMemberRequest) => {
-			return this.mapGroupMemberRequestToDomain(groupMemberRequest);
-		});
-	}
-
-	public async findRequestById(id: string): Promise<GroupMemberRequest> {
-		const groupMemberRequest =
-			await this.prismaService.groupMemberRequest.findFirst({
-				where: { id: id },
-				include: {
-					group: {
-						include: {
-							visibility_configuration: true,
-						},
-					},
-					user: {
-						include: {
-							credentials: true,
-							visibility_configuration: true,
-						},
-					},
-				},
-			});
-
-		return this.mapGroupMemberRequestToDomain(groupMemberRequest);
-	}
-
-	public async findRequestByGroupIdAndUserId(
-		groupId: string,
-		userId: string,
-	): Promise<GroupMemberRequest> {
-		const groupMemberRequest =
-			await this.prismaService.groupMemberRequest.findFirst({
-				where: { group_id: groupId, user_id: userId },
-				include: {
-					group: {
-						include: {
-							visibility_configuration: true,
-						},
-					},
-					user: {
-						include: {
-							credentials: true,
-							visibility_configuration: true,
-						},
-					},
-				},
-			});
-
-		return this.mapGroupMemberRequestToDomain(groupMemberRequest);
 	}
 
 	public async store(model: GroupMember): Promise<GroupMember> {
@@ -761,12 +452,15 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				group_role_id: model.role().id(),
 				id: model.id(),
 				joined_at: model.joinedAt(),
+				requested_at: model.requestedAt(),
+				status: model.status(),
 			},
 			include: {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
+						profile: true,
 					},
 				},
 				group_role: {
@@ -780,7 +474,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				},
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -789,46 +483,21 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		return this.mapGroupMemberToDomain(groupMember);
 	}
 
-	public async storeRequest(
-		model: GroupMemberRequest,
-	): Promise<GroupMemberRequest> {
-		const groupMemberRequest =
-			await this.prismaService.groupMemberRequest.create({
-				data: {
-					id: model.id(),
-					group_id: model.group().id(),
-					user_id: model.user().id(),
-					requested_on: model.requestedOn(),
-				},
-				include: {
-					group: {
-						include: {
-							visibility_configuration: true,
-						},
-					},
-					user: {
-						include: {
-							credentials: true,
-							visibility_configuration: true,
-						},
-					},
-				},
-			});
-
-		return this.mapGroupMemberRequestToDomain(groupMemberRequest);
-	}
-
 	public async update(model: GroupMember): Promise<void> {
 		await this.prismaService.groupMember.update({
 			data: {
 				group_role_id: model.role().id(),
+				status: model.status(),
+				requested_at: model.requestedAt(),
+				joined_at: model.joinedAt(),
 			},
 			where: { id: model.id() },
 			include: {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
+						profile: true,
 					},
 				},
 				group_role: {
@@ -842,7 +511,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				},
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -851,12 +520,6 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 
 	public async delete(id: string): Promise<void> {
 		await this.prismaService.groupMember.delete({
-			where: { id: id },
-		});
-	}
-
-	public async deleteRequest(id: string): Promise<void> {
-		await this.prismaService.groupMemberRequest.delete({
 			where: { id: id },
 		});
 	}

@@ -1,28 +1,28 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpStatus,
-    Inject,
-    Param,
-    Post,
-    Put,
-    Query,
-    Req,
-    Res,
-    UseFilters,
-    UseGuards,
-    UsePipes,
-    ValidationPipe,
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Inject,
+	Param,
+	Post,
+	Put,
+	Query,
+	Req,
+	Res,
+	UseFilters,
+	UseGuards,
+	UsePipes,
+	ValidationPipe,
 } from '@nestjs/common';
 import {
-    ApiForbiddenResponse,
-    ApiNotFoundResponse,
-    ApiOkResponse,
-    ApiOperation,
-    ApiTags,
-    ApiUnauthorizedResponse,
+	ApiForbiddenResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -30,40 +30,40 @@ import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-    CreateSpotUseCase,
-    CreateSpotUseCaseProvider,
+	CreateSpotUseCase,
+	CreateSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/create-spot.use-case';
 import {
-    DeleteSpotUseCase,
-    DeleteSpotUseCaseProvider,
+	DeleteSpotUseCase,
+	DeleteSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/delete-spot.use-case';
 import {
-    FavoriteSpotUseCase,
-    FavoriteSpotUseCaseProvider,
+	FavoriteSpotUseCase,
+	FavoriteSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/favorite-spot.use-case';
 import {
-    GetSpotUseCase,
-    GetSpotUseCaseProvider,
+	GetSpotUseCase,
+	GetSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/get-spot.use-case';
 import {
-    ListSpotsUseCase,
-    ListSpotsUseCaseProvider,
+	ListSpotsUseCase,
+	ListSpotsUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/list-spots.use-case';
 import {
-    UnfavoriteSpotUseCase,
-    UnfavoriteSpotUseCaseProvider,
+	UnfavoriteSpotUseCase,
+	UnfavoriteSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/unfavorite-spot.use-case';
 import {
-    UnvisitSpotUseCase,
-    UnvisitSpotUseCaseProvider,
+	UnvisitSpotUseCase,
+	UnvisitSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/unvisit-spot.use.case';
 import {
-    UpdateSpotUseCase,
-    UpdateSpotUseCaseProvider,
+	UpdateSpotUseCase,
+	UpdateSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/update-spot.use-case';
 import {
-    VisitSpotUseCase,
-    VisitSpotUseCaseProvider,
+	VisitSpotUseCase,
+	VisitSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/visit-spot.use.case';
 import { CreateSpotDto } from 'src/spot/application/ports/out/dto/create-spot.dto';
 import { GetSpotDto } from 'src/spot/application/ports/out/dto/get-spot.dto';
@@ -135,7 +135,15 @@ export class SpotController extends ApiController {
 							country_code: 'BR',
 						},
 						[{ id: 'uuid', file_path: 'string' }],
-						'uuid',
+						{
+							id: 'uuid',
+							display_name: 'string',
+							banner_picture: 'string',
+							credentials: {
+								name: 'string',
+							},
+							profile_picture: 'string',
+						},
 						0,
 						false,
 						new Date(),
@@ -198,7 +206,15 @@ export class SpotController extends ApiController {
 					country_code: 'BR',
 				},
 				[{ id: 'uuid', file_path: 'string' }],
-				'uuid',
+				{
+					id: 'uuid',
+					display_name: 'string',
+					banner_picture: 'string',
+					credentials: {
+						name: 'string',
+					},
+					profile_picture: 'string',
+				},
 				0,
 				false,
 				new Date(),

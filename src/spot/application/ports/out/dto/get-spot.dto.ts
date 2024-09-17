@@ -18,7 +18,15 @@ export class GetSpotDto extends Dto {
 			id: string;
 			file_path: string;
 		}[],
-		readonly creator_id: string,
+		readonly creator: {
+			id: string,
+			display_name: string,
+			profile_picture: string,
+			banner_picture: string,
+			credentials: {
+				name: string,
+			}
+		},
 		readonly distance: number,
 		readonly visited: boolean,
 		readonly visited_at: Date,

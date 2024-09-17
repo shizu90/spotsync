@@ -3,9 +3,8 @@ import { Command } from 'src/common/core/common.command';
 export class UpdateUserProfileCommand extends Command {
 	constructor(
 		readonly id: string,
-		readonly firstName?: string,
-		readonly lastName?: string,
-		readonly profileThemeColor?: string,
+		readonly displayName?: string,
+		readonly themeColor?: string,
 		readonly biograph?: string,
 		readonly birthDate?: Date,
 	) {

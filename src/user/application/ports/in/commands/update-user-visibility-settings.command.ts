@@ -1,7 +1,7 @@
 import { Command } from 'src/common/core/common.command';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 
-export class UpdateUserVisibilityConfigCommand extends Command {
+export class UpdateUserVisibilitySettingsCommand extends Command {
 	constructor(
 		readonly userId: string,
 		readonly profile?: UserVisibility,

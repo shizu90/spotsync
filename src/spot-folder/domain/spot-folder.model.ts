@@ -134,7 +134,7 @@ export class SpotFolder extends Model {
 		);
 
 		if (!exists) {
-			const item = SpotFolderItem.create(randomUUID(), spot);
+			const item = SpotFolderItem.create(randomUUID(), spot, this._items.length + 1);
 
 			this._items.push(item);
 			this._updatedAt = new Date();
@@ -161,5 +161,9 @@ export class SpotFolder extends Model {
 
 	public favorite(user: User): FavoritedSpotFolder {
 		return FavoritedSpotFolder.create(randomUUID(), this, user);
+	}
+
+	public sortItems(): void {
+		this._items = this._items.sort((a, b) => a.orderNumber() - b.orderNumber());
 	}
 }

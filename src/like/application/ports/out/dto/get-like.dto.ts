@@ -7,9 +7,8 @@ export class GetLikeDto extends Dto {
 		readonly subject_id: string,
 		readonly user: {
 			id: string;
-			first_name: string;
-			last_name: string;
-			profile_theme_color: string;
+			display_name: string;
+			theme_color: string;
 			profile_picture: string;
 			banner_picture: string;
 			credentials: { name: string };

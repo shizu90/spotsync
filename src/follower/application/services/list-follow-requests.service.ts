@@ -56,7 +56,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 				).at(0) !== undefined;
 
 			if (
-				user.visibilityConfiguration().profile() ===
+				user.visibilitySettings().profile() ===
 					UserVisibility.FOLLOWERS &&
 				authenticatedUser.id() !== user.id() &&
 				!isFollowing
@@ -65,7 +65,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			}
 
 			if (
-				user.visibilityConfiguration().profile() ===
+				user.visibilitySettings().profile() ===
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
@@ -89,7 +89,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 				).at(0) !== undefined;
 
 			if (
-				user.visibilityConfiguration().profile() ===
+				user.visibilitySettings().profile() ===
 					UserVisibility.FOLLOWERS &&
 				authenticatedUser.id() !== user.id() &&
 				!isFollowing
@@ -98,7 +98,7 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 			}
 
 			if (
-				user.visibilityConfiguration().profile() ===
+				user.visibilitySettings().profile() ===
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
@@ -123,22 +123,20 @@ export class ListFollowRequestsService implements ListFollowRequestsUseCase {
 				i.id(),
 				{
 					id: i.from().id(),
-					first_name: i.from().firstName(),
-					last_name: i.from().lastName(),
-					profile_theme_color: i.from().profileThemeColor(),
-					profile_picture: i.from().profilePicture(),
-					banner_picture: i.from().bannerPicture(),
-					birth_date: i.from().birthDate(),
+					display_name: i.from().profile().displayName(),
+					theme_color: i.from().profile().themeColor(),
+					profile_picture: i.from().profile().profilePicture(),
+					banner_picture: i.from().profile().bannerPicture(),
+					birth_date: i.from().profile().birthDate(),
 					credentials: { name: i.from().credentials().name() },
 				},
 				{
 					id: i.to().id(),
-					first_name: i.from().firstName(),
-					last_name: i.from().lastName(),
-					profile_theme_color: i.from().profileThemeColor(),
-					profile_picture: i.to().profilePicture(),
-					banner_picture: i.to().bannerPicture(),
-					birth_date: i.to().birthDate(),
+					display_name: i.to().profile().displayName(),
+					theme_color: i.to().profile().themeColor(),
+					profile_picture: i.to().profile().profilePicture(),
+					banner_picture: i.to().profile().bannerPicture(),
+					birth_date: i.to().profile().birthDate(),
 					credentials: { name: i.to().credentials().name() },
 				},
 				i.requestedOn(),

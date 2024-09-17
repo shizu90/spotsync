@@ -5,7 +5,7 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
-import { UpdateUserVisibilityConfigCommand } from '../../ports/in/commands/update-user-visibility-config.command';
+import { UpdateUserVisibilityConfigCommand } from '../../ports/in/commands/update-user-visibility-settings.command';
 import {
 	UserRepository,
 	UserRepositoryProvider,
@@ -44,8 +44,8 @@ describe('UpdateUserVisibilityConfigService', () => {
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 
 		await expect(service.execute(command)).resolves.not.toThrow();
-		expect(user.visibilityConfiguration().profile()).toBe(command.profile);
-		expect(user.visibilityConfiguration().spotFolders()).toBe(
+		expect(user.visibilitySettings().profile()).toBe(command.profile);
+		expect(user.visibilitySettings().spotFolders()).toBe(
 			command.spotFolders,
 		);
 	});

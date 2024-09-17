@@ -53,10 +53,6 @@ import {
 	ListGroupMembersUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/list-group-members.use-case';
 import {
-	ListGroupRequestsUseCase,
-	ListGroupRequestsUseCaseProvider,
-} from 'src/group/application/ports/in/use-cases/list-group-requests.use-case';
-import {
 	RefuseGroupRequestUseCase,
 	RefuseGroupRequestUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/refuse-group-request.use-case';
@@ -64,9 +60,7 @@ import {
 	RemoveGroupMemberUseCase,
 	RemoveGroupMemberUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/remove-group-member.use-case';
-import { AcceptGroupRequestDto } from 'src/group/application/ports/out/dto/accept-group-request.dto';
 import { GetGroupMemberDto } from 'src/group/application/ports/out/dto/get-group-member.dto';
-import { GetGroupRequestDto } from 'src/group/application/ports/out/dto/get-group-request.dto';
 import { JoinGroupDto } from 'src/group/application/ports/out/dto/join-group.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
 import { GroupMemberRequestMapper } from './mappers/group-member-request.mapper';
@@ -112,8 +106,6 @@ export class GroupMemberController extends ApiController {
 	constructor(
 		@Inject(ListGroupMembersUseCaseProvider)
 		protected listGroupMembersUseCase: ListGroupMembersUseCase,
-		@Inject(ListGroupRequestsUseCaseProvider)
-		protected listGroupRequestsUseCase: ListGroupRequestsUseCase,
 		@Inject(JoinGroupUseCaseProvider)
 		protected joinGroupUseCase: JoinGroupUseCase,
 		@Inject(LeaveGroupUseCaseProvider)
@@ -140,8 +132,7 @@ export class GroupMemberController extends ApiController {
 						{
 							id: 'uuid',
 							credentials: { name: 'string' },
-							first_name: 'string',
-							last_name: 'string',
+							display_name: 'string',
 							banner_picture: 'string',
 							profile_picture: 'string',
 						},
@@ -183,52 +174,6 @@ export class GroupMemberController extends ApiController {
 		});
 	}
 
-	@ApiOperation({ summary: 'List group join requests' })
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetGroupRequestDto(
-						'uuid',
-						{
-							id: 'uuid',
-							first_name: 'string',
-							last_name: 'string',
-							banner_picture: 'string',
-							credentials: { name: 'string' },
-							profile_picture: 'string',
-						},
-						'uuid',
-						new Date(),
-					),
-				],
-				1,
-				0,
-				10,
-			),
-		},
-	})
-	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
-	@Get(':id/join-requests')
-	public async listRequests(
-		@Param('id') groupId: string,
-		@Query() query: ListGroupMembersQueryRequest,
-		@Req() req: Request,
-		@Res() res: Response,
-	) {
-		const command = GroupMemberRequestMapper.listGroupRequestsCommand(
-			groupId,
-			query,
-		);
-
-		const data = await this.listGroupRequestsUseCase.execute(command);
-
-		res.status(HttpStatus.OK).json({
-			data: data,
-		});
-	}
-
 	@ApiOperation({ summary: 'Join group' })
 	@ApiConflictResponse({
 		example: new ErrorResponse(
@@ -241,32 +186,26 @@ export class GroupMemberController extends ApiController {
 	@ApiOkResponse({
 		content: {
 			'application/json': {
-				examples: {
-					JoinGroupDto: {
+				example: {
+					data: {
 						value: new JoinGroupDto(
 							'uuid',
 							'uuid',
-							'uuid',
-							new Date(),
-						),
-					},
-					AcceptGroupRequestDto: {
-						value: new AcceptGroupRequestDto(
-							'uuid',
 							{
 								id: 'uuid',
+								display_name: 'string',
+								profile_picture: 'string',
 								banner_picture: 'string',
 								credentials: { name: 'string' },
-								first_name: 'string',
-								last_name: 'string',
-								profile_picture: 'string',
 							},
-							new Date(),
 							{
 								name: 'string',
 								hex_color: 'string',
 								permissions: [{ id: 'uuid', name: 'string' }],
 							},
+							new Date(),
+							new Date(),
+							'req',
 						),
 					},
 				},
@@ -350,22 +289,24 @@ export class GroupMemberController extends ApiController {
 	})
 	@ApiOkResponse({
 		example: {
-			data: new AcceptGroupRequestDto(
+			data: new JoinGroupDto(
+				'uuid',
 				'uuid',
 				{
 					id: 'uuid',
+					display_name: 'string',
+					profile_picture: 'string',
 					banner_picture: 'string',
 					credentials: { name: 'string' },
-					first_name: 'string',
-					last_name: 'string',
-					profile_picture: 'string',
 				},
-				new Date(),
 				{
 					name: 'string',
 					hex_color: 'string',
 					permissions: [{ id: 'uuid', name: 'string' }],
 				},
+				new Date(),
+				new Date(),
+				'req',
 			),
 		},
 	})

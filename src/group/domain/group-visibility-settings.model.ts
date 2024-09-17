@@ -1,7 +1,7 @@
 import { Model } from 'src/common/core/common.model';
 import { GroupVisibility } from './group-visibility.enum';
 
-export class GroupVisibilityConfig extends Model {
+export class GroupVisibilitySettings extends Model {
 	private _id: string;
 	private _posts: GroupVisibility;
 	private _spotEvents: GroupVisibility;
@@ -25,8 +25,8 @@ export class GroupVisibilityConfig extends Model {
 		posts: GroupVisibility,
 		spotEvents: GroupVisibility,
 		groups: GroupVisibility,
-	): GroupVisibilityConfig {
-		return new GroupVisibilityConfig(id, posts, spotEvents, groups);
+	): GroupVisibilitySettings {
+		return new GroupVisibilitySettings(id, posts, spotEvents, groups);
 	}
 
 	public id(): string {

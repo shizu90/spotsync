@@ -5,7 +5,7 @@ import { GroupLog } from './group-log.model';
 import { GroupMemberRequest } from './group-member-request.model';
 import { GroupMember } from './group-member.model';
 import { GroupRole } from './group-role.model';
-import { GroupVisibilityConfig } from './group-visibility-config.model';
+import { GroupVisibilitySettings } from './group-visibility-settings.model';
 import { GroupVisibility } from './group-visibility.enum';
 
 export class Group extends Model {
@@ -14,7 +14,7 @@ export class Group extends Model {
 	private _about: string;
 	private _groupPicture: string;
 	private _bannerPicture: string;
-	private _visibilityConfiguration: GroupVisibilityConfig;
+	private _visibilitySettings: GroupVisibilitySettings;
 	private _createdAt: Date;
 	private _updatedAt: Date;
 	private _isDeleted: boolean;
@@ -25,7 +25,7 @@ export class Group extends Model {
 		about: string,
 		groupPicture?: string,
 		bannerPicture?: string,
-		visibilityConfiguration?: GroupVisibilityConfig,
+		visibilitySettings?: GroupVisibilitySettings,
 		createdAt?: Date,
 		updatedAt?: Date,
 		isDeleted?: boolean,
@@ -36,7 +36,7 @@ export class Group extends Model {
 		this._about = about;
 		this._groupPicture = groupPicture ?? null;
 		this._bannerPicture = bannerPicture ?? null;
-		this._visibilityConfiguration = visibilityConfiguration ?? null;
+		this._visibilitySettings = visibilitySettings ?? null;
 		this._createdAt = createdAt ?? new Date();
 		this._updatedAt = updatedAt ?? new Date();
 		this._isDeleted = isDeleted ?? false;
@@ -48,7 +48,7 @@ export class Group extends Model {
 		about: string,
 		groupPicture: string,
 		bannerPicture: string,
-		visibilityConfiguration: GroupVisibilityConfig,
+		visibilitySettings: GroupVisibilitySettings,
 		createdAt?: Date,
 		updatedAt?: Date,
 		isDeleted?: boolean,
@@ -59,7 +59,7 @@ export class Group extends Model {
 			about,
 			groupPicture,
 			bannerPicture,
-			visibilityConfiguration,
+			visibilitySettings,
 			createdAt,
 			updatedAt,
 			isDeleted,
@@ -86,8 +86,8 @@ export class Group extends Model {
 		return this._bannerPicture;
 	}
 
-	public visibilityConfiguration(): GroupVisibilityConfig {
-		return this._visibilityConfiguration;
+	public visibilitySettings(): GroupVisibilitySettings {
+		return this._visibilitySettings;
 	}
 
 	public createdAt(): Date {
@@ -123,9 +123,9 @@ export class Group extends Model {
 	}
 
 	public changeVisibilityConfig(
-		visibilityConfig: GroupVisibilityConfig,
+		visibilityConfig: GroupVisibilitySettings,
 	): void {
-		this._visibilityConfiguration = visibilityConfig;
+		this._visibilitySettings = visibilityConfig;
 		this._updatedAt = new Date();
 	}
 
@@ -134,21 +134,21 @@ export class Group extends Model {
 		this._updatedAt = new Date();
 	}
 
-	public createVisibilityConfig(
+	public createVisibilitySettings(
 		groups: GroupVisibility,
 		posts: GroupVisibility,
 		spotEvents: GroupVisibility,
-	): GroupVisibilityConfig {
-		const groupVisibilityConfig = GroupVisibilityConfig.create(
+	): GroupVisibilitySettings {
+		const groupVisibilitySettings = GroupVisibilitySettings.create(
 			this._id,
 			groups,
 			posts,
 			spotEvents,
 		);
 
-		this._visibilityConfiguration = groupVisibilityConfig;
+		this._visibilitySettings = groupVisibilitySettings;
 
-		return groupVisibilityConfig;
+		return groupVisibilitySettings;
 	}
 
 	public joinGroup(
@@ -158,7 +158,7 @@ export class Group extends Model {
 	): GroupMember | GroupMemberRequest {
 		if (
 			!isCreator &&
-			this._visibilityConfiguration.groups() === GroupVisibility.PRIVATE
+			this._visibilitySettings.groups() === GroupVisibility.PRIVATE
 		) {
 			return this.requestMembership(user);
 		} else {

@@ -9,8 +9,14 @@ import {
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { ApiRequest } from 'src/common/web/common.request';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 
 export class ListGroupMembersQueryRequest extends ApiRequest {
+	@ApiProperty({ required: false, enum: GroupMemberStatus })
+	@IsOptional()
+	@IsEnum(GroupMemberStatus)
+	public status?: GroupMemberStatus;
+
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()

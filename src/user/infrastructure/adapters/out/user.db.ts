@@ -7,7 +7,8 @@ import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserRepository } from 'src/user/application/ports/out/user.repository';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserProfile } from 'src/user/domain/user-profile.model';
+import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { User } from 'src/user/domain/user.model';
 
 export class UserRepositoryImpl implements UserRepository {
@@ -20,43 +21,40 @@ export class UserRepositoryImpl implements UserRepository {
 
 		return User.create(
 			prisma_model.id,
-			prisma_model.first_name,
-			prisma_model.last_name,
-			prisma_model.profile_theme_color,
-			prisma_model.profile_picture,
-			prisma_model.banner_picture,
-			prisma_model.biograph,
-			prisma_model.birth_date,
-			prisma_model.credentials
-				? UserCredentials.create(
-						prisma_model.id,
-						prisma_model.credentials.name,
-						prisma_model.credentials.email,
-						prisma_model.credentials.password,
-						prisma_model.credentials.phone_number,
-						prisma_model.credentials.last_login,
-						prisma_model.credentials.last_logout,
-					)
-				: null,
-			prisma_model.visibility_configuration
-				? UserVisibilityConfig.create(
-						prisma_model.id,
-						prisma_model.visibility_configuration.profile,
-						prisma_model.visibility_configuration.addresses,
-						prisma_model.visibility_configuration.spot_folders,
-						prisma_model.visibility_configuration.visited_spots,
-						prisma_model.visibility_configuration.posts,
-						prisma_model.visibility_configuration.favorite_spots,
-						prisma_model.visibility_configuration
-							.favorite_spot_folders,
-						prisma_model.visibility_configuration
-							.favorite_spot_events,
-					)
-				: null,
+			UserProfile.create(
+				prisma_model.id,
+				prisma_model.profile.birth_date,
+				prisma_model.profile.display_name,
+				prisma_model.profile.theme_color,
+				prisma_model.profile.profile_picture,
+				prisma_model.profile.banner_picture,
+				prisma_model.profile.biograph,
+				prisma_model.profile.visibility
+			),
+			UserCredentials.create(
+				prisma_model.id,
+				prisma_model.credentials.name,
+				prisma_model.credentials.email,
+				prisma_model.credentials.password,
+				prisma_model.credentials.phone_number,
+				prisma_model.credentials.last_login,
+				prisma_model.credentials.last_logout,
+			),
+			UserVisibilitySettings.create(
+				prisma_model.id,
+				prisma_model.visibility_settings.profile,
+				prisma_model.visibility_settings.addresses,
+				prisma_model.visibility_settings.spot_folders,
+				prisma_model.visibility_settings.visited_spots,
+				prisma_model.visibility_settings.posts,
+				prisma_model.visibility_settings.favorite_spots,
+				prisma_model.visibility_settings.favorite_spot_folders,
+				prisma_model.visibility_settings.favorite_spot_events,
+			),
 			prisma_model.status,
 			prisma_model.created_at,
 			prisma_model.updated_at,
-			prisma_model.is_deleted,
+			prisma_model.is_deleted
 		);
 	}
 
@@ -167,7 +165,7 @@ export class UserRepositoryImpl implements UserRepository {
 			items = await this.prismaService.user.findMany({
 				where: { id: { in: ids.map((row) => row.id) } },
 				orderBy: orderBy,
-				include: { credentials: true, visibility_configuration: true },
+				include: { credentials: true, visibility_settings: true, profile: true },
 				skip: limit * page,
 				take: limit,
 			});
@@ -175,7 +173,7 @@ export class UserRepositoryImpl implements UserRepository {
 			items = await this.prismaService.user.findMany({
 				where: { id: { in: ids.map((row) => row.id) } },
 				orderBy: orderBy,
-				include: { credentials: true, visibility_configuration: true },
+				include: { credentials: true, visibility_settings: true, profile: true },
 			});
 		}
 
@@ -225,7 +223,7 @@ export class UserRepositoryImpl implements UserRepository {
 			where: {
 				id: { in: userIds.map((row) => row.id) },
 			},
-			include: { credentials: true, visibility_configuration: true },
+			include: { credentials: true, visibility_settings: true, profile: true },
 		});
 
 		return users.map((user) => {
@@ -279,7 +277,8 @@ export class UserRepositoryImpl implements UserRepository {
 		const users = await this.prismaService.user.findMany({
 			include: {
 				credentials: true,
-				visibility_configuration: true,
+				visibility_settings: true,
+				profile: true,
 			},
 		});
 
@@ -295,7 +294,8 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 			include: {
 				credentials: true,
-				visibility_configuration: true,
+				visibility_settings: true,
+				profile: true,
 			},
 		});
 
@@ -311,7 +311,8 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 			include: {
 				credentials: true,
-				visibility_configuration: true,
+				visibility_settings: true,
+				profile: true,
 			},
 		});
 
@@ -327,7 +328,8 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 			include: {
 				credentials: true,
-				visibility_configuration: true,
+				visibility_settings: true,
+				profile: true,
 			},
 		});
 
@@ -338,12 +340,6 @@ export class UserRepositoryImpl implements UserRepository {
 		const user = await this.prismaService.user.create({
 			data: {
 				id: model.id(),
-				first_name: model.firstName(),
-				last_name: model.lastName(),
-				banner_picture: model.bannerPicture(),
-				profile_picture: model.profilePicture(),
-				biograph: model.biograph(),
-				birth_date: model.birthDate(),
 				status: model.status(),
 				is_deleted: model.isDeleted(),
 				created_at: model.createdAt(),
@@ -355,32 +351,44 @@ export class UserRepositoryImpl implements UserRepository {
 						password: model.credentials().password(),
 					},
 				},
-				visibility_configuration: {
+				profile: {
 					create: {
-						profile: model.visibilityConfiguration().profile(),
-						addresses: model.visibilityConfiguration().addresses(),
+						birth_date: model.profile().birthDate(),
+						display_name: model.profile().displayName(),
+						theme_color: model.profile().themeColor(),
+						profile_picture: model.profile().profilePicture(),
+						banner_picture: model.profile().bannerPicture(),
+						biograph: model.profile().biograph(),
+						visibility: model.profile().visibility(),
+					},
+				},
+				visibility_settings: {
+					create: {
+						profile: model.visibilitySettings().profile(),
+						addresses: model.visibilitySettings().addresses(),
 						spot_folders: model
-							.visibilityConfiguration()
+							.visibilitySettings()
 							.spotFolders(),
 						visited_spots: model
-							.visibilityConfiguration()
+							.visibilitySettings()
 							.visitedSpots(),
-						posts: model.visibilityConfiguration().posts(),
+						posts: model.visibilitySettings().posts(),
 						favorite_spots: model
-							.visibilityConfiguration()
+							.visibilitySettings()
 							.favoriteSpots(),
 						favorite_spot_folders: model
-							.visibilityConfiguration()
+							.visibilitySettings()
 							.favoriteSpotFolders(),
 						favorite_spot_events: model
-							.visibilityConfiguration()
+							.visibilitySettings()
 							.favoriteSpotEvents(),
 					},
 				},
 			},
 			include: {
 				credentials: true,
-				visibility_configuration: true,
+				visibility_settings: true,
+				profile: true,
 			},
 		});
 
@@ -390,12 +398,6 @@ export class UserRepositoryImpl implements UserRepository {
 	public async update(model: User): Promise<void> {
 		await this.prismaService.user.update({
 			data: {
-				first_name: model.firstName(),
-				last_name: model.lastName(),
-				biograph: model.biograph(),
-				banner_picture: model.bannerPicture(),
-				profile_picture: model.profilePicture(),
-				birth_date: model.birthDate(),
 				status: model.status(),
 				is_deleted: model.isDeleted(),
 				updated_at: model.updatedAt(),
@@ -405,7 +407,8 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 			include: {
 				credentials: true,
-				visibility_configuration: true,
+				visibility_settings: true,
+				profile: true,
 			},
 		});
 	}
@@ -433,13 +436,36 @@ export class UserRepositoryImpl implements UserRepository {
 		});
 	}
 
-	public async updateVisibilityConfig(
-		model: UserVisibilityConfig,
+	public async updateProfile(
+		model: UserProfile,
 	): Promise<void> {
 		const user = await this.prismaService.user.update({
 			where: { id: model.id() },
 			data: {
-				visibility_configuration: {
+				profile: {
+					update: {
+						data: {
+							birth_date: model.birthDate(),
+							display_name: model.displayName(),
+							theme_color: model.themeColor(),
+							profile_picture: model.profilePicture(),
+							banner_picture: model.bannerPicture(),
+							biograph: model.biograph(),
+							visibility: model.visibility(),
+						},
+					},	
+				}
+			}
+		})
+	}
+
+	public async updateVisibilitySettings(
+		model: UserVisibilitySettings,
+	): Promise<void> {
+		const user = await this.prismaService.user.update({
+			where: { id: model.id() },
+			data: {
+				visibility_settings: {
 					update: {
 						data: {
 							profile: model.profile(),
@@ -460,11 +486,6 @@ export class UserRepositoryImpl implements UserRepository {
 	public async delete(id: string): Promise<void> {
 		await this.prismaService.user.delete({
 			where: { id: id },
-			include: {
-				credentials: true,
-				addresses: true,
-				visibility_configuration: true,
-			},
 		});
 	}
 }

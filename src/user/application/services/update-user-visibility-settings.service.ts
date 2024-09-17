@@ -4,16 +4,16 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { UpdateUserVisibilityConfigCommand } from '../ports/in/commands/update-user-visibility-config.command';
-import { UpdateUserVisibilityConfigUseCase } from '../ports/in/use-cases/update-user-visibility-config.use-case';
+import { UpdateUserVisibilitySettingsCommand } from '../ports/in/commands/update-user-visibility-settings.command';
+import { UpdateUserVisibilitySettingsUseCase } from '../ports/in/use-cases/update-user-visibility-settings.use-case';
 import {
 	UserRepository,
 	UserRepositoryProvider,
 } from '../ports/out/user.repository';
 
 @Injectable()
-export class UpdateUserVisibilityConfigService
-	implements UpdateUserVisibilityConfigUseCase
+export class UpdateUserVisibilitySettingsService
+	implements UpdateUserVisibilitySettingsUseCase
 {
 	public constructor(
 		@Inject(UserRepositoryProvider)
@@ -23,7 +23,7 @@ export class UpdateUserVisibilityConfigService
 	) {}
 
 	public async execute(
-		command: UpdateUserVisibilityConfigCommand,
+		command: UpdateUserVisibilitySettingsCommand,
 	): Promise<void> {
 		const user = await this.getAuthenticatedUser.execute(null);
 
@@ -31,51 +31,47 @@ export class UpdateUserVisibilityConfigService
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
-		const userVisibilityConfig = user.visibilityConfiguration();
+		const userVisibilitySettings = user.visibilitySettings();
 
 		if (command.profile && command.profile !== null) {
-			userVisibilityConfig.changeProfile(command.profile);
+			userVisibilitySettings.changeProfile(command.profile);
 		}
 
 		if (command.addresses && command.addresses !== null) {
-			userVisibilityConfig.changeAddresses(command.addresses);
+			userVisibilitySettings.changeAddresses(command.addresses);
 		}
 
 		if (command.spotFolders && command.spotFolders !== null) {
-			userVisibilityConfig.changeSpotFolders(command.spotFolders);
+			userVisibilitySettings.changeSpotFolders(command.spotFolders);
 		}
 
 		if (command.visitedSpots && command.visitedSpots !== null) {
-			userVisibilityConfig.changeVisitedSpots(command.visitedSpots);
+			userVisibilitySettings.changeVisitedSpots(command.visitedSpots);
 		}
 
 		if (command.posts && command.posts !== null) {
-			userVisibilityConfig.changePosts(command.posts);
+			userVisibilitySettings.changePosts(command.posts);
 		}
 
 		if (command.favoriteSpots && command.favoriteSpots !== null) {
-			userVisibilityConfig.changeFavoriteSpots(command.favoriteSpots);
+			userVisibilitySettings.changeFavoriteSpots(command.favoriteSpots);
 		}
 
 		if (
 			command.favoriteSpotFolders &&
 			command.favoriteSpotFolders !== null
 		) {
-			userVisibilityConfig.changeFavoriteSpotFolders(
+			userVisibilitySettings.changeFavoriteSpotFolders(
 				command.favoriteSpotFolders,
 			);
 		}
 
 		if (command.favoriteSpotEvents && command.favoriteSpotEvents !== null) {
-			userVisibilityConfig.changeFavoriteSpotEvents(
+			userVisibilitySettings.changeFavoriteSpotEvents(
 				command.favoriteSpotEvents,
 			);
 		}
 
-		user.changeVisibilityConfig(userVisibilityConfig);
-
-		this.userRepository.updateVisibilityConfig(
-			user.visibilityConfiguration(),
-		);
+		this.userRepository.updateVisibilitySettings(userVisibilitySettings);
 	}
 }

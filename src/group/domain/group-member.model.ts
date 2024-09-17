@@ -1,5 +1,6 @@
 import { Model } from 'src/common/core/common.model';
 import { User } from 'src/user/domain/user.model';
+import { GroupMemberStatus } from './group-member-status.enum';
 import { GroupPermissionName } from './group-permission-name.enum';
 import { GroupRole } from './group-role.model';
 import { Group } from './group.model';
@@ -9,8 +10,10 @@ export class GroupMember extends Model {
 	private _group: Group;
 	private _user: User;
 	private _role: GroupRole;
+	private _status: GroupMemberStatus;
 	private _isCreator: boolean;
 	private _joinedAt: Date;
+	private _requestedAt: Date;
 
 	private constructor(
 		id: string,
@@ -18,7 +21,9 @@ export class GroupMember extends Model {
 		user: User,
 		role: GroupRole,
 		isCreator: boolean,
+		status?: GroupMemberStatus,
 		joinedAt?: Date,
+		requestedAt?: Date,
 	) {
 		super();
 		this._id = id;
@@ -26,7 +31,9 @@ export class GroupMember extends Model {
 		this._user = user;
 		this._role = role;
 		this._isCreator = isCreator;
-		this._joinedAt = joinedAt ?? new Date();
+		this._status = status ?? GroupMemberStatus.REQUESTED;
+		this._joinedAt = joinedAt ?? null;
+		this._requestedAt = requestedAt ?? new Date();
 	}
 
 	public static create(
@@ -35,9 +42,11 @@ export class GroupMember extends Model {
 		user: User,
 		role: GroupRole,
 		isCreator: boolean,
+		status?: GroupMemberStatus,
 		joinedAt?: Date,
+		requestedAt?: Date,
 	): GroupMember {
-		return new GroupMember(id, group, user, role, isCreator, joinedAt);
+		return new GroupMember(id, group, user, role, isCreator, status, joinedAt, requestedAt);
 	}
 
 	public id(): string {
@@ -60,8 +69,16 @@ export class GroupMember extends Model {
 		return this._isCreator;
 	}
 
+	public status(): GroupMemberStatus {
+		return this._status;
+	}
+
 	public joinedAt(): Date {
 		return this._joinedAt;
+	}
+
+	public requestedAt(): Date {
+		return this._requestedAt;
 	}
 
 	public changeRole(role: GroupRole): void {
@@ -70,5 +87,16 @@ export class GroupMember extends Model {
 
 	public canExecute(GroupPermissionName: GroupPermissionName): boolean {
 		return this._isCreator || this._role.hasPermission(GroupPermissionName);
+	}
+
+	public accept(): void {
+		this._status = GroupMemberStatus.ACTIVE;
+		this._joinedAt = new Date();
+	}
+
+	public request(): void {
+		this._status = GroupMemberStatus.REQUESTED;
+		this._requestedAt = new Date();
+		this._joinedAt = null;
 	}
 }

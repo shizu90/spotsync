@@ -3,12 +3,10 @@ import { ChangeMemberRoleCommand } from 'src/group/application/ports/in/commands
 import { JoinGroupCommand } from 'src/group/application/ports/in/commands/join-group.command';
 import { LeaveGroupCommand } from 'src/group/application/ports/in/commands/leave-group.command';
 import { ListGroupMembersCommand } from 'src/group/application/ports/in/commands/list-group-members.command';
-import { ListGroupRequestsCommand } from 'src/group/application/ports/in/commands/list-group-requests.command';
 import { RefuseGroupRequestCommand } from 'src/group/application/ports/in/commands/refuse-group-request.command';
 import { RemoveGroupMemberCommand } from 'src/group/application/ports/in/commands/remove-group-member.command';
 import { ChangeMemberRoleRequest } from '../requests/change-member-role.request';
 import { ListGroupMembersQueryRequest } from '../requests/list-group-members-query.request';
-import { ListGroupRequestsQueryRequest } from '../requests/list-group-requests-query.request';
 
 export class GroupMemberRequestMapper {
 	public static listGroupMembersCommand(
@@ -17,27 +15,13 @@ export class GroupMemberRequestMapper {
 	): ListGroupMembersCommand {
 		return new ListGroupMembersCommand(
 			groupId,
+			query.status,
 			query.name,
 			query.role_id,
 			query.sort,
 			query.sort_direction,
 			query.page,
 			query.paginate,
-			query.limit,
-		);
-	}
-
-	public static listGroupRequestsCommand(
-		groupId: string,
-		query: ListGroupRequestsQueryRequest,
-	): ListGroupRequestsCommand {
-		return new ListGroupRequestsCommand(
-			groupId,
-			query.name,
-			query.sort,
-			query.sort_direction,
-			query.paginate,
-			query.page,
 			query.limit,
 		);
 	}

@@ -4,6 +4,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { RefuseGroupRequestCommand } from '../ports/in/commands/refuse-group-request.command';
 import { RefuseGroupRequestUseCase } from '../ports/in/use-cases/refuse-group-request.use-case';
@@ -64,15 +65,16 @@ export class RefuseGroupRequestService implements RefuseGroupRequestUseCase {
 			);
 		}
 
-		const groupRequest = await this.groupMemberRepository.findRequestById(
-			command.id,
-		);
+		const groupRequest = (await this.groupMemberRepository.findBy({
+			id: command.id,
+			status: GroupMemberStatus.REQUESTED,
+		})).at(0);
 
 		if (groupRequest === null || groupRequest === undefined) {
 			throw new GroupRequestNotFoundError(`Group join request not found`);
 		}
 
-		this.groupMemberRepository.deleteRequest(command.id);
+		this.groupMemberRepository.delete(command.id);
 
 		const log = group.newLog(
 			`${authenticatedGroupMember.user().credentials().name()} refused join request of ${groupRequest.user().credentials().name()}`,

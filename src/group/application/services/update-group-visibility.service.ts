@@ -71,7 +71,7 @@ export class UpdateGroupVisibilityService
 			command.spotEvents.length > 0
 		) {
 			group
-				.visibilityConfiguration()
+				.visibilitySettings()
 				.changeSpotEvents(command.spotEvents);
 		}
 
@@ -80,7 +80,7 @@ export class UpdateGroupVisibilityService
 			command.posts !== null &&
 			command.posts.length > 0
 		) {
-			group.visibilityConfiguration().changePosts(command.posts);
+			group.visibilitySettings().changePosts(command.posts);
 		}
 
 		if (
@@ -88,11 +88,11 @@ export class UpdateGroupVisibilityService
 			command.groups !== null &&
 			command.groups.length > 0
 		) {
-			group.visibilityConfiguration().changeGroups(command.groups);
+			group.visibilitySettings().changeGroups(command.groups);
 		}
 
-		this.groupRepository.updateVisibilityConfiguration(
-			group.visibilityConfiguration(),
+		this.groupRepository.updateVisibilitySettings(
+			group.visibilitySettings(),
 		);
 
 		const log = group.newLog(

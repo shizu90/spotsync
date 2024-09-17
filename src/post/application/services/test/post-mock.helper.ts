@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-config.model';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
@@ -93,7 +93,7 @@ export const mockGroup = (): Group => {
 		'Test About',
 		null,
 		null,
-		GroupVisibilityConfig.create(
+		GroupVisibilitySettings.create(
 			id,
 			GroupVisibility.PUBLIC,
 			GroupVisibility.PUBLIC,

@@ -7,7 +7,7 @@ import { GetUserProfileCommand } from 'src/user/application/ports/in/commands/ge
 import { ListUsersCommand } from 'src/user/application/ports/in/commands/list-users.command';
 import { UpdateUserCredentialsCommand } from 'src/user/application/ports/in/commands/update-user-credentials.command';
 import { UpdateUserProfileCommand } from 'src/user/application/ports/in/commands/update-user-profile.command';
-import { UpdateUserVisibilityConfigCommand } from 'src/user/application/ports/in/commands/update-user-visibility-config.command';
+import { UpdateUserVisibilitySettingsCommand } from 'src/user/application/ports/in/commands/update-user-visibility-settings.command';
 import { ActivateUserRequest } from '../requests/activate-user.request';
 import { ChangePasswordRequest } from '../requests/change-password.request';
 import { CreateUserRequest } from '../requests/create-user.request';
@@ -15,7 +15,7 @@ import { ForgotPasswordRequest } from '../requests/forgot-password.request';
 import { ListUsersQueryRequest } from '../requests/list-users-query.request';
 import { UpdateUserCredentialsRequest } from '../requests/update-user-credentials.request';
 import { UpdateUserProfileRequest } from '../requests/update-user-profile.request';
-import { UpdateUserVisibilityConfigRequest } from '../requests/update-user-visibility-config.request';
+import { UpdateUserVisibilitySettingsRequest } from '../requests/update-user-visibility-settings.request';
 
 export class UserRequestMapper {
 	public static getUserProfileCommand(
@@ -45,6 +45,7 @@ export class UserRequestMapper {
 		request: CreateUserRequest,
 	): CreateUserCommand {
 		return new CreateUserCommand(
+			request.birth_date,
 			request.name,
 			request.email,
 			request.password,
@@ -66,8 +67,7 @@ export class UserRequestMapper {
 	): UpdateUserProfileCommand {
 		return new UpdateUserProfileCommand(
 			id,
-			request.first_name,
-			request.last_name,
+			request.display_name,
 			request.profile_theme_color,
 			request.biograph,
 			request.birth_date,
@@ -87,11 +87,11 @@ export class UserRequestMapper {
 		);
 	}
 
-	public static updateUserVisibilityConfigCommand(
+	public static updateUserVisibilitySettingsCommand(
 		id: string,
-		request: UpdateUserVisibilityConfigRequest,
-	): UpdateUserVisibilityConfigCommand {
-		return new UpdateUserVisibilityConfigCommand(
+		request: UpdateUserVisibilitySettingsRequest,
+	): UpdateUserVisibilitySettingsCommand {
+		return new UpdateUserVisibilitySettingsCommand(
 			id,
 			request.profile,
 			request.spot_folders,

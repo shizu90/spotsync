@@ -4,7 +4,7 @@ import { GroupMember } from 'src/group/domain/group-member.model';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
 import { GroupRole } from 'src/group/domain/group-role.model';
-import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-config.model';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
@@ -136,7 +136,7 @@ export const mockGroup = (): Group => {
 		'Test About',
 		null,
 		null,
-		GroupVisibilityConfig.create(
+		GroupVisibilitySettings.create(
 			id,
 			GroupVisibility.PUBLIC,
 			GroupVisibility.PUBLIC,

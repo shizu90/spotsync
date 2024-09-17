@@ -93,7 +93,15 @@ export class GetSpotService implements GetSpotUseCase {
 			spot.photos().map((p) => {
 				return { id: p.id(), file_path: p.filePath() };
 			}),
-			spot.creator().id(),
+			{
+				id: spot.creator().id(),
+				display_name: spot.creator().profile().displayName(),
+				banner_picture: spot.creator().profile().bannerPicture(),
+				credentials: {
+					name: spot.creator().credentials().name(),
+				},
+				profile_picture: spot.creator().profile().profilePicture(),
+			},
 			distance,
 			visited !== null && visited !== undefined,
 			visited !== null && visited !== undefined

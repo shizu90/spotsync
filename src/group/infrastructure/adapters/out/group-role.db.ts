@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    PaginateParameters,
-    Pagination,
+	PaginateParameters,
+	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupRoleRepository } from 'src/group/application/ports/out/group-role.repository';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
 import { GroupRole } from 'src/group/domain/group-role.model';
-import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
 import { Group } from 'src/group/domain/group.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -39,12 +39,12 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 						prisma_model.group.about,
 						prisma_model.group.group_picture,
 						prisma_model.group.banner_picture,
-						GroupVisibilityConfig.create(
+						GroupVisibilitySettings.create(
 							prisma_model.group.id,
-							prisma_model.group.visibility_configuration.posts,
-							prisma_model.group.visibility_configuration
+							prisma_model.group.visibility_settings.posts,
+							prisma_model.group.visibility_settings
 								.spot_events,
-							prisma_model.group.visibility_configuration.groups,
+							prisma_model.group.visibility_settings.groups,
 						),
 						prisma_model.group.created_at,
 						prisma_model.group.updated_at,
@@ -133,7 +133,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 					permissions: { include: { group_permission: true } },
 					group: {
 						include: {
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 				},
@@ -148,7 +148,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 					permissions: { include: { group_permission: true } },
 					group: {
 						include: {
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 				},
@@ -203,7 +203,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				permissions: { include: { group_permission: true } },
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -261,7 +261,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				permissions: { include: { group_permission: true } },
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -279,7 +279,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				permissions: { include: { group_permission: true } },
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -295,7 +295,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				permissions: { include: { group_permission: true } },
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -335,7 +335,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				permissions: { include: { group_permission: true } },
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -356,7 +356,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				permissions: { include: { group_permission: true } },
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},

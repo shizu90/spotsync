@@ -12,7 +12,8 @@ import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
 import { Spot } from 'src/spot/domain/spot.model';
 import { VisitedSpot } from 'src/spot/domain/visited-spot.model';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserProfile } from 'src/user/domain/user-profile.model';
+import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { User } from 'src/user/domain/user.model';
 
 @Injectable()
@@ -46,55 +47,41 @@ export class SpotRepositoryImpl implements SpotRepository {
 			}),
 			prisma_model.creator
 				? User.create(
+					prisma_model.creator.id,
+					UserProfile.create(
 						prisma_model.creator.id,
-						prisma_model.creator.first_name,
-						prisma_model.creator.last_name,
-						prisma_model.creator.profile_theme_color,
-						prisma_model.creator.profile_picture,
-						prisma_model.creator.banner_picture,
-						prisma_model.creator.biograph,
-						prisma_model.creator.birth_date,
-						prisma_model.creator.credentials
-							? UserCredentials.create(
-									prisma_model.creator.id,
-									prisma_model.creator.credentials.name,
-									prisma_model.creator.credentials.email,
-									prisma_model.creator.credentials.password,
-									prisma_model.creator.credentials
-										.phone_number,
-									prisma_model.creator.credentials.last_login,
-									prisma_model.creator.credentials
-										.last_logout,
-								)
-							: null,
-						prisma_model.creator.visibility_configuration
-							? UserVisibilityConfig.create(
-									prisma_model.creator.id,
-									prisma_model.creator
-										.visibility_configuration.profile,
-									prisma_model.creator
-										.visibility_configuration.addresses,
-									prisma_model.creator
-										.visibility_configuration.spot_folders,
-									prisma_model.creator
-										.visibility_configuration.visited_spots,
-									prisma_model.creator
-										.visibility_configuration.posts,
-									prisma_model.creator
-										.visibility_configuration
-										.favorite_spots,
-									prisma_model.creator
-										.visibility_configuration
-										.favorite_spot_folders,
-									prisma_model.creator
-										.visibility_configuration
-										.favorite_spot_events,
-								)
-							: null,
-						prisma_model.creator.status,
-						prisma_model.creator.created_at,
-						prisma_model.creator.updated_at,
-						prisma_model.creator.is_deleted,
+						prisma_model.creator.profile.birth_date,
+						prisma_model.creator.profile.display_name,
+						prisma_model.creator.profile.theme_color,
+						prisma_model.creator.profile.profile_picture,
+						prisma_model.creator.profile.banner_picture,
+						prisma_model.creator.profile.biograph,
+						prisma_model.creator.profile.visibility
+					),
+					UserCredentials.create(
+						prisma_model.creator.id,
+						prisma_model.creator.credentials.name,
+						prisma_model.creator.credentials.email,
+						prisma_model.creator.credentials.password,
+						prisma_model.creator.credentials.phone_number,
+						prisma_model.creator.credentials.last_login,
+						prisma_model.creator.credentials.last_logout,
+					),
+					UserVisibilitySettings.create(
+						prisma_model.creator.id,
+						prisma_model.creator.visibility_settings.profile,
+						prisma_model.creator.visibility_settings.addresses,
+						prisma_model.creator.visibility_settings.spot_folders,
+						prisma_model.creator.visibility_settings.visited_spots,
+						prisma_model.creator.visibility_settings.posts,
+						prisma_model.creator.visibility_settings.favorite_spots,
+						prisma_model.creator.visibility_settings.favorite_spot_folders,
+						prisma_model.creator.visibility_settings.favorite_spot_events,
+					),
+					prisma_model.creator.status,
+					prisma_model.creator.created_at,
+					prisma_model.creator.updated_at,
+					prisma_model.creator.is_deleted
 					)
 				: null,
 			prisma_model.created_at,
@@ -111,51 +98,41 @@ export class SpotRepositoryImpl implements SpotRepository {
 			prisma_model.spot ? this.mapSpotToDomain(prisma_model.spot) : null,
 			prisma_model.user
 				? User.create(
+					prisma_model.user.id,
+					UserProfile.create(
 						prisma_model.user.id,
-						prisma_model.user.first_name,
-						prisma_model.user.last_name,
-						prisma_model.user.profile_theme_color,
-						prisma_model.user.profile_picture,
-						prisma_model.user.banner_picture,
-						prisma_model.user.biograph,
-						prisma_model.user.birth_date,
-						prisma_model.user.credentials
-							? UserCredentials.create(
-									prisma_model.user.id,
-									prisma_model.user.credentials.name,
-									prisma_model.user.credentials.email,
-									prisma_model.user.credentials.password,
-									prisma_model.user.credentials.phone_number,
-									prisma_model.user.credentials.last_login,
-									prisma_model.user.credentials.last_logout,
-								)
-							: null,
-						prisma_model.user.visibility_configuration
-							? UserVisibilityConfig.create(
-									prisma_model.user.visibility_configuration
-										.id,
-									prisma_model.user.visibility_configuration
-										.profile,
-									prisma_model.user.visibility_configuration
-										.addresses,
-									prisma_model.user.visibility_configuration
-										.spot_folders,
-									prisma_model.user.visibility_configuration
-										.visited_spots,
-									prisma_model.user.visibility_configuration
-										.posts,
-									prisma_model.user.visibility_configuration
-										.favorite_spots,
-									prisma_model.user.visibility_configuration
-										.favorite_spot_folders,
-									prisma_model.user.visibility_configuration
-										.favorite_spot_events,
-								)
-							: null,
-						prisma_model.user.status,
-						prisma_model.user.created_at,
-						prisma_model.user.updated_at,
-						prisma_model.user.is_deleted,
+						prisma_model.user.profile.birth_date,
+						prisma_model.user.profile.display_name,
+						prisma_model.user.profile.theme_color,
+						prisma_model.user.profile.profile_picture,
+						prisma_model.user.profile.banner_picture,
+						prisma_model.user.profile.biograph,
+						prisma_model.user.profile.visibility
+					),
+					UserCredentials.create(
+						prisma_model.user.id,
+						prisma_model.user.credentials.name,
+						prisma_model.user.credentials.email,
+						prisma_model.user.credentials.password,
+						prisma_model.user.credentials.phone_number,
+						prisma_model.user.credentials.last_login,
+						prisma_model.user.credentials.last_logout,
+					),
+					UserVisibilitySettings.create(
+						prisma_model.user.id,
+						prisma_model.user.visibility_settings.profile,
+						prisma_model.user.visibility_settings.addresses,
+						prisma_model.user.visibility_settings.spot_folders,
+						prisma_model.user.visibility_settings.visited_spots,
+						prisma_model.user.visibility_settings.posts,
+						prisma_model.user.visibility_settings.favorite_spots,
+						prisma_model.user.visibility_settings.favorite_spot_folders,
+						prisma_model.user.visibility_settings.favorite_spot_events,
+					),
+					prisma_model.user.status,
+					prisma_model.user.created_at,
+					prisma_model.user.updated_at,
+					prisma_model.user.is_deleted
 					)
 				: null,
 			prisma_model.favorited_at,
@@ -170,51 +147,41 @@ export class SpotRepositoryImpl implements SpotRepository {
 			prisma_model.spot ? this.mapSpotToDomain(prisma_model.spot) : null,
 			prisma_model.user
 				? User.create(
+					prisma_model.user.id,
+					UserProfile.create(
 						prisma_model.user.id,
-						prisma_model.user.first_name,
-						prisma_model.user.last_name,
-						prisma_model.user.profile_theme_color,
-						prisma_model.user.profile_picture,
-						prisma_model.user.banner_picture,
-						prisma_model.user.biograph,
-						prisma_model.user.birth_date,
-						prisma_model.user.credentials
-							? UserCredentials.create(
-									prisma_model.user.id,
-									prisma_model.user.credentials.name,
-									prisma_model.user.credentials.email,
-									prisma_model.user.credentials.password,
-									prisma_model.user.credentials.phone_number,
-									prisma_model.user.credentials.last_login,
-									prisma_model.user.credentials.last_logout,
-								)
-							: null,
-						prisma_model.user.visibility_configuration
-							? UserVisibilityConfig.create(
-									prisma_model.user.visibility_configuration
-										.id,
-									prisma_model.user.visibility_configuration
-										.profile,
-									prisma_model.user.visibility_configuration
-										.addresses,
-									prisma_model.user.visibility_configuration
-										.spot_folders,
-									prisma_model.user.visibility_configuration
-										.visited_spots,
-									prisma_model.user.visibility_configuration
-										.posts,
-									prisma_model.user.visibility_configuration
-										.favorite_spots,
-									prisma_model.user.visibility_configuration
-										.favorite_spot_folders,
-									prisma_model.user.visibility_configuration
-										.favorite_spot_events,
-								)
-							: null,
-						prisma_model.user.status,
-						prisma_model.user.created_at,
-						prisma_model.user.updated_at,
-						prisma_model.user.is_deleted,
+						prisma_model.user.profile.birth_date,
+						prisma_model.user.profile.display_name,
+						prisma_model.user.profile.theme_color,
+						prisma_model.user.profile.profile_picture,
+						prisma_model.user.profile.banner_picture,
+						prisma_model.user.profile.biograph,
+						prisma_model.user.profile.visibility
+					),
+					UserCredentials.create(
+						prisma_model.user.id,
+						prisma_model.user.credentials.name,
+						prisma_model.user.credentials.email,
+						prisma_model.user.credentials.password,
+						prisma_model.user.credentials.phone_number,
+						prisma_model.user.credentials.last_login,
+						prisma_model.user.credentials.last_logout,
+					),
+					UserVisibilitySettings.create(
+						prisma_model.user.id,
+						prisma_model.user.visibility_settings.profile,
+						prisma_model.user.visibility_settings.addresses,
+						prisma_model.user.visibility_settings.spot_folders,
+						prisma_model.user.visibility_settings.visited_spots,
+						prisma_model.user.visibility_settings.posts,
+						prisma_model.user.visibility_settings.favorite_spots,
+						prisma_model.user.visibility_settings.favorite_spot_folders,
+						prisma_model.user.visibility_settings.favorite_spot_events,
+					),
+					prisma_model.user.status,
+					prisma_model.user.created_at,
+					prisma_model.user.updated_at,
+					prisma_model.user.is_deleted
 					)
 				: null,
 			prisma_model.visited_at,
@@ -327,7 +294,8 @@ export class SpotRepositoryImpl implements SpotRepository {
 						creator: {
 							include: {
 								credentials: true,
-								visibility_configuration: true,
+								visibility_settings: true,
+								profile: true,
 							},
 						},
 					},
@@ -344,7 +312,8 @@ export class SpotRepositoryImpl implements SpotRepository {
 						creator: {
 							include: {
 								credentials: true,
-								visibility_configuration: true,
+								visibility_settings: true,
+								profile: true,
 							},
 						},
 					},
@@ -375,7 +344,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				creator: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -454,7 +423,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				creator: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -489,7 +458,8 @@ export class SpotRepositoryImpl implements SpotRepository {
 						creator: {
 							include: {
 								credentials: true,
-								visibility_configuration: true,
+								visibility_settings: true,
+								profile: true,
 							},
 						},
 					},
@@ -497,7 +467,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -532,7 +502,8 @@ export class SpotRepositoryImpl implements SpotRepository {
 						creator: {
 							include: {
 								credentials: true,
-								visibility_configuration: true,
+								visibility_settings: true,
+								profile: true,
 							},
 						},
 					},
@@ -540,7 +511,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -665,7 +636,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				creator: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -683,7 +654,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				creator: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -720,7 +691,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				creator: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -749,7 +720,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},
@@ -776,7 +747,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 			},

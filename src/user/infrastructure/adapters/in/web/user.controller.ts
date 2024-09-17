@@ -57,10 +57,7 @@ import {
 	UpdateUserProfileUseCase,
 	UpdateUserProfileUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/update-user-profile.use-case';
-import {
-	UpdateUserVisibilityConfigUseCase,
-	UpdateUserVisibilityConfigUseCaseProvider,
-} from 'src/user/application/ports/in/use-cases/update-user-visibility-config.use-case';
+import { UpdateUserVisibilitySettingsUseCase, UpdateUserVisibilitySettingsUseCaseProvider } from 'src/user/application/ports/in/use-cases/update-user-visibility-settings.use-case';
 import {
 	UploadBannerPictureUseCase,
 	UploadBannerPictureUseCaseProvider,
@@ -78,7 +75,7 @@ import { CreateUserRequest } from './requests/create-user.request';
 import { ListUsersQueryRequest } from './requests/list-users-query.request';
 import { UpdateUserCredentialsRequest } from './requests/update-user-credentials.request';
 import { UpdateUserProfileRequest } from './requests/update-user-profile.request';
-import { UpdateUserVisibilityConfigRequest } from './requests/update-user-visibility-config.request';
+import { UpdateUserVisibilitySettingsRequest } from './requests/update-user-visibility-settings.request';
 
 @ApiTags('Users')
 @ApiInternalServerErrorResponse({
@@ -103,8 +100,8 @@ export class UserController extends ApiController {
 		protected readonly updateUserProfileUseCase: UpdateUserProfileUseCase,
 		@Inject(UpdateUserCredentialsUseCaseProvider)
 		protected readonly updateUserCredentialsUseCase: UpdateUserCredentialsUseCase,
-		@Inject(UpdateUserVisibilityConfigUseCaseProvider)
-		protected readonly updateUserVisibilityConfigUseCase: UpdateUserVisibilityConfigUseCase,
+		@Inject(UpdateUserVisibilitySettingsUseCaseProvider)
+		protected readonly updateUserVisibilitySettingsUseCase: UpdateUserVisibilitySettingsUseCase,
 		@Inject(UploadProfilePictureUseCaseProvider)
 		protected readonly uploadProfilePictureUseCase: UploadProfilePictureUseCase,
 		@Inject(UploadBannerPictureUseCaseProvider)
@@ -140,19 +137,21 @@ export class UserController extends ApiController {
 				[
 					new GetUserProfileDto(
 						'uuid',
-						'string',
-						'string',
-						'#000000',
-						'string',
 						new Date(),
 						new Date(),
-						'string',
-						'string',
+						new Date(),
 						{
 							name: 'string',
 						},
 						{
-							profile: 'public',
+							banner_picture: 'string',
+							biograph: 'string',
+							display_name: 'string',
+							profile_picture: 'string',
+							theme_color: 'string',
+							visibility: 'public',
+						},
+						{
 							addresses: 'public',
 							favorite_spot_events: 'public',
 							favorite_spot_folders: 'public',
@@ -160,6 +159,7 @@ export class UserController extends ApiController {
 							posts: 'public',
 							spot_folders: 'public',
 							visited_spots: 'public',
+							profile: 'public',
 						},
 						0,
 						0,
@@ -169,18 +169,17 @@ export class UserController extends ApiController {
 							area: 'string',
 							sub_area: 'string',
 							locality: 'string',
+							country_code: 'BR',
 							latitude: 0,
 							longitude: 0,
-							country_code: 'BR',
 							created_at: new Date(),
 							updated_at: new Date(),
 						},
-						false,
-					),
+						false
+					)	
 				],
-				1,
-				0,
 				10,
+				1
 			),
 		},
 	})
@@ -230,19 +229,21 @@ export class UserController extends ApiController {
 		example: {
 			data: new GetUserProfileDto(
 				'uuid',
-				'string',
-				'string',
-				'#000000',
-				'string',
 				new Date(),
 				new Date(),
-				'string',
-				'string',
+				new Date(),
 				{
 					name: 'string',
 				},
 				{
-					profile: 'public',
+					banner_picture: 'string',
+					biograph: 'string',
+					display_name: 'string',
+					profile_picture: 'string',
+					theme_color: 'string',
+					visibility: 'public',
+				},
+				{
 					addresses: 'public',
 					favorite_spot_events: 'public',
 					favorite_spot_folders: 'public',
@@ -250,6 +251,7 @@ export class UserController extends ApiController {
 					posts: 'public',
 					spot_folders: 'public',
 					visited_spots: 'public',
+					profile: 'public',
 				},
 				0,
 				0,
@@ -259,13 +261,13 @@ export class UserController extends ApiController {
 					area: 'string',
 					sub_area: 'string',
 					locality: 'string',
+					country_code: 'BR',
 					latitude: 0,
 					longitude: 0,
-					country_code: 'BR',
 					created_at: new Date(),
 					updated_at: new Date(),
 				},
-				false,
+				false
 			),
 		},
 	})
@@ -306,31 +308,32 @@ export class UserController extends ApiController {
 		example: {
 			data: new CreateUserDto(
 				'uuid',
-				'string',
-				'string',
-				'#000000',
-				'string',
-				'string',
-				'string',
 				new Date(),
-				false,
 				new Date(),
 				new Date(),
 				{
 					profile: 'public',
 					addresses: 'public',
-					posts: 'public',
-					visited_spots: 'public',
 					spot_folders: 'public',
+					visited_spots: 'public',
+					posts: 'public',
 					favorite_spots: 'public',
 					favorite_spot_folders: 'public',
 					favorite_spot_events: 'public',
 				},
 				{
-					name: '',
-					email: '',
-					phone_number: '',
+					name: 'string',
+					email: 'string',
+					phone_number: 'string',
 				},
+				{
+					display_name: 'string',
+					theme_color: 'string',
+					biograph: 'string',
+					profile_picture: 'string',
+					banner_picture: 'string',
+					visibility: 'public',
+				}
 			),
 		},
 	})
@@ -465,7 +468,7 @@ export class UserController extends ApiController {
 		});
 	}
 
-	@ApiOperation({ summary: 'Update user visibility configurations' })
+	@ApiOperation({ summary: 'Update user visibility settings' })
 	@ApiUnauthorizedResponse({
 		example: new ErrorResponse(
 			'string',
@@ -501,19 +504,19 @@ export class UserController extends ApiController {
 	@ApiOkResponse({ example: { data: {} } })
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
-	@Put(':id/visibility-configuration')
-	public async udpateVisibilityConfiguration(
+	@Put(':id/visibility-settings')
+	public async updateUserVisibilitySettings(
 		@Param('id') id: string,
-		@Body() body: UpdateUserVisibilityConfigRequest,
+		@Body() body: UpdateUserVisibilitySettingsRequest,
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = UserRequestMapper.updateUserVisibilityConfigCommand(
+		const command = UserRequestMapper.updateUserVisibilitySettingsCommand(
 			id,
 			body,
 		);
 
-		this.updateUserVisibilityConfigUseCase.execute(command);
+		this.updateUserVisibilitySettingsUseCase.execute(command);
 
 		res.status(HttpStatus.NO_CONTENT).json({
 			data: {},

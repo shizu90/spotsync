@@ -13,7 +13,7 @@ import { ListUsersUseCaseProvider } from './application/ports/in/use-cases/list-
 import { UpdateUserAddressUseCaseProvider } from './application/ports/in/use-cases/update-user-address.use-case';
 import { UpdateUserCredentialsUseCaseProvider } from './application/ports/in/use-cases/update-user-credentials.use-case';
 import { UpdateUserProfileUseCaseProvider } from './application/ports/in/use-cases/update-user-profile.use-case';
-import { UpdateUserVisibilityConfigUseCaseProvider } from './application/ports/in/use-cases/update-user-visibility-config.use-case';
+import { UpdateUserVisibilitySettingsUseCaseProvider } from './application/ports/in/use-cases/update-user-visibility-settings.use-case';
 import { UploadBannerPictureUseCaseProvider } from './application/ports/in/use-cases/upload-banner-picture.use-case';
 import { UploadProfilePictureUseCaseProvider } from './application/ports/in/use-cases/upload-profile-picture.use-case';
 import { ActivationRequestRepositoryProvider } from './application/ports/out/activation-request.repository';
@@ -35,7 +35,7 @@ import { ListUsersService } from './application/services/list-users.service';
 import { UpdateUserAddressService } from './application/services/update-user-address.service';
 import { UpdateUserCredentialsService } from './application/services/update-user-credentials.service';
 import { UpdateUserProfileService } from './application/services/update-user-profile.service';
-import { UpdateUserVisibilityConfigService } from './application/services/update-user-visibility-config.service';
+import { UpdateUserVisibilitySettingsService } from './application/services/update-user-visibility-settings.service';
 import { UploadBannerPictureService } from './application/services/upload-banner-picture.service';
 import { UploadProfilePictureService } from './application/services/upload-profile-picture.service';
 import { ActivationRequestRepositoryImpl } from './infrastructure/adapters/out/activation-request.db';
@@ -54,8 +54,8 @@ export const Providers: Provider[] = [
 		useClass: UpdateUserCredentialsService,
 	},
 	{
-		provide: UpdateUserVisibilityConfigUseCaseProvider,
-		useClass: UpdateUserVisibilityConfigService,
+		provide: UpdateUserVisibilitySettingsUseCaseProvider,
+		useClass: UpdateUserVisibilitySettingsService,
 	},
 	{
 		provide: UpdateUserProfileUseCaseProvider,

@@ -8,7 +8,8 @@ import { LikeRepository } from 'src/like/application/ports/out/like.repository';
 import { Like } from 'src/like/domain/like.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserProfile } from 'src/user/domain/user-profile.model';
+import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { User } from 'src/user/domain/user.model';
 
 export class LikeRepositoryImpl implements LikeRepository {
@@ -25,39 +26,41 @@ export class LikeRepositoryImpl implements LikeRepository {
 			prisma_model.likable_subject,
 			prisma_model.likable_id,
 			User.create(
-				prisma_model.user.id,
-				prisma_model.user.first_name,
-				prisma_model.user.last_name,
-				prisma_model.user.profile_theme_color,
-				prisma_model.user.profile_picture,
-				prisma_model.user.banner_picture,
-				prisma_model.user.biograph,
-				prisma_model.user.birth_date,
-				UserCredentials.create(
-					prisma_model.user.id,
-					prisma_model.user.credentials.name,
-					prisma_model.user.credentials.email,
-					prisma_model.user.credentials.password,
-					prisma_model.user.credentials.phone_number,
-					prisma_model.user.credentials.last_login,
-				),
-				UserVisibilityConfig.create(
-					prisma_model.user.id,
-					prisma_model.user.visibility_configuration.profile,
-					prisma_model.user.visibility_configuration.addresses,
-					prisma_model.user.visibility_configuration.spot_folders,
-					prisma_model.user.visibility_configuration.visited_spots,
-					prisma_model.user.visibility_configuration.posts,
-					prisma_model.user.visibility_configuration.favorite_spots,
-					prisma_model.user.visibility_configuration
-						.favorite_spot_folders,
-					prisma_model.user.visibility_configuration
-						.favorite_spot_events,
-				),
-				prisma_model.user.status,
-				prisma_model.user.created_at,
-				prisma_model.user.updated_at,
-				prisma_model.user.is_deleted,
+                prisma_model.user.id,
+                UserProfile.create(
+                    prisma_model.user.id,
+                    prisma_model.user.profile.birth_date,
+                    prisma_model.user.profile.display_name,
+                    prisma_model.user.profile.theme_color,
+                    prisma_model.user.profile.profile_picture,
+                    prisma_model.user.profile.banner_picture,
+                    prisma_model.user.profile.biograph,
+                    prisma_model.user.profile.visibility
+                ),
+                UserCredentials.create(
+                    prisma_model.user.id,
+                    prisma_model.user.credentials.name,
+                    prisma_model.user.credentials.email,
+                    prisma_model.user.credentials.password,
+                    prisma_model.user.credentials.phone_number,
+                    prisma_model.user.credentials.last_login,
+                    prisma_model.user.credentials.last_logout,
+                ),
+                UserVisibilitySettings.create(
+                    prisma_model.user.id,
+                    prisma_model.user.visibility_settings.profile,
+                    prisma_model.user.visibility_settings.addresses,
+                    prisma_model.user.visibility_settings.spot_folders,
+                    prisma_model.user.visibility_settings.visited_spots,
+                    prisma_model.user.visibility_settings.posts,
+                    prisma_model.user.visibility_settings.favorite_spots,
+                    prisma_model.user.visibility_settings.favorite_spot_folders,
+                    prisma_model.user.visibility_settings.favorite_spot_events,
+                ),
+                prisma_model.user.status,
+                prisma_model.user.created_at,
+                prisma_model.user.updated_at,
+                prisma_model.user.is_deleted
 			),
 			prisma_model.created_at,
 		);
@@ -120,11 +123,13 @@ export class LikeRepositoryImpl implements LikeRepository {
 		if (paginate) {
 			items = await this.prismaService.like.findMany({
 				where: { id: { in: ids.map((row) => row.id) } },
+				orderBy: orderBy,
 				include: {
 					user: {
 						include: {
 							credentials: true,
-							visibility_configuration: true,
+							visibility_settings: true,
+							profile: true,
 						},
 					},
 				},
@@ -134,11 +139,13 @@ export class LikeRepositoryImpl implements LikeRepository {
 		} else {
 			items = await this.prismaService.like.findMany({
 				where: { id: { in: ids.map((row) => row.id) } },
+				orderBy: orderBy,
 				include: {
 					user: {
 						include: {
 							credentials: true,
-							visibility_configuration: true,
+							visibility_settings: true,
+							profile: true,
 						},
 					},
 				},
@@ -178,7 +185,8 @@ export class LikeRepositoryImpl implements LikeRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},
@@ -226,7 +234,8 @@ export class LikeRepositoryImpl implements LikeRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},
@@ -248,7 +257,8 @@ export class LikeRepositoryImpl implements LikeRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},
@@ -268,7 +278,8 @@ export class LikeRepositoryImpl implements LikeRepository {
 				user: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},

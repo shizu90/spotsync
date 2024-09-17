@@ -1,20 +1,14 @@
 import { Model } from 'src/common/core/common.model';
 import { UserCredentials } from './user-credentials.model';
+import { UserProfile } from './user-profile.model';
 import { UserStatus } from './user-status.enum';
-import { UserVisibilityConfig } from './user-visibility-config.model';
-import { UserVisibility } from './user-visibility.enum';
+import { UserVisibilitySettings } from './user-visibility-settings.model';
 
 export class User extends Model {
 	private _id: string;
-	private _firstName: string;
-	private _lastName: string;
-	private _profileThemeColor: string;
-	private _profilePicture: string;
-	private _bannerPicture: string;
-	private _biograph: string;
-	private _birthDate: Date;
+	private _profile: UserProfile;
 	private _credentials: UserCredentials;
-	private _visibilityConfiguration: UserVisibilityConfig;
+	private _visibilitySettings: UserVisibilitySettings;
 	private _status: UserStatus;
 	private _createdAt: Date;
 	private _updatedAt: Date;
@@ -22,15 +16,9 @@ export class User extends Model {
 
 	private constructor(
 		id: string,
-		firstName: string,
-		lastName?: string,
-		profileThemeColor?: string,
-		profilePicture?: string,
-		bannerPicture?: string,
-		biograph?: string,
-		birthDate?: Date,
-		credentials?: UserCredentials,
-		visibilityConfiguration?: UserVisibilityConfig,
+		profile: UserProfile,
+		credentials: UserCredentials,
+		visibilitySettings: UserVisibilitySettings,
 		status?: UserStatus,
 		createdAt?: Date,
 		updatedAt?: Date,
@@ -38,15 +26,9 @@ export class User extends Model {
 	) {
 		super();
 		this._id = id;
-		this._firstName = firstName;
-		this._lastName = lastName ?? null;
-		this._profileThemeColor = profileThemeColor ?? null;
-		this._profilePicture = profilePicture ?? null;
-		this._bannerPicture = bannerPicture ?? null;
-		this._biograph = biograph ?? null;
-		this._birthDate = birthDate ?? null;
-		this._credentials = credentials ?? null;
-		this._visibilityConfiguration = visibilityConfiguration ?? null;
+		this._profile = profile;
+		this._credentials = credentials;
+		this._visibilitySettings = visibilitySettings;
 		this._status = status ?? UserStatus.INACTIVE;
 		this._createdAt = createdAt ?? new Date();
 		this._updatedAt = updatedAt ?? new Date();
@@ -55,15 +37,9 @@ export class User extends Model {
 
 	public static create(
 		id: string,
-		firstName: string,
-		lastName?: string,
-		profileThemeColor?: string,
-		profilePicture?: string,
-		bannerPicture?: string,
-		biograph?: string,
-		birthDate?: Date,
-		credentials?: UserCredentials,
-		visibilityConfiguration?: UserVisibilityConfig,
+		profile: UserProfile,
+		credentials: UserCredentials,
+		visibilitySettings: UserVisibilitySettings,
 		status?: UserStatus,
 		createdAt?: Date,
 		updatedAt?: Date,
@@ -71,15 +47,9 @@ export class User extends Model {
 	): User {
 		return new User(
 			id,
-			firstName,
-			lastName,
-			profileThemeColor,
-			profilePicture,
-			bannerPicture,
-			biograph,
-			birthDate,
+			profile,
 			credentials,
-			visibilityConfiguration,
+			visibilitySettings,
 			status,
 			createdAt,
 			updatedAt,
@@ -91,44 +61,16 @@ export class User extends Model {
 		return this._id;
 	}
 
-	public firstName(): string {
-		return this._firstName;
-	}
-
-	public lastName(): string {
-		return this._lastName;
-	}
-
-	public fullName(): string {
-		return `${this._firstName} ${this._lastName}`;
-	}
-
-	public profileThemeColor(): string {
-		return this._profileThemeColor;
-	}
-
-	public profilePicture(): string {
-		return this._profilePicture;
-	}
-
-	public bannerPicture(): string {
-		return this._bannerPicture;
-	}
-
-	public biograph(): string {
-		return this._biograph;
-	}
-
-	public birthDate(): Date {
-		return this._birthDate;
+	public profile(): UserProfile {
+		return this._profile;
 	}
 
 	public credentials(): UserCredentials {
 		return this._credentials;
 	}
 
-	public visibilityConfiguration(): UserVisibilityConfig {
-		return this._visibilityConfiguration;
+	public visibilitySettings(): UserVisibilitySettings {
+		return this._visibilitySettings;
 	}
 
 	public status(): UserStatus {
@@ -147,114 +89,34 @@ export class User extends Model {
 		return this._isDeleted;
 	}
 
-	public changeFirstName(firstName: string): void {
-		this._firstName = firstName;
-		this._updatedAt = new Date();
-	}
-
-	public changeLastName(lastName: string): void {
-		this._lastName = lastName;
-		this._updatedAt = new Date();
-	}
-
-	public changeProfileThemeColor(profileThemeColor: string): void {
-		this._profileThemeColor = profileThemeColor;
-		this._updatedAt = new Date();
-	}
-
-	public changeProfilePicture(profilePicture: string): void {
-		this._profilePicture = profilePicture;
-		this._updatedAt = new Date();
-	}
-
-	public changeBannerPicture(bannerPicture: string): void {
-		this._bannerPicture = bannerPicture;
-		this._updatedAt = new Date();
-	}
-
-	public changeBiograph(biograph: string): void {
-		this._biograph = biograph;
-		this._updatedAt = new Date();
-	}
-
-	public changeBirthDate(birthDate: Date): void {
-		this._birthDate = birthDate;
-		this._updatedAt = new Date();
-	}
-
-	public changeCredentials(userCredentials: UserCredentials): void {
-		this._credentials = userCredentials;
-		this._updatedAt = new Date();
-	}
-
-	public changeVisibilityConfig(
-		visibilityConfig: UserVisibilityConfig,
-	): void {
-		this._visibilityConfiguration = visibilityConfig;
-		this._updatedAt = new Date();
-	}
-
 	public delete(): void {
 		this._isDeleted = true;
 		this._updatedAt = new Date();
 	}
 
-	public createCredentials(
-		name: string,
-		email: string,
-		password: string,
-		phoneNumber?: string,
-	): UserCredentials {
-		const credentials = UserCredentials.create(
-			this._id,
-			name,
-			email,
-			password,
-			phoneNumber,
-		);
-		this._credentials = credentials;
-
-		return credentials;
-	}
-
-	public createVisibilityConfig(
-		profile: UserVisibility,
-		addresses: UserVisibility,
-		spotFolders: UserVisibility,
-		visitedSpots: UserVisibility,
-		posts: UserVisibility,
-		favoriteSpots: UserVisibility,
-		favoriteSpotFolders: UserVisibility,
-		favoriteSpotEvents: UserVisibility,
-	): UserVisibilityConfig {
-		const visibilityConfig = UserVisibilityConfig.create(
-			this._id,
-			profile,
-			addresses,
-			spotFolders,
-			visitedSpots,
-			posts,
-			favoriteSpots,
-			favoriteSpotFolders,
-			favoriteSpotEvents,
-		);
-		this._visibilityConfiguration = visibilityConfig;
-
-		return visibilityConfig;
-	}
-
 	public activate(): void {
-		if (this._status == UserStatus.INACTIVE) {
-			this._status = UserStatus.ACTIVE;
-			this._updatedAt = new Date();
-		}
+		this._status = UserStatus.ACTIVE;
+		this._updatedAt = new Date();
 	}
 
 	public deactivate(): void {
-		if (this._status == UserStatus.ACTIVE) {
-			this._status = UserStatus.INACTIVE;
-			this._updatedAt = new Date();
-		}
+		this._status = UserStatus.INACTIVE;
+		this._updatedAt = new Date();
+	}
+
+	public changeProfile(profile: UserProfile): void {
+		this._profile = profile;
+		this._updatedAt = new Date();
+	}
+
+	public changeVisibilitySettings(visibilitySettings: UserVisibilitySettings): void {
+		this._visibilitySettings = visibilitySettings;
+		this._updatedAt = new Date();
+	}
+
+	public changeCredentials(credentials: UserCredentials): void {
+		this._credentials = credentials;
+		this._updatedAt = new Date();
 	}
 }
  

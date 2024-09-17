@@ -5,10 +5,11 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { AcceptGroupRequestCommand } from '../ports/in/commands/accept-group-request.command';
 import { AcceptGroupRequestUseCase } from '../ports/in/use-cases/accept-group-request.use-case';
-import { AcceptGroupRequestDto } from '../ports/out/dto/accept-group-request.dto';
+import { JoinGroupDto } from '../ports/out/dto/join-group.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -39,7 +40,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 
 	public async execute(
 		command: AcceptGroupRequestCommand,
-	): Promise<AcceptGroupRequestDto> {
+	): Promise<JoinGroupDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
@@ -75,7 +76,10 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 		}
 
 		const groupMemberRequest =
-			await this.groupMemberRepository.findRequestById(command.id);
+			(await this.groupMemberRepository.findBy({
+				id: command.id,
+				status: GroupMemberStatus.REQUESTED,
+			})).at(0);
 
 		if (groupMemberRequest === null || groupMemberRequest === undefined) {
 			throw new GroupRequestNotFoundError(`Group request not found`);
@@ -85,38 +89,41 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 			DefaultGroupRole.MEMBER,
 		);
 
-		const newGroupMember = groupMemberRequest.accept(memberRole);
+		groupMemberRequest.accept();
 
-		await this.groupMemberRepository.store(newGroupMember);
-
-		this.groupMemberRepository.deleteRequest(groupMemberRequest.id());
+		await this.groupMemberRepository.update(groupMemberRequest);
 
 		const log = group.newLog(
-			`${authenticatedGroupMember.user().credentials().name()} accepted the join request of ${newGroupMember.user().credentials().name()}`,
+			`${authenticatedGroupMember.user().credentials().name()} accepted the join request of ${groupMemberRequest.user().credentials().name()}`,
 		);
 
 		this.groupRepository.storeLog(log);
 
-		return new AcceptGroupRequestDto(
-			group.id(),
+		return new JoinGroupDto(
+			groupMemberRequest.id(),
+			groupMemberRequest.group().id(),
 			{
-				id: newGroupMember.user().id(),
-				first_name: newGroupMember.user().firstName(),
-				last_name: newGroupMember.user().lastName(),
-				profile_picture: newGroupMember.user().profilePicture(),
-				banner_picture: newGroupMember.user().bannerPicture(),
+				id: groupMemberRequest.user().id(),
+				display_name: groupMemberRequest.user().profile().displayName(),
+				profile_picture: groupMemberRequest.user().profile().profilePicture(),
+				banner_picture: groupMemberRequest.user().profile().bannerPicture(),
 				credentials: {
-					name: newGroupMember.user().credentials().name(),
+					name: groupMemberRequest.user().credentials().name(),
 				},
 			},
-			newGroupMember.joinedAt(),
 			{
-				name: memberRole.name(),
-				hex_color: memberRole.hexColor(),
-				permissions: memberRole.permissions().map((p) => {
-					return { id: p.id(), name: p.name() };
+				name: groupMemberRequest.role().name(),
+				hex_color: groupMemberRequest.role().hexColor(),
+				permissions: groupMemberRequest.role().permissions().map((permission) => {
+					return {
+						id: permission.id(),
+						name: permission.name(),
+					};
 				}),
 			},
-		);
+			groupMemberRequest.joinedAt(),
+			groupMemberRequest.requestedAt(),
+			groupMemberRequest.status(),
+		)
 	}
 }

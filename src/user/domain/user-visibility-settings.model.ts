@@ -1,7 +1,7 @@
 import { Model } from 'src/common/core/common.model';
 import { UserVisibility } from './user-visibility.enum';
 
-export class UserVisibilityConfig extends Model {
+export class UserVisibilitySettings extends Model {
 	private _id: string;
 	private _profile: UserVisibility;
 	private _addresses: UserVisibility;
@@ -45,8 +45,8 @@ export class UserVisibilityConfig extends Model {
 		favoriteSpots: UserVisibility,
 		favoriteSpotFolders: UserVisibility,
 		favoriteSpotEvents: UserVisibility,
-	): UserVisibilityConfig {
-		return new UserVisibilityConfig(
+	): UserVisibilitySettings {
+		return new UserVisibilitySettings(
 			id,
 			profile,
 			addresses,

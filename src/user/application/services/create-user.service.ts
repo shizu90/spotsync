@@ -7,6 +7,9 @@ import { NewUserMailTemplate } from 'src/mail/templates/new-user-mail.template';
 import { ActivationRequestSubject } from 'src/user/domain/activation-request-subject.enum';
 import { ActivationRequest } from 'src/user/domain/activation-request.model';
 import { UserAddress } from 'src/user/domain/user-address.model';
+import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserProfile } from 'src/user/domain/user-profile.model';
+import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { User } from 'src/user/domain/user.model';
 import { CreateUserCommand } from '../ports/in/commands/create-user.command';
@@ -56,25 +59,21 @@ export class CreateUserService implements CreateUserUseCase {
 
 		const userId = randomUUID();
 
-		const user: User = User.create(
+		const profile = UserProfile.create(
+			userId,
+			command.name
+		);
+
+		const credentials = UserCredentials.create(
 			userId,
 			command.name,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-		);
-
-		user.createCredentials(
-			command.name,
 			command.email,
-			await this.encryptPasswordService.encrypt(command.password),
-			command.phoneNumber ?? null,
+			command.password,
+			command.phoneNumber,
 		);
 
-		user.createVisibilityConfig(
+		const visibilitySettings = UserVisibilitySettings.create(
+			userId,
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
@@ -84,6 +83,15 @@ export class CreateUserService implements CreateUserUseCase {
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
 		);
+
+		const user = User.create(
+			userId,
+			command.birthDate,
+			profile,
+			credentials,
+			visibilitySettings,
+		);
+
 
 		await this.userRepository.store(user);
 
@@ -134,35 +142,32 @@ export class CreateUserService implements CreateUserUseCase {
 
 		return new CreateUserDto(
 			user.id(),
-			user.firstName(),
-			user.lastName(),
-			user.profileThemeColor(),
-			user.biograph(),
-			user.profilePicture(),
-			user.bannerPicture(),
 			user.birthDate(),
-			user.isDeleted(),
 			user.createdAt(),
 			user.updatedAt(),
 			{
-				profile: user.visibilityConfiguration().profile(),
-				addresses: user.visibilityConfiguration().addresses(),
-				spot_folders: user.visibilityConfiguration().spotFolders(),
-				visited_spots: user.visibilityConfiguration().visitedSpots(),
-				posts: user.visibilityConfiguration().posts(),
-				favorite_spots: user.visibilityConfiguration().favoriteSpots(),
-				favorite_spot_folders: user
-					.visibilityConfiguration()
-					.favoriteSpotFolders(),
-				favorite_spot_events: user
-					.visibilityConfiguration()
-					.favoriteSpotEvents(),
+				profile: user.visibilitySettings().profile(),
+				addresses: user.visibilitySettings().addresses(),
+				spot_folders: user.visibilitySettings().spotFolders(),
+				visited_spots: user.visibilitySettings().visitedSpots(),
+				posts: user.visibilitySettings().posts(),
+				favorite_spots: user.visibilitySettings().favoriteSpots(),
+				favorite_spot_folders: user.visibilitySettings().favoriteSpotFolders(),
+				favorite_spot_events: user.visibilitySettings().favoriteSpotEvents(),
 			},
 			{
 				name: user.credentials().name(),
 				email: user.credentials().email(),
 				phone_number: user.credentials().phoneNumber(),
 			},
+			{
+				display_name: user.profile().displayName(),
+				theme_color: user.profile().themeColor(),
+				biograph: user.profile().biograph(),
+				profile_picture: user.profile().profilePicture(),
+				banner_picture: user.profile().bannerPicture(),
+				visibility: user.profile().visibility(),
+			}
 		);
 	}
 }

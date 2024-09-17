@@ -34,7 +34,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 		}
 
 		if (
-			group.visibilityConfiguration().groups() === GroupVisibility.PRIVATE
+			group.visibilitySettings().groups() === GroupVisibility.PRIVATE
 		) {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		} else {
@@ -43,6 +43,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 					groupId: command.groupId,
 					name: command.name,
 					roleId: command.roleId,
+					status: command.status,
 				},
 				sort: command.sort,
 				sortDirection: command.sortDirection,
@@ -56,10 +57,9 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 					gm.id(),
 					{
 						id: gm.user().id(),
-						first_name: gm.user().firstName(),
-						last_name: gm.user().lastName(),
-						banner_picture: gm.user().bannerPicture(),
-						profile_picture: gm.user().profilePicture(),
+						display_name: gm.user().profile().displayName(),
+						banner_picture: gm.user().profile().bannerPicture(),
+						profile_picture: gm.user().profile().profilePicture(),
 						credentials: { name: gm.user().credentials().name() },
 					},
 					gm.group().id(),

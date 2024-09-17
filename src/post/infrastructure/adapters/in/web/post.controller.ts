@@ -1,56 +1,56 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpStatus,
-    Inject,
-    Param,
-    Post,
-    Put,
-    Req,
-    Res,
-    UseFilters,
-    UseGuards,
-    UsePipes,
-    ValidationPipe,
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Inject,
+	Param,
+	Post,
+	Put,
+	Req,
+	Res,
+	UseFilters,
+	UseGuards,
+	UsePipes,
+	ValidationPipe,
 } from '@nestjs/common';
 import {
-    ApiForbiddenResponse,
-    ApiInternalServerErrorResponse,
-    ApiNoContentResponse,
-    ApiNotFoundResponse,
-    ApiOkResponse,
-    ApiOperation,
-    ApiTags,
-    ApiUnauthorizedResponse,
+	ApiForbiddenResponse,
+	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-    AddPostAttachmentUseCase,
-    AddPostAttachmentUseCaseProvider,
+	AddPostAttachmentUseCase,
+	AddPostAttachmentUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/add-post-attachment.use-case';
 import {
-    CreatePostUseCase,
-    CreatePostUseCaseProvider,
+	CreatePostUseCase,
+	CreatePostUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/create-post.use-case';
 import {
-    DeletePostUseCase,
-    DeletePostUseCaseProvider,
+	DeletePostUseCase,
+	DeletePostUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/delete-post.use-case';
 import {
-    GetPostUseCase,
-    GetPostUseCaseProvider,
+	GetPostUseCase,
+	GetPostUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/get-post.use-case';
 import {
-    RemovePostAttachmentUseCase,
-    RemovePostAttachmentUseCaseProvider,
+	RemovePostAttachmentUseCase,
+	RemovePostAttachmentUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/remove-post-attachment.use-case';
 import {
-    UpdatePostUseCase,
-    UpdatePostUseCaseProvider,
+	UpdatePostUseCase,
+	UpdatePostUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/update-post.use-case';
 import { CreatePostDto } from 'src/post/application/ports/out/dto/create-post.dto';
 import { GetPostDto } from 'src/post/application/ports/out/dto/get-post.dto';
@@ -125,8 +125,7 @@ export class PostController {
 				],
 				{
 					id: 'uuid',
-					first_name: 'string',
-					last_name: 'string',
+					display_name: 'string',
 					profile_theme_color: '#000000',
 					profile_picture: 'string',
 					banner_picture: 'string',
@@ -153,8 +152,7 @@ export class PostController {
 						],
 						{
 							id: 'uuid',
-							first_name: 'string',
-							last_name: 'string',
+							display_name: 'string',
 							profile_theme_color: '#000000',
 							profile_picture: 'string',
 							banner_picture: 'string',

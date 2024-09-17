@@ -4,7 +4,7 @@ import {
 	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
-import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-config.model';
 import { Group } from 'src/group/domain/group.model';
 import { PostRepository } from 'src/post/application/ports/out/post.repository';
 import { PostAttachment } from 'src/post/domain/post-attachment.model';
@@ -12,7 +12,8 @@ import { PostThread } from 'src/post/domain/post-thread.model';
 import { Post } from 'src/post/domain/post.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserProfile } from 'src/user/domain/user-profile.model';
+import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { User } from 'src/user/domain/user.model';
 
 export class PostRepositoryImpl implements PostRepository {
@@ -41,13 +42,16 @@ export class PostRepositoryImpl implements PostRepository {
 			prisma_model.visibility,
 			User.create(
 				prisma_model.creator.id,
-				prisma_model.creator.first_name,
-				prisma_model.creator.last_name,
-				prisma_model.creator.profile_theme_color,
-				prisma_model.creator.profile_picture,
-				prisma_model.creator.banner_picture,
-				prisma_model.creator.biograph,
-				prisma_model.creator.birth_date,
+				UserProfile.create(
+					prisma_model.creator.id,
+					prisma_model.creator.profile.birth_date,
+					prisma_model.creator.profile.display_name,
+					prisma_model.creator.profile.theme_color,
+					prisma_model.creator.profile.profile_picture,
+					prisma_model.creator.profile.banner_picture,
+					prisma_model.creator.profile.biograph,
+					prisma_model.creator.profile.visibility
+				),
 				UserCredentials.create(
 					prisma_model.creator.id,
 					prisma_model.creator.credentials.name,
@@ -57,24 +61,21 @@ export class PostRepositoryImpl implements PostRepository {
 					prisma_model.creator.credentials.last_login,
 					prisma_model.creator.credentials.last_logout,
 				),
-				UserVisibilityConfig.create(
+				UserVisibilitySettings.create(
 					prisma_model.creator.id,
-					prisma_model.creator.visibility_configuration.profile,
-					prisma_model.creator.visibility_configuration.addresses,
-					prisma_model.creator.visibility_configuration.spot_folders,
-					prisma_model.creator.visibility_configuration.visited_spots,
-					prisma_model.creator.visibility_configuration.posts,
-					prisma_model.creator.visibility_configuration
-						.favorite_spots,
-					prisma_model.creator.visibility_configuration
-						.favorite_spot_folders,
-					prisma_model.creator.visibility_configuration
-						.favorite_spot_events,
+					prisma_model.creator.visibility_settings.profile,
+					prisma_model.creator.visibility_settings.addresses,
+					prisma_model.creator.visibility_settings.spot_folders,
+					prisma_model.creator.visibility_settings.visited_spots,
+					prisma_model.creator.visibility_settings.posts,
+					prisma_model.creator.visibility_settings.favorite_spots,
+					prisma_model.creator.visibility_settings.favorite_spot_folders,
+					prisma_model.creator.visibility_settings.favorite_spot_events,
 				),
 				prisma_model.creator.status,
 				prisma_model.creator.created_at,
 				prisma_model.creator.updated_at,
-				prisma_model.creator.is_deleted,
+				prisma_model.creator.is_deleted
 			),
 			prisma_model.attachments.map((a) =>
 				this.mapPostAttachmentToDomain(a),
@@ -94,13 +95,13 @@ export class PostRepositoryImpl implements PostRepository {
 						prisma_model.group.about,
 						prisma_model.group_picture,
 						prisma_model.banner_picture,
-						GroupVisibilityConfig.create(
+						GroupVisibilitySettings.create(
 							prisma_model.group.id,
-							prisma_model.group.visibility_configuration
+							prisma_model.group.visibility_settings
 								.post_visibility,
-							prisma_model.group.visibility_configuration
+							prisma_model.group.visibility_settings
 								.event_visibility,
-							prisma_model.group.visibility_configuration
+							prisma_model.group.visibility_settings
 								.group_visibility,
 						),
 						prisma_model.group.created_at,
@@ -136,12 +137,12 @@ export class PostRepositoryImpl implements PostRepository {
 			creator: {
 				include: {
 					credentials: true,
-					visibility_configuration: true,
+					visibility_settings: true,
 				},
 			},
 			group: {
 				include: {
-					visibility_configuration: true,
+					visibility_settings: true,
 				},
 			},
 			parent_post: true,
@@ -262,12 +263,12 @@ export class PostRepositoryImpl implements PostRepository {
 					creator: {
 						include: {
 							credentials: true,
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 					group: {
 						include: {
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 					parent_post: {
@@ -275,12 +276,13 @@ export class PostRepositoryImpl implements PostRepository {
 							creator: {
 								include: {
 									credentials: true,
-									visibility_configuration: true,
+									visibility_settings: true,
+									profile: true,
 								},
 							},
 							group: {
 								include: {
-									visibility_configuration: true,
+									visibility_settings: true,
 								},
 							},
 							attachments: true,
@@ -301,12 +303,12 @@ export class PostRepositoryImpl implements PostRepository {
 					creator: {
 						include: {
 							credentials: true,
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 					group: {
 						include: {
-							visibility_configuration: true,
+							visibility_settings: true,
 						},
 					},
 					parent_post: {
@@ -314,12 +316,13 @@ export class PostRepositoryImpl implements PostRepository {
 							creator: {
 								include: {
 									credentials: true,
-									visibility_configuration: true,
+									visibility_settings: true,
+									profile: true,
 								},
 							},
 							group: {
 								include: {
-									visibility_configuration: true,
+									visibility_settings: true,
 								},
 							},
 							attachments: true,
@@ -372,12 +375,12 @@ export class PostRepositoryImpl implements PostRepository {
 				creator: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 				parent_post: {
@@ -385,12 +388,12 @@ export class PostRepositoryImpl implements PostRepository {
 						creator: {
 							include: {
 								credentials: true,
-								visibility_configuration: true,
+								visibility_settings: true,
 							},
 						},
 						group: {
 							include: {
-								visibility_configuration: true,
+								visibility_settings: true,
 							},
 						},
 						attachments: true,
@@ -458,12 +461,12 @@ export class PostRepositoryImpl implements PostRepository {
 				creator: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 				parent_post: {
@@ -471,12 +474,12 @@ export class PostRepositoryImpl implements PostRepository {
 						creator: {
 							include: {
 								credentials: true,
-								visibility_configuration: true,
+								visibility_settings: true,
 							},
 						},
 						group: {
 							include: {
-								visibility_configuration: true,
+								visibility_settings: true,
 							},
 						},
 						attachments: true,
@@ -525,12 +528,12 @@ export class PostRepositoryImpl implements PostRepository {
 				creator: {
 					include: {
 						credentials: true,
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 				group: {
 					include: {
-						visibility_configuration: true,
+						visibility_settings: true,
 					},
 				},
 				parent_post: true,

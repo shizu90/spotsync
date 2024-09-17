@@ -72,13 +72,13 @@ export class ListUsersService implements ListUsersUseCase {
 
 				if (authenticatedUser.id() !== u.id()) {
 					if (
-						u.visibilityConfiguration().addresses() ===
+						u.visibilitySettings().addresses() ===
 						UserVisibility.PRIVATE
 					) {
 						userMainAddress = undefined;
 					}
 					if (
-						u.visibilityConfiguration().addresses() ===
+						u.visibilitySettings().addresses() ===
 							UserVisibility.FOLLOWERS &&
 						!isFollowing
 					) {
@@ -95,50 +95,44 @@ export class ListUsersService implements ListUsersUseCase {
 
 				return new GetUserProfileDto(
 					u.id(),
-					u.firstName(),
-					u.lastName(),
-					u.profileThemeColor(),
-					u.biograph(),
+					u.birthDate(),
 					u.createdAt(),
 					u.updatedAt(),
-					u.profilePicture(),
-					u.bannerPicture(),
-					{ name: u.credentials().name() },
 					{
-						profile: u.visibilityConfiguration().profile(),
-						addresses: u.visibilityConfiguration().addresses(),
-						favorite_spot_events: u
-							.visibilityConfiguration()
-							.favoriteSpotEvents(),
-						favorite_spot_folders: u
-							.visibilityConfiguration()
-							.favoriteSpotFolders(),
-						favorite_spots: u
-							.visibilityConfiguration()
-							.favoriteSpots(),
-						posts: u.visibilityConfiguration().posts(),
-						spot_folders: u.visibilityConfiguration().spotFolders(),
-						visited_spots: u
-							.visibilityConfiguration()
-							.visitedSpots(),
+						name: u.credentials().name(),
+					},
+					{
+						display_name: u.profile().displayName(),
+						theme_color: u.profile().themeColor(),
+						biograph: u.profile().biograph(),
+						profile_picture: u.profile().profilePicture(),
+						banner_picture: u.profile().bannerPicture(),
+						visibility: u.profile().visibility(),
+					},
+					{
+						profile: u.visibilitySettings().profile(),
+						addresses: u.visibilitySettings().addresses(),
+						visited_spots: u.visibilitySettings().visitedSpots(),
+						posts: u.visibilitySettings().posts(),
+						favorite_spots: u.visibilitySettings().favoriteSpots(),
+						favorite_spot_events: u.visibilitySettings().favoriteSpotEvents(),
+						favorite_spot_folders: u.visibilitySettings().favoriteSpotFolders(),
+						spot_folders: u.visibilitySettings().spotFolders(),
 					},
 					totalFollowers,
 					totalFollowing,
-					userMainAddress
-						? {
-								id: userMainAddress.id(),
-								area: userMainAddress.area(),
-								sub_area: userMainAddress.subArea(),
-								country_code: userMainAddress.countryCode(),
-								locality: userMainAddress.locality(),
-								name: userMainAddress.name(),
-								latitude: userMainAddress.latitude(),
-								longitude: userMainAddress.longitude(),
-								created_at: userMainAddress.createdAt(),
-								updated_at: userMainAddress.updatedAt(),
-							}
-						: null,
-					isFollowing ? true : false,
+					userMainAddress && {
+						id: userMainAddress.id(),
+						name: userMainAddress.name(),
+						area: userMainAddress.area(),
+						sub_area: userMainAddress.subArea(),
+						locality: userMainAddress.locality(),
+						latitude: userMainAddress.latitude(),
+						longitude: userMainAddress.longitude(),
+						country_code: userMainAddress.countryCode(),
+						created_at: userMainAddress.createdAt(),
+						updated_at: userMainAddress.updatedAt(),
+					}
 				);
 			}),
 		);

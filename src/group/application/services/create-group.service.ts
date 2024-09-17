@@ -6,7 +6,7 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
 import { GroupMember } from 'src/group/domain/group-member.model';
-import { GroupVisibilityConfig } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-config.model';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
 import { CreateGroupCommand } from '../ports/in/commands/create-group.command';
@@ -58,7 +58,7 @@ export class CreateGroupService implements CreateGroupUseCase {
 			command.about,
 			null,
 			null,
-			GroupVisibilityConfig.create(
+			GroupVisibilitySettings.create(
 				groupId,
 				GroupVisibility.PUBLIC,
 				GroupVisibility.PUBLIC,
@@ -85,9 +85,9 @@ export class CreateGroupService implements CreateGroupUseCase {
 			group.groupPicture(),
 			group.bannerPicture(),
 			{
-				post_visibility: group.visibilityConfiguration().posts(),
-				event_visibility: group.visibilityConfiguration().spotEvents(),
-				group_visibility: group.visibilityConfiguration().groups(),
+				post_visibility: group.visibilitySettings().posts(),
+				event_visibility: group.visibilitySettings().spotEvents(),
+				group_visibility: group.visibilitySettings().groups(),
 			},
 			group.createdAt(),
 			group.updatedAt(),

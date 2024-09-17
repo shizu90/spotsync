@@ -12,9 +12,8 @@ export class PostRequestMapper {
 		query: ListThreadsQueryRequest,
 	): ListThreadsCommand {
 		return new ListThreadsCommand(
-			query.visibility,
-			query.group_id,
 			query.user_id,
+			query.group_id,
 			query.sort,
 			query.sort_direction,
 			query.paginate,

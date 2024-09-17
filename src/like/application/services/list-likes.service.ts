@@ -45,12 +45,11 @@ export class ListLikesService implements ListLikesUseCase {
 				i.likableSubjectId(),
 				{
 					id: i.user().id(),
-					first_name: i.user().firstName(),
-					last_name: i.user().lastName(),
-					banner_picture: i.user().bannerPicture(),
+					display_name: i.user().profile().displayName(),
+					banner_picture: i.user().profile().bannerPicture(),
 					credentials: { name: i.user().credentials().name() },
-					profile_picture: i.user().profilePicture(),
-					profile_theme_color: i.user().profileThemeColor(),
+					profile_picture: i.user().profile().profilePicture(),
+					theme_color: i.user().profile().themeColor(),
 				},
 				i.createdAt(),
 			);

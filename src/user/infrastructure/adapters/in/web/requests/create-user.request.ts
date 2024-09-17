@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+	IsDateString,
 	IsEmail,
 	IsNotEmptyObject,
 	IsNumber,
@@ -55,6 +56,10 @@ class Address {
 }
 
 export class CreateUserRequest extends ApiRequest {
+	@ApiProperty({ required: true })
+	@IsDateString()
+	public birth_date: Date;
+
 	@ApiProperty({ required: true })
 	@IsString()
 	@MinLength(3)

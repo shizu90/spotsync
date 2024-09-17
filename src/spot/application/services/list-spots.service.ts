@@ -62,7 +62,7 @@ export class ListSpotsService implements ListSpotsUseCase {
 			);
 
 			if (favoritedBy !== null && favoritedBy !== undefined) {
-				switch (favoritedBy.visibilityConfiguration().favoriteSpots()) {
+				switch (favoritedBy.visibilitySettings().favoriteSpots()) {
 					case UserVisibility.FOLLOWERS:
 						const follow = (
 							await this.followRepository.findBy({
@@ -95,7 +95,7 @@ export class ListSpotsService implements ListSpotsUseCase {
 			);
 
 			if (visitedBy !== null && visitedBy !== undefined) {
-				switch (visitedBy.visibilityConfiguration().visitedSpots()) {
+				switch (visitedBy.visibilitySettings().visitedSpots()) {
 					case UserVisibility.FOLLOWERS:
 						const follow = (
 							await this.followRepository.findBy({
@@ -195,7 +195,15 @@ export class ListSpotsService implements ListSpotsUseCase {
 					s.photos().map((p) => {
 						return { id: p.id(), file_path: p.filePath() };
 					}),
-					s.creator().id(),
+					{
+						id: s.creator().id(),
+						display_name: s.creator().profile().displayName(),
+						banner_picture: s.creator().profile().bannerPicture(),
+						credentials: {
+							name: s.creator().credentials().name(),
+						},
+						profile_picture: s.creator().profile().profilePicture(),
+					},
 					distance,
 					visited !== null && visited !== undefined,
 					visited !== null && visited !== undefined

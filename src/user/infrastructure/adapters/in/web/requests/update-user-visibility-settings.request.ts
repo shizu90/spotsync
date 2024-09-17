@@ -3,7 +3,7 @@ import { IsEnum, IsOptional } from 'class-validator';
 import { ApiRequest } from 'src/common/web/common.request';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 
-export class UpdateUserVisibilityConfigRequest extends ApiRequest {
+export class UpdateUserVisibilitySettingsRequest extends ApiRequest {
 	@ApiProperty({ required: false, enum: UserVisibility })
 	@IsEnum(UserVisibility)
 	@IsOptional()

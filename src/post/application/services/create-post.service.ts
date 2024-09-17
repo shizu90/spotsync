@@ -46,7 +46,7 @@ export class CreatePostService implements CreatePostUseCase {
 		let visibility = command.visibility;
 
 		if (visibility === null || visibility === undefined) {
-			switch (authenticatedUser.visibilityConfiguration().posts()) {
+			switch (authenticatedUser.visibilitySettings().posts()) {
 				case UserVisibility.PUBLIC:
 					visibility = PostVisibility.PUBLIC;
 					break;
@@ -72,7 +72,7 @@ export class CreatePostService implements CreatePostUseCase {
 			}
 
 			group = g;
-			switch (g.visibilityConfiguration().posts()) {
+			switch (g.visibilitySettings().posts()) {
 				case GroupVisibility.PRIVATE:
 					visibility = PostVisibility.PRIVATE;
 					break;

@@ -27,7 +27,7 @@ export class CreateSpotFolderService implements CreateSpotFolderUseCase
         let visibility = command.visibility;
 
         if (visibility !== null && visibility !== undefined) {
-            switch(authenticatedUser.visibilityConfiguration().spotFolders()) {
+            switch(authenticatedUser.visibilitySettings().spotFolders()) {
                 case UserVisibility.PRIVATE:
                     visibility = SpotFolderVisibility.PRIVATE;
                     break;

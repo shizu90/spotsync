@@ -13,13 +13,7 @@ export class UpdateUserProfileRequest extends ApiRequest {
 	@IsString()
 	@MaxLength(255)
 	@IsOptional()
-	public first_name?: string;
-
-	@ApiProperty({ required: false })
-	@IsString()
-	@MaxLength(255)
-	@IsOptional()
-	public last_name?: string;
+	public display_name?: string;
 
 	@ApiProperty({ required: false })
 	@IsHexColor()

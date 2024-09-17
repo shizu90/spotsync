@@ -28,27 +28,19 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase {
 		}
 
 		if (
-			command.firstName &&
-			command.firstName !== null &&
-			command.firstName.length > 0
+			command.displayName &&
+			command.displayName !== null &&
+			command.displayName.length > 0
 		) {
-			user.changeFirstName(command.firstName);
+			user.profile().changeDisplayName(command.displayName);
 		}
 
 		if (
-			command.lastName &&
-			command.lastName !== null &&
-			command.lastName.length > 0
+			command.themeColor &&
+			command.themeColor !== null &&
+			command.themeColor.length > 0
 		) {
-			user.changeLastName(command.lastName);
-		}
-
-		if (
-			command.profileThemeColor &&
-			command.profileThemeColor !== null &&
-			command.profileThemeColor.length > 0
-		) {
-			user.changeProfileThemeColor(command.profileThemeColor);
+			user.profile().changeThemeColor(command.themeColor);
 		}
 
 		if (
@@ -56,7 +48,7 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase {
 			command.biograph !== null &&
 			command.biograph.length > 0
 		) {
-			user.changeBiograph(command.biograph);
+			user.profile().changeBiograph(command.biograph);
 		}
 
 		if (command.birthDate && command.birthDate !== null) {
@@ -64,5 +56,6 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase {
 		}
 
 		this.userRepository.update(user);
+		this.userRepository.updateProfile(user.profile());
 	}
 }

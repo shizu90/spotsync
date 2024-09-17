@@ -1,22 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-    IsBoolean,
-    IsEnum,
-    IsNumber,
-    IsOptional,
-    IsString,
-    IsUUID,
+	IsBoolean,
+	IsEnum,
+	IsNumber,
+	IsOptional,
+	IsString,
+	IsUUID,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { ApiRequest } from 'src/common/web/common.request';
-import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 
 export class ListThreadsQueryRequest extends ApiRequest {
-	@ApiProperty({ required: false, enum: PostVisibility })
-	@IsOptional()
-	@IsEnum(PostVisibility)
-	public visibility?: PostVisibility;
-
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsUUID(4)
