@@ -37,14 +37,14 @@ describe('UpdateUserProfileService', () => {
 		const command = new UpdateUserProfileCommand(
 			user.id(),
 			'New Test First Name',
-			'New Test Last Name',
+			'#000000',
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 
 		await expect(service.execute(command)).resolves.not.toThrow();
-		expect(user.firstName()).toBe(command.firstName);
-		expect(user.lastName()).toBe(command.lastName);
+		expect(user.profile().displayName()).toBe(command.displayName);
+		expect(user.profile().themeColor()).toBe(command.themeColor);
 	});
 
 	it('should no update user profile if user is not authorized', async () => {

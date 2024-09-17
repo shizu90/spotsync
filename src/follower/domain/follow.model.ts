@@ -8,14 +8,16 @@ export class Follow extends Model {
 	private _to: User;
 	private _status: FollowStatus;
 	private _followedAt: Date;
+	private _requestedAt: Date;
 
-	private constructor(id: string, from: User, to: User, status?: FollowStatus, followedAt?: Date) {
+	private constructor(id: string, from: User, to: User, status?: FollowStatus, followedAt?: Date, requestedAt?: Date) {
 		super();
 		this._id = id;
 		this._from = from;
 		this._to = to;
-		this._status = status;
+		this._status = status ?? FollowStatus.REQUESTED;
 		this._followedAt = followedAt ?? new Date();
+		this._requestedAt = requestedAt ?? new Date();
 	}
 
 	public static create(
@@ -24,8 +26,9 @@ export class Follow extends Model {
 		to: User,
 		status?: FollowStatus,
 		followedAt?: Date,
+		requestedAt?: Date,
 	): Follow {
-		return new Follow(id, from, to, status, followedAt);
+		return new Follow(id, from, to, status, followedAt, requestedAt);
 	}
 
 	public id(): string {
@@ -46,5 +49,13 @@ export class Follow extends Model {
 
 	public followedAt(): Date {
 		return this._followedAt;
+	}
+
+	public requestedAt(): Date {
+		return this._requestedAt;
+	}
+
+	public accept(): void {
+		this._status = FollowStatus.ACTIVE;
 	}
 }

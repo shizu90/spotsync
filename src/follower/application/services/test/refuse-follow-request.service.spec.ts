@@ -10,7 +10,7 @@ import {
 	FollowRepositoryProvider,
 } from '../../ports/out/follow.repository';
 import { RefuseFollowRequestService } from '../refuse-follow-request.service';
-import { mockFollowRequest, mockUser } from './follow-mock.helper';
+import { mockFollow, mockUser } from './follow-mock.helper';
 
 describe('RefuseFollowRequestService', () => {
 	let service: RefuseFollowRequestService;
@@ -32,25 +32,23 @@ describe('RefuseFollowRequestService', () => {
 	});
 
 	it('should refuse follow request', async () => {
-		const followRequest = mockFollowRequest();
+		const followRequest = mockFollow();
 		const user = followRequest.to();
 
 		const command = new RefuseFollowRequestCommand(followRequest.id());
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
-		followRepository.findRequestById.mockResolvedValue(followRequest);
 
 		await expect(service.execute(command)).resolves.not.toThrow();
 	});
 
 	it('should not refuse follow request if user is not authorized', async () => {
-		const followRequest = mockFollowRequest();
+		const followRequest = mockFollow();
 		const user = followRequest.to();
 
 		const command = new RefuseFollowRequestCommand(followRequest.id());
 
 		getAuthenticatedUser.execute.mockResolvedValue(mockUser());
-		followRepository.findRequestById.mockResolvedValue(followRequest);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			UnauthorizedAccessError,

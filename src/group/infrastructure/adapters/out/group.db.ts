@@ -393,7 +393,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		});
 	}
 
-	public async updateVisibilityConfiguration(
+	public async updateVisibilitySettings(
 		model: GroupVisibilitySettings,
 	): Promise<void> {
 		await this.prismaService.group.update({

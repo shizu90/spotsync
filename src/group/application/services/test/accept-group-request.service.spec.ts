@@ -24,7 +24,6 @@ import { AcceptGroupRequestService } from '../accept-group-request.service';
 import { GroupRequestNotFoundError } from '../errors/group-request-not-found.error';
 import {
 	mockGroupMember,
-	mockGroupMemberRequest,
 	mockGroupRole,
 } from './group-mock.helper';
 
@@ -52,8 +51,8 @@ describe('AcceptGroupRequestService', () => {
 	});
 
 	it('should accept group request', async () => {
-		const groupMemberRequest = mockGroupMemberRequest();
-		const group = groupMemberRequest.group();
+		const groupMember = mockGroupMember();
+		const group = groupMember.group();
 		const authenticatedGroupMember = mockGroupMember(
 			true,
 			false,
@@ -62,7 +61,7 @@ describe('AcceptGroupRequestService', () => {
 		const groupRole = mockGroupRole();
 
 		const command = new AcceptGroupRequestCommand(
-			groupMemberRequest.id(),
+			groupMember.id(),
 			group.id(),
 		);
 
@@ -73,9 +72,6 @@ describe('AcceptGroupRequestService', () => {
 		groupMemberRepository.findBy.mockResolvedValue([
 			authenticatedGroupMember,
 		]);
-		groupMemberRepository.findRequestById.mockResolvedValue(
-			groupMemberRequest,
-		);
 		groupRoleRepository.findByName.mockResolvedValue(groupRole);
 
 		const member = await service.execute(command);
@@ -85,8 +81,8 @@ describe('AcceptGroupRequestService', () => {
 	});
 
 	it('should not accept group request if user is not authorized', async () => {
-		const groupMemberRequest = mockGroupMemberRequest();
-		const group = groupMemberRequest.group();
+		const groupMember = mockGroupMember();
+		const group = groupMember.group();
 		const authenticatedGroupMember = mockGroupMember(
 			false,
 			false,
@@ -102,7 +98,7 @@ describe('AcceptGroupRequestService', () => {
 			);
 
 		const command = new AcceptGroupRequestCommand(
-			groupMemberRequest.id(),
+			groupMember.id(),
 			group.id(),
 		);
 
@@ -136,7 +132,6 @@ describe('AcceptGroupRequestService', () => {
 		groupMemberRepository.findBy.mockResolvedValue([
 			authenticatedGroupMember,
 		]);
-		groupMemberRepository.findRequestById.mockResolvedValue(null);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			GroupRequestNotFoundError,

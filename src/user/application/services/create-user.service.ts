@@ -61,6 +61,7 @@ export class CreateUserService implements CreateUserUseCase {
 
 		const profile = UserProfile.create(
 			userId,
+			command.birthDate,
 			command.name
 		);
 
@@ -86,7 +87,6 @@ export class CreateUserService implements CreateUserUseCase {
 
 		const user = User.create(
 			userId,
-			command.birthDate,
 			profile,
 			credentials,
 			visibilitySettings,
@@ -142,7 +142,6 @@ export class CreateUserService implements CreateUserUseCase {
 
 		return new CreateUserDto(
 			user.id(),
-			user.birthDate(),
 			user.createdAt(),
 			user.updatedAt(),
 			{
@@ -161,6 +160,7 @@ export class CreateUserService implements CreateUserUseCase {
 				phone_number: user.credentials().phoneNumber(),
 			},
 			{
+				birth_date: user.profile().birthDate(),
 				display_name: user.profile().displayName(),
 				theme_color: user.profile().themeColor(),
 				biograph: user.profile().biograph(),

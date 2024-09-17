@@ -89,13 +89,13 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 
 		return new GetUserProfileDto(
 			user.id(),
-			user.birthDate(),
 			user.createdAt(),
 			user.updatedAt(),
 			{
 				name: user.credentials().name(),
 			},
 			{
+				birth_date: user.profile().birthDate(),
 				display_name: user.profile().displayName(),
 				theme_color: user.profile().themeColor(),
 				biograph: user.profile().biograph(),

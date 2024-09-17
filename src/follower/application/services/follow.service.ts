@@ -5,7 +5,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { FollowRequest } from 'src/follower/domain/follow-request.model';
+import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import { Follow } from 'src/follower/domain/follow.model';
 import {
 	UserRepository,
@@ -61,52 +61,48 @@ export class FollowService implements FollowUseCase {
 		).at(0);
 
 		if (follow !== null && follow !== undefined) {
-			throw new AlreadyFollowingError(`Already following user`);
+			if (follow.status() === FollowStatus.ACTIVE) {
+				throw new AlreadyFollowingError(`Already following user`);
+			}
+
+			if (follow.status() === FollowStatus.REQUESTED) {
+				throw new AlreadyRequestedFollowError(
+					`Already requested to follow`,
+				);
+			}
 		}
 
 		if (
 			toUser.visibilitySettings().profile() !== UserVisibility.PUBLIC
 		) {
-			const request = (
-				await this.followRepository.findRequestBy({
-					fromUserId: authenticatedUser.id(),
-					toUserId: toUser.id(),
-				})
-			).at(0);
-
-			if (request !== null && request !== undefined) {
-				throw new AlreadyRequestedFollowError(
-					`Already requested to follow`,
-				);
-			}
-
-			const followRequest = FollowRequest.create(
+			follow = Follow.create(
 				randomUUID(),
 				authenticatedUser,
 				toUser,
-			);
-
-			this.followRepository.storeRequest(followRequest);
-
-			return new FollowDto(
-				followRequest.id(),
-				followRequest.from().id(),
-				followRequest.to().id(),
+				FollowStatus.REQUESTED,
 				null,
-				followRequest.requestedOn(),
+				new Date(),
 			);
 		} else {
-			follow = Follow.create(randomUUID(), authenticatedUser, toUser);
-
-			this.followRepository.store(follow);
-
-			return new FollowDto(
-				follow.id(),
-				follow.from().id(),
-				follow.to().id(),
-				follow.followedAt(),
-				follow.followedAt(),
+			follow = Follow.create(
+				randomUUID(), 
+				authenticatedUser, 
+				toUser,
+				FollowStatus.ACTIVE,
+				new Date(),
+				null,
 			);
 		}
+
+		await this.followRepository.store(follow);
+
+		return new FollowDto(
+			follow.id(),
+			follow.from().id(),
+			follow.to().id(),
+			follow.status(),
+			follow.followedAt(),
+			follow.requestedAt(),
+		);
 	}
 }

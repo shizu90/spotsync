@@ -45,7 +45,7 @@ export class UserRequestMapper {
 		request: CreateUserRequest,
 	): CreateUserCommand {
 		return new CreateUserCommand(
-			request.birth_date,
+			new Date(request.birth_date),
 			request.name,
 			request.email,
 			request.password,

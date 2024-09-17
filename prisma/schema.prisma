@@ -99,7 +99,8 @@ model Follow {
   from_user_id String
   to_user_id   String
   status       String   @db.VarChar(3)
-  followed_at  DateTime @default(now())
+  followed_at  DateTime?
+  requested_at DateTime?
   from_user    User     @relation("from_user", fields: [from_user_id], references: [id], onDelete: Cascade)
   to_user      User     @relation("to_user", fields: [to_user_id], references: [id], onDelete: Cascade)
 

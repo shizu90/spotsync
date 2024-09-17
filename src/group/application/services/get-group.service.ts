@@ -43,13 +43,6 @@ export class GetGroupService implements GetGroupUseCase {
 			})
 		).at(0);
 
-		const groupMemberRequest = (
-			await this.groupMemberRepository.findRequestBy({
-				groupId: group.id(),
-				userId: authenticatedUser.id(),
-			})
-		).at(0);
-
 		return new GetGroupDto(
 			group.id(),
 			group.name(),
@@ -82,9 +75,7 @@ export class GetGroupService implements GetGroupUseCase {
 						},
 					}
 				: null,
-			groupMemberRequest !== null && groupMemberRequest !== undefined
-				? groupMemberRequest.requestedOn()
-				: null,
+				groupMember.requestedAt(),
 		);
 	}
 }

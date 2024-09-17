@@ -81,8 +81,7 @@ export class PostThreadController {
 						],
 						{
 							id: 'uuid',
-							first_name: 'string',
-							last_name: 'string',
+							display_name: 'string',
 							profile_theme_color: '#000000',
 							profile_picture: 'string',
 							banner_picture: 'string',

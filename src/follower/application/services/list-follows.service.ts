@@ -112,6 +112,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			filters: {
 				fromUserId: command.from_user_id,
 				toUserId: command.to_user_id,
+				status: command.status,
 			},
 			sort: command.sort,
 			sortDirection: command.sortDirection,
@@ -123,6 +124,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 		const items = pagination.items.map((i) => {
 			return new GetFollowDto(
 				i.id(),
+				i.status(),
 				{
 					id: i.from().id(),
 					display_name: i.from().profile().displayName(),
@@ -142,6 +144,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 					credentials: { name: i.to().credentials().name() },
 				},
 				i.followedAt(),
+				i.requestedAt(),
 			);
 		});
 

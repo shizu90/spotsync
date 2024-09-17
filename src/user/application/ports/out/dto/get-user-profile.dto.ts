@@ -3,13 +3,13 @@ import { Dto } from 'src/common/core/common.dto';
 export class GetUserProfileDto extends Dto {
 	constructor(
 		readonly id: string,
-		readonly birth_date: Date,
 		readonly created_at: Date,
 		readonly updated_at: Date,
 		readonly credentials: {
 			name: string;
 		},
 		readonly profile: {
+			birth_date: Date;
 			display_name: string;
 			theme_color: string;
 			biograph: string;

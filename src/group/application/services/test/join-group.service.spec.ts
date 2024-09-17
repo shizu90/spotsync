@@ -25,7 +25,6 @@ import { JoinGroupService } from '../join-group.service';
 import {
 	mockGroup,
 	mockGroupMember,
-	mockGroupMemberRequest,
 	mockGroupRole,
 	mockUser,
 } from './group-mock.helper';
@@ -85,7 +84,6 @@ describe('JoinGroupService', () => {
 		groupRepository.findById.mockResolvedValue(group);
 		groupRoleRepository.findByName.mockResolvedValue(groupRole);
 		groupMemberRepository.findBy.mockResolvedValue([]);
-		groupMemberRepository.findRequestBy.mockResolvedValue([]);
 
 		const joined = await service.execute(command);
 
@@ -124,9 +122,6 @@ describe('JoinGroupService', () => {
 		groupRepository.findById.mockResolvedValue(group);
 		groupRoleRepository.findByName.mockResolvedValue(groupRole);
 		groupMemberRepository.findBy.mockResolvedValue([]);
-		groupMemberRepository.findRequestBy.mockResolvedValue([
-			mockGroupMemberRequest(),
-		]);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			AlreadyRequestedToJoinError,
@@ -148,7 +143,6 @@ describe('JoinGroupService', () => {
 		groupRepository.findById.mockResolvedValue(group);
 		groupRoleRepository.findByName.mockResolvedValue(groupRole);
 		groupMemberRepository.findBy.mockResolvedValue([mockGroupMember()]);
-		groupMemberRepository.findRequestBy.mockResolvedValue([]);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			AlreadyMemberOfGroup,

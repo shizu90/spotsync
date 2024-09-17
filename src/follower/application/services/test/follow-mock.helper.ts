@@ -1,9 +1,9 @@
 import { randomUUID } from 'crypto';
-import { FollowRequest } from 'src/follower/domain/follow-request.model';
 import { Follow } from 'src/follower/domain/follow.model';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserProfile } from 'src/user/domain/user-profile.model';
 import { UserStatus } from 'src/user/domain/user-status.enum';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { User } from 'src/user/domain/user.model';
 
@@ -11,13 +11,16 @@ export const mockUser = (): User => {
 	const id = randomUUID();
 	return User.create(
 		id,
-		'User',
-		'Test',
-		null,
-		null,
-		null,
-		null,
-		null,
+		UserProfile.create(
+			id,
+			new Date(),
+			'Test',
+			'#000000',
+			'',
+			'',
+			'',
+			UserVisibility.PUBLIC,
+		),
 		UserCredentials.create(
 			id,
 			'UserTest',
@@ -25,7 +28,7 @@ export const mockUser = (): User => {
 			'TestPassword321',
 			'11999999999',
 		),
-		UserVisibilityConfig.create(
+		UserVisibilitySettings.create(
 			id,
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
@@ -41,10 +44,6 @@ export const mockUser = (): User => {
 		new Date(),
 		false,
 	);
-};
-
-export const mockFollowRequest = (): FollowRequest => {
-	return FollowRequest.create(randomUUID(), mockUser(), mockUser());
 };
 
 export const mockFollow = (): Follow => {

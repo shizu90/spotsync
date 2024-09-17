@@ -3,8 +3,9 @@ import { SpotAddress } from 'src/spot/domain/spot-address.model';
 import { SpotType } from 'src/spot/domain/spot-type.enum';
 import { Spot } from 'src/spot/domain/spot.model';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserProfile } from 'src/user/domain/user-profile.model';
 import { UserStatus } from 'src/user/domain/user-status.enum';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { User } from 'src/user/domain/user.model';
 
@@ -12,13 +13,16 @@ export const mockUser = (): User => {
 	const id = randomUUID();
 	return User.create(
 		id,
-		'User',
-		'Test',
-		null,
-		null,
-		null,
-		null,
-		null,
+		UserProfile.create(
+			id,
+			new Date(),
+			'Test',
+			'#000000',
+			'',
+			'',
+			'',
+			UserVisibility.PUBLIC,
+		),
 		UserCredentials.create(
 			id,
 			'UserTest',
@@ -26,7 +30,7 @@ export const mockUser = (): User => {
 			'TestPassword321',
 			'11999999999',
 		),
-		UserVisibilityConfig.create(
+		UserVisibilitySettings.create(
 			id,
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,

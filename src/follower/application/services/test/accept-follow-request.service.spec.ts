@@ -12,7 +12,7 @@ import {
 } from '../../ports/out/follow.repository';
 import { AcceptFollowRequestService } from '../accept-follow-request.service';
 import { FollowRequestNotFoundError } from '../errors/follow-request-not-found.error';
-import { mockFollowRequest, mockUser } from './follow-mock.helper';
+import { mockFollow, mockUser } from './follow-mock.helper';
 
 describe('AcceptFollowRequestService', () => {
 	let service: AcceptFollowRequestService;
@@ -34,25 +34,23 @@ describe('AcceptFollowRequestService', () => {
 	});
 
 	it('should accept follow request', async () => {
-		const followRequest = mockFollowRequest();
+		const followRequest = mockFollow();
 		const user = followRequest.to();
 
 		const command = new AcceptFollowRequestCommand(followRequest.id());
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
-		followRepository.findRequestById.mockResolvedValue(followRequest);
 
 		await expect(service.execute(command)).resolves.not.toThrow();
 	});
 
 	it('should not accept follow request if user is not authorized', async () => {
-		const followRequest = mockFollowRequest();
+		const followRequest = mockFollow();
 		const user = followRequest.to();
 
 		const command = new AcceptFollowRequestCommand(followRequest.id());
 
 		getAuthenticatedUser.execute.mockResolvedValue(mockUser());
-		followRepository.findRequestById.mockResolvedValue(followRequest);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			UnauthorizedAccessError,
@@ -65,7 +63,6 @@ describe('AcceptFollowRequestService', () => {
 		const command = new AcceptFollowRequestCommand(randomUUID());
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
-		followRepository.findRequestById.mockResolvedValue(null);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			FollowRequestNotFoundError,

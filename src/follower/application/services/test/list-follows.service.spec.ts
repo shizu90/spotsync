@@ -40,6 +40,7 @@ describe('ListFollowsService', () => {
 		const user = mockUser();
 
 		const command = new ListFollowsCommand(
+			null,
 			user.id(),
 			null,
 			null,

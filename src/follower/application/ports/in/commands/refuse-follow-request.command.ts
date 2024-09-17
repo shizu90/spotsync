@@ -1,7 +1,7 @@
 import { Command } from 'src/common/core/common.command';
 
 export class RefuseFollowRequestCommand extends Command {
-	constructor(readonly followRequestId: string) {
+	constructor(readonly id: string) {
 		super();
 	}
 }

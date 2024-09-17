@@ -6,7 +6,7 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { DefaultGroupRole } from 'src/group/domain/default-group-role.enum';
 import { GroupMember } from 'src/group/domain/group-member.model';
-import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
 import { CreateGroupCommand } from '../ports/in/commands/create-group.command';

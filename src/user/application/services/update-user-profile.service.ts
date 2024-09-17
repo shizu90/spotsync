@@ -52,7 +52,7 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase {
 		}
 
 		if (command.birthDate && command.birthDate !== null) {
-			user.changeBirthDate(command.birthDate);
+			user.profile().changeBirthDate(command.birthDate);
 		}
 
 		this.userRepository.update(user);

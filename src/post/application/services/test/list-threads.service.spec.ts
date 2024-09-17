@@ -65,8 +65,7 @@ describe('ListThreadsService', () => {
 		const user = mockUser();
 
 		const command = new ListThreadsCommand(
-			null, 
-			user.id(),
+			user.id(), 
 			null,
 			'created_at',
 			SortDirection.DESC,

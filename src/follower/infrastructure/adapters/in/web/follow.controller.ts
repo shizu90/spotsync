@@ -39,27 +39,21 @@ import {
 	FollowUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/follow.use-case';
 import {
-	ListFollowRequestsUseCase,
-	ListFollowRequestsUseCaseProvider,
-} from 'src/follower/application/ports/in/use-cases/list-follow-requests.use-case';
-import {
 	ListFollowsUseCase,
 	ListFollowsUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/list-follows.use-case';
 import {
+	RefuseFollowRequestUseCase,
 	RefuseFollowRequestUseCaseProvider,
-	RefusseFollowRequestUseCase,
 } from 'src/follower/application/ports/in/use-cases/refuse-follow-request.use-case';
 import {
 	UnfollowUseCase,
 	UnfollowUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/unfollow.use-case';
 import { FollowDto } from 'src/follower/application/ports/out/dto/follow.dto';
-import { GetFollowRequestDto } from 'src/follower/application/ports/out/dto/get-follow-request.dto';
 import { GetFollowDto } from 'src/follower/application/ports/out/dto/get-follow.dto';
 import { FollowErrorHandler } from './handlers/follow-error.handler';
 import { FollowRequestMapper } from './mappers/follow-request.mapper';
-import { ListFollowRequestsQueryRequest } from './requests/list-follow-requests-query.request';
 import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
 
 @ApiTags('Followers')
@@ -98,11 +92,9 @@ export class FollowController extends ApiController {
 		@Inject(AcceptFollowRequestUseCaseProvider)
 		protected acceptFollowRequestUseCase: AcceptFollowRequestUseCase,
 		@Inject(RefuseFollowRequestUseCaseProvider)
-		protected refuseFollowRequestUseCase: RefusseFollowRequestUseCase,
+		protected refuseFollowRequestUseCase: RefuseFollowRequestUseCase,
 		@Inject(ListFollowsUseCaseProvider)
 		protected listFollowsUseCase: ListFollowsUseCase,
-		@Inject(ListFollowRequestsUseCaseProvider)
-		protected listFollowRequestsUseCase: ListFollowRequestsUseCase,
 	) {
 		super();
 	}
@@ -114,6 +106,7 @@ export class FollowController extends ApiController {
 				[
 					new GetFollowDto(
 						'uuid',
+						'req',
 						{
 							id: 'uuid',
 							banner_picture: 'string',
@@ -132,6 +125,7 @@ export class FollowController extends ApiController {
 							profile_picture: 'string',
 							theme_color: '#000000',
 						},
+						new Date(),
 						new Date(),
 					),
 				],
@@ -158,57 +152,6 @@ export class FollowController extends ApiController {
 		});
 	}
 
-	@ApiOperation({ summary: 'List follow requests' })
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetFollowRequestDto(
-						'uuid',
-						{
-							id: 'uuid',
-							banner_picture: 'string',
-							birth_date: new Date(),
-							credentials: { name: 'string' },
-							display_name: 'string',
-							profile_picture: 'string',
-							theme_color: '#000000',
-						},
-						{
-							id: 'uuid',
-							banner_picture: 'string',
-							birth_date: new Date(),
-							credentials: { name: 'string' },
-							display_name: 'string',
-							profile_picture: 'string',
-							theme_color: '#000000',
-						},
-						new Date(),
-					),
-				],
-				1,
-				0,
-				10,
-			),
-		},
-	})
-	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
-	@Get('requests')
-	public async listRequests(
-		@Query() query: ListFollowRequestsQueryRequest,
-		@Req() req: Request,
-		@Res() res: Response,
-	) {
-		const command = FollowRequestMapper.listFollowRequestsCommand(query);
-
-		const data = await this.listFollowRequestsUseCase.execute(command);
-
-		res.status(HttpStatus.OK).json({
-			data: data,
-		});
-	}
-
 	@ApiOperation({ summary: 'Follow user' })
 	@ApiConflictResponse({
 		example: new ErrorResponse(
@@ -228,7 +171,7 @@ export class FollowController extends ApiController {
 	})
 	@ApiOkResponse({
 		example: {
-			data: new FollowDto('uuid', 'uuid', 'uuid', new Date(), new Date()),
+			data: new FollowDto('uuid', 'uuid', 'uuid', 'req', new Date(), new Date()),
 		},
 	})
 	@UseGuards(AuthGuard)

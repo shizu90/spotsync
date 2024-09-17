@@ -3,5 +3,5 @@ import { RefuseFollowRequestCommand } from '../commands/refuse-follow-request.co
 
 export const RefuseFollowRequestUseCaseProvider = 'RefuseFollowRequestUseCase';
 
-export interface RefusseFollowRequestUseCase
+export interface RefuseFollowRequestUseCase
 	extends UseCase<RefuseFollowRequestCommand, Promise<void>> {}

@@ -29,6 +29,7 @@ describe('CreateUserService', () => {
 
 	it('should create an user', async () => {
 		const command = new CreateUserCommand(
+			new Date(),
 			'Test',
 			'test@test.test',
 			'test123',
@@ -46,11 +47,12 @@ describe('CreateUserService', () => {
 		expect(user.credentials.name).toBe(command.name);
 		expect(user.credentials.email).toBe(command.email);
 		expect(user.credentials.phone_number).toBe(command.phoneNumber);
-		expect(user.first_name).toBe(command.name);
+		expect(user.profile.display_name).toBe(command.name);
 	});
 
 	it('should not create an user if email is already in use', async () => {
 		const command = new CreateUserCommand(
+			new Date(),
 			'Test',
 			'test@test.test',
 			'test123',
@@ -66,6 +68,7 @@ describe('CreateUserService', () => {
 
 	it('should not create an user if name is already taken', async () => {
 		const command = new CreateUserCommand(
+			new Date(),
 			'Test',
 			'test@test.test',
 			'test123',

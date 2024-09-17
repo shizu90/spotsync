@@ -3,6 +3,7 @@ import { Dto } from 'src/common/core/common.dto';
 export class GetFollowDto extends Dto {
 	constructor(
 		readonly id: string,
+		readonly status: string,
 		readonly from_user: {
 			readonly id: string;
 			readonly display_name: string;
@@ -22,6 +23,7 @@ export class GetFollowDto extends Dto {
 			readonly credentials: { name: string };
 		},
 		readonly followed_at: Date,
+		readonly requested_at: Date,
 	) {
 		super();
 	}

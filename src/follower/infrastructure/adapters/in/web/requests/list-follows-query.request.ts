@@ -1,16 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-    IsBoolean,
-    IsEnum,
-    IsNumber,
-    IsOptional,
-    IsString,
-    IsUUID,
+	IsBoolean,
+	IsEnum,
+	IsNumber,
+	IsOptional,
+	IsString,
+	IsUUID,
 } from 'class-validator';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { ApiRequest } from 'src/common/web/common.request';
+import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 
 export class ListFollowsQueryRequest extends ApiRequest {
+	@ApiProperty({
+		required: false,
+	})
+	@IsOptional()
+	@IsEnum(FollowStatus)
+	public status?: FollowStatus;
+
 	@ApiProperty({
 		required: false,
 	})

@@ -4,7 +4,7 @@ import {
 	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
-import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
 import { Group } from 'src/group/domain/group.model';
 import { PostRepository } from 'src/post/application/ports/out/post.repository';
 import { PostAttachment } from 'src/post/domain/post-attachment.model';

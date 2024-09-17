@@ -139,11 +139,11 @@ export class UserController extends ApiController {
 						'uuid',
 						new Date(),
 						new Date(),
-						new Date(),
 						{
 							name: 'string',
 						},
 						{
+							birth_date: new Date(),
 							banner_picture: 'string',
 							biograph: 'string',
 							display_name: 'string',
@@ -231,11 +231,11 @@ export class UserController extends ApiController {
 				'uuid',
 				new Date(),
 				new Date(),
-				new Date(),
 				{
 					name: 'string',
 				},
 				{
+					birth_date: new Date(),
 					banner_picture: 'string',
 					biograph: 'string',
 					display_name: 'string',
@@ -310,7 +310,6 @@ export class UserController extends ApiController {
 				'uuid',
 				new Date(),
 				new Date(),
-				new Date(),
 				{
 					profile: 'public',
 					addresses: 'public',
@@ -327,6 +326,7 @@ export class UserController extends ApiController {
 					phone_number: 'string',
 				},
 				{
+					birth_date: new Date(),
 					display_name: 'string',
 					theme_color: 'string',
 					biograph: 'string',

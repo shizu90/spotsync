@@ -2,7 +2,6 @@ import { randomUUID } from 'crypto';
 import { Model } from 'src/common/core/common.model';
 import { User } from 'src/user/domain/user.model';
 import { GroupLog } from './group-log.model';
-import { GroupMemberRequest } from './group-member-request.model';
 import { GroupMember } from './group-member.model';
 import { GroupRole } from './group-role.model';
 import { GroupVisibilitySettings } from './group-visibility-settings.model';
@@ -151,21 +150,6 @@ export class Group extends Model {
 		return groupVisibilitySettings;
 	}
 
-	public joinGroup(
-		user: User,
-		role: GroupRole,
-		isCreator: boolean = false,
-	): GroupMember | GroupMemberRequest {
-		if (
-			!isCreator &&
-			this._visibilitySettings.groups() === GroupVisibility.PRIVATE
-		) {
-			return this.requestMembership(user);
-		} else {
-			return this.addMember(user, role, isCreator);
-		}
-	}
-
 	public addMember(
 		user: User,
 		role: GroupRole,
@@ -180,16 +164,6 @@ export class Group extends Model {
 		);
 
 		return groupMember;
-	}
-
-	public requestMembership(user: User): GroupMemberRequest {
-		const groupMemberRequest = GroupMemberRequest.create(
-			randomUUID(),
-			this,
-			user,
-		);
-
-		return groupMemberRequest;
 	}
 
 	public newLog(text: string): GroupLog {

@@ -17,7 +17,7 @@ import {
 } from '../../ports/out/group.repository';
 import { GroupRequestNotFoundError } from '../errors/group-request-not-found.error';
 import { RefuseGroupRequestService } from '../refuse-group-request.service';
-import { mockGroupMember, mockGroupMemberRequest } from './group-mock.helper';
+import { mockGroupMember } from './group-mock.helper';
 
 describe('RefuseGroupRequestService', () => {
 	let service: RefuseGroupRequestService;
@@ -42,7 +42,7 @@ describe('RefuseGroupRequestService', () => {
 
 	it('should refuse group request', async () => {
 		const groupMember = mockGroupMember(true, true, 'administrator');
-		const groupRequest = mockGroupMemberRequest();
+		const groupRequest = mockGroupMember();
 
 		const command = new RefuseGroupRequestCommand(
 			groupRequest.id(),
@@ -52,7 +52,6 @@ describe('RefuseGroupRequestService', () => {
 		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());
 		groupRepository.findById.mockResolvedValue(groupRequest.group());
 		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
-		groupMemberRepository.findRequestById.mockResolvedValue(groupRequest);
 
 		await expect(service.execute(command)).resolves.not.toThrow();
 	});
@@ -68,7 +67,6 @@ describe('RefuseGroupRequestService', () => {
 		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());
 		groupRepository.findById.mockResolvedValue(groupMember.group());
 		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
-		groupMemberRepository.findRequestById.mockResolvedValue(null);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			GroupRequestNotFoundError,
@@ -77,6 +75,7 @@ describe('RefuseGroupRequestService', () => {
 
 	it('should not refuse group request if user is not authorized', async () => {
 		const groupMember = mockGroupMember(false, false, 'administrator');
+		const groupRequest = mockGroupMember();
 		groupMember
 			.role()
 			.removePermission(
@@ -84,7 +83,6 @@ describe('RefuseGroupRequestService', () => {
 					.role()
 					.findPermission(GroupPermissionName.ACCEPT_REQUESTS),
 			);
-		const groupRequest = mockGroupMemberRequest();
 
 		const command = new RefuseGroupRequestCommand(
 			groupRequest.id(),
@@ -94,7 +92,6 @@ describe('RefuseGroupRequestService', () => {
 		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());
 		groupRepository.findById.mockResolvedValue(groupRequest.group());
 		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
-		groupMemberRepository.findRequestById.mockResolvedValue(groupRequest);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			UnauthorizedAccessError,

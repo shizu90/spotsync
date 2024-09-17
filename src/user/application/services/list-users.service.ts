@@ -95,13 +95,13 @@ export class ListUsersService implements ListUsersUseCase {
 
 				return new GetUserProfileDto(
 					u.id(),
-					u.birthDate(),
 					u.createdAt(),
 					u.updatedAt(),
 					{
 						name: u.credentials().name(),
 					},
 					{
+						birth_date: u.profile().birthDate(),
 						display_name: u.profile().displayName(),
 						theme_color: u.profile().themeColor(),
 						biograph: u.profile().biograph(),

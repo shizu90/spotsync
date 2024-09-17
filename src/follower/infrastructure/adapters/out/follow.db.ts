@@ -97,7 +97,9 @@ export class FollowRepositoryImpl implements FollowRepository {
                 prisma_model.to_user.updated_at,
                 prisma_model.to_user.is_deleted
 			),
+			prisma_model.status,
 			prisma_model.followed_at,
+			prisma_model.requested_at,
 		);
 	}
 
@@ -107,6 +109,15 @@ export class FollowRepositoryImpl implements FollowRepository {
 		let query = `SELECT id FROM follows`;
 
 		if (params.filters) {
+			if (typeof params.filters['status'] === 'string') {
+				const status = params.filters['status'];
+				if (query.includes('WHERE')) {
+					query = `${query} AND status = '${status}'`;
+				} else {
+					query = `${query} WHERE status = '${status}'`;
+				}
+			}
+
 			if (typeof params.filters['fromUserId'] === 'string') {
 				const fromUserId = params.filters['fromUserId'];
 				if (query.includes('WHERE')) {
@@ -205,10 +216,19 @@ export class FollowRepositoryImpl implements FollowRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<Follow>> {
+		const status = values['status'];
 		const fromUserId = values['fromUserId'];
 		const toUserId = values['toUserId'];
 
 		let query = 'SELECT id FROM follows';
+
+		if (status) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND status = '${status}'`;
+			} else {
+				query = `${query} WHERE status = '${status}'`;
+			}
+		}
 
 		if (fromUserId) {
 			if (query.includes('WHERE')) {
@@ -257,10 +277,19 @@ export class FollowRepositoryImpl implements FollowRepository {
 	}
 
 	public async countBy(values: Object) {
+		const status = values['status'];
 		const fromUserId = values['fromUserId'];
 		const toUserId = values['toUserId'];
 
 		let query = 'SELECT id FROM follows';
+
+		if (status) {
+			if (query.includes('WHERE')) {
+				query = `${query} AND status = '${status}'`;
+			} else {
+				query = `${query} WHERE status = '${status}'`;
+			}
+		}
 
 		if (fromUserId) {
 			if (query.includes('WHERE')) {
@@ -346,6 +375,8 @@ export class FollowRepositoryImpl implements FollowRepository {
 				from_user_id: model.from().id(),
 				to_user_id: model.to().id(),
 				followed_at: model.followedAt(),
+				status: model.status(),
+				requested_at: model.requestedAt(),
 			},
 			include: {
 				from_user: {
@@ -374,6 +405,9 @@ export class FollowRepositoryImpl implements FollowRepository {
 			data: {
 				from_user_id: model.from().id(),
 				to_user_id: model.to().id(),
+				followed_at: model.followedAt(),
+				status: model.status(),
+				requested_at: model.requestedAt(),
 			},
 			include: {
 				from_user: {

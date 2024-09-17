@@ -54,7 +54,7 @@ describe('FollowService', () => {
 		expect(follow).toBeInstanceOf(FollowDto);
 		expect(follow.from_user_id).toBe(fromUser.id());
 		expect(follow.to_user_id).toBe(toUser.id());
-		expect(follow.requested_on).toEqual(follow.followed_on);
+		expect(follow.requested_at).toEqual(follow.followed_at);
 	});
 
 	it('should not follow user if user is not authorized', async () => {

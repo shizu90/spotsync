@@ -24,6 +24,6 @@ export class GetGroupDto {
 				permissions: { id: string; name: string }[];
 			};
 		} | null,
-		readonly requested_on?: Date,
+		readonly requested_at?: Date,
 	) {}
 }

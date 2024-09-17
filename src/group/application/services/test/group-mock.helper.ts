@@ -1,15 +1,15 @@
 import { randomUUID } from 'crypto';
-import { GroupMemberRequest } from 'src/group/domain/group-member-request.model';
 import { GroupMember } from 'src/group/domain/group-member.model';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
 import { GroupRole } from 'src/group/domain/group-role.model';
-import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-config.model';
+import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
+import { UserProfile } from 'src/user/domain/user-profile.model';
 import { UserStatus } from 'src/user/domain/user-status.enum';
-import { UserVisibilityConfig } from 'src/user/domain/user-visibility-config.model';
+import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { User } from 'src/user/domain/user.model';
 
@@ -18,13 +18,16 @@ export const mockUser = (): User => {
 
 	return User.create(
 		id,
-		'User',
-		'Test',
-		null,
-		null,
-		null,
-		null,
-		null,
+		UserProfile.create(
+			id,
+			new Date(),
+			'Test',
+			'#000000',
+			'',
+			'',
+			'',
+			UserVisibility.PUBLIC,
+		),
 		UserCredentials.create(
 			id,
 			'UserTest',
@@ -32,7 +35,7 @@ export const mockUser = (): User => {
 			'TestPassword321',
 			'11999999999',
 		),
-		UserVisibilityConfig.create(
+		UserVisibilitySettings.create(
 			id,
 			UserVisibility.PUBLIC,
 			UserVisibility.PUBLIC,
@@ -143,8 +146,4 @@ export const mockGroup = (): Group => {
 			GroupVisibility.PUBLIC,
 		),
 	);
-};
-
-export const mockGroupMemberRequest = (): GroupMemberRequest => {
-	return GroupMemberRequest.create(randomUUID(), mockGroup(), mockUser());
 };

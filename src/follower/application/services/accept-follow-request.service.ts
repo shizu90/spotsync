@@ -4,6 +4,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import { AcceptFollowRequestCommand } from '../ports/in/commands/accept-follow-request.command';
 import { AcceptFollowRequestUseCase } from '../ports/in/use-cases/accept-follow-request.use-case';
 import {
@@ -24,9 +25,10 @@ export class AcceptFollowRequestService implements AcceptFollowRequestUseCase {
 	public async execute(command: AcceptFollowRequestCommand): Promise<void> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
-		const followRequest = await this.followRepository.findRequestById(
-			command.followRequestId,
-		);
+		const followRequest = (await this.followRepository.findBy({
+			id: command.id,
+			status: FollowStatus.REQUESTED
+		})).at(0);
 
 		if (followRequest === null || followRequest === undefined) {
 			throw new FollowRequestNotFoundError(`Follow request not found`);
@@ -36,10 +38,8 @@ export class AcceptFollowRequestService implements AcceptFollowRequestUseCase {
 			throw new UnauthorizedAccessError(`Unauthorized access`);
 		}
 
-		const follow = followRequest.accept();
+		followRequest.accept();
 
-		await this.followRepository.store(follow);
-
-		this.followRepository.deleteRequest(followRequest.id());
+		await this.followRepository.update(followRequest);
 	}
 }

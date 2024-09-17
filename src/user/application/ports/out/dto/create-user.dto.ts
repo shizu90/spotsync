@@ -3,7 +3,6 @@ import { Dto } from 'src/common/core/common.dto';
 export class CreateUserDto extends Dto {
 	constructor(
 		readonly id: string,
-		readonly birth_date: Date,
 		readonly created_at: Date,
 		readonly updated_at: Date,
 		readonly visibility_settings: {
@@ -22,6 +21,7 @@ export class CreateUserDto extends Dto {
 			phone_number: string;
 		},
 		readonly profile: {
+			birth_date: Date,
 			display_name: string,
 			theme_color: string,
 			biograph: string,

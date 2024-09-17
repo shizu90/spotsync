@@ -1,10 +1,8 @@
 import { AcceptFollowRequestCommand } from 'src/follower/application/ports/in/commands/accept-follow-request.command';
 import { FollowCommand } from 'src/follower/application/ports/in/commands/follow.command';
-import { ListFollowRequestsCommand } from 'src/follower/application/ports/in/commands/list-follow-requests.command';
 import { ListFollowsCommand } from 'src/follower/application/ports/in/commands/list-follows.command';
 import { RefuseFollowRequestCommand } from 'src/follower/application/ports/in/commands/refuse-follow-request.command';
 import { UnfollowCommand } from 'src/follower/application/ports/in/commands/unfollow.command';
-import { ListFollowRequestsQueryRequest } from '../requests/list-follow-requests-query.request';
 import { ListFollowsQueryRequest } from '../requests/list-follows-query.request';
 
 export class FollowRequestMapper {
@@ -12,6 +10,7 @@ export class FollowRequestMapper {
 		query: ListFollowsQueryRequest,
 	): ListFollowsCommand {
 		return new ListFollowsCommand(
+			query.status,
 			query.from_user_id,
 			query.to_user_id,
 			query.sort,
@@ -21,21 +20,7 @@ export class FollowRequestMapper {
 			query.limit,
 		);
 	}
-
-	public static listFollowRequestsCommand(
-		query: ListFollowRequestsQueryRequest,
-	): ListFollowRequestsCommand {
-		return new ListFollowRequestsCommand(
-			query.from_user_id,
-			query.to_user_id,
-			query.sort,
-			query.sort_direction,
-			query.paginate,
-			query.page,
-			query.limit,
-		);
-	}
-
+	
 	public static followCommand(
 		fromUserId: string,
 		toUserId: string,

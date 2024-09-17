@@ -5,8 +5,9 @@ export class FollowDto extends Dto {
 		readonly id: string,
 		readonly from_user_id: string,
 		readonly to_user_id: string,
-		readonly followed_on?: Date,
-		readonly requested_on?: Date,
+		readonly status: string,
+		readonly followed_at?: Date,
+		readonly requested_at?: Date,
 	) {
 		super();
 	}
