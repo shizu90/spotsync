@@ -69,7 +69,7 @@ export class CreateUserService implements CreateUserUseCase {
 			userId,
 			command.name,
 			command.email,
-			command.password,
+			await this.encryptPasswordService.encrypt(command.password),
 			command.phoneNumber,
 		);
 
@@ -142,6 +142,7 @@ export class CreateUserService implements CreateUserUseCase {
 
 		return new CreateUserDto(
 			user.id(),
+			user.status(),
 			user.createdAt(),
 			user.updatedAt(),
 			{

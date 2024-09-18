@@ -12,7 +12,7 @@ export class UserAddressRequestMapper {
 		addressId: string,
 		userId: string,
 	): GetUserAddressCommand {
-		return new GetUserAddressCommand(userId, addressId);
+		return new GetUserAddressCommand(addressId, userId);
 	}
 
 	public static listUserAddressesCommand(

@@ -62,7 +62,7 @@ export class UserRepositoryImpl implements UserRepository {
 		params: PaginateParameters,
 	): Promise<Pagination<User>> {
 		let query =
-			'SELECT users.id FROM users JOIN user_credentials ON user_credentials.user_id = users.id';
+			'SELECT users.id FROM users JOIN user_credentials ON user_credentials.user_id = users.id JOIN user_profiles ON user_profiles.user_id = users.id';
 
 		if (params.filters) {
 			if (typeof params.filters['name'] === 'string') {
@@ -74,30 +74,12 @@ export class UserRepositoryImpl implements UserRepository {
 				}
 			}
 
-			if (typeof params.filters['firstName'] === 'string') {
-				const firstName = params.filters['firstName'];
+			if (typeof params.filters['displayName'] === 'string') {
+				const displayName = params.filters['displayName'];
 				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(users.first_name) LIKE '%${firstName.toLowerCase()}%'`;
+					query = `${query} AND LOWER(user_profiles.display_name) LIKE '%${displayName.toLowerCase()}%'`;
 				} else {
-					query = `${query} WHERE LOWER(users.first_name) LIKE '%${firstName.toLowerCase()}%'`;
-				}
-			}
-
-			if (typeof params.filters['lastName'] === 'string') {
-				const lastName = params.filters['lastName'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(users.last_name) LIKE '%${lastName.toLowerCase()}%'`;
-				} else {
-					query = `${query} WHERE LOWER(users.last_name) LIKE '%${lastName.toLowerCase()}%'`;
-				}
-			}
-
-			if (typeof params.filters['fullName'] === 'string') {
-				const fullName = params.filters['fullName'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER((users.first_name || COALESCE(users.last_name, ''))) LIKE '%${fullName.trim().toLowerCase()}%'`;
-				} else {
-					query = `${query} WHERE LOWER((users.first_name || COALESCE(users.last_name, ''))) LIKE '%${fullName.trim().toLowerCase()}%'`;
+					query = `${query} WHERE LOWER(user_profiles.display_name) LIKE '%${displayName.toLowerCase()}%'`;
 				}
 			}
 
@@ -130,15 +112,9 @@ export class UserRepositoryImpl implements UserRepository {
 		let orderBy = {};
 
 		switch (sort) {
-			case 'full_name':
-			case 'fullName':
-			case 'first_name':
-			case 'firstName':
-				orderBy = { first_name: sortDirection };
-				break;
-			case 'last_name':
-			case 'lastName':
-				orderBy = { last_name: sortDirection };
+			case 'displayName':
+			case 'display_name':
+				orderBy = { profile: { display_name: sortDirection } };
 				break;
 			case 'created_at':
 			case 'createdAt':

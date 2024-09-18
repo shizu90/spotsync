@@ -56,7 +56,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Group>> {
-		let query = `SELECT groups.id FROM groups JOIN group_visibility_configs ON group_visibility_configs.group_id = groups.id`;
+		let query = `SELECT groups.id FROM groups JOIN group_visibility_settings ON group_visibility_settings.group_id = groups.id`;
 
 		if (params.filters) {
 			if (typeof params.filters['name'] === 'string') {
@@ -80,9 +80,9 @@ export class GroupRepositoryImpl implements GroupRepository {
 			if (typeof params.filters['groupVisibility'] === 'string') {
 				const groupVisibility = params.filters['groupVisibility'];
 				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(group_visibility_configs.group_visibility) = '${groupVisibility.toLowerCase()}'`;
+					query = `${query} AND LOWER(group_visibility_settings.group_visibility) = '${groupVisibility.toLowerCase()}'`;
 				} else {
-					query = `${query} WHERE LOWER(group_visibility_configs.group_visibility) = '${groupVisibility.toLowerCase()}'`;
+					query = `${query} WHERE LOWER(group_visibility_settings.group_visibility) = '${groupVisibility.toLowerCase()}'`;
 				}
 			}
 		}
@@ -146,7 +146,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		const visibility = values['visibility'];
 
 		let query =
-			'SELECT groups.id FROM groups JOIN group_visibility_configs ON group_visibility_configs.group_id = groups.id';
+			'SELECT groups.id FROM groups JOIN group_visibility_settings ON group_visibility_settings.group_id = groups.id';
 
 		if (name) {
 			if (query.includes('WHERE')) {
@@ -166,9 +166,9 @@ export class GroupRepositoryImpl implements GroupRepository {
 
 		if (visibility) {
 			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(group_visibility_configs.group_visibility) = '${visibility.toLowerCase()}'`;
+				query = `${query} AND LOWER(group_visibility_settings.group_visibility) = '${visibility.toLowerCase()}'`;
 			} else {
-				query = `${query} WHERE LOWER(group_visibility_configs.group_visibility) = '${visibility.toLowerCase()}'`;
+				query = `${query} WHERE LOWER(group_visibility_settings.group_visibility) = '${visibility.toLowerCase()}'`;
 			}
 		}
 
@@ -193,7 +193,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		const visibility = values['visibility'];
 
 		let query =
-			'SELECT groups.id FROM groups JOIN group_visibility_configs ON group_visibility_configs.group_id = groups.id';
+			'SELECT groups.id FROM groups JOIN group_visibility_settings ON group_visibility_settings.group_id = groups.id';
 
 		if (name) {
 			if (query.includes('WHERE')) {
@@ -213,9 +213,9 @@ export class GroupRepositoryImpl implements GroupRepository {
 
 		if (visibility) {
 			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(group_visibility_configs.group_visibility) = '${visibility.toLowerCase()}'`;
+				query = `${query} AND LOWER(group_visibility_settings.group_visibility) = '${visibility.toLowerCase()}'`;
 			} else {
-				query = `${query} WHERE LOWER(group_visibility_configs.group_visibility) = '${visibility.toLowerCase()}'`;
+				query = `${query} WHERE LOWER(group_visibility_settings.group_visibility) = '${visibility.toLowerCase()}'`;
 			}
 		}
 

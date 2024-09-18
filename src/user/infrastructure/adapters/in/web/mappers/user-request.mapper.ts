@@ -29,9 +29,7 @@ export class UserRequestMapper {
 		query: ListUsersQueryRequest,
 	): ListUsersCommand {
 		return new ListUsersCommand(
-			query.first_name,
-			query.last_name,
-			query.full_name,
+			query.display_name,
 			query.name,
 			query.sort,
 			query.sort_direction,
@@ -70,7 +68,7 @@ export class UserRequestMapper {
 			request.display_name,
 			request.profile_theme_color,
 			request.biograph,
-			request.birth_date,
+			request.birth_date ? new Date(request.birth_date) : null,
 		);
 	}
 

@@ -137,6 +137,7 @@ export class UserController extends ApiController {
 				[
 					new GetUserProfileDto(
 						'uuid',
+						'act',
 						new Date(),
 						new Date(),
 						{
@@ -229,6 +230,7 @@ export class UserController extends ApiController {
 		example: {
 			data: new GetUserProfileDto(
 				'uuid',
+				'act',
 				new Date(),
 				new Date(),
 				{
@@ -308,6 +310,7 @@ export class UserController extends ApiController {
 		example: {
 			data: new CreateUserDto(
 				'uuid',
+				'act',
 				new Date(),
 				new Date(),
 				{

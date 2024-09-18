@@ -42,9 +42,7 @@ export class ListUsersService implements ListUsersUseCase {
 		const pagination = await this.userRepository.paginate({
 			filters: {
 				name: command.name,
-				firstName: command.firstName,
-				lastName: command.lastName,
-				fullName: command.fullName,
+				displayName: command.displayName,
 				isDeleted: false,
 			},
 			sort: command.sort,
@@ -95,6 +93,7 @@ export class ListUsersService implements ListUsersUseCase {
 
 				return new GetUserProfileDto(
 					u.id(),
+					u.status(),
 					u.createdAt(),
 					u.updatedAt(),
 					{

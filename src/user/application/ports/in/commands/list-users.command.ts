@@ -3,9 +3,7 @@ import { SortDirection } from 'src/common/enums/sort-direction.enum';
 
 export class ListUsersCommand extends Command {
 	constructor(
-		readonly firstName?: string,
-		readonly lastName?: string,
-		readonly fullName?: string,
+		readonly displayName?: string,
 		readonly name?: string,
 		readonly sort?: string,
 		readonly sortDirection?: SortDirection,

@@ -27,7 +27,8 @@ export class UpdateUserProfileRequest extends ApiRequest {
 	public biograph?: string;
 
 	@ApiProperty({ required: false })
+	@MaxLength(10)
 	@IsDateString()
 	@IsOptional()
-	public birth_date?: Date;
+	public birth_date?: string;
 }

@@ -22,21 +22,7 @@ export class ListUsersQueryRequest extends ApiRequest {
 	})
 	@IsOptional()
 	@IsString()
-	public first_name?: string;
-
-	@ApiProperty({
-		required: false,
-	})
-	@IsOptional()
-	@IsString()
-	public last_name?: string;
-
-	@ApiProperty({
-		required: false,
-	})
-	@IsOptional()
-	@IsString()
-	public full_name?: string;
+	public display_name?: string;
 
 	@ApiProperty({
 		required: false,

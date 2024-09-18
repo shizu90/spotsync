@@ -89,6 +89,7 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 
 		return new GetUserProfileDto(
 			user.id(),
+			user.status(),
 			user.createdAt(),
 			user.updatedAt(),
 			{

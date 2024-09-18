@@ -33,8 +33,11 @@ export class ActivateUserService implements ActivateUserUseCase {
 
         const user = activationRequest.user();
 
+        activationRequest.approve();
+
         user.activate();
 
+        await this.activationRequestRepository.update(activationRequest);
         await this.userRepository.update(user);
 
         if (command.autoLogin) {

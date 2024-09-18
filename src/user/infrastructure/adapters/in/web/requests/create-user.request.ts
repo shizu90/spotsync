@@ -57,8 +57,9 @@ class Address {
 
 export class CreateUserRequest extends ApiRequest {
 	@ApiProperty({ required: true })
+	@MaxLength(10)
 	@IsDateString()
-	public birth_date: Date;
+	public birth_date: string;
 
 	@ApiProperty({ required: true })
 	@IsString()
