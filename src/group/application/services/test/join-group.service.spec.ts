@@ -3,9 +3,9 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { JoinGroupCommand } from '../../ports/in/commands/join-group.command';
-import { AcceptGroupRequestDto } from '../../ports/out/dto/accept-group-request.dto';
 import { JoinGroupDto } from '../../ports/out/dto/join-group.dto';
 import {
 	GroupMemberRepository,
@@ -19,7 +19,7 @@ import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from '../../ports/out/group.repository';
-import { AlreadyMemberOfGroup } from '../errors/already-member-of-group.error';
+import { AlreadyMemberOfGroupError } from '../errors/already-member-of-group.error';
 import { AlreadyRequestedToJoinError } from '../errors/already-requested-to-join.error';
 import { JoinGroupService } from '../join-group.service';
 import {
@@ -65,7 +65,7 @@ describe('JoinGroupService', () => {
 
 		const joined = await service.execute(command);
 
-		expect(joined).toBeInstanceOf(AcceptGroupRequestDto);
+		expect(joined).toBeInstanceOf(JoinGroupDto);
 	});
 
 	it('should request to join group', async () => {
@@ -103,7 +103,7 @@ describe('JoinGroupService', () => {
 		groupMemberRepository.findBy.mockResolvedValue([mockGroupMember()]);
 
 		await expect(service.execute(command)).rejects.toThrow(
-			AlreadyMemberOfGroup,
+			AlreadyMemberOfGroupError,
 		);
 	});
 
@@ -121,7 +121,9 @@ describe('JoinGroupService', () => {
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		groupRepository.findById.mockResolvedValue(group);
 		groupRoleRepository.findByName.mockResolvedValue(groupRole);
-		groupMemberRepository.findBy.mockResolvedValue([]);
+		groupMemberRepository.findBy.mockResolvedValue([
+			mockGroupMember(false, false, 'member', GroupMemberStatus.REQUESTED)
+		]);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			AlreadyRequestedToJoinError,
@@ -139,13 +141,23 @@ describe('JoinGroupService', () => {
 
 		const command = new JoinGroupCommand(group.id());
 
+		const groupMember = mockGroupMember(
+			false,
+			false,
+			'member',
+			GroupMemberStatus.ACTIVE,
+		);
+
+		console.log(groupMember.status() == GroupMemberStatus.ACTIVE);
+
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		groupRepository.findById.mockResolvedValue(group);
 		groupRoleRepository.findByName.mockResolvedValue(groupRole);
-		groupMemberRepository.findBy.mockResolvedValue([mockGroupMember()]);
+		groupMemberRepository.findBy
+			.mockResolvedValue([groupMember]);
 
 		await expect(service.execute(command)).rejects.toThrow(
-			AlreadyMemberOfGroup,
+			AlreadyMemberOfGroupError,
 		);
 	});
 });

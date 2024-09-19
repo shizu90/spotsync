@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GroupMember } from 'src/group/domain/group-member.model';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
@@ -120,6 +121,7 @@ export const mockGroupMember = (
 	isCreator = false,
 	isImmutable = false,
 	role = 'member',
+	status = GroupMemberStatus.REQUESTED
 ): GroupMember => {
 	return GroupMember.create(
 		randomUUID(),
@@ -127,6 +129,7 @@ export const mockGroupMember = (
 		mockUser(),
 		mockGroupRole(isImmutable, role),
 		isCreator,
+		status,
 	);
 };
 

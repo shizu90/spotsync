@@ -14,7 +14,7 @@ import {
 	GroupRepositoryProvider,
 } from '../../ports/out/group.repository';
 import { GetGroupService } from '../get-group.service';
-import { mockGroup, mockUser } from './group-mock.helper';
+import { mockGroup, mockGroupMember, mockUser } from './group-mock.helper';
 
 describe('GetGroupService', () => {
 	let service: GetGroupService;
@@ -42,7 +42,9 @@ describe('GetGroupService', () => {
 
 		getAuthenticatedUser.execute.mockResolvedValue(mockUser());
 		groupRepository.findById.mockResolvedValue(group);
-		groupMemberRepository.findBy.mockResolvedValue([]);
+		groupMemberRepository.findBy.mockResolvedValue([
+			mockGroupMember()
+		]);
 
 		const g = await service.execute(command);
 

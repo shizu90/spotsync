@@ -1,4 +1,4 @@
-export class AlreadyMemberOfGroup extends Error {
+export class AlreadyMemberOfGroupError extends Error {
 	constructor(message: string) {
 		super(message);
 	}

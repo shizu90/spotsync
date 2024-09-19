@@ -23,7 +23,7 @@ import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from '../ports/out/group.repository';
-import { AlreadyMemberOfGroup } from './errors/already-member-of-group.error';
+import { AlreadyMemberOfGroupError } from './errors/already-member-of-group.error';
 import { AlreadyRequestedToJoinError } from './errors/already-requested-to-join.error';
 import { GroupRoleNotFoundError } from './errors/group-role-not-found.error';
 
@@ -63,14 +63,14 @@ export class JoinGroupService implements JoinGroupUseCase {
 		})).at(0);
 
 		if (groupMember !== null && groupMember !== undefined) {
-			if (groupMember.status() === GroupMemberStatus.REQUESTED) {
+			if (groupMember.status() == GroupMemberStatus.REQUESTED) {
 				throw new AlreadyRequestedToJoinError(
 					`Already requested to join group`,
 				);
 			}
 
-			if (groupMember.status() === GroupMemberStatus.ACTIVE) {
-				throw new AlreadyMemberOfGroup(`Already member of the group`);
+			if (groupMember.status() == GroupMemberStatus.ACTIVE) {
+				throw new AlreadyMemberOfGroupError(`Already member of the group`);
 			}
 
 			groupMember.request();
