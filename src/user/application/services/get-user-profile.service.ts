@@ -127,7 +127,8 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 				country_code: userMainAddress.countryCode(),
 				created_at: userMainAddress.createdAt(),
 				updated_at: userMainAddress.updatedAt(),
-			}
+			},
+			isFollowing,
 		);
 	}
 }

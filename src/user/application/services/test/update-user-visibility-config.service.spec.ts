@@ -5,22 +5,22 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
-import { UpdateUserVisibilityConfigCommand } from '../../ports/in/commands/update-user-visibility-settings.command';
+import { UpdateUserVisibilitySettingsCommand } from '../../ports/in/commands/update-user-visibility-settings.command';
 import {
 	UserRepository,
 	UserRepositoryProvider,
 } from '../../ports/out/user.repository';
-import { UpdateUserVisibilityConfigService } from '../update-user-visibility-config.service';
+import { UpdateUserVisibilitySettingsService } from '../update-user-visibility-settings.service';
 import { mockUser } from './user-mock.helper';
 
-describe('UpdateUserVisibilityConfigService', () => {
-	let service: UpdateUserVisibilityConfigService;
+describe('UpdateUserVisibilitySettingsService', () => {
+	let service: UpdateUserVisibilitySettingsService;
 	let userRepository: jest.Mocked<UserRepository>;
 	let getAuthenticatedUser: jest.Mocked<GetAuthenticatedUserUseCase>;
 
 	beforeAll(() => {
 		const { unit, unitRef } = TestBed.create(
-			UpdateUserVisibilityConfigService,
+			UpdateUserVisibilitySettingsService,
 		).compile();
 
 		service = unit;
@@ -32,10 +32,10 @@ describe('UpdateUserVisibilityConfigService', () => {
 		expect(service).toBeDefined();
 	});
 
-	it('should update user visibility config', async () => {
+	it('should update user visibility settings', async () => {
 		const user = mockUser();
 
-		const command = new UpdateUserVisibilityConfigCommand(
+		const command = new UpdateUserVisibilitySettingsCommand(
 			user.id(),
 			UserVisibility.PRIVATE,
 			UserVisibility.PRIVATE,
@@ -53,7 +53,7 @@ describe('UpdateUserVisibilityConfigService', () => {
 	it('should not update user visibility config if user is not authorized', async () => {
 		const user = mockUser();
 
-		const command = new UpdateUserVisibilityConfigCommand(user.id());
+		const command = new UpdateUserVisibilitySettingsCommand(user.id());
 
 		getAuthenticatedUser.execute.mockResolvedValue(mockUser());
 

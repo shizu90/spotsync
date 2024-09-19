@@ -47,8 +47,6 @@ describe('ListUsersService', () => {
 		const command = new ListUsersCommand(
 			null,
 			null,
-			null,
-			null,
 			'created_at',
 			SortDirection.DESC,
 			1,
