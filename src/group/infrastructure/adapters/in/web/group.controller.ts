@@ -39,6 +39,7 @@ import {
 	DeleteGroupUseCase,
 	DeleteGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/delete-group.use-case';
+import { GetGroupHistoryUseCase, GetGroupHistoryUseCaseProvider } from 'src/group/application/ports/in/use-cases/get-group-history.use-case';
 import {
 	GetGroupUseCase,
 	GetGroupUseCaseProvider,
@@ -56,6 +57,7 @@ import {
 	UpdateGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group.use-case';
 import { CreateGroupDto } from 'src/group/application/ports/out/dto/create-group.dto';
+import { GetGroupLogDto } from 'src/group/application/ports/out/dto/get-group-log.dto';
 import { GetGroupDto } from 'src/group/application/ports/out/dto/get-group.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
 import { GroupRequestMapper } from './mappers/group-request.mapper';
@@ -105,6 +107,8 @@ export class GroupController extends ApiController {
 		protected listGroupsUseCase: ListGroupsUseCase,
 		@Inject(GetGroupUseCaseProvider)
 		protected getGroupUseCase: GetGroupUseCase,
+		@Inject(GetGroupHistoryUseCaseProvider)
+		protected getGroupHistoryUseCase: GetGroupHistoryUseCase,
 	) {
 		super();
 	}
@@ -363,6 +367,44 @@ export class GroupController extends ApiController {
 
 		res.status(HttpStatus.NO_CONTENT).json({
 			data: {},
+		});
+	}
+
+	@ApiOperation({ summary: 'Get group history' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse(
+			'string',
+			'2024-07-24 12:00:00',
+			'string',
+			'string',
+		),
+	})
+	@ApiOkResponse({
+		example: {
+			data: new Pagination([
+				new GetGroupLogDto(
+					'uuid',
+					'string',
+					'uuid',
+					new Date(),
+				)
+			], 1, 1, 12)
+		}
+	})
+	@UseGuards(AuthGuard)
+	@Get(':id/history')
+	public async getHistory(
+		@Param('id') id: string,
+		@Query() query: ListGroupsQueryRequest,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = GroupRequestMapper.getGroupHistoryCommand(id, query);
+
+		const data = await this.getGroupHistoryUseCase.execute(command);
+
+		res.status(HttpStatus.OK).json({
+			data: data,
 		});
 	}
 }
