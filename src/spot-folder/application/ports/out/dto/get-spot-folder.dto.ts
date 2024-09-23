@@ -17,7 +17,7 @@ export class GetSpotFolderDto extends Dto {
                     area: string,
                     sub_area: string,
                     country_code: string,
-                    location: string,
+                    locality: string,
                     latitude: number,
                     longitude: number,
                 },
@@ -28,8 +28,7 @@ export class GetSpotFolderDto extends Dto {
                 }[],
                 creator: {
                     id: string,
-                    first_name: string,
-                    last_name: string,
+                    display_name: string,
                     profile_picture: string,
                     credentials: {
                         name: string,
@@ -41,8 +40,7 @@ export class GetSpotFolderDto extends Dto {
         }[],
         readonly creator: {
             id: string,
-            first_name: string,
-            last_name: string,
+            display_name: string,
             profile_picture: string,
             credentials: {
                 name: string,
