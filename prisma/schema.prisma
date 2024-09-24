@@ -13,8 +13,7 @@ model User {
   created_at               DateTime              @default(now())
   updated_at               DateTime              @default(now())
   is_deleted               Boolean               @default(false)
-  status                   String?               @db.VarChar(3) 
-  favorited_spots          FavoritedSpot[]
+  status                   String?               @db.VarChar(3)
   followers                Follow[]              @relation("from_user")
   following                Follow[]              @relation("to_user")
   member_of                GroupMember[]
@@ -30,7 +29,7 @@ model User {
   activation_requests      ActivationRequest[]
   comments                 Comment[]
   spotFolders              SpotFolder[]
-  favorited_spot_folders   FavoritedSpotFolder[]
+  favorites                Favorite[]
 
   @@map("users")
 }
@@ -256,7 +255,6 @@ model Spot {
   creator_id   String
   created_at   DateTime        @default(now())
   updated_at   DateTime        @default(now())
-  favorited_by FavoritedSpot[]
   address      SpotAddress?
   photos       SpotPhoto[]
   creator      User            @relation(fields: [creator_id], references: [id], onDelete: Cascade)
@@ -299,17 +297,6 @@ model Comment {
   user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("comments")
-}
-
-model FavoritedSpot {
-  id           String   @id @default(uuid())
-  user_id      String
-  spot_id      String
-  favorited_at DateTime @default(now())
-  spot         Spot     @relation(fields: [spot_id], references: [id], onDelete: Cascade)
-  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("favorited_spots")
 }
 
 model VisitedSpot {
@@ -358,7 +345,6 @@ model SpotFolder {
   user_id      String
   creator      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   spots        SpotFolderItem[]
-  favorited_by FavoritedSpotFolder[]
 
   @@map("spot_folders")
 }
@@ -375,13 +361,13 @@ model SpotFolderItem {
   @@map("spot_folder_items")
 }
 
-model FavoritedSpotFolder {
-  id              String      @id @default(uuid())
+model Favorite {
+  id              String   @id @default(uuid())
+  subject         String   @db.VarChar(120)
+  subject_id      String
   user_id         String
-  spot_folder_id  String
-  favorited_at    DateTime    @default(now())
-  spot_folder     SpotFolder  @relation(fields: [spot_folder_id], references: [id], onDelete: Cascade)
-  user            User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  created_at      DateTime @default(now())
+  user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@map("favorited_spot_folders")
+  @@map("favorites")
 }
