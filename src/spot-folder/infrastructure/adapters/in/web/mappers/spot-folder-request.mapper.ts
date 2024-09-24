@@ -20,7 +20,7 @@ export class SpotFolderRequestMapper {
         return new GetSpotFolderCommand(id);
     }
 
-    public static listSpotFolderCommand(query: ListSpotFoldersQueryRequest): ListSpotFoldersCommand {
+    public static listSpotFoldersCommand(query: ListSpotFoldersQueryRequest): ListSpotFoldersCommand {
         return new ListSpotFoldersCommand(
             query.name,
             query.creator_id,

@@ -1,4 +1,5 @@
 import { Dto } from "src/common/core/common.dto";
+import { SpotFolderVisibility } from "src/spot-folder/domain/spot-folder-visibility.enum";
 
 export class GetSpotFolderDto extends Dto {
     constructor(
@@ -6,7 +7,7 @@ export class GetSpotFolderDto extends Dto {
         readonly name: string,
         readonly description: string,
         readonly hex_color: string,
-        readonly visibility: string,
+        readonly visibility: SpotFolderVisibility,
         readonly items: {
             spot: {
                 id: string,
