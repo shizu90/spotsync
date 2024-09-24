@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { ApiRequest } from 'src/common/web/common.request';
 
 export class CreateUserAddressRequest extends ApiRequest {
@@ -19,15 +19,18 @@ export class CreateUserAddressRequest extends ApiRequest {
 
 	@ApiProperty({ required: true })
 	@IsString()
-	public locality: string;
-
-	@ApiProperty({ required: true })
-	@IsString()
 	@MaxLength(2)
 	@MinLength(2)
 	public country_code: string;
 
 	@ApiProperty({ required: true })
+	@IsOptional()
+	@IsString()
+	@MaxLength(255)
+	public locality?: string;
+
+	@ApiProperty({ required: true })
+	@IsOptional()
 	@IsBoolean()
-	public main: boolean;
+	public main: boolean = false;
 }

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiQuery } from '@nestjs/swagger';
 import {
 	IsBoolean,
 	IsEnum,
@@ -11,6 +11,7 @@ import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { ApiRequest } from 'src/common/web/common.request';
 import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 
+@ApiQuery({})
 export class ListFollowsQueryRequest extends ApiRequest {
 	@ApiProperty({
 		required: false,

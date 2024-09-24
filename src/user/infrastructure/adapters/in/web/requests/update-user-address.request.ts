@@ -19,16 +19,19 @@ export class UpdateUserAddressRequest extends ApiRequest {
 	@ApiProperty({ required: false })
 	@IsString()
 	@IsOptional()
+	@MaxLength(255)
 	public area?: string;
 
 	@ApiProperty({ required: false })
 	@IsString()
 	@IsOptional()
+	@MaxLength(255)
 	public sub_area?: string;
 
 	@ApiProperty({ required: false })
 	@IsString()
 	@IsOptional()
+	@MaxLength(255)
 	public locality?: string;
 
 	@ApiProperty({ required: false })

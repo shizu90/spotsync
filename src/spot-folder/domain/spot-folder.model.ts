@@ -134,7 +134,7 @@ export class SpotFolder extends Model {
 		);
 
 		if (!exists) {
-			const item = SpotFolderItem.create(randomUUID(), spot, this._items.length + 1);
+			const item = SpotFolderItem.create(spot, this._items.length + 1);
 
 			this._items.push(item);
 			this._updatedAt = new Date();

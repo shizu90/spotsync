@@ -19,18 +19,22 @@ class Address {
 		required: true,
 	})
 	@IsString()
+	@MaxLength(255)
 	public area: string;
 
 	@ApiProperty({
 		required: true,
 	})
 	@IsString()
+	@MaxLength(255)
 	public sub_area: string;
 
 	@ApiProperty({
 		required: true,
 	})
 	@IsString()
+	@MaxLength(2)
+	@MinLength(2)
 	public country_code: string;
 
 	@ApiProperty({
@@ -38,6 +42,7 @@ class Address {
 	})
 	@IsOptional()
 	@IsString()
+	@MaxLength(255)
 	public locality?: string;
 
 	@ApiProperty({

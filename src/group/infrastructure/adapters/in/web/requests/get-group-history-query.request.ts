@@ -1,8 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsEnum, IsLowercase, IsNumber, IsOptional, IsString } from "class-validator";
+import { ApiProperty, ApiQuery } from "@nestjs/swagger";
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { ApiRequest } from "src/common/web/common.request";
 
+@ApiQuery({})
 export class GetGroupHistoryQueryRequest extends ApiRequest {
     @ApiProperty({ required: false })
 	@IsOptional()
@@ -11,7 +12,6 @@ export class GetGroupHistoryQueryRequest extends ApiRequest {
 
 	@ApiProperty({ required: false, enum: SortDirection })
 	@IsOptional()
-	@IsLowercase()
 	@IsEnum(SortDirection)
 	public sort_direction?: SortDirection;
 

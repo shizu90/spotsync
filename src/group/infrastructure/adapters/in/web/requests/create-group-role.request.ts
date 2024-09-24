@@ -24,6 +24,6 @@ export class CreateGroupRoleRequest extends ApiRequest {
 	@ApiProperty({ required: true })
 	@IsArray()
 	@ValidateNested()
-	@IsUUID(4)
+	@IsUUID(4, { each: true })
 	public permissions: string[];
 }
