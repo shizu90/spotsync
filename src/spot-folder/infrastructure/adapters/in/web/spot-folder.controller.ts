@@ -8,12 +8,10 @@ import { ErrorResponse } from "src/common/web/common.error";
 import { AddSpotUseCase, AddSpotUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/add-spot.use-case";
 import { CreateSpotFolderUseCase, CreateSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/create-spot-folder.use-case";
 import { DeleteSpotFolderUseCase, DeleteSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/delete-spot-folder.use-case";
-import { FavoriteSpotFolderUseCase, FavoriteSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/favorite-spot-folder.use.case";
 import { GetSpotFolderUseCase, GetSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/get-spot-folder.use-case";
 import { ListSpotFoldersUseCase, ListSpotFoldersUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/list-spot-folders.use-case";
 import { RemoveSpotUseCase, RemoveSpotUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/remove-spot.use-case";
 import { SortItemsUseCase, SortItemsUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/sort-items.use-case";
-import { UnfavoriteSpotFolderUseCase, UnfavoriteSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/unfavorite-spot-folder.use-case";
 import { UpdateSpotFolderUseCase, UpdateSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/update-spot-folder.use-case";
 import { CreateSpotFolderDto } from "src/spot-folder/application/ports/out/dto/create-spot-folder.dto";
 import { GetSpotFolderDto } from "src/spot-folder/application/ports/out/dto/get-spot-folder.dto";
@@ -56,10 +54,6 @@ export class SpotFolderController extends ApiController {
         protected createSpotFolderUseCase: CreateSpotFolderUseCase,
         @Inject(UpdateSpotFolderUseCaseProvider)
         protected updateSpotFolderUseCase: UpdateSpotFolderUseCase,
-        @Inject(FavoriteSpotFolderUseCaseProvider)
-        protected favoriteSpotFolderUseCase: FavoriteSpotFolderUseCase,
-        @Inject(UnfavoriteSpotFolderUseCaseProvider)
-        protected unfavoriteSpotFolderUseCase: UnfavoriteSpotFolderUseCase,
         @Inject(SortItemsUseCaseProvider)
         protected sortItemsUseCase: SortItemsUseCase,
         @Inject(DeleteSpotFolderUseCaseProvider)
@@ -305,58 +299,6 @@ export class SpotFolderController extends ApiController {
         const command = SpotFolderRequestMapper.deleteSpotFolderCommand(id);
 
         const data = await this.deleteSpotFolderUseCase.execute(command);
-
-        res.status(HttpStatus.NO_CONTENT).json({
-            data: data
-        });
-    }
-
-    @ApiOperation({ summary: 'Favorite spot folder' })
-    @ApiNoContentResponse()
-    @ApiNotFoundResponse({
-        example: new ErrorResponse(
-            'string',
-            '2024-07-24 12:00:00',
-            'string',
-            'string',
-        )
-    })
-    @UseGuards(AuthGuard)
-    @Post(':id/favorite')
-    public async favorite(
-        @Param('id') id: string,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.favoriteSpotFolderCommand(id);
-
-        const data = await this.favoriteSpotFolderUseCase.execute(command);
-
-        res.status(HttpStatus.NO_CONTENT).json({
-            data: data
-        });
-    }
-
-    @ApiOperation({ summary: 'Unfavorite spot folder' })
-    @ApiNoContentResponse()
-    @ApiNotFoundResponse({
-        example: new ErrorResponse(
-            'string',
-            '2024-07-24 12:00:00',
-            'string',
-            'string',
-        )
-    })
-    @UseGuards(AuthGuard)
-    @Delete(':id/unfavorite')
-    public async unfavorite(
-        @Param('id') id: string,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.unfavoriteSpotFolderCommand(id);
-
-        const data = await this.unfavoriteSpotFolderUseCase.execute(command);
 
         res.status(HttpStatus.NO_CONTENT).json({
             data: data

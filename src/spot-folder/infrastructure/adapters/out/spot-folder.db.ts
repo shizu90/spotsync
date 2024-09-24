@@ -3,7 +3,6 @@ import { PaginateParameters, Pagination } from "src/common/core/common.repositor
 import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { PrismaService } from "src/prisma/prisma.service";
 import { SpotFolderRepository } from "src/spot-folder/application/ports/out/spot-folder.repository";
-import { FavoritedSpotFolder } from "src/spot-folder/domain/favorited-spot-folder.model";
 import { SpotFolderItem } from "src/spot-folder/domain/spot-folder-item.model";
 import { SpotFolder } from "src/spot-folder/domain/spot-folder.model";
 import { SpotAddress } from "src/spot/domain/spot-address.model";
@@ -137,53 +136,6 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
             }),
             prisma_model.created_at,
             prisma_model.updated_at
-        );
-    }
-
-    private mapFavoritedSpotFolderToDomain(prisma_model: any): FavoritedSpotFolder {
-        if (prisma_model === undefined || prisma_model === null) return null;
-
-        return FavoritedSpotFolder.create(
-            prisma_model.id,
-            this.mapSpotFolderToDomain(prisma_model.spot_folder),
-            User.create(
-                prisma_model.user.id,
-                UserProfile.create(
-                    prisma_model.user.id,
-                    prisma_model.user.profile.birth_date,
-                    prisma_model.user.profile.display_name,
-                    prisma_model.user.profile.theme_color,
-                    prisma_model.user.profile.profile_picture,
-                    prisma_model.user.profile.banner_picture,
-                    prisma_model.user.profile.biograph,
-                    prisma_model.user.profile.visibility,
-                ),
-                UserCredentials.create(
-                    prisma_model.user.id,
-                    prisma_model.user.credentials.name,
-                    prisma_model.user.credentials.email,
-                    prisma_model.user.credentials.password,
-                    prisma_model.user.credentials.phone_number,
-                    prisma_model.user.credentials.last_login,
-                    prisma_model.user.credentials.last_logout,
-                ),
-                UserVisibilitySettings.create(
-                    prisma_model.user.id,
-                    prisma_model.user.visibility_settings.profile,
-                    prisma_model.user.visibility_settings.addresses,
-                    prisma_model.user.visibility_settings.spot_folders,
-                    prisma_model.user.visibility_settings.visited_spots,
-                    prisma_model.user.visibility_settings.posts,
-                    prisma_model.user.visibility_settings.favorite_spots,
-                    prisma_model.user.visibility_settings.favorite_spot_folders,
-                    prisma_model.user.visibility_settings.favorite_spot_events,
-                ),
-                prisma_model.user.status,
-                prisma_model.user.created_at,
-                prisma_model.user.updated_at,
-                prisma_model.user.is_deleted
-            ),
-            prisma_model.favorited_at
         );
     }
 
@@ -418,66 +370,6 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
         return items.map(item => this.mapSpotFolderToDomain(item));
     }
 
-    public async findFavoritedSpotFolderBy(values: Object): Promise<Array<FavoritedSpotFolder>> {
-        const userId = values['userId'] ?? null;
-        const spotFolderId = values['spotFolderId'] ?? null;
-
-        let query = `SELECT favorited_spot_folders.id FROM favorited_spot_folders`;
-
-        if (userId !== null) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND user_id = '${userId}'`;
-            } else {
-                query = `${query} WHERE user_id = '${userId}'`;
-            }
-        }
-
-        if (spotFolderId !== null) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND spot_folder_id = '${spotFolderId}'`;
-            } else {
-                query = `${query} WHERE spot_folder_id = '${spotFolderId}'`;
-            }
-        }
-
-        const ids = await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
-        const items = await this.prismaService.favoritedSpotFolder.findMany({
-            where: { id: { in: ids.map((row) => row.id) } },
-            include: {
-                user: {
-                    include: {
-                        credentials: true,
-                        visibility_settings: true,
-                        profile: true,
-                    }
-                },
-                spot_folder: {
-                    include: {
-                        creator: {
-                            include: {
-                                credentials: true,
-                                visibility_settings: true,
-                                profile: true,
-                            }
-                        },
-                        spots: {
-                            include: {
-                                spot: {
-                                    include: {
-                                        address: true
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        return items.map(item => this.mapFavoritedSpotFolderToDomain(item));
-    }
-
     public async findById(id: string): Promise<SpotFolder> {
         const item = await this.prismaService.spotFolder.findUnique({
             where: {
@@ -552,19 +444,6 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
         return this.mapSpotFolderToDomain(spotFolder);
     }
 
-    public async storeFavoritedSpotFolder(model: FavoritedSpotFolder): Promise<FavoritedSpotFolder> {
-        const favoritedSpotFolder = await this.prismaService.favoritedSpotFolder.create({
-            data: {
-                id: model.id(),
-                user_id: model.user().id(),
-                spot_folder_id: model.spotFolder().id(),
-                favorited_at: model.favoritedAt(),
-            }
-        });
-
-        return this.mapFavoritedSpotFolderToDomain(favoritedSpotFolder);
-    }
-
     public async update(model: SpotFolder): Promise<void> {
         await this.prismaService.spotFolder.update({
             data: {
@@ -601,14 +480,6 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
     }
 
     public async delete(id: string): Promise<void> {
-        await this.prismaService.spotFolder.delete({
-            where: {
-                id: id
-            }
-        });
-    }
-
-    public async removeFavoritedSpotFolder(id: string): Promise<void> {
         await this.prismaService.spotFolder.delete({
             where: {
                 id: id

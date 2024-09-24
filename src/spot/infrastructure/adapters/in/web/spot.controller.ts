@@ -38,10 +38,6 @@ import {
 	DeleteSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/delete-spot.use-case';
 import {
-	FavoriteSpotUseCase,
-	FavoriteSpotUseCaseProvider,
-} from 'src/spot/application/ports/in/use-cases/favorite-spot.use-case';
-import {
 	GetSpotUseCase,
 	GetSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/get-spot.use-case';
@@ -49,10 +45,6 @@ import {
 	ListSpotsUseCase,
 	ListSpotsUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/list-spots.use-case';
-import {
-	UnfavoriteSpotUseCase,
-	UnfavoriteSpotUseCaseProvider,
-} from 'src/spot/application/ports/in/use-cases/unfavorite-spot.use-case';
 import {
 	UnvisitSpotUseCase,
 	UnvisitSpotUseCaseProvider,
@@ -104,10 +96,6 @@ export class SpotController extends ApiController {
 		protected getSpotUseCase: GetSpotUseCase,
 		@Inject(ListSpotsUseCaseProvider)
 		protected listSpotsUseCase: ListSpotsUseCase,
-		@Inject(FavoriteSpotUseCaseProvider)
-		protected favoriteSpotUseCase: FavoriteSpotUseCase,
-		@Inject(UnfavoriteSpotUseCaseProvider)
-		protected unfavoriteSpotUseCase: UnfavoriteSpotUseCase,
 		@Inject(VisitSpotUseCaseProvider)
 		protected visitSpotUseCase: VisitSpotUseCase,
 		@Inject(UnvisitSpotUseCaseProvider)
@@ -342,66 +330,6 @@ export class SpotController extends ApiController {
 		const command = SpotRequestMapper.deleteSpotCommand(id);
 
 		const data = await this.deleteSpotUseCase.execute(command);
-
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: data,
-		});
-	}
-
-	@ApiOperation({ summary: 'Favorite spot' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			'2024-07-24 12:00:00',
-			'string',
-			'string',
-		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: {},
-		},
-	})
-	@UseGuards(AuthGuard)
-	@Post(':id/favorite')
-	public async favorite(
-		@Param('id') id: string,
-		@Req() req: Request,
-		@Res() res: Response,
-	) {
-		const command = SpotRequestMapper.favoriteSpotCommand(id);
-
-		const data = await this.favoriteSpotUseCase.execute(command);
-
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: data,
-		});
-	}
-
-	@ApiOperation({ summary: 'Unfavorite spot' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			'2024-07-24 12:00:00',
-			'string',
-			'string',
-		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: {},
-		},
-	})
-	@UseGuards(AuthGuard)
-	@Delete(':id/unfavorite')
-	public async unfavorite(
-		@Param('id') id: string,
-		@Req() req: Request,
-		@Res() res: Response,
-	) {
-		const command = SpotRequestMapper.unfavoriteSpotCommand(id);
-
-		const data = await this.unfavoriteSpotUseCase.execute(command);
 
 		res.status(HttpStatus.NO_CONTENT).json({
 			data: data,

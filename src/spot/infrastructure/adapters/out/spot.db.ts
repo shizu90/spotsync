@@ -6,7 +6,6 @@ import {
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SpotRepository } from 'src/spot/application/ports/out/spot.repository';
-import { FavoritedSpot } from 'src/spot/domain/favorited-spot.model';
 import { SpotAddress } from 'src/spot/domain/spot-address.model';
 import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
 import { Spot } from 'src/spot/domain/spot.model';
@@ -87,55 +86,6 @@ export class SpotRepositoryImpl implements SpotRepository {
 			prisma_model.created_at,
 			prisma_model.updated_at,
 			prisma_model.is_deleted,
-		);
-	}
-
-	private mapFavoritedSpotToDomain(prisma_model: any): FavoritedSpot {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return FavoritedSpot.create(
-			prisma_model.id,
-			prisma_model.spot ? this.mapSpotToDomain(prisma_model.spot) : null,
-			prisma_model.user
-				? User.create(
-					prisma_model.user.id,
-					UserProfile.create(
-						prisma_model.user.id,
-						prisma_model.user.profile.birth_date,
-						prisma_model.user.profile.display_name,
-						prisma_model.user.profile.theme_color,
-						prisma_model.user.profile.profile_picture,
-						prisma_model.user.profile.banner_picture,
-						prisma_model.user.profile.biograph,
-						prisma_model.user.profile.visibility
-					),
-					UserCredentials.create(
-						prisma_model.user.id,
-						prisma_model.user.credentials.name,
-						prisma_model.user.credentials.email,
-						prisma_model.user.credentials.password,
-						prisma_model.user.credentials.phone_number,
-						prisma_model.user.credentials.last_login,
-						prisma_model.user.credentials.last_logout,
-					),
-					UserVisibilitySettings.create(
-						prisma_model.user.id,
-						prisma_model.user.visibility_settings.profile,
-						prisma_model.user.visibility_settings.addresses,
-						prisma_model.user.visibility_settings.spot_folders,
-						prisma_model.user.visibility_settings.visited_spots,
-						prisma_model.user.visibility_settings.posts,
-						prisma_model.user.visibility_settings.favorite_spots,
-						prisma_model.user.visibility_settings.favorite_spot_folders,
-						prisma_model.user.visibility_settings.favorite_spot_events,
-					),
-					prisma_model.user.status,
-					prisma_model.user.created_at,
-					prisma_model.user.updated_at,
-					prisma_model.user.is_deleted
-					)
-				: null,
-			prisma_model.favorited_at,
 		);
 	}
 
@@ -432,50 +382,6 @@ export class SpotRepositoryImpl implements SpotRepository {
 		return spots.map((s) => this.mapSpotToDomain(s));
 	}
 
-	public async findFavoritedSpotBy(
-		values: Object,
-	): Promise<Array<FavoritedSpot>> {
-		const spotId = values['spotId'] ?? null;
-		const userId = values['userId'] ?? null;
-
-		let query = {};
-
-		if (spotId !== null) {
-			query['spot_id'] = spotId;
-		}
-
-		if (userId !== null) {
-			query['user_id'] = userId;
-		}
-
-		const favoritedSpots = await this.prismaService.favoritedSpot.findMany({
-			where: query,
-			include: {
-				spot: {
-					include: {
-						address: true,
-						photos: true,
-						creator: {
-							include: {
-								credentials: true,
-								visibility_settings: true,
-								profile: true,
-							},
-						},
-					},
-				},
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-					},
-				},
-			},
-		});
-
-		return favoritedSpots.map((fs) => this.mapFavoritedSpotToDomain(fs));
-	}
-
 	public async findVisitedSpotBy(
 		values: Object,
 	): Promise<Array<VisitedSpot>> {
@@ -586,27 +492,6 @@ export class SpotRepositoryImpl implements SpotRepository {
 		return count.count;
 	}
 
-	public async countFavoritedSpotBy(values: Object): Promise<number> {
-		const spotId = values['spotId'] ?? null;
-		const userId = values['userId'] ?? null;
-
-		let query = {};
-
-		if (spotId !== null) {
-			query['spot_id'] = spotId;
-		}
-
-		if (userId !== null) {
-			query['user_id'] = userId;
-		}
-
-		const count = await this.prismaService.favoritedSpot.count({
-			where: query,
-		});
-
-		return count;
-	}
-
 	public async countVisitedSpotBy(values: Object): Promise<number> {
 		const spotId = values['spotId'] ?? null;
 		const userId = values['userId'] ?? null;
@@ -700,35 +585,6 @@ export class SpotRepositoryImpl implements SpotRepository {
 		return this.mapSpotToDomain(spot);
 	}
 
-	public async storeFavoritedSpot(
-		model: FavoritedSpot,
-	): Promise<FavoritedSpot> {
-		const favoritedSpot = await this.prismaService.favoritedSpot.create({
-			data: {
-				id: model.id(),
-				spot_id: model.spot().id(),
-				user_id: model.user().id(),
-				favorited_at: model.favoritedAt(),
-			},
-			include: {
-				spot: {
-					include: {
-						address: true,
-						photos: true,
-					},
-				},
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-					},
-				},
-			},
-		});
-
-		return this.mapFavoritedSpotToDomain(favoritedSpot);
-	}
-
 	public async storeVisitedSpot(model: VisitedSpot): Promise<VisitedSpot> {
 		const visitedSpot = await this.prismaService.visitedSpot.create({
 			data: {
@@ -781,12 +637,6 @@ export class SpotRepositoryImpl implements SpotRepository {
 
 	public async delete(id: string): Promise<void> {
 		await this.prismaService.spot.delete({
-			where: { id: id },
-		});
-	}
-
-	public async deleteFavoritedSpot(id: string): Promise<void> {
-		await this.prismaService.favoritedSpot.delete({
 			where: { id: id },
 		});
 	}

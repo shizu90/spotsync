@@ -1,9 +1,7 @@
 import { CreateSpotCommand } from 'src/spot/application/ports/in/commands/create-spot.command';
 import { DeleteSpotCommand } from 'src/spot/application/ports/in/commands/delete-spot.command';
-import { FavoriteSpotCommand } from 'src/spot/application/ports/in/commands/favorite-spot.command';
 import { GetSpotCommand } from 'src/spot/application/ports/in/commands/get-spot.command';
 import { ListSpotsCommand } from 'src/spot/application/ports/in/commands/list-spots.command';
-import { UnfavoriteSpotCommand } from 'src/spot/application/ports/in/commands/unfavorite-spot.command';
 import { UnvisitSpotCommand } from 'src/spot/application/ports/in/commands/unvisit-spot.command';
 import { UpdateSpotCommand } from 'src/spot/application/ports/in/commands/update-spot.command';
 import { VisitSpotCommand } from 'src/spot/application/ports/in/commands/visit-spot.command';
@@ -75,14 +73,6 @@ export class SpotRequestMapper {
 
 	public static deleteSpotCommand(id: string): DeleteSpotCommand {
 		return new DeleteSpotCommand(id);
-	}
-
-	public static favoriteSpotCommand(id: string): FavoriteSpotCommand {
-		return new FavoriteSpotCommand(id);
-	}
-
-	public static unfavoriteSpotCommand(id: string): UnfavoriteSpotCommand {
-		return new UnfavoriteSpotCommand(id);
 	}
 
 	public static visitSpotCommand(id: string): VisitSpotCommand {

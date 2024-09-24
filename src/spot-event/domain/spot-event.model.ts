@@ -1,14 +1,15 @@
 import { randomUUID } from 'crypto';
 import { Model } from 'src/common/core/common.model';
+import { Favoritable } from 'src/favorite/domain/favoritable.interface';
+import { Favorite } from 'src/favorite/domain/favorite.model';
 import { Group } from 'src/group/domain/group.model';
 import { Spot } from 'src/spot/domain/spot.model';
 import { User } from 'src/user/domain/user.model';
-import { FavoritedSpotEvent } from './favorited-spot-event.model';
 import { SpotEventParticipant } from './spot-event-participant.model';
 import { SpotEventStatus } from './spot-event-status.enum';
 import { SpotEventVisibility } from './spot-event-visibility.enum';
 
-export class SpotEvent extends Model {
+export class SpotEvent extends Model implements Favoritable {
 	private _id: string;
 	private _name: string;
 	private _description: string;
@@ -236,7 +237,7 @@ export class SpotEvent extends Model {
 		this._updatedAt = new Date();
 	}
 
-	public favorite(user: User): FavoritedSpotEvent {
-		return FavoritedSpotEvent.create(randomUUID(), user, this);
+	public favorite(user: User): Favorite {
+		return Favorite.createForSpotEvent(randomUUID(), user, this._id, this);
 	}
 }
