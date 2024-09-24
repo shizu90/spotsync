@@ -8,7 +8,6 @@ export class GetSpotFolderDto extends Dto {
         readonly hex_color: string,
         readonly visibility: string,
         readonly items: {
-            id: string,
             spot: {
                 id: string,
                 name: string,

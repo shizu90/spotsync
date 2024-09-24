@@ -47,7 +47,7 @@ export class ListSpotFoldersService implements ListSpotFoldersUseCase {
                         toUserId: spotFolder.creator().id(),
                     })).at(0);
 
-                    if (isFollowing === null || isFollowing === undefined) return null;
+                    if ((isFollowing === null || isFollowing === undefined) && spotFolder.creator().id() !== authenticatedUser.id()) return null;
                 }
             }
 
@@ -59,7 +59,6 @@ export class ListSpotFoldersService implements ListSpotFoldersUseCase {
                 spotFolder.visibility(),
                 spotFolder.items().map(i => {
                     return {
-                        id: i.id(),
                         added_at: i.addedAt(),
                         order_number: i.orderNumber(),
                         spot: {

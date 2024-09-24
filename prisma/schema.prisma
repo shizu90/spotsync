@@ -29,6 +29,8 @@ model User {
   password_recoveries      PasswordRecovery[]
   activation_requests      ActivationRequest[]
   comments                 Comment[]
+  spotFolders              SpotFolder[]
+  favorited_spot_folders   FavoritedSpotFolder[]
 
   @@map("users")
 }
@@ -259,6 +261,7 @@ model Spot {
   photos       SpotPhoto[]
   creator      User            @relation(fields: [creator_id], references: [id], onDelete: Cascade)
   visited_by   VisitedSpot[]
+  spot_folders SpotFolderItem[]
 
   @@map("spots")
 }
@@ -342,4 +345,43 @@ model ActivationRequest {
   user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("activation_requests")
+}
+
+model SpotFolder {
+  id           String   @id @default(uuid())
+  name         String   @db.VarChar(255)
+  description  String?  @db.VarChar(400)
+  hex_color    String   @db.VarChar(7)
+  visibility   String   @db.VarChar(12)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  user_id      String
+  creator      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  spots        SpotFolderItem[]
+  favorited_by FavoritedSpotFolder[]
+
+  @@map("spot_folders")
+}
+
+model SpotFolderItem {
+  spot_folder_id String
+  spot_id        String
+  added_at       DateTime   @default(now())
+  order_number   Int
+  spot_folder    SpotFolder @relation(fields: [spot_folder_id], references: [id], onDelete: Cascade)
+  spot           Spot       @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+
+  @@id([spot_folder_id, spot_id])
+  @@map("spot_folder_items")
+}
+
+model FavoritedSpotFolder {
+  id              String      @id @default(uuid())
+  user_id         String
+  spot_folder_id  String
+  favorited_at    DateTime    @default(now())
+  spot_folder     SpotFolder  @relation(fields: [spot_folder_id], references: [id], onDelete: Cascade)
+  user            User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("favorited_spot_folders")
 }
