@@ -3,6 +3,8 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { FavoriteRepository, FavoriteRepositoryProvider } from 'src/favorite/application/ports/out/favorite.repository';
+import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import {
 	UserAddressRepository,
@@ -26,6 +28,8 @@ export class GetSpotService implements GetSpotUseCase {
 		protected userAddressRepository: UserAddressRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+		@Inject(FavoriteRepositoryProvider)
+		protected favoriteRepository: FavoriteRepository,
 	) {}
 
 	public async execute(command: GetSpotCommand): Promise<GetSpotDto> {
@@ -47,8 +51,9 @@ export class GetSpotService implements GetSpotUseCase {
 			spotId: spot.id(),
 		});
 
-		const totalFavorites = await this.spotRepository.countFavoritedSpotBy({
-			spotId: spot.id(),
+		const totalFavorites = await this.spotRepository.countBy({
+			favoritableId: spot.id(),
+			favoritableSubject: FavoritableSubject.SPOT,
 		});
 
 		const visited = (
@@ -59,9 +64,10 @@ export class GetSpotService implements GetSpotUseCase {
 		).at(0);
 
 		const favorited = (
-			await this.spotRepository.findFavoritedSpotBy({
+			await this.spotRepository.findBy({
 				userId: authenticatedUser.id(),
-				spotId: spot.id(),
+				favoritableId: spot.id(),
+				favoritableSubject: FavoritableSubject.SPOT,
 			})
 		).at(0);
 
@@ -109,7 +115,7 @@ export class GetSpotService implements GetSpotUseCase {
 				: null,
 			favorited !== null && favorited !== undefined,
 			favorited !== null && favorited !== undefined
-				? favorited.favoritedAt()
+				? favorited.createdAt()
 				: null,
 			0,
 			0,

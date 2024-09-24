@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
+import { FavoriteModule } from 'src/favorite/favorite.module';
 import { FollowerModule } from 'src/follower/follower.module';
 import { GeolocationModule } from 'src/geolocation/geolocation.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
@@ -16,6 +17,7 @@ import { Providers } from './spot.provider';
 		FollowerModule,
 		GeolocationModule,
 		PrismaModule,
+		forwardRef(() => FavoriteModule),
 	],
 	controllers: [SpotController],
 })

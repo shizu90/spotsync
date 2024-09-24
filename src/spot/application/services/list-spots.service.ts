@@ -5,6 +5,8 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
+import { FavoriteRepository, FavoriteRepositoryProvider } from 'src/favorite/application/ports/out/favorite.repository';
+import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import {
 	FollowRepository,
 	FollowRepositoryProvider,
@@ -40,6 +42,8 @@ export class ListSpotsService implements ListSpotsUseCase {
 		protected followRepository: FollowRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+		@Inject(FavoriteRepositoryProvider)
+		protected favoriteRepository: FavoriteRepository,
 	) {}
 
 	public async execute(
@@ -146,8 +150,9 @@ export class ListSpotsService implements ListSpotsUseCase {
 					});
 
 				const totalFavorites =
-					await this.spotRepository.countFavoritedSpotBy({
-						spotId: s.id(),
+					await this.favoriteRepository.countBy({
+						favoritableId: s.id(),
+						favoritableSubject: FavoritableSubject.SPOT,
 					});
 
 				const visited = (
@@ -158,9 +163,10 @@ export class ListSpotsService implements ListSpotsUseCase {
 				).at(0);
 
 				const favorited = (
-					await this.spotRepository.findFavoritedSpotBy({
+					await this.favoriteRepository.findBy({
 						userId: authenticatedUser.id(),
-						spotId: s.id(),
+						favoritableId: s.id(),
+						favoritableSubject: FavoritableSubject.SPOT,
 					})
 				).at(0);
 
@@ -211,7 +217,7 @@ export class ListSpotsService implements ListSpotsUseCase {
 						: null,
 					favorited !== null && favorited !== undefined,
 					favorited !== null && favorited !== undefined
-						? favorited.favoritedAt()
+						? favorited.createdAt()
 						: null,
 					0,
 					0,
