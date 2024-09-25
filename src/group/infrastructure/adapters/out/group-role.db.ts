@@ -7,60 +7,19 @@ import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupRoleRepository } from 'src/group/application/ports/out/group-role.repository';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
 import { GroupRole } from 'src/group/domain/group-role.model';
-import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
-import { Group } from 'src/group/domain/group.model';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GroupPermissionEntityMapper } from './mappers/group-permission-entity.mapper';
+import { GroupRoleEntityMapper } from './mappers/group-role-entity.mapper';
 
 @Injectable()
 export class GroupRoleRepositoryImpl implements GroupRoleRepository {
+	private _groupRoleEntityMapper: GroupRoleEntityMapper = new GroupRoleEntityMapper();
+	private _groupPermissionEntityMapper: GroupPermissionEntityMapper = new GroupPermissionEntityMapper();
+	
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 	) {}
-
-	private mapGroupRoleToDomain(prisma_model: any): GroupRole {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return GroupRole.create(
-			prisma_model.id,
-			prisma_model.name,
-			prisma_model.hex_color,
-			prisma_model.permissions.map((p) => {
-				return GroupPermission.create(
-					p.group_permission.id,
-					p.group_permission.name,
-				);
-			}),
-			prisma_model.is_immutable,
-			prisma_model.group
-				? Group.create(
-						prisma_model.group.id,
-						prisma_model.group.name,
-						prisma_model.group.about,
-						prisma_model.group.group_picture,
-						prisma_model.group.banner_picture,
-						GroupVisibilitySettings.create(
-							prisma_model.group.id,
-							prisma_model.group.visibility_settings.posts,
-							prisma_model.group.visibility_settings
-								.spot_events,
-							prisma_model.group.visibility_settings.groups,
-						),
-						prisma_model.group.created_at,
-						prisma_model.group.updated_at,
-						prisma_model.group.is_deleted,
-					)
-				: null,
-			prisma_model.created_at,
-			prisma_model.updated_at,
-		);
-	}
-
-	private mapGroupPermissionToDomain(prisma_model: any): GroupPermission {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return GroupPermission.create(prisma_model.id, prisma_model.name);
-	}
 
 	public async paginate(
 		params: PaginateParameters,
@@ -157,7 +116,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		}
 
 		items = items.map((i) => {
-			return this.mapGroupRoleToDomain(i);
+			return this._groupRoleEntityMapper.toModel(i);
 		});
 
 		return new Pagination(items, total, page+1, limit);
@@ -210,7 +169,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		});
 
 		return groupRoles.map((groupRole) => {
-			return this.mapGroupRoleToDomain(groupRole);
+			return this._groupRoleEntityMapper.toModel(groupRole);
 		});
 	}
 
@@ -268,7 +227,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		});
 
 		return groupRoles.map((groupRole) => {
-			return this.mapGroupRoleToDomain(groupRole);
+			return this._groupRoleEntityMapper.toModel(groupRole);
 		});
 	}
 
@@ -285,7 +244,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			},
 		});
 
-		return this.mapGroupRoleToDomain(groupRole);
+		return this._groupRoleEntityMapper.toModel(groupRole);
 	}
 
 	public async findByName(name: string): Promise<GroupRole> {
@@ -301,7 +260,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			},
 		});
 
-		return this.mapGroupRoleToDomain(groupRole);
+		return this._groupRoleEntityMapper.toModel(groupRole);
 	}
 
 	public async findPermissionById(id: string): Promise<GroupPermission> {
@@ -310,7 +269,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				where: { id: id },
 			});
 
-		return this.mapGroupPermissionToDomain(groupPermission);
+		return this._groupPermissionEntityMapper.toModel(groupPermission);
 	}
 
 	public async store(model: GroupRole): Promise<GroupRole> {
@@ -341,7 +300,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			},
 		});
 
-		return this.mapGroupRoleToDomain(groupRole);
+		return this._groupRoleEntityMapper.toModel(groupRole);
 	}
 
 	public async update(model: GroupRole): Promise<void> {

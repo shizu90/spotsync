@@ -7,101 +7,15 @@ import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { FollowRepository } from 'src/follower/application/ports/out/follow.repository';
 import { Follow } from 'src/follower/domain/follow.model';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserProfile } from 'src/user/domain/user-profile.model';
-import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
-import { User } from 'src/user/domain/user.model';
+import { FollowEntityMapper } from './mappers/follow-entity.mapper';
 
 export class FollowRepositoryImpl implements FollowRepository {
+	private _followEntityMapper: FollowEntityMapper = new FollowEntityMapper();
+
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 	) {}
-
-	private mapFollowToDomain(prisma_model: any): Follow {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return Follow.create(
-			prisma_model.id,
-			User.create(
-                prisma_model.from_user.id,
-                UserProfile.create(
-                    prisma_model.from_user.id,
-                    prisma_model.from_user.profile.birth_date,
-                    prisma_model.from_user.profile.display_name,
-                    prisma_model.from_user.profile.theme_color,
-                    prisma_model.from_user.profile.profile_picture,
-                    prisma_model.from_user.profile.banner_picture,
-                    prisma_model.from_user.profile.biograph,
-                    prisma_model.from_user.profile.visibility
-                ),
-                UserCredentials.create(
-                    prisma_model.from_user.id,
-                    prisma_model.from_user.credentials.name,
-                    prisma_model.from_user.credentials.email,
-                    prisma_model.from_user.credentials.password,
-                    prisma_model.from_user.credentials.phone_number,
-                    prisma_model.from_user.credentials.last_login,
-                    prisma_model.from_user.credentials.last_logout,
-                ),
-                UserVisibilitySettings.create(
-                    prisma_model.from_user.id,
-                    prisma_model.from_user.visibility_settings.profile,
-                    prisma_model.from_user.visibility_settings.addresses,
-                    prisma_model.from_user.visibility_settings.spot_folders,
-                    prisma_model.from_user.visibility_settings.visited_spots,
-                    prisma_model.from_user.visibility_settings.posts,
-                    prisma_model.from_user.visibility_settings.favorite_spots,
-                    prisma_model.from_user.visibility_settings.favorite_spot_folders,
-                    prisma_model.from_user.visibility_settings.favorite_spot_events,
-                ),
-                prisma_model.from_user.status,
-                prisma_model.from_user.created_at,
-                prisma_model.from_user.updated_at,
-                prisma_model.from_user.is_deleted
-			),
-			User.create(
-                prisma_model.to_user.id,
-                UserProfile.create(
-                    prisma_model.to_user.id,
-                    prisma_model.to_user.profile.birth_date,
-                    prisma_model.to_user.profile.display_name,
-                    prisma_model.to_user.profile.theme_color,
-                    prisma_model.to_user.profile.profile_picture,
-                    prisma_model.to_user.profile.banner_picture,
-                    prisma_model.to_user.profile.biograph,
-                    prisma_model.to_user.profile.visibility
-                ),
-                UserCredentials.create(
-                    prisma_model.to_user.id,
-                    prisma_model.to_user.credentials.name,
-                    prisma_model.to_user.credentials.email,
-                    prisma_model.to_user.credentials.password,
-                    prisma_model.to_user.credentials.phone_number,
-                    prisma_model.to_user.credentials.last_login,
-                    prisma_model.to_user.credentials.last_logout,
-                ),
-                UserVisibilitySettings.create(
-                    prisma_model.to_user.id,
-                    prisma_model.to_user.visibility_settings.profile,
-                    prisma_model.to_user.visibility_settings.addresses,
-                    prisma_model.to_user.visibility_settings.spot_folders,
-                    prisma_model.to_user.visibility_settings.visited_spots,
-                    prisma_model.to_user.visibility_settings.posts,
-                    prisma_model.to_user.visibility_settings.favorite_spots,
-                    prisma_model.to_user.visibility_settings.favorite_spot_folders,
-                    prisma_model.to_user.visibility_settings.favorite_spot_events,
-                ),
-                prisma_model.to_user.status,
-                prisma_model.to_user.created_at,
-                prisma_model.to_user.updated_at,
-                prisma_model.to_user.is_deleted
-			),
-			prisma_model.status,
-			prisma_model.followed_at,
-			prisma_model.requested_at,
-		);
-	}
 
 	public async paginate(
 		params: PaginateParameters,
@@ -209,7 +123,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 		}
 
 		items = items.map((i) => {
-			return this.mapFollowToDomain(i);
+			return this._followEntityMapper.toModel(i);
 		});
 
 		return new Pagination(items, total, page+1, limit);
@@ -272,7 +186,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 		});
 
 		return follows.map((follow) => {
-			return this.mapFollowToDomain(follow);
+			return this._followEntityMapper.toModel(follow);
 		});
 	}
 
@@ -338,7 +252,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 		});
 
 		return follows.map((follow) => {
-			return this.mapFollowToDomain(follow);
+			return this._followEntityMapper.toModel(follow);
 		});
 	}
 
@@ -365,7 +279,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			},
 		});
 
-		return this.mapFollowToDomain(follow);
+		return this._followEntityMapper.toModel(follow);
 	}
 
 	public async store(model: Follow): Promise<Follow> {
@@ -396,7 +310,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			},
 		});
 
-		return this.mapFollowToDomain(follow);
+		return this._followEntityMapper.toModel(follow);
 	}
 
 	public async update(model: Follow): Promise<void> {

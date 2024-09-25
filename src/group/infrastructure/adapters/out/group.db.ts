@@ -9,49 +9,18 @@ import { GroupLog } from 'src/group/domain/group-log.model';
 import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
 import { Group } from 'src/group/domain/group.model';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GroupEntityMapper } from './mappers/group-entity.mapper';
+import { GroupLogEntityMapper } from './mappers/group-log-entity.mapper';
 
 @Injectable()
 export class GroupRepositoryImpl implements GroupRepository {
+	private _groupEntityMapper: GroupEntityMapper = new GroupEntityMapper();
+	private _groupLogEntityMapper: GroupLogEntityMapper = new GroupLogEntityMapper();
+
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 	) {}
-
-	private mapGroupToDomain(prisma_model: any): Group {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return Group.create(
-			prisma_model.id,
-			prisma_model.name,
-			prisma_model.about,
-			prisma_model.group_picture,
-			prisma_model.banner_picture,
-			prisma_model.visibility_settings
-				? GroupVisibilitySettings.create(
-						prisma_model.id,
-						prisma_model.visibility_settings.posts,
-						prisma_model.visibility_settings.spot_events,
-						prisma_model.visibility_settings.groups,
-					)
-				: null,
-			prisma_model.created_at,
-			prisma_model.updated_at,
-			prisma_model.is_deleted,
-		);
-	}
-
-	private mapGroupLogToDomain(prisma_model: any): GroupLog {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return GroupLog.create(
-			prisma_model.id,
-			prisma_model.group
-				? this.mapGroupToDomain(prisma_model.group)
-				: null,
-			prisma_model.text,
-			prisma_model.occurred_at,
-		);
-	}
 
 	public async paginate(
 		params: PaginateParameters,
@@ -134,7 +103,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		}
 
 		items = items.map((i) => {
-			return this.mapGroupToDomain(i);
+			return this._groupEntityMapper.toModel(i);
 		});
 
 		return new Pagination(items, total, page+1, limit);
@@ -183,7 +152,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		});
 
 		return groups.map((group) => {
-			return this.mapGroupToDomain(group);
+			return this._groupEntityMapper.toModel(group);
 		});
 	}
 
@@ -300,7 +269,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		}
 
 		items = items.map((i) => {
-			return this.mapGroupLogToDomain(i);
+			return this._groupLogEntityMapper.toModel(i);
 		});
 
 		return new Pagination(items, total, page+1, limit);
@@ -312,7 +281,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		});
 
 		return groups.map((group) => {
-			return this.mapGroupToDomain(group);
+			return this._groupEntityMapper.toModel(group);
 		});
 	}
 
@@ -322,7 +291,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			include: { visibility_settings: true },
 		});
 
-		return this.mapGroupToDomain(group);
+		return this._groupEntityMapper.toModel(group);
 	}
 
 	public async store(model: Group): Promise<Group> {
@@ -351,7 +320,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			},
 		});
 
-		return this.mapGroupToDomain(group);
+		return this._groupEntityMapper.toModel(group);
 	}
 
 	public async storeLog(model: GroupLog): Promise<GroupLog> {
@@ -371,7 +340,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			},
 		});
 
-		return this.mapGroupLogToDomain(groupLog);
+		return this._groupLogEntityMapper.toModel(groupLog);
 	}
 
 	public async update(model: Group): Promise<void> {

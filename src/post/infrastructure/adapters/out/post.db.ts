@@ -4,123 +4,18 @@ import {
 	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
-import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
-import { Group } from 'src/group/domain/group.model';
 import { PostRepository } from 'src/post/application/ports/out/post.repository';
-import { PostAttachment } from 'src/post/domain/post-attachment.model';
-import { PostThread } from 'src/post/domain/post-thread.model';
 import { Post } from 'src/post/domain/post.model';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserProfile } from 'src/user/domain/user-profile.model';
-import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
-import { User } from 'src/user/domain/user.model';
+import { PostEntityMapper } from './mappers/post-entity.mapper';
 
 export class PostRepositoryImpl implements PostRepository {
+	private _postEntityMapper: PostEntityMapper = new PostEntityMapper();
+	
 	public constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 	) {}
-
-	private mapPostAttachmentToDomain(prisma_model: any): PostAttachment {
-		if (prisma_model === undefined || prisma_model === null) return null;
-
-		return PostAttachment.create(
-			prisma_model.id,
-			prisma_model.file_path,
-			prisma_model.file_type,
-		);
-	}
-
-	private mapPostToDomain(prisma_model: any): Post {
-		if (prisma_model === undefined || prisma_model === null) return null;
-
-		return Post.create(
-			prisma_model.id,
-			prisma_model.title,
-			prisma_model.content,
-			prisma_model.visibility,
-			User.create(
-				prisma_model.creator.id,
-				UserProfile.create(
-					prisma_model.creator.id,
-					prisma_model.creator.profile.birth_date,
-					prisma_model.creator.profile.display_name,
-					prisma_model.creator.profile.theme_color,
-					prisma_model.creator.profile.profile_picture,
-					prisma_model.creator.profile.banner_picture,
-					prisma_model.creator.profile.biograph,
-					prisma_model.creator.profile.visibility
-				),
-				UserCredentials.create(
-					prisma_model.creator.id,
-					prisma_model.creator.credentials.name,
-					prisma_model.creator.credentials.email,
-					prisma_model.creator.credentials.password,
-					prisma_model.creator.credentials.phone_number,
-					prisma_model.creator.credentials.last_login,
-					prisma_model.creator.credentials.last_logout,
-				),
-				UserVisibilitySettings.create(
-					prisma_model.creator.id,
-					prisma_model.creator.visibility_settings.profile,
-					prisma_model.creator.visibility_settings.addresses,
-					prisma_model.creator.visibility_settings.spot_folders,
-					prisma_model.creator.visibility_settings.visited_spots,
-					prisma_model.creator.visibility_settings.posts,
-					prisma_model.creator.visibility_settings.favorite_spots,
-					prisma_model.creator.visibility_settings.favorite_spot_folders,
-					prisma_model.creator.visibility_settings.favorite_spot_events,
-				),
-				prisma_model.creator.status,
-				prisma_model.creator.created_at,
-				prisma_model.creator.updated_at,
-				prisma_model.creator.is_deleted
-			),
-			prisma_model.attachments.map((a) =>
-				this.mapPostAttachmentToDomain(a),
-			),
-			prisma_model.parent
-				? this.mapPostToDomain(prisma_model.parent)
-				: null,
-			prisma_model.children_posts
-				? prisma_model.children_posts.map((children_post) =>
-						this.mapPostToDomain(children_post),
-					)
-				: [],
-			prisma_model.group
-				? Group.create(
-						prisma_model.group.id,
-						prisma_model.group.name,
-						prisma_model.group.about,
-						prisma_model.group_picture,
-						prisma_model.banner_picture,
-						GroupVisibilitySettings.create(
-							prisma_model.group.id,
-							prisma_model.group.visibility_settings
-								.post_visibility,
-							prisma_model.group.visibility_settings
-								.event_visibility,
-							prisma_model.group.visibility_settings
-								.group_visibility,
-						),
-						prisma_model.group.created_at,
-						prisma_model.group.updated_at,
-						prisma_model.group.is_deleted,
-					)
-				: null,
-			prisma_model.thread
-				? PostThread.create(
-						prisma_model.thread.id,
-						prisma_model.thread.max_depth_level,
-						prisma_model.thread.created_at,
-					)
-				: null,
-			prisma_model.depth_level,
-			prisma_model.created_at,
-			prisma_model.updated_at,
-		);
-	}
 
 	private async getThreadMaxDepthLevel(post_id: string): Promise<number> {
 		const threadMaxDepthLevel = await this.prismaService.$queryRawUnsafe<{
@@ -335,7 +230,7 @@ export class PostRepositoryImpl implements PostRepository {
 			});
 		}
 
-		items = items.map((i) => this.mapPostToDomain(i));
+		items = items.map((i) => this._postEntityMapper.toModel(i));
 
 		return new Pagination(items, total, page+1, limit);
 	}
@@ -405,7 +300,7 @@ export class PostRepositoryImpl implements PostRepository {
 			},
 		});
 
-		return posts.map((p) => this.mapPostToDomain(p));
+		return posts.map((p) => this._postEntityMapper.toModel(p));
 	}
 
 	public async countBy(values: Object): Promise<number> {
@@ -444,17 +339,6 @@ export class PostRepositoryImpl implements PostRepository {
 		return count;
 	}
 
-	public async findAttachmentById(id: string): Promise<PostAttachment> {
-		const postAttachment =
-			await this.prismaService.postAttachment.findFirst({
-				where: {
-					id: id,
-				},
-			});
-
-		return this.mapPostAttachmentToDomain(postAttachment);
-	}
-
 	public async findAll(): Promise<Array<Post>> {
 		const posts = await this.prismaService.post.findMany({
 			include: {
@@ -491,7 +375,7 @@ export class PostRepositoryImpl implements PostRepository {
 			},
 		});
 
-		return posts.map((p) => this.mapPostToDomain(p));
+		return posts.map((p) => this._postEntityMapper.toModel(p));
 	}
 
 	public async findById(id: string): Promise<Post> {
@@ -506,7 +390,7 @@ export class PostRepositoryImpl implements PostRepository {
 			include: include,
 		});
 
-		return this.mapPostToDomain(post);
+		return this._postEntityMapper.toModel(post);
 	}
 
 	public async store(model: Post): Promise<Post> {
@@ -554,7 +438,7 @@ export class PostRepositoryImpl implements PostRepository {
 			});
 		});
 
-		return this.mapPostToDomain(post);
+		return this._postEntityMapper.toModel(post);
 	}
 
 	public async update(model: Post): Promise<void> {

@@ -6,107 +6,17 @@ import {
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { GroupMemberRepository } from 'src/group/application/ports/out/group-member.repository';
 import { GroupMember } from 'src/group/domain/group-member.model';
-import { GroupPermission } from 'src/group/domain/group-permission.model';
-import { GroupRole } from 'src/group/domain/group-role.model';
-import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
-import { Group } from 'src/group/domain/group.model';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserProfile } from 'src/user/domain/user-profile.model';
-import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
-import { User } from 'src/user/domain/user.model';
+import { GroupMemberEntityMapper } from './mappers/group-member.mapper';
 
 @Injectable()
 export class GroupMemberRepositoryImpl implements GroupMemberRepository {
+	private _groupMemberEntityMapper: GroupMemberEntityMapper = new GroupMemberEntityMapper();
+	
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 	) {}
-
-	private mapGroupMemberToDomain(prisma_model: any): GroupMember {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return GroupMember.create(
-			prisma_model.id,
-			prisma_model.group
-				? Group.create(
-						prisma_model.group.id,
-						prisma_model.group.name,
-						prisma_model.group.about,
-						prisma_model.group.group_picture,
-						prisma_model.group.banner_picture,
-						prisma_model.group.visibility_settings
-							? GroupVisibilitySettings.create(
-									prisma_model.group.id,
-									prisma_model.group.visibility_settings
-										.posts,
-									prisma_model.group.visibility_settings
-										.spot_events,
-									prisma_model.group.visibility_settings
-										.groups,
-								)
-							: null,
-						prisma_model.group.created_at,
-						prisma_model.group.updated_at,
-						prisma_model.group.is_deleted,
-					)
-				: null,
-			prisma_model.user
-				? User.create(
-					prisma_model.user.id,
-					UserProfile.create(
-						prisma_model.user.id,
-						prisma_model.user.profile.birth_date,
-						prisma_model.user.profile.display_name,
-						prisma_model.user.profile.theme_color,
-						prisma_model.user.profile.profile_picture,
-						prisma_model.user.profile.banner_picture,
-						prisma_model.user.profile.biograph,
-						prisma_model.user.profile.visibility
-					),
-					UserCredentials.create(
-						prisma_model.user.id,
-						prisma_model.user.credentials.name,
-						prisma_model.user.credentials.email,
-						prisma_model.user.credentials.password,
-						prisma_model.user.credentials.phone_number,
-						prisma_model.user.credentials.last_login,
-						prisma_model.user.credentials.last_logout,
-					),
-					UserVisibilitySettings.create(
-						prisma_model.user.id,
-						prisma_model.user.visibility_settings.profile,
-						prisma_model.user.visibility_settings.addresses,
-						prisma_model.user.visibility_settings.spot_folders,
-						prisma_model.user.visibility_settings.visited_spots,
-						prisma_model.user.visibility_settings.posts,
-						prisma_model.user.visibility_settings.favorite_spots,
-						prisma_model.user.visibility_settings.favorite_spot_folders,
-						prisma_model.user.visibility_settings.favorite_spot_events,
-					),
-					prisma_model.user.status,
-					prisma_model.user.created_at,
-					prisma_model.user.updated_at,
-					prisma_model.user.is_deleted
-					)
-				: null,
-			GroupRole.create(
-				prisma_model.group_role.id,
-				prisma_model.group_role.name,
-				prisma_model.group_role.hex_color,
-				prisma_model.group_role.permissions.map((p) => {
-					return GroupPermission.create(
-						p.group_permission.id,
-						p.group_permission.name,
-					);
-				}),
-				prisma_model.group_role.is_immutable,
-			),
-			prisma_model.is_creator,
-			prisma_model.status,
-			prisma_model.joined_at,
-		);
-	}
 
 	public async paginate(
 		params: PaginateParameters,
@@ -229,7 +139,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		}
 
 		items = items.map((i) => {
-			return this.mapGroupMemberToDomain(i);
+			return this._groupMemberEntityMapper.toModel(i);
 		});
 
 		return new Pagination(items, total, page+1, limit);
@@ -325,7 +235,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		});
 
 		return groupMembers.map((gm) => {
-			return this.mapGroupMemberToDomain(gm);
+			return this._groupMemberEntityMapper.toModel(gm);
 		});
 	}
 
@@ -408,7 +318,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		});
 
 		return groupMembers.map((gm) => {
-			return this.mapGroupMemberToDomain(gm);
+			return this._groupMemberEntityMapper.toModel(gm);
 		});
 	}
 
@@ -440,7 +350,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			},
 		});
 
-		return this.mapGroupMemberToDomain(groupMember);
+		return this._groupMemberEntityMapper.toModel(groupMember);
 	}
 
 	public async store(model: GroupMember): Promise<GroupMember> {
@@ -480,7 +390,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			},
 		});
 
-		return this.mapGroupMemberToDomain(groupMember);
+		return this._groupMemberEntityMapper.toModel(groupMember);
 	}
 
 	public async update(model: GroupMember): Promise<void> {

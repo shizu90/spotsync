@@ -7,22 +7,15 @@ import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PostThreadRepository } from 'src/post/application/ports/out/post-thread.repository';
 import { PostThread } from 'src/post/domain/post-thread.model';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PostThreadEntityMapper } from './mappers/post-thread-entity.mapper';
 
 export class PostThreadRepositoryImpl implements PostThreadRepository {
+	private _postThreadEntityMapper: PostThreadEntityMapper = new PostThreadEntityMapper();
+	
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 	) {}
-
-	private mapThreadToDomain(prisma_model: any): PostThread {
-		if (prisma_model === undefined || prisma_model === null) return null;
-
-		return PostThread.create(
-			prisma_model.id,
-			prisma_model.max_depth_level,
-			prisma_model.created_at,
-		);
-	}
 
 	public async paginate(
 		params: PaginateParameters,
@@ -81,6 +74,8 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 			});
 		}
 
+		items = items.map((thread) => this._postThreadEntityMapper.toModel(thread));
+
 		return new Pagination<PostThread>(items, total, page+1, limit);
 	}
 
@@ -97,7 +92,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 			where: query,
 		});
 
-		return threads.map((thread) => this.mapThreadToDomain(thread));
+		return threads.map((thread) => this._postThreadEntityMapper.toModel(thread));
 	}
 
 	public async countBy(values: Object): Promise<number> {
@@ -119,7 +114,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 	public async findAll(): Promise<PostThread[]> {
 		const threads = await this.prismaService.postThread.findMany();
 
-		return threads.map((thread) => this.mapThreadToDomain(thread));
+		return threads.map((thread) => this._postThreadEntityMapper.toModel(thread));
 	}
 
 	public async findById(id: string): Promise<PostThread> {
@@ -127,7 +122,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 			where: { id: id },
 		});
 
-		return this.mapThreadToDomain(thread);
+		return this._postThreadEntityMapper.toModel(thread);
 	}
 
 	public async store(model: PostThread): Promise<PostThread> {
@@ -138,7 +133,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 			},
 		});
 
-		return this.mapThreadToDomain(thread);
+		return this._postThreadEntityMapper.toModel(thread);
 	}
 
 	public async update(model: PostThread): Promise<void> {

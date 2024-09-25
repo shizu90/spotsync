@@ -1,214 +1,22 @@
 import { Inject } from '@nestjs/common';
-import { Comment } from 'src/comment/domain/comment.model';
 import {
 	PaginateParameters,
 	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
-import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
-import { Group } from 'src/group/domain/group.model';
 import { LikeRepository } from 'src/like/application/ports/out/like.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { Like } from 'src/like/domain/like.model';
-import { PostAttachment } from 'src/post/domain/post-attachment.model';
-import { PostThread } from 'src/post/domain/post-thread.model';
-import { Post } from 'src/post/domain/post.model';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserProfile } from 'src/user/domain/user-profile.model';
-import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
-import { User } from 'src/user/domain/user.model';
+import { LikeEntityMapper } from './mappers/like-entity.mapper';
 
 export class LikeRepositoryImpl implements LikeRepository {
+	private _likeEntityMapper: LikeEntityMapper = new LikeEntityMapper();
+	
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 	) {}
-
-	private mapCommentToDomain(prisma_model: any): Comment {
-		if (prisma_model === undefined || prisma_model === null) return null;
-
-		return Comment.create(
-			prisma_model.id,
-			prisma_model.text,
-			User.create(
-				prisma_model.creator.id,
-				UserProfile.create(
-					prisma_model.creator.id,
-					prisma_model.creator.profile.birth_date,
-					prisma_model.creator.profile.display_name,
-					prisma_model.creator.profile.theme_color,
-					prisma_model.creator.profile.profile_picture,
-					prisma_model.creator.profile.banner_picture,
-					prisma_model.creator.profile.biograph,
-					prisma_model.creator.profile.visibility
-				),
-				UserCredentials.create(
-					prisma_model.creator.id,
-					prisma_model.creator.credentials.name,
-					prisma_model.creator.credentials.email,
-					prisma_model.creator.credentials.password,
-					prisma_model.creator.credentials.phone_number,
-					prisma_model.creator.credentials.last_login,
-					prisma_model.creator.credentials.last_logout,
-				),
-				UserVisibilitySettings.create(
-					prisma_model.creator.id,
-					prisma_model.creator.visibility_settings.profile,
-					prisma_model.creator.visibility_settings.addresses,
-					prisma_model.creator.visibility_settings.spot_folders,
-					prisma_model.creator.visibility_settings.visited_spots,
-					prisma_model.creator.visibility_settings.posts,
-					prisma_model.creator.visibility_settings.favorite_spots,
-					prisma_model.creator.visibility_settings.favorite_spot_folders,
-					prisma_model.creator.visibility_settings.favorite_spot_events,
-				),
-				prisma_model.creator.status,
-				prisma_model.creator.created_at,
-				prisma_model.creator.updated_at,
-				prisma_model.creator.is_deleted
-			),
-			prisma_model.subject,
-		)
-	}
-
-	private mapPostToDomain(prisma_model: any): Post {
-		if (prisma_model === undefined || prisma_model === null) return null;
-
-		return Post.create(
-			prisma_model.id,
-			prisma_model.title,
-			prisma_model.content,
-			prisma_model.visibility,
-			User.create(
-				prisma_model.creator.id,
-				UserProfile.create(
-					prisma_model.creator.id,
-					prisma_model.creator.profile.birth_date,
-					prisma_model.creator.profile.display_name,
-					prisma_model.creator.profile.theme_color,
-					prisma_model.creator.profile.profile_picture,
-					prisma_model.creator.profile.banner_picture,
-					prisma_model.creator.profile.biograph,
-					prisma_model.creator.profile.visibility
-				),
-				UserCredentials.create(
-					prisma_model.creator.id,
-					prisma_model.creator.credentials.name,
-					prisma_model.creator.credentials.email,
-					prisma_model.creator.credentials.password,
-					prisma_model.creator.credentials.phone_number,
-					prisma_model.creator.credentials.last_login,
-					prisma_model.creator.credentials.last_logout,
-				),
-				UserVisibilitySettings.create(
-					prisma_model.creator.id,
-					prisma_model.creator.visibility_settings.profile,
-					prisma_model.creator.visibility_settings.addresses,
-					prisma_model.creator.visibility_settings.spot_folders,
-					prisma_model.creator.visibility_settings.visited_spots,
-					prisma_model.creator.visibility_settings.posts,
-					prisma_model.creator.visibility_settings.favorite_spots,
-					prisma_model.creator.visibility_settings.favorite_spot_folders,
-					prisma_model.creator.visibility_settings.favorite_spot_events,
-				),
-				prisma_model.creator.status,
-				prisma_model.creator.created_at,
-				prisma_model.creator.updated_at,
-				prisma_model.creator.is_deleted
-			),
-			prisma_model.attachments.map((a) =>
-				PostAttachment.create(
-					a.id,
-					a.file_path,
-					a.file_type,
-				),
-			),
-			prisma_model.parent
-				? this.mapPostToDomain(prisma_model.parent)
-				: null,
-			[],
-			prisma_model.group
-				? Group.create(
-						prisma_model.group.id,
-						prisma_model.group.name,
-						prisma_model.group.about,
-						prisma_model.group_picture,
-						prisma_model.banner_picture,
-						GroupVisibilitySettings.create(
-							prisma_model.group.id,
-							prisma_model.group.visibility_settings
-								.post_visibility,
-							prisma_model.group.visibility_settings
-								.event_visibility,
-							prisma_model.group.visibility_settings
-								.group_visibility,
-						),
-						prisma_model.group.created_at,
-						prisma_model.group.updated_at,
-						prisma_model.group.is_deleted,
-					)
-				: null,
-			prisma_model.thread
-				? PostThread.create(
-						prisma_model.thread.id,
-						prisma_model.thread.max_depth_level,
-						prisma_model.thread.created_at,
-					)
-				: null,
-			prisma_model.depth_level,
-			prisma_model.created_at,
-			prisma_model.updated_at,
-		);
-	}
-
-	private mapLikeToDomain(prisma_model: any): Like {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return Like.create(
-			prisma_model.id,
-			prisma_model.likable_subject,
-			prisma_model.likable_subject === LikableSubject.POST.toString() ? this.mapPostToDomain(prisma_model.post) : null,
-			User.create(
-                prisma_model.user.id,
-                UserProfile.create(
-                    prisma_model.user.id,
-                    prisma_model.user.profile.birth_date,
-                    prisma_model.user.profile.display_name,
-                    prisma_model.user.profile.theme_color,
-                    prisma_model.user.profile.profile_picture,
-                    prisma_model.user.profile.banner_picture,
-                    prisma_model.user.profile.biograph,
-                    prisma_model.user.profile.visibility
-                ),
-                UserCredentials.create(
-                    prisma_model.user.id,
-                    prisma_model.user.credentials.name,
-                    prisma_model.user.credentials.email,
-                    prisma_model.user.credentials.password,
-                    prisma_model.user.credentials.phone_number,
-                    prisma_model.user.credentials.last_login,
-                    prisma_model.user.credentials.last_logout,
-                ),
-                UserVisibilitySettings.create(
-                    prisma_model.user.id,
-                    prisma_model.user.visibility_settings.profile,
-                    prisma_model.user.visibility_settings.addresses,
-                    prisma_model.user.visibility_settings.spot_folders,
-                    prisma_model.user.visibility_settings.visited_spots,
-                    prisma_model.user.visibility_settings.posts,
-                    prisma_model.user.visibility_settings.favorite_spots,
-                    prisma_model.user.visibility_settings.favorite_spot_folders,
-                    prisma_model.user.visibility_settings.favorite_spot_events,
-                ),
-                prisma_model.user.status,
-                prisma_model.user.created_at,
-                prisma_model.user.updated_at,
-                prisma_model.user.is_deleted
-			),
-			prisma_model.created_at,
-		);
-	}
 
 	private mapSubjectId(subject: LikableSubject): string {
 		switch(subject) {
@@ -338,7 +146,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 		}
 
 		return new Pagination(
-			items.map((i) => this.mapLikeToDomain(i)),
+			items.map((i) => this._likeEntityMapper.toModel(i)),
 			total,
 			page+1,
 			limit,
@@ -390,7 +198,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			},
 		});
 
-		return likes.map((like) => this.mapLikeToDomain(like));
+		return likes.map((like) => this._likeEntityMapper.toModel(like));
 	}
 
 	public async countBy(values: Object): Promise<number> {
@@ -445,7 +253,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			}
 		});
 
-		return likes.map((like) => this.mapLikeToDomain(like));
+		return likes.map((like) => this._likeEntityMapper.toModel(like));
 	}
 
 	public async findById(id: string): Promise<Like> {
@@ -475,7 +283,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			},
 		});
 
-		return this.mapLikeToDomain(like);
+		return this._likeEntityMapper.toModel(like);
 	}
 
 	public async store(model: Like): Promise<Like> {
@@ -512,7 +320,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			},
 		});
 
-		return this.mapLikeToDomain(like);
+		return this._likeEntityMapper.toModel(like);
 	}
 
 	public async update(model: Like): Promise<void> {

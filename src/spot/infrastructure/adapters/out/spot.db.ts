@@ -6,137 +6,20 @@ import {
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SpotRepository } from 'src/spot/application/ports/out/spot.repository';
-import { SpotAddress } from 'src/spot/domain/spot-address.model';
-import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
 import { Spot } from 'src/spot/domain/spot.model';
 import { VisitedSpot } from 'src/spot/domain/visited-spot.model';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserProfile } from 'src/user/domain/user-profile.model';
-import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
-import { User } from 'src/user/domain/user.model';
+import { SpotEntityMapper } from './mappers/spot-entity.mapper';
+import { VisitedSpotEntityMapper } from './mappers/visited-spot-entity.mapper';
 
 @Injectable()
 export class SpotRepositoryImpl implements SpotRepository {
+	private _spotEntityMapper: SpotEntityMapper = new SpotEntityMapper();
+	private _visitedSpotEntityMapper: VisitedSpotEntityMapper = new VisitedSpotEntityMapper();
+
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 	) {}
-
-	private mapSpotToDomain(prisma_model: any): Spot {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return Spot.create(
-			prisma_model.id,
-			prisma_model.name,
-			prisma_model.description,
-			prisma_model.type,
-			prisma_model.address
-				? SpotAddress.create(
-						prisma_model.address.id,
-						prisma_model.address.area,
-						prisma_model.address.sub_area,
-						prisma_model.address.latitude,
-						prisma_model.address.longitude,
-						prisma_model.address.country_code,
-						prisma_model.address.locality,
-					)
-				: null,
-			prisma_model.photos.map((p) => {
-				return SpotPhoto.create(p.id, p.file_path);
-			}),
-			prisma_model.creator
-				? User.create(
-					prisma_model.creator.id,
-					UserProfile.create(
-						prisma_model.creator.id,
-						prisma_model.creator.profile.birth_date,
-						prisma_model.creator.profile.display_name,
-						prisma_model.creator.profile.theme_color,
-						prisma_model.creator.profile.profile_picture,
-						prisma_model.creator.profile.banner_picture,
-						prisma_model.creator.profile.biograph,
-						prisma_model.creator.profile.visibility
-					),
-					UserCredentials.create(
-						prisma_model.creator.id,
-						prisma_model.creator.credentials.name,
-						prisma_model.creator.credentials.email,
-						prisma_model.creator.credentials.password,
-						prisma_model.creator.credentials.phone_number,
-						prisma_model.creator.credentials.last_login,
-						prisma_model.creator.credentials.last_logout,
-					),
-					UserVisibilitySettings.create(
-						prisma_model.creator.id,
-						prisma_model.creator.visibility_settings.profile,
-						prisma_model.creator.visibility_settings.addresses,
-						prisma_model.creator.visibility_settings.spot_folders,
-						prisma_model.creator.visibility_settings.visited_spots,
-						prisma_model.creator.visibility_settings.posts,
-						prisma_model.creator.visibility_settings.favorite_spots,
-						prisma_model.creator.visibility_settings.favorite_spot_folders,
-						prisma_model.creator.visibility_settings.favorite_spot_events,
-					),
-					prisma_model.creator.status,
-					prisma_model.creator.created_at,
-					prisma_model.creator.updated_at,
-					prisma_model.creator.is_deleted
-					)
-				: null,
-			prisma_model.created_at,
-			prisma_model.updated_at,
-			prisma_model.is_deleted,
-		);
-	}
-
-	private mapVisitedSpotToDomain(prisma_model: any): VisitedSpot {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return VisitedSpot.create(
-			prisma_model.id,
-			prisma_model.spot ? this.mapSpotToDomain(prisma_model.spot) : null,
-			prisma_model.user
-				? User.create(
-					prisma_model.user.id,
-					UserProfile.create(
-						prisma_model.user.id,
-						prisma_model.user.profile.birth_date,
-						prisma_model.user.profile.display_name,
-						prisma_model.user.profile.theme_color,
-						prisma_model.user.profile.profile_picture,
-						prisma_model.user.profile.banner_picture,
-						prisma_model.user.profile.biograph,
-						prisma_model.user.profile.visibility
-					),
-					UserCredentials.create(
-						prisma_model.user.id,
-						prisma_model.user.credentials.name,
-						prisma_model.user.credentials.email,
-						prisma_model.user.credentials.password,
-						prisma_model.user.credentials.phone_number,
-						prisma_model.user.credentials.last_login,
-						prisma_model.user.credentials.last_logout,
-					),
-					UserVisibilitySettings.create(
-						prisma_model.user.id,
-						prisma_model.user.visibility_settings.profile,
-						prisma_model.user.visibility_settings.addresses,
-						prisma_model.user.visibility_settings.spot_folders,
-						prisma_model.user.visibility_settings.visited_spots,
-						prisma_model.user.visibility_settings.posts,
-						prisma_model.user.visibility_settings.favorite_spots,
-						prisma_model.user.visibility_settings.favorite_spot_folders,
-						prisma_model.user.visibility_settings.favorite_spot_events,
-					),
-					prisma_model.user.status,
-					prisma_model.user.created_at,
-					prisma_model.user.updated_at,
-					prisma_model.user.is_deleted
-					)
-				: null,
-			prisma_model.visited_at,
-		);
-	}
 
 	public async paginate(
 		params: PaginateParameters,
@@ -271,7 +154,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			}
 
 			return new Pagination(
-				items.map((s) => this.mapSpotToDomain(s)),
+				items.map((s) => this._spotEntityMapper.toModel(s)),
 				total,
 				page+1,
 				limit,
@@ -300,7 +183,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		return this.mapSpotToDomain(spot);
+		return this._spotEntityMapper.toModel(spot);
 	}
 
 	public async findBy(values: Object): Promise<Spot[]> {
@@ -379,7 +262,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		return spots.map((s) => this.mapSpotToDomain(s));
+		return spots.map((s) => this._spotEntityMapper.toModel(s));
 	}
 
 	public async findVisitedSpotBy(
@@ -423,7 +306,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		return visitedSpots.map((vs) => this.mapVisitedSpotToDomain(vs));
+		return visitedSpots.map((vs) => this._visitedSpotEntityMapper.toModel(vs));
 	}
 
 	public async countBy(values: Object): Promise<number> {
@@ -527,7 +410,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		return spots.map((s) => this.mapSpotToDomain(s));
+		return spots.map((s) => this._spotEntityMapper.toModel(s));
 	}
 
 	public async findById(id: string): Promise<Spot> {
@@ -545,7 +428,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		return this.mapSpotToDomain(spot);
+		return this._spotEntityMapper.toModel(spot);
 	}
 
 	public async store(model: Spot): Promise<Spot> {
@@ -582,7 +465,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		return this.mapSpotToDomain(spot);
+		return this._spotEntityMapper.toModel(spot);
 	}
 
 	public async storeVisitedSpot(model: VisitedSpot): Promise<VisitedSpot> {
@@ -609,7 +492,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		return this.mapVisitedSpotToDomain(visitedSpot);
+		return this._visitedSpotEntityMapper.toModel(visitedSpot);
 	}
 
 	public async update(model: Spot): Promise<void> {
