@@ -17,25 +17,22 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 		protected prismaService: PrismaService,
 	) {}
 
+	private _mountQuery(values: Object): Object {
+		const maxDepthLevel = values['maxDepthLevel'] ?? null;
+
+		let query = {};
+
+		if (maxDepthLevel !== null) {
+			query['max_depth_level'] = maxDepthLevel;
+		}
+
+		return query;
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<PostThread>> {
-		let query = `SELECT id FROM post_thread`;
-
-		if (params.filters) {
-			if (typeof params.filters['maxDepthLevel'] === 'number') {
-				const maxDepthLevel = params.filters['maxDepthLevel'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND max_depth_level = ${maxDepthLevel}`;
-				} else {
-					query = `${query} WHERE max_depth_level = ${maxDepthLevel}`;
-				}
-			}
-		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
 
@@ -58,18 +55,18 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = ids.length;
+		const total = await this.countBy(query);
 
 		if (paginate) {
 			items = await this.prismaService.postThread.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				skip: limit * page,
 				take: limit,
 			});
 		} else {
 			items = await this.prismaService.postThread.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 			});
 		}
@@ -80,14 +77,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 	}
 
 	public async findBy(values: Object): Promise<PostThread[]> {
-		const maxDepthLevel = values['maxDepthLevel'] ?? null;
-
-		let query = {};
-
-		if (maxDepthLevel !== null) {
-			query['max_depth_level'] = maxDepthLevel;
-		}
-
+		const query = this._mountQuery(values);
 		const threads = await this.prismaService.postThread.findMany({
 			where: query,
 		});
@@ -96,14 +86,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
-		const maxDepthLevel = values['maxDepthLevel'] ?? null;
-
-		let query = {};
-
-		if (maxDepthLevel !== null) {
-			query['max_depth_level'] = maxDepthLevel;
-		}
-
+		const query = this._mountQuery(values);
 		const count = await this.prismaService.postThread.count({
 			where: query,
 		});

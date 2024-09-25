@@ -22,43 +22,32 @@ export class GroupRepositoryImpl implements GroupRepository {
 		protected prismaService: PrismaService,
 	) {}
 
+	private _mountQuery(values: Object): Object {
+		const name = values['name'] ?? null;
+		const isDeleted = values['isDeleted'] ?? null;
+		const visibility = values['visibility'] ?? null;
+
+		let query = {};
+
+		if (name) {
+			query['name'] = name;
+		}
+
+		if (isDeleted !== undefined) {
+			query['is_deleted'] = isDeleted;
+		}
+
+		if (visibility) {
+			query['visibility'] = visibility;
+		}
+
+		return query;
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Group>> {
-		let query = `SELECT groups.id FROM groups JOIN group_visibility_settings ON group_visibility_settings.group_id = groups.id`;
-
-		if (params.filters) {
-			if (typeof params.filters['name'] === 'string') {
-				const name = params.filters['name'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
-				} else {
-					query = `${query} WHERE LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
-				}
-			}
-
-			if (typeof params.filters['isDeleted'] === 'boolean') {
-				const isDeleted = params.filters['isDeleted'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND groups.is_deleted = ${isDeleted}`;
-				} else {
-					query = `${query} WHERE groups.is_deleted = ${isDeleted}`;
-				}
-			}
-
-			if (typeof params.filters['groupVisibility'] === 'string') {
-				const groupVisibility = params.filters['groupVisibility'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(group_visibility_settings.group_visibility) = '${groupVisibility.toLowerCase()}'`;
-				} else {
-					query = `${query} WHERE LOWER(group_visibility_settings.group_visibility) = '${groupVisibility.toLowerCase()}'`;
-				}
-			}
-		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
@@ -84,11 +73,11 @@ export class GroupRepositoryImpl implements GroupRepository {
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = ids.length;
+		const total = await this.countBy(params.filters);
 
 		if (paginate) {
 			items = await this.prismaService.group.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				include: { visibility_settings: true },
 				orderBy: orderBy,
 				skip: limit * page,
@@ -96,7 +85,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			});
 		} else {
 			items = await this.prismaService.group.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				include: { visibility_settings: true },
 				orderBy: orderBy,
 			});
@@ -110,44 +99,9 @@ export class GroupRepositoryImpl implements GroupRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<Group>> {
-		const name = values['name'];
-		const isDeleted = values['isDeleted'] ?? false;
-		const visibility = values['visibility'];
-
-		let query =
-			'SELECT groups.id FROM groups JOIN group_visibility_settings ON group_visibility_settings.group_id = groups.id';
-
-		if (name) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
-			} else {
-				query = `${query} WHERE LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
-			}
-		}
-
-		if (isDeleted !== undefined) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND groups.is_deleted = ${isDeleted}`;
-			} else {
-				query = `${query} WHERE groups.is_deleted = ${isDeleted}`;
-			}
-		}
-
-		if (visibility) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(group_visibility_settings.group_visibility) = '${visibility.toLowerCase()}'`;
-			} else {
-				query = `${query} WHERE LOWER(group_visibility_settings.group_visibility) = '${visibility.toLowerCase()}'`;
-			}
-		}
-
-		const groupIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(values);
 		const groups = await this.prismaService.group.findMany({
-			where: {
-				id: { in: groupIds.map((row) => row.id) },
-			},
+			where: query,
 			include: { visibility_settings: true },
 		});
 
@@ -157,42 +111,9 @@ export class GroupRepositoryImpl implements GroupRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
-		const name = values['name'];
-		const isDeleted = values['isDeleted'] ?? false;
-		const visibility = values['visibility'];
-
-		let query =
-			'SELECT groups.id FROM groups JOIN group_visibility_settings ON group_visibility_settings.group_id = groups.id';
-
-		if (name) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
-			} else {
-				query = `${query} WHERE LOWER(groups.name) LIKE '%${name.toLowerCase()}%'`;
-			}
-		}
-
-		if (isDeleted !== undefined) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND groups.is_deleted = ${isDeleted}`;
-			} else {
-				query = `${query} WHERE groups.is_deleted = ${isDeleted}`;
-			}
-		}
-
-		if (visibility) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(group_visibility_settings.group_visibility) = '${visibility.toLowerCase()}'`;
-			} else {
-				query = `${query} WHERE LOWER(group_visibility_settings.group_visibility) = '${visibility.toLowerCase()}'`;
-			}
-		}
-
-		const groupIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(values);
 		const count = await this.prismaService.group.count({
-			where: { id: { in: groupIds.map((row) => row.id) } },
+			where: query,
 		});
 
 		return count;
@@ -201,22 +122,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 	public async paginateLog(
 		params: PaginateParameters,
 	): Promise<Pagination<GroupLog>> {
-		let query = 'SELECT id FROM group_logs';
-
-		if (params.filters) {
-			if (typeof params.filters['groupId']) {
-				const groupId = params.filters['groupId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND group_id = '${groupId}'`;
-				} else {
-					query = `${query} WHERE group_id = '${groupId}'`;
-				}
-			}
-		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'occurredAt';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
@@ -238,11 +144,11 @@ export class GroupRepositoryImpl implements GroupRepository {
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = ids.length;
+		const total = await this.countBy(params.filters);
 
 		if (paginate) {
 			items = await this.prismaService.groupLog.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					group: {
@@ -256,7 +162,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			});
 		} else {
 			items = await this.prismaService.groupLog.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					group: {

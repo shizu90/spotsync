@@ -13,41 +13,30 @@ export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepositor
 		@Inject(PrismaService) protected prismaService: PrismaService,
 	) {}
 
-	public async paginate(params: PaginateParameters): Promise<Pagination<PasswordRecovery>> {
-		let query = 'SELECT password_recoveries.id FROM password_recoveries';
-		
-		if (params.filters) {
-			if (typeof params.filters['status'] === 'string') {
-				const status = params.filters['status'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND status = '${status}'`;
-				} else {
-					query = `${query} WHERE status = '${status}'`;
-				}
-			}
+	private _mountQuery(params: Object): Object {
+		const token = params['token'];
+		const userId = params['userId'];
+		const status = params['status'];
 
-			if (typeof params.filters['token'] === 'string') {
-				const token = params.filters['token'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND token = '${token}'`;
-				} else {
-					query = `${query} WHERE token = '${token}'`;
-				}
-			}
+		let query = {};
 
-			if (typeof params.filters['userId'] === 'string') {
-				const userId = params.filters['userId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND user_id = '${userId}'`;
-				} else {
-					query = `${query} WHERE user_id = '${userId}'`;
-				}
-			}
+		if (token) {
+			query['token'] = token;
 		}
 
-		const ids = 
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-		
+		if (userId) {
+			query['user_id'] = userId;
+		}
+
+		if (status) {
+			query['status'] = status;
+		}
+
+		return query;
+	}
+
+	public async paginate(params: PaginateParameters): Promise<Pagination<PasswordRecovery>> {
+		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
 
@@ -70,11 +59,11 @@ export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepositor
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = ids.length;
+		const total = await this.countBy(query);
 
 		if (paginate) {
 			items = await this.prismaService.passwordRecovery.findMany({
-				where: { id: { in: ids.map(row => row.id) } },
+				where: query,
 				include: {
 					user: {
 						include: {
@@ -90,7 +79,7 @@ export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepositor
 			})
 		} else {
 			items = await this.prismaService.passwordRecovery.findMany({
-				where: { id: { in: ids.map(row => row.id) } },
+				where: query,
 				include: {
 					user: {
 						include: {
@@ -112,42 +101,9 @@ export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepositor
 	}
 
 	public async findBy(values: Object): Promise<PasswordRecovery[]> {
-		const token = values['token'];
-		const userId = values['userId'];
-		const status = values['status'];
-
-		let query = 
-			'SELECT password_recoveries.id FROM password_recoveries';
-		
-		if (token) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND token = '${token}'`;
-			} else {
-				query = `${query} WHERE token = '${token}'`;
-			}
-		}
-
-		if (userId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND user_id = '${userId}'`;
-			} else {
-				query = `${query} WHERE user_id = '${userId}'`;
-			}
-		}
-
-		if (status) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND status = '${status}'`;
-			} else {
-				query = `${query} WHERE status = '${status}'`;
-			}
-		}
-
-		const ids = 
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(values);
 		const items = await this.prismaService.passwordRecovery.findMany({
-			where: { id: { in: ids.map(row => row.id) } },
+			where: query,
 			include: {
 				user: {
 					include: {

@@ -17,7 +17,39 @@ export class PostRepositoryImpl implements PostRepository {
 		protected prismaService: PrismaService,
 	) {}
 
-	private async getThreadMaxDepthLevel(post_id: string): Promise<number> {
+	private _mountQuery(values: Object): Object {
+		const groupId = values['groupId'] ?? null;
+		const userId = values['userId'] ?? null;
+		const parentId = values['parentId'] ?? null;
+		const threadId = values['threadId'] ?? null;
+		const depthLevel = values['depthLevel'] ?? null;
+
+		let query = {};
+
+		if (groupId !== null) {
+			query['group_id'] = groupId;
+		}
+
+		if (userId !== null) {
+			query['user_id'] = userId;
+		}
+
+		if (parentId !== null) {
+			query['parent_id'] = parentId;
+		}
+
+		if (threadId !== null) {
+			query['thread_id'] = threadId;
+		}
+
+		if (depthLevel !== null) {
+			query['depth_level'] = depthLevel;
+		}
+
+		return query;
+	}
+
+	private async _getThreadMaxDepthLevel(post_id: string): Promise<number> {
 		const threadMaxDepthLevel = await this.prismaService.$queryRawUnsafe<{
 			max_depth_level: number;
 		}>(`
@@ -27,7 +59,7 @@ export class PostRepositoryImpl implements PostRepository {
 		return threadMaxDepthLevel[0]?.max_depth_level;
 	}
 
-	private mountIncludeTree(maxDepthLevel: number): any {
+	private _mountIncludeTree(maxDepthLevel: number): any {
 		return {
 			creator: {
 				include: {
@@ -43,7 +75,7 @@ export class PostRepositoryImpl implements PostRepository {
 			parent_post: true,
 			children_posts:
 				maxDepthLevel > 0
-					? { include: this.mountIncludeTree(maxDepthLevel - 1) }
+					? { include: this._mountIncludeTree(maxDepthLevel - 1) }
 					: true,
 			attachments: true,
 			thread: true,
@@ -53,76 +85,7 @@ export class PostRepositoryImpl implements PostRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Post>> {
-		let query = `SELECT p.id FROM posts p LEFT JOIN groups ON groups.id = p.group_id LEFT JOIN users ON users.id = p.user_id LEFT JOIN posts ON posts.id = p.parent_id`;
-
-		if (params.filters) {
-			if (typeof params.filters['groupId'] === 'string') {
-				const groupId = params.filters['groupId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND p.group_id = '${groupId}'`;
-				} else {
-					query = `${query} WHERE p.group_id = '${groupId}'`;
-				}
-			}
-
-			if (typeof params.filters['userId'] === 'string') {
-				const userId = params.filters['userId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND p.user_id = '${userId}`;
-				} else {
-					query = `${query} WHERE p.user_id = '${userId}'`;
-				}
-			}
-
-			if (typeof params.filters['parentId'] === 'string') {
-				const parentId = params.filters['parentId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND p.parent_id = '${parentId}'`;
-				} else {
-					query = `${query} WHERE p.parent_id = '${parentId}'`;
-				}
-			}
-
-			if (typeof params.filters['threadId'] === 'string') {
-				const threadId = params.filters['threadId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND p.thread_id = '${threadId}'`;
-				} else {
-					query = `${query} WHERE p.thread_id = '${threadId}'`;
-				}
-			}
-
-			if (typeof params.filters['title'] === 'string') {
-				const title = params.filters['title'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(p.title) LIKE '%${title.toLowerCase()}%'`;
-				} else {
-					query = `${query} WHERE LOWER(p.title) LIKE '%${title.toLowerCase()}%'`;
-				}
-			}
-
-			if (typeof params.filters['depthLevel'] === 'number') {
-				const depthLevel = params.filters['depthLevel'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND p.depth_level = ${depthLevel}`;
-				} else {
-					query = `${query} WHERE p.depth_level = ${depthLevel}`;
-				}
-			}
-
-			if (typeof params.filters['visibility'] === 'string') {
-				const visibility = params.filters['visibility'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND p.visibility = '${visibility}'`;
-				} else {
-					query = `${query} WHERE p.visibility = '${visibility}'`;
-				}
-			}
-		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
 
@@ -148,11 +111,11 @@ export class PostRepositoryImpl implements PostRepository {
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = ids.length;
+		const total = await this.countBy(params.filters);
 
 		if (paginate) {
 			items = await this.prismaService.post.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					creator: {
@@ -192,7 +155,7 @@ export class PostRepositoryImpl implements PostRepository {
 			});
 		} else {
 			items = await this.prismaService.post.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					creator: {
@@ -236,34 +199,7 @@ export class PostRepositoryImpl implements PostRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<Post>> {
-		const groupId = values['groupId'] ?? null;
-		const userId = values['userId'] ?? null;
-		const parentId = values['parentId'] ?? null;
-		const threadId = values['threadId'] ?? null;
-		const depthLevel = values['depthLevel'] ?? null;
-
-		let query = {};
-
-		if (groupId !== null) {
-			query['group_id'] = groupId;
-		}
-
-		if (userId !== null) {
-			query['user_id'] = userId;
-		}
-
-		if (parentId !== null) {
-			query['parent_id'] = parentId;
-		}
-
-		if (threadId !== null) {
-			query['thread_id'] = threadId;
-		}
-
-		if (depthLevel !== null) {
-			query['depth_level'] = depthLevel;
-		}
-
+		const query = this._mountQuery(values);
 		const posts = await this.prismaService.post.findMany({
 			where: query,
 			include: {
@@ -304,34 +240,7 @@ export class PostRepositoryImpl implements PostRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
-		const groupId = values['groupId'] ?? null;
-		const userId = values['userId'] ?? null;
-		const parentId = values['parentId'] ?? null;
-		const threadId = values['threadId'] ?? null;
-		const depthLevel = values['depthLevel'] ?? null;
-
-		let query = {};
-
-		if (groupId !== null) {
-			query['group_id'] = groupId;
-		}
-
-		if (userId !== null) {
-			query['user_id'] = userId;
-		}
-
-		if (parentId !== null) {
-			query['parent_id'] = parentId;
-		}
-
-		if (threadId !== null) {
-			query['thread_id'] = threadId;
-		}
-
-		if (depthLevel !== null) {
-			query['depth_level'] = depthLevel;
-		}
-
+		const query = this._mountQuery(values);
 		const count = await this.prismaService.post.count({
 			where: query,
 		});
@@ -379,9 +288,9 @@ export class PostRepositoryImpl implements PostRepository {
 	}
 
 	public async findById(id: string): Promise<Post> {
-		const maxDepthLevel = await this.getThreadMaxDepthLevel(id);
+		const maxDepthLevel = await this._getThreadMaxDepthLevel(id);
 
-		const include = this.mountIncludeTree(maxDepthLevel);
+		const include = this._mountIncludeTree(maxDepthLevel);
 
 		const post = await this.prismaService.post.findFirst({
 			where: {

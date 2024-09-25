@@ -11,7 +11,6 @@ import { SpotEventModule } from './spot-event/spot-event.module';
 import { SpotFolderModule } from './spot-folder/spot-folder.module';
 import { SpotModule } from './spot/spot.module';
 import { UserModule } from './user/user.module';
-import { FavoriteModule } from './favorite/favorite.module';
 
 @Module({
 	imports: [
@@ -27,7 +26,7 @@ import { FavoriteModule } from './favorite/favorite.module';
 		SpotEventModule,
 		MailModule,
 		CommentModule,
-		FavoriteModule,
+		//FavoriteModule,
 	],
 })
 export class AppModule {}

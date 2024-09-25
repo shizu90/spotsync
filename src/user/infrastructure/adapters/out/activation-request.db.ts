@@ -15,42 +15,35 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
         protected prismaService: PrismaService
     ) {}
 
-    public async paginate(params: PaginateParameters): Promise<Pagination<ActivationRequest>> {
-        let query = 
-            `SELECT * FROM activation_requests`;
+    private _mountQuery(params: Object): Object {
+        const status = params['status'];
+        const subject = params['subject'];
+        const code = params['code'];
+        const userId = params['userId'];
 
-        if (params.filters) {
-            if (typeof params.filters['status'] === 'string') {
-                const status = params.filters['status'];
-                if (query.includes('WHERE')) {
-                    query = `${query} AND status = '${status}'`;
-                } else {
-                    query = `${query} WHERE status = '${status}'`;
-                }
-            }
+        let query = {};
 
-            if (typeof params.filters['subject'] === 'string') {
-                const subject = params.filters['subject'];
-                if (query.includes('WHERE')) {
-                    query = `${query} AND subject = '${subject}'`;
-                } else {
-                    query = `${query} WHERE subject = '${subject}'`;
-                }
-            }
-
-            if (typeof params.filters['userId'] === 'string') {
-                const userId = params.filters['userId'];
-                if (query.includes('WHERE')) {
-                    query = `${query} AND user_id = '${userId}'`;
-                } else {
-                    query = `${query} WHERE user_id = '${userId}'`;
-                }
-            }
+        if (status) {
+            query['status'] = status;
         }
 
-        const ids = 
-            await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-        
+        if (subject) {
+            query['subject'] = subject;
+        }
+
+        if (code) {
+            query['code'] = code;
+        }
+
+        if (userId) {
+            query['user_id'] = userId;
+        }
+
+        return query;
+    }
+
+    public async paginate(params: PaginateParameters): Promise<Pagination<ActivationRequest>> {
+        const query = this._mountQuery(params.filters);
         const sort = params.sort ?? 'requested_at';
         const sortDirection = params.sortDirection ?? SortDirection.DESC;
 
@@ -69,11 +62,11 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
         const paginate = params.paginate ?? false;
         const page = (params.page ?? 1)-1;
         const limit = params.limit ?? 12;
-        const total = ids.length;
+        const total = await this.countBy(query);
 
         if (paginate) {
             items = await this.prismaService.activationRequest.findMany({
-                where: {id: {in: ids.map(row => row.id)}},
+                where: query,
                 orderBy: orderBy,
                 include: {
                     user: {
@@ -89,7 +82,7 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
             });
         } else {
             items = await this.prismaService.user.findMany({
-                where: {id: {in: ids.map(row => row.id)}},
+                where: query,
                 orderBy: orderBy,
                 include: {
                     credentials: true,
@@ -106,51 +99,9 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
     }
     
     public async findBy(values: Object): Promise<ActivationRequest[]> {
-        const status = values['status'];
-        const subject = values['subject'];
-        const code = values['code'];
-        const userId = values['userId'];
-
-        let query = 
-            `SELECT activation_requests.id FROM activation_requests`;
-
-        if (status) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND status = '${status}'`;
-            } else {
-                query = `${query} WHERE status = '${status}'`;
-            }
-        }
-
-        if (subject) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND subject = '${subject}'`;
-            } else {
-                query = `${query} WHERE subject = '${subject}'`;
-            }
-        }
-
-        if (code) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND code = '${code}'`;
-            } else {
-                query = `${query} WHERE code = '${code}'`;
-            }
-        }
-
-        if (userId) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND user_id = '${userId}'`;
-            } else {
-                query = `${query} WHERE user_id = '${userId}'`;
-            }
-        }
-
-        const ids = 
-            await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-        
+        const query = this._mountQuery(values);
         const items = await this.prismaService.activationRequest.findMany({
-            where: {id: {in: ids.map(row => row.id)}},
+            where: this._mountQuery(values),
             include: {
                 user: {
                     include: {

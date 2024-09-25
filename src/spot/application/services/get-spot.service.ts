@@ -64,7 +64,7 @@ export class GetSpotService implements GetSpotUseCase {
 		).at(0);
 
 		const favorited = (
-			await this.spotRepository.findBy({
+			await this.favoriteRepository.findBy({
 				userId: authenticatedUser.id(),
 				favoritableId: spot.id(),
 				favoritableSubject: FavoritableSubject.SPOT,

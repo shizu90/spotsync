@@ -17,43 +17,32 @@ export class FollowRepositoryImpl implements FollowRepository {
 		protected prismaService: PrismaService,
 	) {}
 
+	private _mountQuery(values: Object): Object {
+		const status = values['status'] ?? null;
+		const fromUserId = values['fromUserId'] ?? null;
+		const toUserId = values['toUserId'] ?? null;
+
+		let query = {};
+
+		if (status) {
+			query['status'] = status;
+		}
+
+		if (fromUserId) {
+			query['from_user_id'] = fromUserId;
+		}
+
+		if (toUserId) {
+			query['to_user_id'] = toUserId;
+		}
+
+		return query;
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Follow>> {
-		let query = `SELECT id FROM follows`;
-
-		if (params.filters) {
-			if (typeof params.filters['status'] === 'string') {
-				const status = params.filters['status'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND status = '${status}'`;
-				} else {
-					query = `${query} WHERE status = '${status}'`;
-				}
-			}
-
-			if (typeof params.filters['fromUserId'] === 'string') {
-				const fromUserId = params.filters['fromUserId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND from_user_id = '${fromUserId}'`;
-				} else {
-					query = `${query} WHERE from_user_id = '${fromUserId}'`;
-				}
-			}
-
-			if (typeof params.filters['toUserId'] === 'string') {
-				const toUserId = params.filters['toUserId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND to_user_id = '${toUserId}'`;
-				} else {
-					query = `${query} WHERE to_user_id = '${toUserId}'`;
-				}
-			}
-		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'followedAt';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
@@ -74,11 +63,11 @@ export class FollowRepositoryImpl implements FollowRepository {
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = ids.length;
+		const total = await this.countBy(params.filters);
 
 		if (paginate) {
 			items = await this.prismaService.follow.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					from_user: {
@@ -101,7 +90,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			});
 		} else {
 			items = await this.prismaService.follow.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					from_user: {
@@ -130,42 +119,10 @@ export class FollowRepositoryImpl implements FollowRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<Follow>> {
-		const status = values['status'];
-		const fromUserId = values['fromUserId'];
-		const toUserId = values['toUserId'];
-
-		let query = 'SELECT id FROM follows';
-
-		if (status) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND status = '${status}'`;
-			} else {
-				query = `${query} WHERE status = '${status}'`;
-			}
-		}
-
-		if (fromUserId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND from_user_id = '${fromUserId}'`;
-			} else {
-				query = `${query} WHERE from_user_id = '${fromUserId}'`;
-			}
-		}
-
-		if (toUserId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND to_user_id = '${toUserId}'`;
-			} else {
-				query = `${query} WHERE to_user_id = '${toUserId}'`;
-			}
-		}
-
-		const followIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(values);
 		const follows = await this.prismaService.follow.findMany({
 			where: {
-				id: { in: followIds.map((row) => row.id) },
+				id: query,
 			},
 			include: {
 				from_user: {
@@ -191,41 +148,9 @@ export class FollowRepositoryImpl implements FollowRepository {
 	}
 
 	public async countBy(values: Object) {
-		const status = values['status'];
-		const fromUserId = values['fromUserId'];
-		const toUserId = values['toUserId'];
-
-		let query = 'SELECT id FROM follows';
-
-		if (status) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND status = '${status}'`;
-			} else {
-				query = `${query} WHERE status = '${status}'`;
-			}
-		}
-
-		if (fromUserId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND from_user_id = '${fromUserId}'`;
-			} else {
-				query = `${query} WHERE from_user_id = '${fromUserId}'`;
-			}
-		}
-
-		if (toUserId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND to_user_id = '${toUserId}'`;
-			} else {
-				query = `${query} WHERE to_user_id = '${toUserId}'`;
-			}
-		}
-
-		const followIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(values);
 		const count = await this.prismaService.follow.count({
-			where: { id: { in: followIds.map((row) => row.id) } },
+			where: query,
 		});
 
 		return count;

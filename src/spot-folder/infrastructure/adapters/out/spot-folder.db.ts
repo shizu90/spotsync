@@ -16,33 +16,30 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
         protected prismaService: PrismaService
     ) {}
 
-    public async paginate(params: PaginateParameters): Promise<Pagination<SpotFolder>> {
-        let query = `SELECT spot_folders.id FROM spot_folders`;
+    private _mountQuery(values: Object): Object {
+        const name = values['name'] ?? null;
+        const userId = values['userId'] ?? null;
+        const visibility = values['visibility'] ?? null;
 
-        if (params.filters) {
-            if (typeof params.filters['userId'] === 'string') {
-                const userId = params.filters['userId'];
+        let query = {};
 
-                if (query.includes('WHERE')) {
-                    query = `${query} AND user_id = '${userId}'`;
-                } else {
-                    query = `${query} WHERE user_id = '${userId}'`;
-                }
-            }
-
-            if (typeof params.filters['name'] === 'string') {
-                const name = params.filters['name'];
-
-                if (query.includes('WHERE')) {
-                    query = `${query} AND name ILIKE '%${name}%'`;
-                } else {
-                    query = `${query} WHERE name ILIKE '%${name}%'`;
-                }
-            }
+        if (name) {
+            query['name'] = name;
         }
 
-        const ids = await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
+        if (userId) {
+            query['user_id'] = userId;
+        }
 
+        if (visibility) {
+            query['visibility'] = visibility;
+        }
+
+        return query;
+    }
+
+    public async paginate(params: PaginateParameters): Promise<Pagination<SpotFolder>> {
+        const query = this._mountQuery(params.filters);
         const sort = params.sort || 'created_at';
         const sortDirection = params.sortDirection || SortDirection.DESC;
 
@@ -68,11 +65,11 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
         const paginate = params.paginate ?? false;
         const page = (params.page ?? 1) - 1;
         const limit = params.limit ?? 12;
-        const total = ids.length;
+        const total = await this.countBy(params.filters);
 
         if (paginate) {
             items = await this.prismaService.spotFolder.findMany({
-                where: { id: { in: ids.map((row) => row.id) } },
+                where: query,
                 orderBy: orderBy,
                 include: {
                     creator: {
@@ -97,7 +94,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
             });
         } else {
             items = await this.prismaService.spotFolder.findMany({
-                where: { id: { in: ids.map((row) => row.id) } },
+                where: query,
                 orderBy: orderBy,
                 include: {
                     creator: {
@@ -129,40 +126,9 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
     }
 
     public async findBy(values: Object): Promise<SpotFolder[]> {
-        const name = values['name'] ?? null;
-        const userId = values['userId'] ?? null;
-        const visibility = values['visibility'] ?? null;
-        
-        let query = `SELECT spot_folders.id FROM spot_folders`;
-
-        if (name !== null) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND name = '${name}'`;
-            } else {
-                query = `${query} WHERE name = '${name}'`;
-            }
-        }
-
-        if (userId !== null) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND user_id = '${userId}'`;
-            } else {
-                query = `${query} WHERE user_id = '${userId}'`;
-            }
-        }
-
-        if (visibility !== null) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND visibility = '${visibility}'`;
-            } else {
-                query = `${query} WHERE visibility = '${visibility}'`;
-            }
-        }
-
-        const ids = await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+        const query = this._mountQuery(values);
         const items = await this.prismaService.spotFolder.findMany({
-            where: { id: { in: ids.map((row) => row.id) } },
+            where: query,
             include: {
                 creator: {
                     include: {
@@ -187,39 +153,12 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
     }
 
     public async countBy(values: Object): Promise<number> {
-        const name = values['name'] ?? null;
-        const userId = values['userId'] ?? null;
-        const visibility = values['visibility'] ?? null;
-        
-        let query = `SELECT count(spot_folders.id) FROM spot_folders`;
+        const query = this._mountQuery(values);
+        const count = await this.prismaService.spotFolder.count({
+            where: query,
+        });
 
-        if (name !== null) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND name = '${name}'`;
-            } else {
-                query = `${query} WHERE name = '${name}'`;
-            }
-        }
-
-        if (userId !== null) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND user_id = '${userId}'`;
-            } else {
-                query = `${query} WHERE user_id = '${userId}'`;
-            }
-        }
-
-        if (visibility !== null) {
-            if (query.includes('WHERE')) {
-                query = `${query} AND visibility = '${visibility}'`;
-            } else {
-                query = `${query} WHERE visibility = '${visibility}'`;
-            }
-        }
-
-        const count = await this.prismaService.$queryRawUnsafe<{ count: number }>(query);
-
-        return count.count;
+        return count;
     }
 
     public async findAll(): Promise<SpotFolder[]> {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
 import { FollowerModule } from 'src/follower/follower.module';
 import { GroupModule } from 'src/group/group.module';
@@ -15,7 +15,7 @@ import { Providers } from './post.provider';
 		UserModule,
 		GroupModule,
 		FollowerModule,
-		LikeModule,
+		forwardRef(() => LikeModule),
 		AuthModule,
 	],
 	providers: [...Providers],

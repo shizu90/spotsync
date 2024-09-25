@@ -18,7 +18,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 		protected prismaService: PrismaService,
 	) {}
 
-	private mapSubjectId(subject: LikableSubject): string {
+	private _mapSubjectId(subject: LikableSubject): string {
 		switch(subject) {
 			case LikableSubject.POST:
 				return 'post_id';
@@ -29,44 +29,32 @@ export class LikeRepositoryImpl implements LikeRepository {
 		}
 	}
 
+	private _mountQuery(values: Object): Object {
+		const subjectId = values['subjectId'] ?? null;
+		const subject = values['subject'] ?? null;
+		const userId = values['userId'] ?? null;
+
+		let query = {};
+
+		if (subjectId && subject) {
+			query[this._mapSubjectId(subject)] = subjectId;
+		}
+
+		if (subject) {
+			query['likable_subject'] = subject;
+		}
+
+		if (userId) {
+			query['user_id'] = userId;
+		}
+
+		return query;
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Like>> {
-		let query = `SELECT id FROM likes`;
-
-		if (params.filters) {
-			if (typeof params.filters['subject'] === 'string') {
-				const subject = params.filters['subject'];
-
-				if (query.includes('WHERE')) {
-					query = `${query} AND likable_subject = '${subject}'`;
-				} else {
-					query = `${query} WHERE likable_subject = '${subject}'`;
-				}
-
-				if (typeof params.filters['subjectId'] === 'string') {
-					const subjectId = params.filters['subjectId'];
-
-					if (query.includes('WHERE')) {
-						query = `${query} AND ${this.mapSubjectId(subject as LikableSubject)} = '${subjectId}'`;
-					} else {
-						query = `${query} WHERE ${this.mapSubjectId(subject as LikableSubject)} = '${subjectId}'`;
-					}
-				}
-			}
-
-			if (typeof params.filters['userId'] === 'string') {
-				if (query.includes('WHERE')) {
-					query = `${query} AND user_id = '${params.filters['userId']}'`;
-				} else {
-					query = `${query} WHERE user_id = '${params.filters['userId']}'`;
-				}
-			}
-		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
 
@@ -83,13 +71,13 @@ export class LikeRepositoryImpl implements LikeRepository {
 		const paginate = params.paginate ?? false;
 		const limit = params.limit ?? 12;
 		const page = (params.page ?? 1)-1;
-		const total = ids.length;
+		const total = await this.countBy(params.filters);
 
 		let items = [];
 
 		if (paginate) {
 			items = await this.prismaService.like.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					user: {
@@ -118,7 +106,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			});
 		} else {
 			items = await this.prismaService.like.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					user: {
@@ -154,24 +142,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 	}
 
 	public async findBy(values: Object): Promise<Like[]> {
-		const subjectId = values['subjectId'] ?? null;
-		const subject = values['subject'] ?? null;
-		const userId = values['userId'] ?? null;
-
-		let query = {};
-
-		if (subjectId !== null) {
-			query['likable_id'] = subjectId;
-		}
-
-		if (subject !== null) {
-			query['likable_subject'] = subject;
-		}
-
-		if (userId !== null) {
-			query['user_id'] = userId;
-		}
-
+		const query = this._mountQuery(values);
 		const likes = await this.prismaService.like.findMany({
 			where: query,
 			include: {
@@ -202,24 +173,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
-		const subjectId = values['subjectId'] ?? null;
-		const subject = values['subject'] ?? null;
-		const userId = values['userId'] ?? null;
-
-		let query = {};
-
-		if (subjectId !== null) {
-			query['likable_id'] = subjectId;
-		}
-
-		if (subject !== null) {
-			query['likable_subject'] = subject;
-		}
-
-		if (userId !== null) {
-			query['user_id'] = userId;
-		}
-
+		const query = this._mountQuery(values);
 		const count = await this.prismaService.like.count({
 			where: query,
 		});

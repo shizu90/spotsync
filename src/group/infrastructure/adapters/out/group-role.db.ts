@@ -21,43 +21,32 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		protected prismaService: PrismaService,
 	) {}
 
+	private _mountQuery(values: Object): Object {
+		const name = values['name'] ?? null;
+		const isImmutable = values['isImmutable'] ?? null;
+		const groupId = values['groupId'] ?? null;
+
+		let query = {};
+
+		if (name) {
+			query['name'] = name;
+		}
+
+		if (isImmutable !== undefined) {
+			query['is_immutable'] = isImmutable;
+		}
+
+		if (groupId) {
+			query['group_id'] = groupId;
+		}
+
+		return query;
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<GroupRole>> {
-		let query = `SELECT id FROM group_roles`;
-
-		if (params.filters) {
-			if (typeof params.filters['name'] === 'string') {
-				const name = params.filters['name'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(name) = '${name.toLowerCase()}'`;
-				} else {
-					query = `${query} WHERE LOWER(name) = '${name.toLowerCase()}'`;
-				}
-			}
-
-			if (typeof params.filters['isImmutable'] === 'boolean') {
-				const isImmutable = params.filters['isImmutable'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND is_immutable = ${isImmutable}`;
-				} else {
-					query = `${query} WHERE is_immutable = ${isImmutable}`;
-				}
-			}
-
-			if (typeof params.filters['groupId'] === 'string') {
-				const groupId = params.filters['groupId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND (group_id = '${groupId}' OR group_id IS null)`;
-				} else {
-					query = `${query} WHERE (group_id = '${groupId}' OR group_id is null)`;
-				}
-			}
-		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
@@ -83,11 +72,11 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = ids.length;
+		const total = await this.countBy(params.filters);
 
 		if (paginate) {
 			items = await this.prismaService.groupRole.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				include: {
 					permissions: { include: { group_permission: true } },
 					group: {
@@ -102,7 +91,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			});
 		} else {
 			items = await this.prismaService.groupRole.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				include: {
 					permissions: { include: { group_permission: true } },
 					group: {
@@ -123,41 +112,9 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<GroupRole>> {
-		const name = values['name'];
-		const isImmutable = values['isImmutable'];
-		const groupId = values['groupId'];
-
-		let query = 'SELECT group_roles.id FROM group_roles';
-
-		if (name) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(name) = '${name.toLowerCase()}'`;
-			} else {
-				query = `${query} WHERE LOWER(name) = '${name.toLowerCase()}'`;
-			}
-		}
-
-		if (isImmutable) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND is_immutable = ${isImmutable}`;
-			} else {
-				query = `${query} WHERE is_immutable = ${isImmutable}`;
-			}
-		}
-
-		if (groupId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND (group_id = '${groupId}' OR group_id IS null)`;
-			} else {
-				query = `${query} WHERE (group_id = '${groupId}' OR group_id IS null)`;
-			}
-		}
-
-		const groupRoleIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(values);
 		const groupRoles = await this.prismaService.groupRole.findMany({
-			where: { id: { in: groupRoleIds.map((row) => row.id) } },
+			where: query,
 			include: {
 				permissions: { include: { group_permission: true } },
 				group: {
@@ -174,41 +131,9 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
-		const name = values['name'];
-		const isImmutable = values['isImmutable'];
-		const groupId = values['groupId'];
-
-		let query = 'SELECT group_roles.id FROM group_roles';
-
-		if (name) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(name) = '${name.toLowerCase()}'`;
-			} else {
-				query = `${query} WHERE LOWER(name) = '${name.toLowerCase()}'`;
-			}
-		}
-
-		if (isImmutable) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND is_immutable = ${isImmutable}`;
-			} else {
-				query = `${query} WHERE is_immutable = ${isImmutable}`;
-			}
-		}
-
-		if (groupId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND (group_id = '${groupId}' OR group_id IS null)`;
-			} else {
-				query = `${query} WHERE (group_id = '${groupId}' OR group_id IS null)`;
-			}
-		}
-
-		const groupRoleIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(values);
 		const count = await this.prismaService.groupRole.count({
-			where: { id: { in: groupRoleIds.map((row) => row.id) } },
+			where: query,
 		});
 
 		return count;

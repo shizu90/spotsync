@@ -19,40 +19,40 @@ export class UserRepositoryImpl implements UserRepository {
 		@Inject(PrismaService) protected prismaService: PrismaService,
 	) {}
 
+	private _mountQuery(params: Object): Object {
+		const name = params['name'];
+		const displayName = params['displayName'];
+		const status = params['status'];
+		const isDeleted = params['isDeleted'];
+
+		let query = {
+			credentials: {},
+			profile: {},
+		};
+
+		if (name) {
+			query['credentials']['name'] = { contains: name, mode: 'insensitive' };
+		}
+
+		if (displayName) {
+			query['profile']['display_name'] = { contains: displayName, mode: 'insensitive' };
+		}
+
+		if (status) {
+			query['status'] = status;
+		}
+
+		if (isDeleted) {
+			query['is_deleted'] = isDeleted;
+		}
+
+		return query;
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<User>> {
-		let query = {};
-
-		if (params.filters) {
-			const name = params.filters['name'];
-			const displayName = params.filters['displayName'];
-			const status = params.filters['status'];
-			const isDeleted = params.filters['isDeleted'];
-
-			if (name) {
-				query['name'] = { 
-					contains: name,
-					mode: 'insensitive',
-				};
-			}
-
-			if (displayName) {
-				query['profile']['display_name'] = {
-					contains: displayName,
-					mode: 'insensitive',
-				};
-			}
-
-			if (status) {
-				query['status'] = status;
-			}
-
-			if (isDeleted) {
-				query['is_deleted'] = isDeleted;
-			}
-		}
-
+		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
@@ -108,28 +108,7 @@ export class UserRepositoryImpl implements UserRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<User>> {
-		const name = values['name'];
-		const displayName = values['displayName'];
-		const status = values['status'];
-		const isDeleted = values['isDeleted'] ?? false;
-
-		let query = {};
-
-		if (name) {
-			query['name'] = { contains: name, mode: 'insensitive' };
-		}
-
-		if (displayName) {
-			query['profile']['display_name'] = { contains: displayName, mode: 'insensitive' };
-		}
-
-		if (status) {
-			query['status'] = status;
-		}
-
-		if (isDeleted !== undefined) {
-			query['is_deleted'] = isDeleted;
-		}
+		const query = this._mountQuery(values);
 
 		const users = await this.prismaService.user.findMany({
 			where: query,
@@ -142,28 +121,7 @@ export class UserRepositoryImpl implements UserRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
-		const name = values['name'];
-		const displayName = values['displayName'];
-		const status = values['status'];
-		const isDeleted = values['isDeleted'] ?? false;
-
-		let query = {};
-
-		if (name) {
-			query['name'] = { contains: name, mode: 'insensitive' };
-		}
-
-		if (displayName) {
-			query['profile']['display_name'] = { contains: displayName, mode: 'insensitive' };
-		}
-
-		if (status) {
-			query['status'] = status;
-		}
-
-		if (isDeleted !== undefined) {
-			query['is_deleted'] = isDeleted;
-		}
+		const query = this._mountQuery(values);
 
 		const count = await this.prismaService.user.count({
 			where: query,

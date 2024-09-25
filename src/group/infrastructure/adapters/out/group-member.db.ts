@@ -18,43 +18,42 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		protected prismaService: PrismaService,
 	) {}
 
+	private _mountQuery(values: Object): Object {
+		const name = values['name'] ?? null;
+		const status = values['status'] ?? null;
+		const roleId = values['roleId'] ?? null;
+		const groupId = values['groupId'] ?? null;
+		const userId = values['userId'] ?? null;
+
+		let query = {};
+
+		if (name) {
+			query['name'] = name;
+		}
+
+		if (roleId) {
+			query['role_id'] = roleId;
+		}
+
+		if (groupId) {
+			query['group_id'] = groupId;
+		}
+
+		if (userId) {
+			query['user_id'] = userId;
+		}
+
+		if (status) {
+			query['status'] = status;
+		}
+
+		return query;
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<GroupMember>> {
-		let query = `SELECT group_members.id FROM group_members JOIN users ON users.id = group_members.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false`;
-
-		if (params.filters) {
-			if (typeof params.filters['name'] === 'string') {
-				const name = params.filters['name'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-				} else {
-					query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-				}
-			}
-
-			if (typeof params.filters['roleId'] === 'string') {
-				const roleId = params.filters['roleId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND group_members.role_id = '${roleId}'`;
-				} else {
-					query = `${query} WHERE group_members.role_id = '${roleId}'`;
-				}
-			}
-
-			if (typeof params.filters['groupId'] === 'string') {
-				const groupId = params.filters['groupId'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND group_members.group_id = '${groupId}'`;
-				} else {
-					query = `${query} WHERE group_members.group_id = '${groupId}'`;
-				}
-			}
-		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
@@ -76,11 +75,11 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = ids.length;
+		const total = await this.countBy(params.filters);
 
 		if (paginate) {
 			items = await this.prismaService.groupMember.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					user: {
@@ -110,7 +109,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			});
 		} else {
 			items = await this.prismaService.groupMember.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: {
 					user: {
@@ -146,69 +145,9 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<GroupMember>> {
-		const id = values['id'];
-		const status = values['status'];
-		const name = values['name'];
-		const roleId = values['roleId'];
-		const groupId = values['groupId'];
-		const userId = values['userId'];
-
-		let query =
-			'SELECT group_members.id FROM group_members JOIN users ON users.id = group_members.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false';
-
-		if (id) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_members.id = '${id}'`;
-			} else {
-				query = `${query} WHERE group_members.id = '${id}'`;
-			}
-		}
-
-		if (status) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_members.status = '${status}'`;
-			} else {
-				query = `${query} WHERE group_members.status = '${status}'`;
-			}
-		}
-
-		if (name) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			} else {
-				query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			}
-		}
-
-		if (roleId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_members.role_id = '${roleId}'`;
-			} else {
-				query = `${query} WHERE group_members.role_id = '${roleId}'`;
-			}
-		}
-
-		if (groupId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_members.group_id = '${groupId}'`;
-			} else {
-				query = `${query} WHERE group_members.group_id = '${groupId}'`;
-			}
-		}
-
-		if (userId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_members.user_id = '${userId}'`;
-			} else {
-				query = `${query} WHERE group_members.user_id = '${userId}'`;
-			}
-		}
-
-		const groupMemberIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(values);
 		const groupMembers = await this.prismaService.groupMember.findMany({
-			where: { id: { in: groupMemberIds.map((row) => row.id) } },
+			where: query,
 			include: {
 				user: {
 					include: {
@@ -240,51 +179,9 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
-		const name = values['name'];
-		const roleId = values['roleId'];
-		const groupId = values['groupId'];
-		const userId = values['userId'];
-
-		let query =
-			'SELECT group_members.id FROM group_members JOIN users ON users.id = group_members.user_id JOIN user_credentials ON user_credentials.user_id = users.id WHERE users.is_deleted = false';
-
-		if (name) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			} else {
-				query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			}
-		}
-
-		if (roleId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_members.role_id = '${roleId}'`;
-			} else {
-				query = `${query} WHERE group_members.role_id = '${roleId}'`;
-			}
-		}
-
-		if (groupId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_members.group_id = '${groupId}'`;
-			} else {
-				query = `${query} WHERE group_members.group_id = '${groupId}'`;
-			}
-		}
-
-		if (userId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND group_members.user_id = '${userId}'`;
-			} else {
-				query = `${query} WHERE group_members.user_id = '${userId}'`;
-			}
-		}
-
-		const groupMemberIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
+		const query = this._mountQuery(values);
 		const count = await this.prismaService.groupMember.count({
-			where: { id: { in: groupMemberIds.map((row) => row.id) } },
+			where: query,
 		});
 
 		return count;
