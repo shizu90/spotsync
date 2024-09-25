@@ -1,18 +1,20 @@
 import { Model } from 'src/common/core/common.model';
+import { Post } from 'src/post/domain/post.model';
 import { User } from 'src/user/domain/user.model';
 import { LikableSubject } from './likable-subject.enum';
+import { Likable } from './likable.interface';
 
 export class Like extends Model {
 	private _id: string;
 	private _likableSubject: LikableSubject;
-	private _likableSubjectId: string;
+	private _likable: Likable;
 	private _user: User;
 	private _createdAt: Date;
 
 	private constructor(
 		id: string,
 		likableSubject: LikableSubject,
-		likableSubjectId: string,
+		likable: Likable,
 		user: User,
 		createdAt?: Date,
 	) {
@@ -20,7 +22,7 @@ export class Like extends Model {
 
 		this._id = id;
 		this._likableSubject = likableSubject;
-		this._likableSubjectId = likableSubjectId;
+		this._likable = likable;
 		this._user = user;
 		this._createdAt = createdAt ?? new Date();
 	}
@@ -28,11 +30,20 @@ export class Like extends Model {
 	public static create(
 		id: string,
 		likableSubject: LikableSubject,
-		likableSubjectId: string,
+		likable: Likable,
 		user: User,
 		createdAt?: Date,
 	): Like {
-		return new Like(id, likableSubject, likableSubjectId, user, createdAt);
+		return new Like(id, likableSubject, likable, user, createdAt);
+	}
+
+	public static createForPost(
+		id: string,
+		spot: Post,
+		user: User,
+		createdAt?: Date,
+	) {
+		return new Like(id, LikableSubject.POST, spot, user, createdAt);
 	}
 
 	public id(): string {
@@ -43,8 +54,8 @@ export class Like extends Model {
 		return this._likableSubject;
 	}
 
-	public likableSubjectId(): string {
-		return this._likableSubjectId;
+	public likable(): Likable {
+		return this._likable;
 	}
 
 	public user(): User {

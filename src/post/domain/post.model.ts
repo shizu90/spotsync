@@ -1,12 +1,14 @@
 import { randomUUID } from 'crypto';
 import { Model } from 'src/common/core/common.model';
 import { Group } from 'src/group/domain/group.model';
+import { Likable } from 'src/like/domain/likable.interface';
+import { Like } from 'src/like/domain/like.model';
 import { User } from 'src/user/domain/user.model';
 import { PostAttachment } from './post-attachment.model';
 import { PostThread } from './post-thread.model';
 import { PostVisibility } from './post-visibility.enum';
 
-export class Post extends Model {
+export class Post extends Model implements Likable {
 	private _id: string;
 	private _title: string;
 	private _content: string;
@@ -180,5 +182,9 @@ export class Post extends Model {
 	public removeAllAttachments(): void {
 		this._attachments = [];
 		this._updatedAt = new Date();
+	}
+
+	public like(user: User): Like {
+		return Like.createForPost(randomUUID(), this, user);
 	}
 }

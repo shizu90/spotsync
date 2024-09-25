@@ -238,6 +238,6 @@ export class SpotEvent extends Model implements Favoritable {
 	}
 
 	public favorite(user: User): Favorite {
-		return Favorite.createForSpotEvent(randomUUID(), user, this._id, this);
+		return Favorite.createForSpotEvent(randomUUID(), user, this);
 	}
 }

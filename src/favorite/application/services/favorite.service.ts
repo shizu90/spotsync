@@ -1,13 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { randomUUID } from "crypto";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { FavoritableSubject } from "src/favorite/domain/favoritable-subject.enum";
-import { Favorite } from "src/favorite/domain/favorite.model";
-import { SpotEvent } from "src/spot-event/domain/spot-event.model";
+import { Favoritable } from "src/favorite/domain/favoritable.interface";
 import { SpotFolderRepository, SpotFolderRepositoryProvider } from "src/spot-folder/application/ports/out/spot-folder.repository";
-import { SpotFolder } from "src/spot-folder/domain/spot-folder.model";
 import { SpotRepository, SpotRepositoryProvider } from "src/spot/application/ports/out/spot.repository";
-import { Spot } from "src/spot/domain/spot.model";
 import { FavoriteCommand } from "../ports/in/commands/favorite.command";
 import { FavoriteUseCase } from "../ports/in/use-cases/favorite.use-case";
 import { FavoriteDto } from "../ports/out/dto/favorite.dto";
@@ -29,7 +25,7 @@ export class FavoriteService implements FavoriteUseCase {
     public async execute(command: FavoriteCommand): Promise<FavoriteDto> {
         const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
-        let favoritable: Spot | SpotFolder | SpotEvent = null;
+        let favoritable: Favoritable = null;
 
         switch(command.subject) {
             case FavoritableSubject.SPOT:
@@ -44,20 +40,14 @@ export class FavoriteService implements FavoriteUseCase {
             default: break;
         }
 
-        const favorite = Favorite.create(
-            randomUUID(),
-            authenticatedUser,
-            command.subject,
-            command.subjectId,
-            favoritable
-        );
+        const favorite = favoritable.favorite(authenticatedUser);
 
         await this.favoriteRepository.store(favorite);
 
         return new FavoriteDto(
             favorite.id(),
             favorite.favoritableSubject(),
-            favorite.favoritableId(),
+            favorite.favoritable().id(),
             favorite.user().id(),
             favorite.createdAt().toISOString(),
         );

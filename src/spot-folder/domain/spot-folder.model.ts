@@ -161,7 +161,7 @@ export class SpotFolder extends Model implements Favoritable {
 	}
 
 	public favorite(user: User): Favorite {
-		return Favorite.createForSpotFolder(randomUUID(), user, this._id, this);
+		return Favorite.createForSpotFolder(randomUUID(), user, this);
 	}
 
 	public sortItems(): void {

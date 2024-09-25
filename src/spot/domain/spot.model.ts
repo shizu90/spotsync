@@ -150,7 +150,7 @@ export class Spot extends Model implements Favoritable {
 	}
 
 	public favorite(user: User): Favorite {
-		return Favorite.createForSpot(randomUUID(), user, this._id, this);
+		return Favorite.createForSpot(randomUUID(), user, this);
 	}
 
 	public delete(): void {

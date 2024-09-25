@@ -18,7 +18,6 @@ export class Favorite extends Model {
         id: string,
         user: User,
         favoritableSubject: FavoritableSubject,
-        favoritableId: string,
         favoritable: Favoritable,
         createdAt?: Date,
     ) {
@@ -26,7 +25,6 @@ export class Favorite extends Model {
         this._id = id;
         this._user = user;
         this._favoritableSubject = favoritableSubject;
-        this._favoritableId = favoritableId;
         this._favoritable = favoritable;
         this._createdAt = createdAt ?? new Date();
     }
@@ -35,41 +33,37 @@ export class Favorite extends Model {
         id: string,
         user: User,
         favoritableSubject: FavoritableSubject,
-        favoritableId: string,
         favoritable: Favoritable,
         createdAt?: Date,
     ) {
-        return new Favorite(id, user, favoritableSubject, favoritableId, favoritable, createdAt);
+        return new Favorite(id, user, favoritableSubject, favoritable, createdAt);
     }
 
     public static createForSpot(
         id: string,
         user: User,
-        spotId: string,
         spot: Spot,
         createdAt?: Date,
     ) {
-        return new Favorite(id, user, FavoritableSubject.SPOT, spotId, spot, createdAt);
+        return new Favorite(id, user, FavoritableSubject.SPOT, spot, createdAt);
     }
 
     public static createForSpotFolder(
         id: string,
         user: User,
-        spotFolderId: string,
         spotFolder: SpotFolder,
         createdAt?: Date,
     ) {
-        return new Favorite(id, user, FavoritableSubject.SPOT_FOLDER, spotFolderId, spotFolder, createdAt);
+        return new Favorite(id, user, FavoritableSubject.SPOT_FOLDER, spotFolder, createdAt);
     }
 
     public static createForSpotEvent(
         id: string,
         user: User,
-        spotEventId: string,
         spotEvent: SpotEvent,
         createdAt?: Date,
     ) {
-        return new Favorite(id, user, FavoritableSubject.SPOT_EVENT, spotEventId, spotEvent, createdAt);
+        return new Favorite(id, user, FavoritableSubject.SPOT_EVENT, spotEvent, createdAt);
     }
 
     public id(): string {
@@ -82,10 +76,6 @@ export class Favorite extends Model {
 
     public favoritableSubject(): FavoritableSubject {
         return this._favoritableSubject;
-    }
-
-    public favoritableId(): string {
-        return this._favoritableId;
     }
 
     public favoritable(): Favoritable {
