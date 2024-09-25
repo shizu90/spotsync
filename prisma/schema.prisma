@@ -213,6 +213,7 @@ model Post {
   children_posts Post[]           @relation("parent_post")
   thread         PostThread       @relation("posts", fields: [thread_id], references: [id], onDelete: Cascade)
   creator        User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  likes          Like[]
 
   @@map("posts")
 }
@@ -238,10 +239,13 @@ model PostThread {
 model Like {
   id              String   @id @default(uuid())
   likable_subject String   @db.VarChar(12)
-  likable_id      String
+  post_id         String?
+  comment_id      String?
   created_at      DateTime @default(now())
   user_id         String
   user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  post            Post?     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  comment         Comment?  @relation(fields: [comment_id], references: [id], onDelete: Cascade)
 
   @@map("likes")
 }
@@ -260,6 +264,7 @@ model Spot {
   creator      User            @relation(fields: [creator_id], references: [id], onDelete: Cascade)
   visited_by   VisitedSpot[]
   spot_folders SpotFolderItem[]
+  favorites    Favorite[]
 
   @@map("spots")
 }
@@ -295,6 +300,7 @@ model Comment {
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now())
   user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  likes        Like[]
 
   @@map("comments")
 }
@@ -345,6 +351,7 @@ model SpotFolder {
   user_id      String
   creator      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   spots        SpotFolderItem[]
+  favorites    Favorite[]
 
   @@map("spot_folders")
 }
@@ -364,10 +371,14 @@ model SpotFolderItem {
 model Favorite {
   id              String   @id @default(uuid())
   subject         String   @db.VarChar(120)
-  subject_id      String
+  spot_id         String?
+  spot_folder_id  String?
+  spot_event_id   String?
   user_id         String
   created_at      DateTime @default(now())
   user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  spot            Spot?    @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+  spot_folder     SpotFolder? @relation(fields: [spot_folder_id], references: [id], onDelete: Cascade)
 
   @@map("favorites")
 }

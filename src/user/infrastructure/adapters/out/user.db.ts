@@ -10,53 +10,14 @@ import { UserCredentials } from 'src/user/domain/user-credentials.model';
 import { UserProfile } from 'src/user/domain/user-profile.model';
 import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
 import { User } from 'src/user/domain/user.model';
+import { UserEntityMapper } from './mappers/user-entity.mapper';
 
 export class UserRepositoryImpl implements UserRepository {
+	private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
+	
 	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
 	) {}
-
-	private mapUserToDomain(prisma_model: any): User | null {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return User.create(
-			prisma_model.id,
-			UserProfile.create(
-				prisma_model.id,
-				prisma_model.profile.birth_date,
-				prisma_model.profile.display_name,
-				prisma_model.profile.theme_color,
-				prisma_model.profile.profile_picture,
-				prisma_model.profile.banner_picture,
-				prisma_model.profile.biograph,
-				prisma_model.profile.visibility
-			),
-			UserCredentials.create(
-				prisma_model.id,
-				prisma_model.credentials.name,
-				prisma_model.credentials.email,
-				prisma_model.credentials.password,
-				prisma_model.credentials.phone_number,
-				prisma_model.credentials.last_login,
-				prisma_model.credentials.last_logout,
-			),
-			UserVisibilitySettings.create(
-				prisma_model.id,
-				prisma_model.visibility_settings.profile,
-				prisma_model.visibility_settings.addresses,
-				prisma_model.visibility_settings.spot_folders,
-				prisma_model.visibility_settings.visited_spots,
-				prisma_model.visibility_settings.posts,
-				prisma_model.visibility_settings.favorite_spots,
-				prisma_model.visibility_settings.favorite_spot_folders,
-				prisma_model.visibility_settings.favorite_spot_events,
-			),
-			prisma_model.status,
-			prisma_model.created_at,
-			prisma_model.updated_at,
-			prisma_model.is_deleted
-		);
-	}
 
 	public async paginate(
 		params: PaginateParameters,
@@ -154,7 +115,7 @@ export class UserRepositoryImpl implements UserRepository {
 		}
 
 		items = items.map((i) => {
-			return this.mapUserToDomain(i);
+			return this._userEntityMapper.toModel(i);
 		});
 
 		return new Pagination(items, total, page+1, limit);
@@ -203,7 +164,7 @@ export class UserRepositoryImpl implements UserRepository {
 		});
 
 		return users.map((user) => {
-			return this.mapUserToDomain(user);
+			return this._userEntityMapper.toModel(user);
 		});
 	}
 
@@ -259,7 +220,7 @@ export class UserRepositoryImpl implements UserRepository {
 		});
 
 		return users.map((user): User => {
-			return this.mapUserToDomain(user);
+			return this._userEntityMapper.toModel(user);
 		});
 	}
 
@@ -275,7 +236,7 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 		});
 
-		return this.mapUserToDomain(user);
+		return this._userEntityMapper.toModel(user);
 	}
 
 	public async findByName(name: string): Promise<User> {
@@ -292,7 +253,7 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 		});
 
-		return this.mapUserToDomain(user);
+		return this._userEntityMapper.toModel(user);
 	}
 
 	public async findByEmail(email: string): Promise<User> {
@@ -309,7 +270,7 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 		});
 
-		return this.mapUserToDomain(user);
+		return this._userEntityMapper.toModel(user);
 	}
 
 	public async store(model: User): Promise<User> {
@@ -368,7 +329,7 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 		});
 
-		return this.mapUserToDomain(user);
+		return this._userEntityMapper.toModel(user);
 	}
 
 	public async update(model: User): Promise<void> {

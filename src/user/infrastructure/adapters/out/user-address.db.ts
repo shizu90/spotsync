@@ -7,71 +7,14 @@ import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserAddressRepository } from 'src/user/application/ports/out/user-address.repository';
 import { UserAddress } from 'src/user/domain/user-address.model';
-import { UserCredentials } from 'src/user/domain/user-credentials.model';
-import { UserProfile } from 'src/user/domain/user-profile.model';
-import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings.model';
-import { User } from 'src/user/domain/user.model';
+import { UserAddressEntityMapper } from './mappers/user-address-entity.mapper';
 
 export class UserAddressRepositoryImpl implements UserAddressRepository {
+	private _userAddressEntityMapper: UserAddressEntityMapper = new UserAddressEntityMapper();
+
 	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
 	) {}
-
-	private mapUserAddressToDomain(prisma_model: any): UserAddress {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return UserAddress.create(
-			prisma_model.id,
-			prisma_model.name,
-			prisma_model.area,
-			prisma_model.sub_area,
-			prisma_model.locality,
-			prisma_model.latitude.toNumber(),
-			prisma_model.longitude.toNumber(),
-			prisma_model.country_code,
-			prisma_model.main,
-			User.create(
-                prisma_model.user.id,
-                UserProfile.create(
-                    prisma_model.user.id,
-                    prisma_model.user.profile.birth_date,
-                    prisma_model.user.profile.display_name,
-                    prisma_model.user.profile.theme_color,
-                    prisma_model.user.profile.profile_picture,
-                    prisma_model.user.profile.banner_picture,
-                    prisma_model.user.profile.biograph,
-                    prisma_model.user.profile.visibility
-                ),
-                UserCredentials.create(
-                    prisma_model.user.id,
-                    prisma_model.user.credentials.name,
-                    prisma_model.user.credentials.email,
-                    prisma_model.user.credentials.password,
-                    prisma_model.user.credentials.phone_number,
-                    prisma_model.user.credentials.last_login,
-                    prisma_model.user.credentials.last_logout,
-                ),
-                UserVisibilitySettings.create(
-                    prisma_model.user.id,
-                    prisma_model.user.visibility_settings.profile,
-                    prisma_model.user.visibility_settings.addresses,
-                    prisma_model.user.visibility_settings.spot_folders,
-                    prisma_model.user.visibility_settings.visited_spots,
-                    prisma_model.user.visibility_settings.posts,
-                    prisma_model.user.visibility_settings.favorite_spots,
-                    prisma_model.user.visibility_settings.favorite_spot_folders,
-                    prisma_model.user.visibility_settings.favorite_spot_events,
-                ),
-                prisma_model.user.status,
-                prisma_model.user.created_at,
-                prisma_model.user.updated_at,
-                prisma_model.user.is_deleted
-			),
-			prisma_model.created_at,
-			prisma_model.updated_at,
-			prisma_model.is_deleted,
-		);
-	}
 
 	public async paginate(
 		params: PaginateParameters,
@@ -179,7 +122,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		}
 
 		items = items.map((i) => {
-			return this.mapUserAddressToDomain(i);
+			return this._userAddressEntityMapper.toModel(i);
 		});
 
 		return new Pagination(items, total, page+1, limit);
@@ -242,7 +185,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		});
 
 		return userAddresses.map((userAddress) => {
-			return this.mapUserAddressToDomain(userAddress);
+			return this._userAddressEntityMapper.toModel(userAddress);
 		});
 	}
 
@@ -310,7 +253,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		});
 
 		return userAddresses.map((userAddress) => {
-			return this.mapUserAddressToDomain(userAddress);
+			return this._userAddressEntityMapper.toModel(userAddress);
 		});
 	}
 
@@ -330,7 +273,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			},
 		});
 
-		return this.mapUserAddressToDomain(userAddress);
+		return this._userAddressEntityMapper.toModel(userAddress);
 	}
 
 	public async store(model: UserAddress): Promise<UserAddress> {
@@ -360,7 +303,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			},
 		});
 
-		return this.mapUserAddressToDomain(userAddress);
+		return this._userAddressEntityMapper.toModel(userAddress);
 	}
 
 	public async update(model: UserAddress): Promise<void> {

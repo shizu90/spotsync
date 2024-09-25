@@ -4,66 +4,16 @@ import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { PrismaService } from "src/prisma/prisma.service";
 import { ActivationRequestRepository } from "src/user/application/ports/out/activation-request.repository";
 import { ActivationRequest } from "src/user/domain/activation-request.model";
-import { UserCredentials } from "src/user/domain/user-credentials.model";
-import { UserProfile } from "src/user/domain/user-profile.model";
-import { UserVisibilitySettings } from "src/user/domain/user-visibility-settings.model";
-import { User } from "src/user/domain/user.model";
+import { ActivationRequestEntityMapper } from "./mappers/activation-request-entity.mapper";
 
 @Injectable()
 export class ActivationRequestRepositoryImpl implements ActivationRequestRepository {
+    private _activationRequestEntityMapper: ActivationRequestEntityMapper = new ActivationRequestEntityMapper();
+    
     constructor(
         @Inject(PrismaService)
         protected prismaService: PrismaService
     ) {}
-
-    private mapActivationRequestToDomain(prisma_model: any): ActivationRequest | null {
-        if (prisma_model == null || prisma_model == undefined) return null;
-
-        return ActivationRequest.create(
-            prisma_model.id,
-            User.create(
-                prisma_model.user.id,
-                UserProfile.create(
-                    prisma_model.user.id,
-                    prisma_model.user.profile.birth_date,
-                    prisma_model.user.profile.display_name,
-                    prisma_model.user.profile.theme_color,
-                    prisma_model.user.profile.profile_picture,
-                    prisma_model.user.profile.banner_picture,
-                    prisma_model.user.profile.biograph,
-                    prisma_model.user.profile.visibility
-                ),
-                UserCredentials.create(
-                    prisma_model.user.id,
-                    prisma_model.user.credentials.name,
-                    prisma_model.user.credentials.email,
-                    prisma_model.user.credentials.password,
-                    prisma_model.user.credentials.phone_number,
-                    prisma_model.user.credentials.last_login,
-                    prisma_model.user.credentials.last_logout,
-                ),
-                UserVisibilitySettings.create(
-                    prisma_model.user.id,
-                    prisma_model.user.visibility_settings.profile,
-                    prisma_model.user.visibility_settings.addresses,
-                    prisma_model.user.visibility_settings.spot_folders,
-                    prisma_model.user.visibility_settings.visited_spots,
-                    prisma_model.user.visibility_settings.posts,
-                    prisma_model.user.visibility_settings.favorite_spots,
-                    prisma_model.user.visibility_settings.favorite_spot_folders,
-                    prisma_model.user.visibility_settings.favorite_spot_events,
-                ),
-                prisma_model.user.status,
-                prisma_model.user.created_at,
-                prisma_model.user.updated_at,
-                prisma_model.user.is_deleted
-            ),
-            prisma_model.subject,
-            prisma_model.code,
-            prisma_model.status,
-            prisma_model.requested_at
-        )
-    }
 
     public async paginate(params: PaginateParameters): Promise<Pagination<ActivationRequest>> {
         let query = 
@@ -149,7 +99,7 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
         }
 
         items = items.map((i) => {
-            return this.mapActivationRequestToDomain(i);
+            return this._activationRequestEntityMapper.toModel(i);
         });
 
         return new Pagination(items, total, page+1, limit);
@@ -213,7 +163,7 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
         });
 
         return items.map((i) => {
-            return this.mapActivationRequestToDomain(i);
+            return this._activationRequestEntityMapper.toModel(i);
         });
     }
     public async countBy(values: Object): Promise<number> {
@@ -277,7 +227,7 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
             }
         });
 
-        return this.mapActivationRequestToDomain(item);
+        return this._activationRequestEntityMapper.toModel(item);
     }
 
     public async findAll(): Promise<ActivationRequest[]> {
@@ -294,7 +244,7 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
         });
 
         return items.map((i) => {
-            return this.mapActivationRequestToDomain(i);
+            return this._activationRequestEntityMapper.toModel(i);
         });
     }
 
@@ -319,7 +269,7 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
             }
         });
 
-        return this.mapActivationRequestToDomain(item);
+        return this._activationRequestEntityMapper.toModel(item);
     }
     
     public async update(model: ActivationRequest): Promise<void> {

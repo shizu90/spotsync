@@ -4,65 +4,14 @@ import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { PrismaService } from "src/prisma/prisma.service";
 import { PasswordRecoveryRepository } from "src/user/application/ports/out/password-recovery.repository";
 import { PasswordRecovery } from "src/user/domain/password-recovery.model";
-import { UserCredentials } from "src/user/domain/user-credentials.model";
-import { UserProfile } from "src/user/domain/user-profile.model";
-import { UserVisibilitySettings } from "src/user/domain/user-visibility-settings.model";
-import { User } from "src/user/domain/user.model";
+import { PasswordRecoveryEntityMapper } from "./mappers/password-recovery-entity.mapper";
 
 export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepository {
-    public constructor(
+    private _passwordRecoveryEntityMapper: PasswordRecoveryEntityMapper = new PasswordRecoveryEntityMapper();
+	
+	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
 	) {}
-
-	private mapPasswordRecoveryToDomain(prisma_model: any): PasswordRecovery | null {
-		if (prisma_model === null || prisma_model === undefined) return null;
-
-		return PasswordRecovery.create(
-			prisma_model.id,
-			User.create(
-                prisma_model.user.id,
-                UserProfile.create(
-                    prisma_model.user.id,
-                    prisma_model.user.profile.birth_date,
-                    prisma_model.user.profile.display_name,
-                    prisma_model.user.profile.theme_color,
-                    prisma_model.user.profile.profile_picture,
-                    prisma_model.user.profile.banner_picture,
-                    prisma_model.user.profile.biograph,
-                    prisma_model.user.profile.visibility
-                ),
-                UserCredentials.create(
-                    prisma_model.user.id,
-                    prisma_model.user.credentials.name,
-                    prisma_model.user.credentials.email,
-                    prisma_model.user.credentials.password,
-                    prisma_model.user.credentials.phone_number,
-                    prisma_model.user.credentials.last_login,
-                    prisma_model.user.credentials.last_logout,
-                ),
-                UserVisibilitySettings.create(
-                    prisma_model.user.id,
-                    prisma_model.user.visibility_settings.profile,
-                    prisma_model.user.visibility_settings.addresses,
-                    prisma_model.user.visibility_settings.spot_folders,
-                    prisma_model.user.visibility_settings.visited_spots,
-                    prisma_model.user.visibility_settings.posts,
-                    prisma_model.user.visibility_settings.favorite_spots,
-                    prisma_model.user.visibility_settings.favorite_spot_folders,
-                    prisma_model.user.visibility_settings.favorite_spot_events,
-                ),
-                prisma_model.user.status,
-                prisma_model.user.created_at,
-                prisma_model.user.updated_at,
-                prisma_model.user.is_deleted
-
-			),
-			prisma_model.status,
-			prisma_model.token,
-			prisma_model.created_at,
-			prisma_model.expires_at
-		);
-	}
 
 	public async paginate(params: PaginateParameters): Promise<Pagination<PasswordRecovery>> {
 		let query = 'SELECT password_recoveries.id FROM password_recoveries';
@@ -156,7 +105,7 @@ export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepositor
 		}
 
 		items = items.map((i) => {
-			return this.mapPasswordRecoveryToDomain(i);
+			return this._passwordRecoveryEntityMapper.toModel(i);
 		});
 
 		return new Pagination(items, total, page+1, limit);
@@ -211,7 +160,7 @@ export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepositor
 		});
 
 		return items.map((i) => {
-			return this.mapPasswordRecoveryToDomain(i);
+			return this._passwordRecoveryEntityMapper.toModel(i);
 		});
 	}
 	public async countBy(values: Object): Promise<number> {
@@ -270,7 +219,7 @@ export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepositor
 			}
 		});
 
-		return this.mapPasswordRecoveryToDomain(passwordRecovery);
+		return this._passwordRecoveryEntityMapper.toModel(passwordRecovery);
 	}
 	public async findAll(): Promise<PasswordRecovery[]> {
 		const passwordRecoveries = await this.prismaService.passwordRecovery.findMany({
@@ -286,7 +235,7 @@ export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepositor
 		});
 
 		return passwordRecoveries.map((i) => {
-			return this.mapPasswordRecoveryToDomain(i);
+			return this._passwordRecoveryEntityMapper.toModel(i);
 		});
 	}
 	public async store(model: PasswordRecovery): Promise<PasswordRecovery> {
@@ -309,7 +258,7 @@ export class PasswordRecoveryRepositoryImpl implements PasswordRecoveryRepositor
 			}
 		});
 
-		return this.mapPasswordRecoveryToDomain(passwordRecovery);
+		return this._passwordRecoveryEntityMapper.toModel(passwordRecovery);
 	}
 	public async update(model: PasswordRecovery): Promise<void> {
 		await this.prismaService.passwordRecovery.update({
