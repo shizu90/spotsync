@@ -22,50 +22,36 @@ export class UserRepositoryImpl implements UserRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<User>> {
-		let query =
-			'SELECT users.id FROM users JOIN user_credentials ON user_credentials.user_id = users.id JOIN user_profiles ON user_profiles.user_id = users.id';
+		let query = {};
 
 		if (params.filters) {
-			if (typeof params.filters['name'] === 'string') {
-				const name = params.filters['name'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-				} else {
-					query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-				}
+			const name = params.filters['name'];
+			const displayName = params.filters['displayName'];
+			const status = params.filters['status'];
+			const isDeleted = params.filters['isDeleted'];
+
+			if (name) {
+				query['name'] = { 
+					contains: name,
+					mode: 'insensitive',
+				};
 			}
 
-			if (typeof params.filters['displayName'] === 'string') {
-				const displayName = params.filters['displayName'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND LOWER(user_profiles.display_name) LIKE '%${displayName.toLowerCase()}%'`;
-				} else {
-					query = `${query} WHERE LOWER(user_profiles.display_name) LIKE '%${displayName.toLowerCase()}%'`;
-				}
+			if (displayName) {
+				query['profile']['display_name'] = {
+					contains: displayName,
+					mode: 'insensitive',
+				};
 			}
 
-			if (typeof params.filters['status'] === 'string') {
-				const status = params.filters['status'];
-				if (query.includes('WHERE')) {
-					query = `${query} AND users.status = '${status}'`;
-				} else {
-					query = `${query} WHERE users.status = '${status}'`;
-				}
+			if (status) {
+				query['status'] = status;
 			}
 
-			if (typeof params.filters['isDeleted'] === 'boolean') {
-				const isDeleted = params.filters['isDeleted'];
-
-				if (query.includes('WHERE')) {
-					query = `${query} AND users.is_deleted = '${isDeleted}'`;
-				} else {
-					query = `${query} WHERE users.is_deleted = '${isDeleted}'`;
-				}
+			if (isDeleted) {
+				query['is_deleted'] = isDeleted;
 			}
 		}
-
-		const ids =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
 
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
@@ -96,11 +82,11 @@ export class UserRepositoryImpl implements UserRepository {
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = ids.length;
+		const total = await this.countBy(params.filters);
 
 		if (paginate) {
 			items = await this.prismaService.user.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: { credentials: true, visibility_settings: true, profile: true },
 				skip: limit * page,
@@ -108,7 +94,7 @@ export class UserRepositoryImpl implements UserRepository {
 			});
 		} else {
 			items = await this.prismaService.user.findMany({
-				where: { id: { in: ids.map((row) => row.id) } },
+				where: query,
 				orderBy: orderBy,
 				include: { credentials: true, visibility_settings: true, profile: true },
 			});
@@ -123,43 +109,30 @@ export class UserRepositoryImpl implements UserRepository {
 
 	public async findBy(values: Object): Promise<Array<User>> {
 		const name = values['name'];
+		const displayName = values['displayName'];
 		const status = values['status'];
 		const isDeleted = values['isDeleted'] ?? false;
 
-		let query =
-			'SELECT users.id FROM users JOIN user_credentials ON user_credentials.user_id = users.id';
+		let query = {};
 
 		if (name) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			} else {
-				query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			}
+			query['name'] = { contains: name, mode: 'insensitive' };
+		}
+
+		if (displayName) {
+			query['profile']['display_name'] = { contains: displayName, mode: 'insensitive' };
 		}
 
 		if (status) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND users.status = '${status}'`;
-			} else {
-				query = `${query} WHERE users.status = '${status}'`;
-			}
+			query['status'] = status;
 		}
 
 		if (isDeleted !== undefined) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND users.is_deleted = '${isDeleted}'`;
-			} else {
-				query = `${query} WHERE users.is_deleted = '${isDeleted}'`;
-			}
+			query['is_deleted'] = isDeleted;
 		}
 
-		const userIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
 		const users = await this.prismaService.user.findMany({
-			where: {
-				id: { in: userIds.map((row) => row.id) },
-			},
+			where: query,
 			include: { credentials: true, visibility_settings: true, profile: true },
 		});
 
@@ -170,41 +143,30 @@ export class UserRepositoryImpl implements UserRepository {
 
 	public async countBy(values: Object): Promise<number> {
 		const name = values['name'];
+		const displayName = values['displayName'];
 		const status = values['status'];
 		const isDeleted = values['isDeleted'] ?? false;
 
-		let query =
-			'SELECT users.id FROM users JOIN user_credentials ON user_credentials.user_id = users.id';
+		let query = {};
 
 		if (name) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			} else {
-				query = `${query} WHERE LOWER(user_credentials.name) LIKE '%${name.toLowerCase()}%'`;
-			}
+			query['name'] = { contains: name, mode: 'insensitive' };
+		}
+
+		if (displayName) {
+			query['profile']['display_name'] = { contains: displayName, mode: 'insensitive' };
 		}
 
 		if (status) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND users.status = '${status}'`;
-			} else {
-				query = `${query} WHERE users.status = '${status}'`;
-			}
+			query['status'] = status;
 		}
 
 		if (isDeleted !== undefined) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND users.is_deleted = '${isDeleted}'`;
-			} else {
-				query = `${query} WHERE users.is_deleted = '${isDeleted}'`;
-			}
+			query['is_deleted'] = isDeleted;
 		}
 
-		const userIds =
-			await this.prismaService.$queryRawUnsafe<{ id: string }[]>(query);
-
 		const count = await this.prismaService.user.count({
-			where: { id: { in: userIds.map((row) => row.id) } },
+			where: query,
 		});
 
 		return count;

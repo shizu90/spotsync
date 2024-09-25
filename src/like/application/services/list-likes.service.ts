@@ -42,7 +42,7 @@ export class ListLikesService implements ListLikesUseCase {
 			return new GetLikeDto(
 				i.id(),
 				i.likableSubject(),
-				i.likableSubjectId(),
+				i.likable().id(),
 				{
 					id: i.user().id(),
 					display_name: i.user().profile().displayName(),
