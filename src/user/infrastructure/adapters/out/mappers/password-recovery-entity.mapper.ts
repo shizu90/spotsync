@@ -10,6 +10,8 @@ export class PasswordRecoveryEntityMapper implements EntityMapper<PasswordRecove
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 
     public toEntity(model: PasswordRecovery): PasswordRecoveryEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             created_at: model.createdAt(),
@@ -22,6 +24,8 @@ export class PasswordRecoveryEntityMapper implements EntityMapper<PasswordRecove
     }
 
     public toModel(entity: PasswordRecoveryEntity): PasswordRecovery {
+        if (entity === null || entity === undefined) return null;
+
         return PasswordRecovery.create(
             entity.id,
             entity.user ? this._userEntityMapper.toModel(entity.user) : null,

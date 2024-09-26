@@ -11,6 +11,8 @@ export class VisitedSpotEntityMapper implements EntityMapper<VisitedSpot, Visite
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 
     public toEntity(model: VisitedSpot): VisitedSpotEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             spot_id: model.spot() ? model.spot().id() : null,
@@ -22,6 +24,8 @@ export class VisitedSpotEntityMapper implements EntityMapper<VisitedSpot, Visite
     }
 
     public toModel(entity: VisitedSpotEntity): VisitedSpot {
+        if (entity === null || entity === undefined) return null;
+
         return VisitedSpot.create(
             entity.id,
             entity.spot ? this._spotEntityMapper.toModel(entity.spot) : null,

@@ -11,6 +11,8 @@ export class ActivationRequestEntityMapper implements EntityMapper<ActivationReq
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 
     public toEntity(model: ActivationRequest): ActivationRequestEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             code: model.code(),
@@ -23,6 +25,8 @@ export class ActivationRequestEntityMapper implements EntityMapper<ActivationReq
     }
 
     public toModel(entity: ActivationRequestEntity): ActivationRequest {
+        if (entity === null || entity === undefined) return null;
+
         return ActivationRequest.create(
             entity.id,
             entity.user ? this._userEntityMapper.toModel(entity.user) : null,

@@ -13,6 +13,8 @@ export class SpotEntityMapper implements EntityMapper<Spot, SpotEntity> {
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 
     public toEntity(model: Spot): SpotEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             name: model.name(),
@@ -36,6 +38,8 @@ export class SpotEntityMapper implements EntityMapper<Spot, SpotEntity> {
     }
 
     public toModel(entity: SpotEntity): Spot {
+        if (entity === null || entity === undefined) return null;
+
         return Spot.create(
             entity.id,
             entity.name,

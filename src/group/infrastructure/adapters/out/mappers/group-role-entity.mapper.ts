@@ -11,6 +11,8 @@ export class GroupRoleEntityMapper implements EntityMapper<GroupRole, GroupRoleE
     private _groupEntityMapper: GroupEntityMapper = new GroupEntityMapper();
     
     public toEntity(model: GroupRole): GroupRoleEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             name: model.name(),
@@ -32,6 +34,8 @@ export class GroupRoleEntityMapper implements EntityMapper<GroupRole, GroupRoleE
     }
 
     public toModel(entity: GroupRoleEntity): GroupRole {
+        if (entity === null || entity === undefined) return null;
+
         return GroupRole.create(
             entity.id,
             entity.name,

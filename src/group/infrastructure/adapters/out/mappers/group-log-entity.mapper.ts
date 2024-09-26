@@ -9,6 +9,8 @@ export class GroupLogEntityMapper implements EntityMapper<GroupLog, GroupLogEnti
     private _groupEntityMapper: GroupEntityMapper = new GroupEntityMapper();
 
     public toEntity(model: GroupLog): GroupLogEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             text: model.text(),
@@ -19,6 +21,8 @@ export class GroupLogEntityMapper implements EntityMapper<GroupLog, GroupLogEnti
     }
 
     public toModel(entity: GroupLogEntity): GroupLog {
+        if (entity === null || entity === undefined) return null;
+
         return GroupLog.create(
             entity.id,
             entity.group ? this._groupEntityMapper.toModel(entity.group) : null,

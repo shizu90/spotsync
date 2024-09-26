@@ -26,6 +26,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		const name = values['name'] ?? null;
 		const isDeleted = values['isDeleted'] ?? null;
 		const visibility = values['visibility'] ?? null;
+		const userId = values['userId'] ?? null;
 
 		let query = {};
 
@@ -41,13 +42,21 @@ export class GroupRepositoryImpl implements GroupRepository {
 			query['visibility'] = visibility;
 		}
 
+		if (userId) {
+			query['members'] = {
+				some: {
+					user_id: userId,
+				},
+			};
+		}
+
 		return query;
 	}
 
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Group>> {
-		const query = this._mountQuery(params);
+		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
@@ -112,7 +121,19 @@ export class GroupRepositoryImpl implements GroupRepository {
 
 	public async countBy(values: Object): Promise<number> {
 		const query = this._mountQuery(values);
+
 		const count = await this.prismaService.group.count({
+			where: query,
+		});
+
+		return count;
+	}
+
+	public async countLogBy(values: Object): Promise<number> {
+		const query = this._mountQuery(values);
+		query['group_id'] = values['groupId'] ?? null;
+
+		const count = await this.prismaService.groupLog.count({
 			where: query,
 		});
 
@@ -122,7 +143,8 @@ export class GroupRepositoryImpl implements GroupRepository {
 	public async paginateLog(
 		params: PaginateParameters,
 	): Promise<Pagination<GroupLog>> {
-		const query = this._mountQuery(params);
+		const query = this._mountQuery(params.filters);
+		query['group_id'] = params.filters['groupId'] ?? null;
 		const sort = params.sort ?? 'occurredAt';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
@@ -144,7 +166,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		const paginate = params.paginate ?? false;
 		const page = (params.page ?? 1)-1;
 		const limit = params.limit ?? 12;
-		const total = await this.countBy(params.filters);
+		const total = await this.countLogBy(params.filters);
 
 		if (paginate) {
 			items = await this.prismaService.groupLog.findMany({

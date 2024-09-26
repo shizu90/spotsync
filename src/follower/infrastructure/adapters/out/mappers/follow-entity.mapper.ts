@@ -10,9 +10,7 @@ export class FollowEntityMapper implements EntityMapper<Follow, FollowEntity> {
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 
     public toEntity(model: Follow): FollowEntity {
-        if (model === null || model === undefined) {
-            return null;
-        }
+        if (model === null || model === undefined) return null;
 
         return {
             id: model.id(),
@@ -27,9 +25,7 @@ export class FollowEntityMapper implements EntityMapper<Follow, FollowEntity> {
     }
 
     public toModel(entity: FollowEntity): Follow {
-        if (entity === null || entity === undefined) {
-            return null;
-        }
+        if (entity === null || entity === undefined) return null;
 
         return Follow.create(
             entity.id,

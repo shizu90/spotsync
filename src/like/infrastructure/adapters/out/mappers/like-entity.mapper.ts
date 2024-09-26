@@ -14,6 +14,8 @@ export class LikeEntityMapper implements EntityMapper<Like, LikeEntity> {
     private _postEntityMapper: PostEntityMapper = new PostEntityMapper();
     
     public toEntity(like: Like): LikeEntity {
+        if (like === null || like === undefined) return null;
+
         return {
             id: like.id(),
             likable_subject: like.likableSubject(),
@@ -28,6 +30,8 @@ export class LikeEntityMapper implements EntityMapper<Like, LikeEntity> {
     }
 
     public toModel(entity: LikeEntity): Like {
+        if (entity === null || entity === undefined) return null;
+
         let likable: Likable;
 
         switch(entity.likable_subject) {

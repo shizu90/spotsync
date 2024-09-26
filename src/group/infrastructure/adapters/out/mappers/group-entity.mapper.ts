@@ -8,9 +8,7 @@ export type GroupEntity = GroupPrisma & {visibility_settings?: GroupVisibilitySe
 
 export class GroupEntityMapper implements EntityMapper<Group, GroupEntity> {
     public toEntity(model: Group): GroupEntity {
-        if (model === null || model === undefined) {
-            return null;
-        }
+        if (model === null || model === undefined) return null;
 
         return {
             id: model.id(),
@@ -25,9 +23,7 @@ export class GroupEntityMapper implements EntityMapper<Group, GroupEntity> {
     }
 
     public toModel(entity: GroupEntity): Group {
-        if (entity === null || entity === undefined) {
-            return null;
-        }
+        if (entity === null || entity === undefined) return null;
 
         return Group.create(
             entity.id,

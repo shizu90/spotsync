@@ -11,6 +11,8 @@ export class UserAddressEntityMapper implements EntityMapper<UserAddress, UserAd
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 
     public toEntity(model: UserAddress): UserAddressEntity {     
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             area: model.area(),
@@ -30,6 +32,8 @@ export class UserAddressEntityMapper implements EntityMapper<UserAddress, UserAd
     }
     
     public toModel(entity: UserAddressEntity): UserAddress {
+        if (entity === null || entity === undefined) return null;
+
         return UserAddress.create(
             entity.id,
             entity.name,

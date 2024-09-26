@@ -65,6 +65,7 @@ export class PostRepositoryImpl implements PostRepository {
 				include: {
 					credentials: true,
 					visibility_settings: true,
+					profile: true,
 				},
 			},
 			group: {
@@ -122,6 +123,7 @@ export class PostRepositoryImpl implements PostRepository {
 						include: {
 							credentials: true,
 							visibility_settings: true,
+							profile: true,
 						},
 					},
 					group: {
@@ -162,6 +164,7 @@ export class PostRepositoryImpl implements PostRepository {
 						include: {
 							credentials: true,
 							visibility_settings: true,
+							profile: true,
 						},
 					},
 					group: {
@@ -207,6 +210,7 @@ export class PostRepositoryImpl implements PostRepository {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 				group: {
@@ -255,6 +259,7 @@ export class PostRepositoryImpl implements PostRepository {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 				group: {
@@ -322,6 +327,7 @@ export class PostRepositoryImpl implements PostRepository {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 				group: {

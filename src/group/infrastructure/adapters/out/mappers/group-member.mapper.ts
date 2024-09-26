@@ -6,7 +6,7 @@ import { UserEntity, UserEntityMapper } from "src/user/infrastructure/adapters/o
 import { GroupEntity, GroupEntityMapper } from "./group-entity.mapper";
 import { GroupRoleEntity, GroupRoleEntityMapper } from "./group-role-entity.mapper";
 
-export type GroupMemberEntity = GroupMemberPrisma & {role?: GroupRoleEntity, group?: GroupEntity, user?: UserEntity};
+export type GroupMemberEntity = GroupMemberPrisma & {group_role?: GroupRoleEntity, group?: GroupEntity, user?: UserEntity};
 
 export class GroupMemberEntityMapper implements EntityMapper<GroupMember, GroupMemberEntity> {
     private _groupRoleEntityMapper: GroupRoleEntityMapper = new GroupRoleEntityMapper();
@@ -14,6 +14,8 @@ export class GroupMemberEntityMapper implements EntityMapper<GroupMember, GroupM
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 
     public toEntity(model: GroupMember): GroupMemberEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             status: model.status(),
@@ -24,17 +26,19 @@ export class GroupMemberEntityMapper implements EntityMapper<GroupMember, GroupM
             group_role_id: model.role() ? model.role().id() : null,
             user_id: model.user() ? model.user().id() : null,
             group: model.group() ? this._groupEntityMapper.toEntity(model.group()) : null,
-            role: model.role() ? this._groupRoleEntityMapper.toEntity(model.role()) : null,
+            group_role: model.role() ? this._groupRoleEntityMapper.toEntity(model.role()) : null,
             user: model.user() ? this._userEntityMapper.toEntity(model.user()) : null,
         };
     }
 
     public toModel(entity: GroupMemberEntity): GroupMember {
+        if (entity === null || entity === undefined) return null;
+
         return GroupMember.create(
             entity.id,
             entity.group ? this._groupEntityMapper.toModel(entity.group) : null,
             entity.user ? this._userEntityMapper.toModel(entity.user) : null,
-            entity.role ? this._groupRoleEntityMapper.toModel(entity.role) : null,
+            entity.group_role ? this._groupRoleEntityMapper.toModel(entity.group_role) : null,
             entity.is_creator,
             entity.status as GroupMemberStatus,
             entity.joined_at,

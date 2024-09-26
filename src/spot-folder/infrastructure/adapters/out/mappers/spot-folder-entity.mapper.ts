@@ -13,6 +13,8 @@ export class SpotFolderEntityMapper implements EntityMapper<SpotFolder, SpotFold
     private _spotEntityMapper: SpotEntityMapper = new SpotEntityMapper();
 
     public toEntity(model: SpotFolder): SpotFolderEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             name: model.name(),
@@ -34,6 +36,8 @@ export class SpotFolderEntityMapper implements EntityMapper<SpotFolder, SpotFold
     }
 
     public toModel(entity: SpotFolderEntity): SpotFolder {
+        if (entity === null || entity === undefined) return null;
+
         return SpotFolder.create(
             entity.id,
             entity.name,

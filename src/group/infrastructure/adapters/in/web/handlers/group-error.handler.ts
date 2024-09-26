@@ -17,6 +17,7 @@ export class GroupErrorHandler implements ExceptionFilter {
 		switch (error.constructor.name) {
 			case 'GroupNotFoundError':
 			case 'GroupRoleNotFoundError':
+			case 'GroupRequestNotFoundError':
 			case 'GroupMemberNotFoundError':
 				response
 					.status(HttpStatus.NOT_FOUND)

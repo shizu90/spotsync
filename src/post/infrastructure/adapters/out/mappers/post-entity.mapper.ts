@@ -7,7 +7,7 @@ import { Post } from "src/post/domain/post.model";
 import { UserEntity, UserEntityMapper } from "src/user/infrastructure/adapters/out/mappers/user-entity.mapper";
 import { PostThreadEntity, PostThreadEntityMapper } from "./post-thread-entity.mapper";
 
-export type PostEntity = PostPrisma & {parent?: PostEntity, attachments?: PostAttachmentPrisma[], children?: PostEntity[], creator?: UserEntity, group?: GroupEntity, thread?: PostThreadEntity};
+export type PostEntity = PostPrisma & {parent?: PostEntity, attachments?: PostAttachmentPrisma[], children_posts?: PostEntity[], creator?: UserEntity, group?: GroupEntity, thread?: PostThreadEntity};
 
 export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
@@ -15,6 +15,8 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
     private _postThreadEntityMapper: PostThreadEntityMapper = new PostThreadEntityMapper();
 
     public toEntity(model: Post): PostEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             title: model.title(),
@@ -33,7 +35,7 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
                 file_type: attachment.fileType(),
                 post_id: model.id(),
             })) : [],
-            children: model.childrens() ? model.childrens().map(child => this.toEntity(child)) : [],
+            children_posts: model.childrens() ? model.childrens().map(child => this.toEntity(child)) : [],
             creator: model.creator() ? this._userEntityMapper.toEntity(model.creator()) : null,
             group: model.group() ? this._groupEntityMapper.toEntity(model.group()) : null,
             parent: model.parent() ? this.toEntity(model.parent()) : null,
@@ -42,6 +44,8 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
     }
 
     public toModel(entity: PostEntity): Post {
+        if (entity === null || entity === undefined) return null;
+
         return Post.create(
             entity.id,
             entity.title,
@@ -54,7 +58,7 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
                 attachment.file_type,
             )) : [],
             entity.parent ? this.toModel(entity.parent) : null,
-            entity.children ? entity.children.map(child => this.toModel(child)) : [],
+            entity.children_posts ? entity.children_posts.map(child => this.toModel(child)) : [],
             entity.group ? this._groupEntityMapper.toModel(entity.group) : null,
             entity.thread ? this._postThreadEntityMapper.toModel(entity.thread) : null,
             entity.depth_level,

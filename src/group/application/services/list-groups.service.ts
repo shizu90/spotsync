@@ -35,7 +35,8 @@ export class ListGroupsService implements ListGroupsUseCase {
 		const pagination = await this.groupRepository.paginate({
 			filters: {
 				name: command.name,
-				groupVisibility: command.groupVisibility,
+				visibility: command.groupVisibility,
+				is_deleted: false,
 			},
 			sort: command.sort,
 			sortDirection: command.sortDirection,

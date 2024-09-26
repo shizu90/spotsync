@@ -74,7 +74,7 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 		this.groupRepository.update(group);
 
 		const log = group.newLog(
-			`${authenticatedGroupMember.user().credentials().name()} removed the group settings`,
+			`${authenticatedGroupMember.user().credentials().name()} updated the group settings.`,
 		);
 
 		this.groupRepository.storeLog(log);

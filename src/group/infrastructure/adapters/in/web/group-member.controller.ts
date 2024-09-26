@@ -14,7 +14,7 @@ import {
 	UseFilters,
 	UseGuards,
 	UsePipes,
-	ValidationPipe,
+	ValidationPipe
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
@@ -312,7 +312,7 @@ export class GroupMemberController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@Post(':id/join-requests/:request_id/accept')
+	@Patch(':id/join-requests/:request_id/accept')
 	public async acceptGroupRequest(
 		@Param('id') groupId: string,
 		@Param('request_id') requestId: string,

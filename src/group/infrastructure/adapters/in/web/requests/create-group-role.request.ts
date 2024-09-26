@@ -5,8 +5,7 @@ import {
 	IsString,
 	IsUUID,
 	MaxLength,
-	MinLength,
-	ValidateNested,
+	MinLength
 } from 'class-validator';
 import { ApiRequest } from 'src/common/web/common.request';
 
@@ -23,7 +22,6 @@ export class CreateGroupRoleRequest extends ApiRequest {
 
 	@ApiProperty({ required: true })
 	@IsArray()
-	@ValidateNested()
 	@IsUUID(4, { each: true })
 	public permissions: string[];
 }

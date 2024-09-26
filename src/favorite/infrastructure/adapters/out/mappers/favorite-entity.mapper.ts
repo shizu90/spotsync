@@ -17,6 +17,8 @@ export class FavoriteEntityMapper implements EntityMapper<Favorite, FavoriteEnti
     private _spotFolderEntityMapper: SpotFolderEntityMapper = new SpotFolderEntityMapper();
 
     public toEntity(model: Favorite): FavoriteEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             created_at: model.createdAt(),
@@ -32,6 +34,8 @@ export class FavoriteEntityMapper implements EntityMapper<Favorite, FavoriteEnti
     }
 
     public toModel(entity: FavoriteEntity): Favorite {
+        if (entity === null || entity === undefined) return null;
+
         let favoritable: Favoritable;
 
         switch(entity.subject) {

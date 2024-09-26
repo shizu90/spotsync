@@ -32,12 +32,12 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			query['name'] = name;
 		}
 
-		if (isImmutable !== undefined) {
+		if (isImmutable !== undefined && isImmutable !== null) {
 			query['is_immutable'] = isImmutable;
 		}
 
 		if (groupId) {
-			query['group_id'] = groupId;
+			query['OR'] = [{ group_id: groupId }, { group_id: null }];
 		}
 
 		return query;
@@ -46,7 +46,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<GroupRole>> {
-		const query = this._mountQuery(params);
+		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
