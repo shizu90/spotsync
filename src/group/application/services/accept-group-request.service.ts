@@ -46,7 +46,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -60,9 +60,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You are not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -70,9 +68,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 				GroupPermissionName.ACCEPT_REQUESTS,
 			)
 		) {
-			throw new UnauthorizedAccessError(
-				`You don't have permission to accept join requests`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		const groupMemberRequest =
@@ -82,7 +78,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 			})).at(0);
 
 		if (groupMemberRequest === null || groupMemberRequest === undefined) {
-			throw new GroupRequestNotFoundError(`Group request not found`);
+			throw new GroupRequestNotFoundError();
 		}
 
 		const memberRole = await this.groupRoleRepository.findByName(

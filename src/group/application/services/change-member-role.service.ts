@@ -42,7 +42,7 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -56,9 +56,7 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You are not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -66,9 +64,7 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase {
 				GroupPermissionName.CHANGE_MEMBER_ROLE,
 			)
 		) {
-			throw new UnauthorizedAccessError(
-				`You don't have permissions to change member role`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		const groupMember = await this.groupMemberRepository.findById(
@@ -76,13 +72,13 @@ export class ChangeMemberRoleService implements ChangeMemberRoleUseCase {
 		);
 
 		if (groupMember === null || groupMember === undefined) {
-			throw new GroupMemberNotFoundError(`Group member not found`);
+			throw new GroupMemberNotFoundError();
 		}
 
 		const role = await this.groupRoleRepository.findById(command.roleId);
 
 		if (role === null || role === undefined) {
-			throw new GroupRoleNotFoundError(`Group role not found`);
+			throw new GroupRoleNotFoundError();
 		}
 
 		groupMember.changeRole(role);

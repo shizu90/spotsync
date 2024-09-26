@@ -4,5 +4,6 @@ export class ErrorResponse {
 		readonly timestamp: string,
 		readonly message: string,
 		readonly error_name: string,
+		readonly stack?: string,
 	) {}
 }

@@ -43,7 +43,7 @@ export class GetGroupRoleService implements GetGroupRoleUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember =
@@ -56,9 +56,7 @@ export class GetGroupRoleService implements GetGroupRoleUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You're not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		const groupRole = await this.groupRoleRepository.findById(command.id);
@@ -69,7 +67,7 @@ export class GetGroupRoleService implements GetGroupRoleUseCase {
 			(groupRole.group() !== null &&
 				groupRole.group().id() !== group.id())
 		) {
-			throw new GroupRoleNotFoundError(`Group role not found`);
+			throw new GroupRoleNotFoundError();
 		}
 
 		return new GetGroupRoleDto(

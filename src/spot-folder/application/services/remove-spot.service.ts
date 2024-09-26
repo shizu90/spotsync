@@ -29,24 +29,24 @@ export class RemoveSpotService implements RemoveSpotUseCase
         const spotFolder = await this.spotFolderRepository.findById(command.id);
 
         if (spotFolder === null || spotFolder === undefined) {
-            throw new SpotFolderNotFoundError(`Spot folder not found`);
+            throw new SpotFolderNotFoundError();
         }
 
         if (spotFolder.creator().id() !== authenticatedUser.id()) {
-            throw new UnauthorizedAccessError(`Unauthorized access`);
+            throw new UnauthorizedAccessError();
         }
 
         for (const spotId of command.spotIds) {
             const spot = await this.spotRepository.findById(spotId);
 
             if (spot === null || spot === undefined || spot.isDeleted()) {
-                throw new SpotNotFoundError(`Spot not found`);
+                throw new SpotNotFoundError();
             }
 
             const spotAlreadyAdded = spotFolder.findItemBySpotId(spot.id());
 
             if (spotAlreadyAdded === null || spotAlreadyAdded === undefined) {
-                throw new SpotNotAddedError(`Spot not added`);
+                throw new SpotNotAddedError();
             }
 
             spotFolder.removeItem(spot);

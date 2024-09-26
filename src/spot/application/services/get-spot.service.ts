@@ -1,21 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { FavoriteRepository, FavoriteRepositoryProvider } from 'src/favorite/application/ports/out/favorite.repository';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import {
-	UserAddressRepository,
-	UserAddressRepositoryProvider,
+    UserAddressRepository,
+    UserAddressRepositoryProvider,
 } from 'src/user/application/ports/out/user-address.repository';
 import { GetSpotCommand } from '../ports/in/commands/get-spot.command';
 import { GetSpotUseCase } from '../ports/in/use-cases/get-spot.use-case';
 import { GetSpotDto } from '../ports/out/dto/get-spot.dto';
 import {
-	SpotRepository,
-	SpotRepositoryProvider,
+    SpotRepository,
+    SpotRepositoryProvider,
 } from '../ports/out/spot.repository';
 import { SpotNotFoundError } from './errors/spot-not-found.error';
 
@@ -44,7 +44,7 @@ export class GetSpotService implements GetSpotUseCase {
 		const spot = await this.spotRepository.findById(command.id);
 
 		if (spot === null || spot === undefined || spot.isDeleted()) {
-			throw new SpotNotFoundError(`Spot not found`);
+			throw new SpotNotFoundError();
 		}
 
 		const totalSpotVisits = await this.spotRepository.countVisitedSpotBy({

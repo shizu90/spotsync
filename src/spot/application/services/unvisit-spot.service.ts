@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnvisitSpotCommand } from '../ports/in/commands/unvisit-spot.command';
 import {
-	SpotRepository,
-	SpotRepositoryProvider,
+    SpotRepository,
+    SpotRepositoryProvider,
 } from '../ports/out/spot.repository';
 import { SpotNotFoundError } from './errors/spot-not-found.error';
 
@@ -25,7 +25,7 @@ export class UnvisitSpotService implements UnvisitSpotService {
 		const spot = await this.spotRepository.findById(command.id);
 
 		if (spot === null || spot === undefined || spot.isDeleted()) {
-			throw new SpotNotFoundError(`Spot not found`);
+			throw new SpotNotFoundError();
 		}
 
 		const visitedSpot = (

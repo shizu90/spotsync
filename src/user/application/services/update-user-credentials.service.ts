@@ -33,7 +33,7 @@ export class UpdateUserCredentialsService
 		const user = await this.getAuthenticatedUser.execute(null);
 
 		if (command.id !== user.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		const userCredentials = user.credentials();
@@ -43,9 +43,7 @@ export class UpdateUserCredentialsService
 			user.credentials().email() !== command.email &&
 			(await this.userRepository.findByEmail(command.email)) !== null
 		) {
-			throw new UserAlreadyExistsError(
-				`E-mail ${command.email} already in use`,
-			);
+			throw new UserAlreadyExistsError("E-mail already in use.");
 		}
 
 		if (
@@ -54,9 +52,7 @@ export class UpdateUserCredentialsService
 			user.credentials().name() !== command.name &&
 			(await this.userRepository.findByName(command.name)) !== null
 		) {
-			throw new UserAlreadyExistsError(
-				`User name ${command.name} already taken`,
-			);
+			throw new UserAlreadyExistsError("User name already taken.");
 		}
 
 		if (

@@ -34,7 +34,7 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 		const group = await this.groupRepository.findById(command.id);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -48,9 +48,7 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You are not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -58,9 +56,7 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 				GroupPermissionName.UPDATE_SETTINGS,
 			)
 		) {
-			throw new UnauthorizedAccessError(
-				`You don't have permissions to update group settings`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (command.name && command.name !== null && command.name.length > 0) {

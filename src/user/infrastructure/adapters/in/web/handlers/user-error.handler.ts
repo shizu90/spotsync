@@ -15,6 +15,18 @@ export class UserErrorHandler implements ExceptionFilter {
 		const request = ctx.getRequest<Request>();
 
 		switch (error.constructor.name) {
+			case 'InvalidActivationCodeError':
+				response
+					.status(HttpStatus.BAD_REQUEST)
+					.json(
+						new ErrorResponse(
+							request.url,
+							new Date().toISOString(),
+							error.message,
+							error.constructor.name,
+						),
+					);
+				break;
 			case 'UserNotFoundError':
 			case 'UserAddressNotFoundError':
 				response
@@ -88,6 +100,7 @@ export class UserErrorHandler implements ExceptionFilter {
 								new Date().toISOString(),
 								error.message,
 								error.constructor.name,
+								error.stack,
 							),
 						);
 				}

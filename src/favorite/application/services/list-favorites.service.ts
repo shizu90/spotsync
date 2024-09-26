@@ -48,7 +48,7 @@ export class ListFavoritesService implements ListFavoritesUseCase {
             }
 
             if (visibility == UserVisibility.PRIVATE) {
-                throw new UnauthorizedAccessError(`Unauthorized access`);
+                throw new UnauthorizedAccessError();
             }
 
             if (visibility == UserVisibility.FOLLOWERS) {
@@ -58,7 +58,7 @@ export class ListFavoritesService implements ListFavoritesUseCase {
                 })).at(0);
 
                 if (isFollowing === null || isFollowing === undefined) {
-                    throw new UnauthorizedAccessError(`Unauthorized access`);
+                    throw new UnauthorizedAccessError();
                 }
             }
         }

@@ -44,7 +44,7 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 			: this.userRepository.findByName(command.name));
 
 		if (user === null || user === undefined || user.isDeleted()) {
-			throw new UserNotFoundError(`User not found`);
+			throw new UserNotFoundError();
 		}
 
 		const isFollowing =

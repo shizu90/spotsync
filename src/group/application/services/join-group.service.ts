@@ -52,9 +52,7 @@ export class JoinGroupService implements JoinGroupUseCase {
 		);
 
 		if (memberRole === null || memberRole === undefined) {
-			throw new GroupRoleNotFoundError(
-				`Group role ${DefaultGroupRole.MEMBER} not found`,
-			);
+			throw new GroupRoleNotFoundError();
 		}
 
 		let groupMember = (await this.groupMemberRepository.findBy({
@@ -64,13 +62,11 @@ export class JoinGroupService implements JoinGroupUseCase {
 
 		if (groupMember !== null && groupMember !== undefined) {
 			if (groupMember.status() == GroupMemberStatus.REQUESTED) {
-				throw new AlreadyRequestedToJoinError(
-					`Already requested to join group`,
-				);
+				throw new AlreadyRequestedToJoinError();
 			}
 
 			if (groupMember.status() == GroupMemberStatus.ACTIVE) {
-				throw new AlreadyMemberOfGroupError(`Already member of the group`);
+				throw new AlreadyMemberOfGroupError();
 			}
 
 			groupMember.request();

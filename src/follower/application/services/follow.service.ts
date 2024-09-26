@@ -38,19 +38,17 @@ export class FollowService implements FollowUseCase {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		if (command.fromUserId !== authenticatedUser.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (command.fromUserId === command.toUserId) {
-			throw new AlreadyFollowingError(
-				`To user must be a different user.`,
-			);
+			throw new AlreadyFollowingError();
 		}
 
 		const toUser = await this.userRepository.findById(command.toUserId);
 
 		if (toUser === null || toUser === undefined || toUser.isDeleted()) {
-			throw new UserNotFoundError(`To user not found`);
+			throw new UserNotFoundError();
 		}
 
 		let follow = (
@@ -62,13 +60,11 @@ export class FollowService implements FollowUseCase {
 
 		if (follow !== null && follow !== undefined) {
 			if (follow.status() === FollowStatus.ACTIVE) {
-				throw new AlreadyFollowingError(`Already following user`);
+				throw new AlreadyFollowingError();
 			}
 
 			if (follow.status() === FollowStatus.REQUESTED) {
-				throw new AlreadyRequestedFollowError(
-					`Already requested to follow`,
-				);
+				throw new AlreadyRequestedFollowError();
 			}
 		}
 

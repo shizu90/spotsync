@@ -36,7 +36,7 @@ export class UpdateGroupVisibilityService
 		const group = await this.groupRepository.findById(command.id);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -50,9 +50,7 @@ export class UpdateGroupVisibilityService
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You are not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -60,9 +58,7 @@ export class UpdateGroupVisibilityService
 				GroupPermissionName.UPDATE_SETTINGS,
 			)
 		) {
-			throw new UnauthorizedAccessError(
-				`You don't have permissions to update group settings`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (

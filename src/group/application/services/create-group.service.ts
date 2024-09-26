@@ -47,7 +47,7 @@ export class CreateGroupService implements CreateGroupUseCase {
 		);
 
 		if (adminRole === null || adminRole === undefined) {
-			throw new GroupRoleNotFoundError(`Group role ${DefaultGroupRole.ADMINISTRATOR} not found`);
+			throw new GroupRoleNotFoundError();
 		}
 
 		const groupId = randomUUID();

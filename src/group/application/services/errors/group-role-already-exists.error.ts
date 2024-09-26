@@ -1,5 +1,5 @@
 export class GroupRoleAlreadyExistsError extends Error {
-	constructor(message: string) {
+	constructor(message = "Group role already exists.") {
 		super(message);
 	}
 }

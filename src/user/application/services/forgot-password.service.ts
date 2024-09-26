@@ -26,7 +26,7 @@ export class ForgotPasswordService implements ForgotPasswordUseCase {
         const user = await this.userRepository.findByEmail(command.email);
 
         if (user === null || user === undefined) {
-            throw new UserNotFoundError(`User not found`);
+            throw new UserNotFoundError();
         }
 
         const passwordRecovery = PasswordRecovery.create(randomUUID(), user);

@@ -42,7 +42,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Follow>> {
-		const query = this._mountQuery(params);
+		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'followedAt';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
 
@@ -121,9 +121,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 	public async findBy(values: Object): Promise<Array<Follow>> {
 		const query = this._mountQuery(values);
 		const follows = await this.prismaService.follow.findMany({
-			where: {
-				id: query,
-			},
+			where: query,
 			include: {
 				from_user: {
 					include: {

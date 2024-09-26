@@ -11,6 +11,8 @@ export type UserEntity = UserPrisma & {profile?: UserProfilePrisma, credentials?
 
 export class UserEntityMapper implements EntityMapper<User, UserEntity> {
     public toEntity(model: User): UserEntity {
+        if (model === null || model === undefined) return null;
+
         return {
             id: model.id(),
             created_at: model.createdAt(),
@@ -51,6 +53,8 @@ export class UserEntityMapper implements EntityMapper<User, UserEntity> {
     }
 
     public toModel(entity: UserEntity): User {
+        if (entity === null || entity === undefined) return null;
+
         return User.create(
             entity.id,
             entity.profile ? UserProfile.create(

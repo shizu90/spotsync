@@ -1,5 +1,5 @@
 export class UnauthorizedAccessError extends Error {
-	constructor(message: string) {
+	constructor(message = "Unauthorized access.") {
 		super(message);
 	}
 }

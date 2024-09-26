@@ -27,7 +27,7 @@ export class ChangePasswordService implements ChangePasswordUseCase
         })).at(0);
 
         if (passwordRecovery === null || passwordRecovery === undefined) {
-            throw new PasswordRecoveryExpired(`Password recovery is expired`);
+            throw new PasswordRecoveryExpired();
         }
 
         if (passwordRecovery.isExpired()) {
@@ -35,7 +35,7 @@ export class ChangePasswordService implements ChangePasswordUseCase
 
             await this.passwordRecoveryRepository.update(passwordRecovery);
 
-            throw new PasswordRecoveryExpired(`Password recovery is expired`);
+            throw new PasswordRecoveryExpired();
         }
 
         const user = passwordRecovery.user();

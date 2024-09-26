@@ -1,5 +1,5 @@
 export class PostNotFoundError extends Error {
-	constructor(message: string) {
+	constructor(message = "Post not found.") {
 		super(message);
 	}
 }

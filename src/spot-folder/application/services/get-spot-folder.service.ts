@@ -25,11 +25,11 @@ export class GetSpotFolderService implements GetSpotFolderUseCase {
         const spotFolder = await this.spotFolderRepository.findById(command.id);
 
         if (spotFolder === null || spotFolder === undefined) {
-            throw new SpotFolderNotFoundError(`Spot folder not found`);
+            throw new SpotFolderNotFoundError();
         }
 
         if (spotFolder.visibility() === SpotFolderVisibility.PRIVATE && spotFolder.creator().id() !== authenticatedUser.id()) {
-            throw new SpotFolderNotFoundError(`Spot folder not found`);
+            throw new SpotFolderNotFoundError();
         }
 
         if (spotFolder.visibility() === SpotFolderVisibility.FOLLOWERS) {
@@ -39,7 +39,7 @@ export class GetSpotFolderService implements GetSpotFolderUseCase {
             })).at(0);
 
             if ((isFollowing === null || isFollowing === undefined) && spotFolder.creator().id() !== authenticatedUser.id()) {
-                throw new SpotFolderNotFoundError(`Spot folder not found`);
+                throw new SpotFolderNotFoundError();
             }
         }
 

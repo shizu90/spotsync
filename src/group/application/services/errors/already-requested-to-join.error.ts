@@ -1,5 +1,5 @@
 export class AlreadyRequestedToJoinError extends Error {
-	constructor(message: string) {
+	constructor(message = "Already requested to join.") {
 		super(message);
 	}
 }

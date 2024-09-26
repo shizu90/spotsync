@@ -42,7 +42,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -56,9 +56,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You're not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -66,9 +64,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 				GroupPermissionName.UPDATE_ROLE,
 			)
 		) {
-			throw new UnauthorizedAccessError(
-				`You don't have permissions to update role`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		const groupRole = await this.groupRoleRepository.findById(command.id);
@@ -79,7 +75,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 			(groupRole.group() !== null &&
 				groupRole.group().id() !== group.id())
 		) {
-			throw new GroupRoleNotFoundError(`Group role not found`);
+			throw new GroupRoleNotFoundError();
 		}
 
 		if (
@@ -93,9 +89,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 				null;
 
 			if (roleExists)
-				throw new GroupRoleAlreadyExistsError(
-					`Role ${command.name} already exists`,
-				);
+				throw new GroupRoleAlreadyExistsError();
 
 			groupRole.changeName(command.name);
 		}

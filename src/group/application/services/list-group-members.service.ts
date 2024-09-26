@@ -6,12 +6,12 @@ import { ListGroupMembersCommand } from '../ports/in/commands/list-group-members
 import { ListGroupMembersUseCase } from '../ports/in/use-cases/list-group-members.use-case';
 import { GetGroupMemberDto } from '../ports/out/dto/get-group-member.dto';
 import {
-	GroupMemberRepository,
-	GroupMemberRepositoryProvider,
+    GroupMemberRepository,
+    GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
 import {
-	GroupRepository,
-	GroupRepositoryProvider,
+    GroupRepository,
+    GroupRepositoryProvider,
 } from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
 
@@ -30,13 +30,13 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		if (
 			group.visibilitySettings().groups() === GroupVisibility.PRIVATE
 		) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		} else {
 			const pagination = await this.groupMemberRepository.paginate({
 				filters: {

@@ -35,9 +35,7 @@ export class CreateSpotService implements CreateSpotUseCase {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		if ((await this.spotRepository.findByName(command.name)) !== null) {
-			throw new SpotAlreadyExistsError(
-				`Spot with name ${command.name} already exists.`,
-			);
+			throw new SpotAlreadyExistsError();
 		}
 
 		let latitude = command.address.latitude;

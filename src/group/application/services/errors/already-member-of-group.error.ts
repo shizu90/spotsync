@@ -1,5 +1,5 @@
 export class AlreadyMemberOfGroupError extends Error {
-	constructor(message: string) {
+	constructor(message = "Already member of group.") {
 		super(message);
 	}
 }

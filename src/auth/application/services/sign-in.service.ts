@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
-	EncryptPasswordService,
-	EncryptPasswordServiceProvider,
+    EncryptPasswordService,
+    EncryptPasswordServiceProvider,
 } from 'src/user/application/ports/out/encrypt-password.service';
 import {
-	UserRepository,
-	UserRepositoryProvider,
+    UserRepository,
+    UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { UserInvalidCredentialsError } from 'src/user/application/services/errors/user-invalid-credentials.error';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
@@ -39,7 +39,7 @@ export class SignInService implements SignInUseCase {
 		}
 
 		if (user === null || user === undefined || user.isDeleted() || user.status() === UserStatus.INACTIVE) {
-			throw new UserNotFoundError(`User not found`);
+			throw new UserNotFoundError();
 		}
 
 		if (

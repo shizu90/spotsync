@@ -35,7 +35,7 @@ export class LeaveGroupService implements LeaveGroupUseCase {
 		const group = await this.groupRepository.findById(command.id);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const groupMember = (
@@ -46,9 +46,7 @@ export class LeaveGroupService implements LeaveGroupUseCase {
 		).at(0);
 
 		if (groupMember === null || groupMember === undefined) {
-			throw new UnauthorizedAccessError(
-				`You are not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		const groupMembers = await this.groupMemberRepository.findBy({
@@ -70,7 +68,7 @@ export class LeaveGroupService implements LeaveGroupUseCase {
 			(!hasAdministratorGroupMember &&
 				groupMember.role().name() === DefaultGroupRole.ADMINISTRATOR)
 		) {
-			throw new UnableToLeaveGroupError(`Unable to leave group`);
+			throw new UnableToLeaveGroupError();
 		}
 
 		this.groupMemberRepository.delete(groupMember.id());

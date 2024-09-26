@@ -1,5 +1,5 @@
 export class AlreadyRequestedFollowError extends Error {
-	constructor(message: string) {
+	constructor(message = "Already requested follow.") {
 		super(message);
 	}
 }

@@ -27,7 +27,7 @@ export class DeleteUserAddressService implements DeleteUserAddressUseCase {
 		const user: User = await this.getAuthenticatedUser.execute(null);
 
 		if (command.userId !== user.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		const userAddress: UserAddress =
@@ -39,7 +39,7 @@ export class DeleteUserAddressService implements DeleteUserAddressUseCase {
 			userAddress.isDeleted() ||
 			userAddress.user().id() !== user.id()
 		) {
-			throw new UserAddressNotFoundError(`User address not found`);
+			throw new UserAddressNotFoundError();
 		}
 
 		userAddress.delete();

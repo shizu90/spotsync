@@ -1,23 +1,23 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import {
-	GroupMemberRepository,
-	GroupMemberRepositoryProvider,
+    GroupMemberRepository,
+    GroupMemberRepositoryProvider,
 } from 'src/group/application/ports/out/group-member.repository';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { DeletePostCommand } from '../ports/in/commands/delete-post.command';
 import { DeletePostUseCase } from '../ports/in/use-cases/delete-post.use-case';
 import {
-	PostThreadRepository,
-	PostThreadRepositoryProvider,
+    PostThreadRepository,
+    PostThreadRepositoryProvider,
 } from '../ports/out/post-thread.repository';
 import {
-	PostRepository,
-	PostRepositoryProvider,
+    PostRepository,
+    PostRepositoryProvider,
 } from '../ports/out/post.repository';
 import { PostNotFoundError } from './errors/post-not-found.error';
 
@@ -40,7 +40,7 @@ export class DeletePostService implements DeletePostUseCase {
 		const post = await this.postRepository.findById(command.id);
 
 		if (post === null || post === undefined) {
-			throw new PostNotFoundError(`Post not found`);
+			throw new PostNotFoundError();
 		}
 
 		let canDelete = post.creator().id() === authenticatedUser.id();
@@ -70,7 +70,7 @@ export class DeletePostService implements DeletePostUseCase {
 		}
 
 		if (!canDelete) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		const thread = post.thread();

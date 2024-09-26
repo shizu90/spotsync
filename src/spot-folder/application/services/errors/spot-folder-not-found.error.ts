@@ -1,5 +1,5 @@
 export class SpotFolderNotFoundError extends Error {
-    constructor(message: string) {
+    constructor(message = "Spot folder not found.") {
         super(message);
     }
 }

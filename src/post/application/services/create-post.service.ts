@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import {
-	GroupRepository,
-	GroupRepositoryProvider,
+    GroupRepository,
+    GroupRepositoryProvider,
 } from 'src/group/application/ports/out/group.repository';
 import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
@@ -18,12 +18,12 @@ import { CreatePostCommand } from '../ports/in/commands/create-post.command';
 import { CreatePostUseCase } from '../ports/in/use-cases/create-post.use-case';
 import { CreatePostDto } from '../ports/out/dto/create-post.dto';
 import {
-	PostThreadRepository,
-	PostThreadRepositoryProvider,
+    PostThreadRepository,
+    PostThreadRepositoryProvider,
 } from '../ports/out/post-thread.repository';
 import {
-	PostRepository,
-	PostRepositoryProvider,
+    PostRepository,
+    PostRepositoryProvider,
 } from '../ports/out/post.repository';
 import { PostNotFoundError } from './errors/post-not-found.error';
 
@@ -68,7 +68,7 @@ export class CreatePostService implements CreatePostUseCase {
 			const g = await this.groupRepository.findById(command.groupId);
 
 			if (g === null || g === undefined || g.isDeleted()) {
-				throw new GroupNotFoundError(`Group not found`);
+				throw new GroupNotFoundError();
 			}
 
 			group = g;

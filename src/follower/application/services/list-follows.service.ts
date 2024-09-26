@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
 import {
-	UserRepository,
-	UserRepositoryProvider,
+    UserRepository,
+    UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
@@ -15,8 +15,8 @@ import { ListFollowsCommand } from '../ports/in/commands/list-follows.command';
 import { ListFollowsUseCase } from '../ports/in/use-cases/list-follows.use-case';
 import { GetFollowDto } from '../ports/out/dto/get-follow.dto';
 import {
-	FollowRepository,
-	FollowRepositoryProvider,
+    FollowRepository,
+    FollowRepositoryProvider,
 } from '../ports/out/follow.repository';
 
 @Injectable()
@@ -44,7 +44,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			);
 
 			if (user === null || user === undefined || user.isDeleted()) {
-				throw new UserNotFoundError(`User not found`);
+				throw new UserNotFoundError();
 			}
 
 			const isFollowingUser =
@@ -60,7 +60,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
-				throw new UnauthorizedAccessError(`Unauthorized access`);
+				throw new UnauthorizedAccessError();
 			}
 
 			if (
@@ -69,7 +69,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 				authenticatedUser.id() !== user.id() &&
 				!isFollowingUser
 			) {
-				throw new UnauthorizedAccessError(`Unauthorized access`);
+				throw new UnauthorizedAccessError();
 			}
 		}
 
@@ -79,7 +79,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 			);
 
 			if (user === null || user === undefined || user.isDeleted()) {
-				throw new UserNotFoundError(`User not found`);
+				throw new UserNotFoundError();
 			}
 
 			const isFollowingUser =
@@ -95,7 +95,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 					UserVisibility.PRIVATE &&
 				authenticatedUser.id() !== user.id()
 			) {
-				throw new UnauthorizedAccessError(`Unauthorized access`);
+				throw new UnauthorizedAccessError();
 			}
 
 			if (
@@ -104,7 +104,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 				authenticatedUser.id() !== user.id() &&
 				!isFollowingUser
 			) {
-				throw new UnauthorizedAccessError(`Unauthorized access`);
+				throw new UnauthorizedAccessError();
 			}
 		}
 

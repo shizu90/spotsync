@@ -35,11 +35,11 @@ export class UpdateSpotService implements UpdateSpotUseCase {
 		const spot = await this.spotRepository.findById(command.id);
 
 		if (spot === null || spot === undefined || spot.isDeleted()) {
-			throw new SpotNotFoundError(`Spot not found`);
+			throw new SpotNotFoundError();
 		}
 
 		if (spot.creator().id() !== authenticatedUser.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -51,9 +51,7 @@ export class UpdateSpotService implements UpdateSpotUseCase {
 				command.name !== spot.name() &&
 				(await this.spotRepository.findByName(command.name)) !== null
 			) {
-				throw new SpotAlreadyExistsError(
-					`Spot with name ${command.name} already exists`,
-				);
+				throw new SpotAlreadyExistsError();
 			}
 
 			spot.changeName(command.name);

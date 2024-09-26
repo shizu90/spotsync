@@ -25,7 +25,7 @@ export class DeleteUserService implements DeleteUserUseCase {
 		const user: User = await this.getAuthenticatedUser.execute(null);
 
 		if (command.id !== user.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		user.delete();

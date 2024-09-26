@@ -27,7 +27,7 @@ export class GetAuthenticatedUserService
 		);
 
 		if (user === null || user === undefined || user.isDeleted() || user.status() === UserStatus.INACTIVE) {
-			throw new UnauthenticatedError(`Not authenticated`);
+			throw new UnauthenticatedError();
 		}
 
 		return user;

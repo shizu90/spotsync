@@ -1,5 +1,5 @@
 export class LikableNotFoundError extends Error {
-    constructor(message: string = 'Likable not found') {
+    constructor(message = "Likable not found.") {
         super(message);
     }
 }

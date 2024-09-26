@@ -1,5 +1,5 @@
 export class SpotAlreadyExistsError extends Error {
-	constructor(message: string) {
+	constructor(message = "Spot already exists.") {
 		super(message);
 	}
 }

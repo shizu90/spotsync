@@ -32,13 +32,13 @@ export class UnfollowService implements UnfollowUseCase {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		if (command.fromUserId !== authenticatedUser.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		const toUser = await this.userRepository.findById(command.toUserId);
 
 		if (toUser === null || toUser === undefined || toUser.isDeleted()) {
-			throw new UserNotFoundError(`To user not found`);
+			throw new UserNotFoundError();
 		}
 
 		const follow = (
@@ -49,7 +49,7 @@ export class UnfollowService implements UnfollowUseCase {
 		).at(0);
 
 		if (follow === null || follow === undefined) {
-			throw new NotFollowingError(`Not following user`);
+			throw new NotFollowingError();
 		}
 
 		this.followRepository.delete(follow.id());

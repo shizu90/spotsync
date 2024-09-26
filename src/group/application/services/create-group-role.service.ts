@@ -46,7 +46,7 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -60,9 +60,7 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You're not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -70,18 +68,14 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 				GroupPermissionName.CREATE_ROLE,
 			)
 		) {
-			throw new UnauthorizedAccessError(
-				`You don't have permissions to create role`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		let roleExists =
 			(await this.groupRoleRepository.findByName(command.name)) !== null;
 
 		if (roleExists) {
-			throw new GroupRoleAlreadyExistsError(
-				`Role ${command.name} already exists`,
-			);
+			throw new GroupRoleAlreadyExistsError();
 		}
 
 		const groupRole = GroupRole.create(

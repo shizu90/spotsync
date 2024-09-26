@@ -22,11 +22,11 @@ export class SortItemsService implements SortItemsUseCase {
         const spotFolder = await this.spotFolderRepository.findById(command.spotFolderId);
 
         if (spotFolder === null || spotFolder === undefined) {
-            throw new SpotFolderNotFoundError(`Spot folder not found`);
+            throw new SpotFolderNotFoundError();
         }
 
         if (spotFolder.creator().id() !== authenticatedUser.id()) {
-            throw new UnauthorizedAccessError(`Unauthorized access`);
+            throw new UnauthorizedAccessError();
         }
 
         spotFolder.sortItems();

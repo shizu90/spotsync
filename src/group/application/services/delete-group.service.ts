@@ -34,7 +34,7 @@ export class DeleteGroupService implements DeleteGroupUseCase {
 		const group = await this.groupRepository.findById(command.id);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -48,9 +48,7 @@ export class DeleteGroupService implements DeleteGroupUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You are not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -58,9 +56,7 @@ export class DeleteGroupService implements DeleteGroupUseCase {
 				GroupPermissionName.DELETE_GROUP,
 			)
 		) {
-			throw new UnauthorizedAccessError(
-				`You don't have permissions to delete the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		group.delete();

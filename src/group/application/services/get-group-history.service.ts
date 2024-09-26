@@ -37,7 +37,7 @@ export class GetGroupHistoryService implements GetGroupHistoryUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -51,9 +51,7 @@ export class GetGroupHistoryService implements GetGroupHistoryUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You're not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		const pagination = await this.groupRepository.paginateLog({

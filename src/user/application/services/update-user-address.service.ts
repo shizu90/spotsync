@@ -34,7 +34,7 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase {
 		const user = await this.getAuthenticatedUser.execute(null);
 
 		if (command.userId !== user.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		const userAddress: UserAddress =
@@ -46,7 +46,7 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase {
 			userAddress.user().id() !== user.id() ||
 			userAddress.isDeleted()
 		) {
-			throw new UserAddressNotFoundError(`User address not found`);
+			throw new UserAddressNotFoundError();
 		}
 
 		if (command.name && command.name !== null && command.name.length > 0) {

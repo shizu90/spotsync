@@ -1,14 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { UnlikeCommand } from '../ports/in/commands/unlike.command';
 import { UnlikeUseCase } from '../ports/in/use-cases/unlike.use-case';
 import {
-	LikeRepository,
-	LikeRepositoryProvider,
+    LikeRepository,
+    LikeRepositoryProvider,
 } from '../ports/out/like.repository';
 import { LikeNotFoundError } from './errors/like-not-found.error';
 
@@ -37,7 +37,7 @@ export class UnlikeService implements UnlikeUseCase {
 		}
 
 		if (like.user().id() !== authenticatedUser.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		await this.likeRepository.delete(like.id());

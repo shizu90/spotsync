@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
 		const token = this.extractTokenFromHeader(request);
 
 		if (!token) {
-			throw new UnauthenticatedError(`Not authenticated`);
+			throw new UnauthenticatedError();
 		}
 
 		try {
@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
 
 			request['authenticated_user'] = payload.sub;
 		} catch {
-			throw new UnauthenticatedError(`Not authenticated`);
+			throw new UnauthenticatedError();
 		}
 
 		return true;

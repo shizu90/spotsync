@@ -1,5 +1,5 @@
 export class SpotNotAddedError extends Error {
-    constructor(message: string) {
+    constructor(message = "Spot not in folder.") {
         super(message);
     }
 }

@@ -1,5 +1,5 @@
 export class NotFollowingError extends Error {
-	constructor(message: string) {
+	constructor(message = "Not following.") {
 		super(message);
 	}
 }

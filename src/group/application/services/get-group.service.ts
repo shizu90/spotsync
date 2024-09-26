@@ -1,18 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { GetGroupCommand } from '../ports/in/commands/get-group.command';
 import { GetGroupUseCase } from '../ports/in/use-cases/get-group.use-case';
 import { GetGroupDto } from '../ports/out/dto/get-group.dto';
 import {
-	GroupMemberRepository,
-	GroupMemberRepositoryProvider,
+    GroupMemberRepository,
+    GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
 import {
-	GroupRepository,
-	GroupRepositoryProvider,
+    GroupRepository,
+    GroupRepositoryProvider,
 } from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
 
@@ -33,7 +33,7 @@ export class GetGroupService implements GetGroupUseCase {
 		const group = await this.groupRepository.findById(command.id);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const groupMember = (

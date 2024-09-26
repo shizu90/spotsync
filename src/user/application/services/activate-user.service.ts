@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { SignInDto } from "src/auth/application/ports/out/dto/sign-in.dto";
 import { ActivationRequestStatus } from "src/user/domain/activation-request-status.enum";
+import { ActivationRequestSubject } from "src/user/domain/activation-request-subject.enum";
 import { ActivateUserCommand } from "../ports/in/commands/activate-user.command";
 import { ActivateUserUseCase } from "../ports/in/use-cases/activate-user.use-case";
 import { ActivationRequestRepository, ActivationRequestRepositoryProvider } from "../ports/out/activation-request.repository";
@@ -21,14 +22,18 @@ export class ActivateUserService implements ActivateUserUseCase {
     {}
 
     public async execute(command: ActivateUserCommand): Promise<void | SignInDto> {
+        console.log(command);
+
         const activationRequest = (await this.activationRequestRepository.findBy({
             userId: command.userId,
             code: command.activationCode,
             status: ActivationRequestStatus.PENDING,
+            subject: ActivationRequestSubject.NEW_USER,
         })).at(0);
 
+
         if (activationRequest === null || activationRequest === undefined) {
-            throw new InvalidActivationCodeError("Invalid activation code");
+            throw new InvalidActivationCodeError();
         }
 
         const user = activationRequest.user();

@@ -26,7 +26,7 @@ export class UnfavoriteService implements UnfavoriteUseCase {
         ).at(0);
 
         if (favorite === null || favorite === undefined) {
-            throw new FavoriteNotFoundError(`Favorite not found`);
+            throw new FavoriteNotFoundError();
         }
 
         await this.favoriteRepository.delete(favorite.id());

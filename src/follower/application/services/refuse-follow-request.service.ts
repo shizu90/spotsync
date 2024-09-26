@@ -31,11 +31,11 @@ export class RefuseFollowRequestService implements RefuseFollowRequestUseCase {
 		})).at(0);
 
 		if (followRequest === null || followRequest === undefined) {
-			throw new FollowRequestNotFoundError(`Follow request not found`);
+			throw new FollowRequestNotFoundError();
 		}
 
 		if (authenticatedUser.id() !== followRequest.to().id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		this.followRepository.delete(followRequest.id());

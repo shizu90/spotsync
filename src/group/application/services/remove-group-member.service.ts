@@ -35,7 +35,7 @@ export class RemoveGroupMemberService implements RemoveGroupMemberUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -49,9 +49,7 @@ export class RemoveGroupMemberService implements RemoveGroupMemberUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You are not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -59,9 +57,7 @@ export class RemoveGroupMemberService implements RemoveGroupMemberUseCase {
 				GroupPermissionName.REMOVE_MEMBER,
 			)
 		) {
-			throw new UnauthorizedAccessError(
-				`You don't have permissions to remove members`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		const groupMember = await this.groupMemberRepository.findById(
@@ -69,7 +65,7 @@ export class RemoveGroupMemberService implements RemoveGroupMemberUseCase {
 		);
 
 		if (groupMember === null || groupMember === undefined) {
-			throw new GroupMemberNotFoundError(`Group member not found`);
+			throw new GroupMemberNotFoundError();
 		}
 
 		this.groupMemberRepository.delete(groupMember.id());

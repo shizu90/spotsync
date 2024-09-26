@@ -38,7 +38,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase {
 		const user: User = await this.getAuthenticatedUser.execute(null);
 
 		if (command.userId !== user.id()) {
-			throw new UnauthorizedAccessError(`Unauthorized access`);
+			throw new UnauthorizedAccessError();
 		}
 
 		const coordinates: GeoLocatorOutput =

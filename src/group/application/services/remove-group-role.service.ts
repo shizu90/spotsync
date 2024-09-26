@@ -41,7 +41,7 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
-			throw new GroupNotFoundError(`Group not found`);
+			throw new GroupNotFoundError();
 		}
 
 		const authenticatedGroupMember = (
@@ -55,9 +55,7 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase {
 			authenticatedGroupMember === null ||
 			authenticatedGroupMember === undefined
 		) {
-			throw new UnauthorizedAccessError(
-				`You're not a member of the group`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		if (
@@ -65,9 +63,7 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase {
 				GroupPermissionName.REMOVE_ROLE,
 			)
 		) {
-			throw new UnauthorizedAccessError(
-				`You don't have permissions to delete role`,
-			);
+			throw new UnauthorizedAccessError();
 		}
 
 		const groupRole = await this.groupRoleRepository.findById(command.id);
@@ -78,7 +74,7 @@ export class RemoveGroupRoleService implements RemoveGroupRoleUseCase {
 			(groupRole.group() !== null &&
 				groupRole.group().id() !== group.id())
 		) {
-			throw new GroupRoleNotFoundError(`Group role not found`);
+			throw new GroupRoleNotFoundError();
 		}
 
 		this.groupRoleRepository.delete(groupRole.id());

@@ -98,10 +98,10 @@ export class ActivationRequestRepositoryImpl implements ActivationRequestReposit
         return new Pagination(items, total, page+1, limit);
     }
     
-    public async findBy(values: Object): Promise<ActivationRequest[]> {
+    public async findBy(values: Object): Promise<any[]> {
         const query = this._mountQuery(values);
         const items = await this.prismaService.activationRequest.findMany({
-            where: this._mountQuery(values),
+            where: query,
             include: {
                 user: {
                     include: {

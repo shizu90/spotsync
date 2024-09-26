@@ -587,10 +587,10 @@ export class UserController extends ApiController {
 	) {
 		const command = UserRequestMapper.activateUserCommand(id, body);
 
-		await this.activateUserUseCase.execute(command);
+		const data = await this.activateUserUseCase.execute(command);
 
 		res.status(HttpStatus.OK).json({
-			data: await this.activateUserUseCase.execute(command),
+			data: data,
 		});
 	}
 }

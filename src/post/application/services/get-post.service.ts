@@ -1,20 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import {
-	FollowRepository,
-	FollowRepositoryProvider,
+    FollowRepository,
+    FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import {
-	GroupMemberRepository,
-	GroupMemberRepositoryProvider,
+    GroupMemberRepository,
+    GroupMemberRepositoryProvider,
 } from 'src/group/application/ports/out/group-member.repository';
 import {
-	LikeRepository,
-	LikeRepositoryProvider,
+    LikeRepository,
+    LikeRepositoryProvider,
 } from 'src/like/application/ports/out/like.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
@@ -23,8 +23,8 @@ import { GetPostCommand } from '../ports/in/commands/get-post.command';
 import { GetPostUseCase } from '../ports/in/use-cases/get-post.use-case';
 import { GetPostDto } from '../ports/out/dto/get-post.dto';
 import {
-	PostRepository,
-	PostRepositoryProvider,
+    PostRepository,
+    PostRepositoryProvider,
 } from '../ports/out/post.repository';
 import { PostNotFoundError } from './errors/post-not-found.error';
 
@@ -49,7 +49,7 @@ export class GetPostService implements GetPostUseCase {
 		const post = await this.postRepository.findById(command.id);
 
 		if (post === null || post === undefined) {
-			throw new PostNotFoundError(`Post not found`);
+			throw new PostNotFoundError();
 		}
 
 		switch (post.visibility()) {
@@ -71,7 +71,7 @@ export class GetPostService implements GetPostUseCase {
 						);
 					}
 				} else if (post.creator().id() !== authenticatedUser.id()) {
-					throw new UnauthorizedAccessError(`Unauthorized access`);
+					throw new UnauthorizedAccessError();
 				}
 
 				break;
@@ -84,7 +84,7 @@ export class GetPostService implements GetPostUseCase {
 				).at(0);
 
 				if (follow === null || follow === undefined) {
-					throw new UnauthorizedAccessError(`Unauthorized access`);
+					throw new UnauthorizedAccessError();
 				}
 
 				break;

@@ -1,5 +1,5 @@
 export class UnableToLeaveGroupError extends Error {
-	constructor(message: string) {
+	constructor(message = "Unable to leave group.") {
 		super(message);
 	}
 }

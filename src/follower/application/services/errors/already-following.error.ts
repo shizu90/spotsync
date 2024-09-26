@@ -1,5 +1,5 @@
 export class AlreadyFollowingError extends Error {
-	constructor(message: string) {
+	constructor(message = "Already following.") {
 		super(message);
 	}
 }
