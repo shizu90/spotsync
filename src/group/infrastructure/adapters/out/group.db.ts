@@ -31,7 +31,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		let query = {};
 
 		if (name) {
-			query['name'] = name;
+			query['name'] = { contains: name, mode: 'insensitive' };
 		}
 
 		if (isDeleted !== undefined && isDeleted !== null) {

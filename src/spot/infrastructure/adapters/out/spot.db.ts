@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    PaginateParameters,
-    Pagination,
+	PaginateParameters,
+	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -30,21 +30,23 @@ export class SpotRepositoryImpl implements SpotRepository {
 		const visitedById = values['visitedById'] ?? null;
 		const spotId = values['spotId'] ?? null;
 		
-		let query = {
-			favorites: {},
-			visited_by: {}
-		};
+		let query = {};
 
 		if (favoritedById) {
-			query['favorites']['user_id'] = favoritedById;
+			query['favorites'] = {};
+			query['favorites'] = { some: { user_id: favoritedById } };
 		}
 
 		if (visitedById) {
+			query['visited_by'] = {};
 			query['visited_by']['user_id'] = visitedById;
 		}
 
 		if (name) {
-			query['name'] = name;
+			query['name'] = {
+				contains: name,
+				mode: 'insensitive',
+			};
 		}
 
 		if (type) {

@@ -48,5 +48,7 @@ export class GetSpotFolderDto extends Dto {
         },
         readonly created_at: Date,
         readonly updated_at: Date,
+        readonly total_favorites: number,
+        readonly favorited: boolean,
     ) {super();}
 }

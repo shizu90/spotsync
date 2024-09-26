@@ -1,36 +1,23 @@
 import {
-	ArgumentsHost,
-	BadRequestException,
-	ExceptionFilter,
-	HttpException,
-	HttpStatus,
+    ArgumentsHost,
+    BadRequestException,
+    ExceptionFilter,
+    HttpException,
+    HttpStatus,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { ErrorResponse } from 'src/common/web/common.error';
 
-export class SpotFolderErrorHandler implements ExceptionFilter {
+export class FavoriteErrorHandler implements ExceptionFilter {
 	public catch(error: Error | HttpException, host: ArgumentsHost) {
 		const ctx = host.switchToHttp();
-		const response = ctx.getResponse();
-		const request = ctx.getRequest();
+		const response = ctx.getResponse<Response>();
+		const request = ctx.getRequest<Request>();
 
 		switch (error.constructor.name) {
-            case 'SpotFolderNotFoundError':
-			case 'SpotNotFoundError':
+			case 'FavoriteNotFoundError':
 				response
 					.status(HttpStatus.NOT_FOUND)
-					.json(
-						new ErrorResponse(
-							request.url,
-							new Date().toISOString(),
-							error.message,
-							error.constructor.name,
-						),
-					);
-				break;
-			case 'SpotFolderAlreadyAddedError':
-            case 'SpotAlreadyAddedError':
-				response
-					.status(HttpStatus.CONFLICT)
 					.json(
 						new ErrorResponse(
 							request.url,
@@ -51,6 +38,7 @@ export class SpotFolderErrorHandler implements ExceptionFilter {
 							error.constructor.name,
 						),
 					);
+
 				break;
 			case 'UnauthorizedAccessError':
 				response
@@ -63,6 +51,7 @@ export class SpotFolderErrorHandler implements ExceptionFilter {
 							error.constructor.name,
 						),
 					);
+
 				break;
 			default:
 				if (error instanceof BadRequestException) {
@@ -85,7 +74,6 @@ export class SpotFolderErrorHandler implements ExceptionFilter {
 								new Date().toISOString(),
 								error.message,
 								error.constructor.name,
-								error.stack
 							),
 						);
 				}

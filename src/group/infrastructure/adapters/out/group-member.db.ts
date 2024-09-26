@@ -28,7 +28,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		let query = {};
 
 		if (name) {
-			query['name'] = name;
+			query['name'] = { contains: name, mode: 'insensitive' };
 		}
 
 		if (roleId) {

@@ -1,5 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
+import { FavoriteRepository, FavoriteRepositoryProvider } from "src/favorite/application/ports/out/favorite.repository";
+import { FavoritableSubject } from "src/favorite/domain/favoritable-subject.enum";
 import { FollowRepository, FollowRepositoryProvider } from "src/follower/application/ports/out/follow.repository";
 import { SpotFolderVisibility } from "src/spot-folder/domain/spot-folder-visibility.enum";
 import { GetSpotFolderCommand } from "../ports/in/commands/get-spot-folder.command";
@@ -17,6 +19,8 @@ export class GetSpotFolderService implements GetSpotFolderUseCase {
         protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
         @Inject(FollowRepositoryProvider)
         protected followRepository: FollowRepository,
+        @Inject(FavoriteRepositoryProvider)
+        protected favoriteRepository: FavoriteRepository,
     ) {}
 
     public async execute(command: GetSpotFolderCommand): Promise<GetSpotFolderDto> {
@@ -42,6 +46,17 @@ export class GetSpotFolderService implements GetSpotFolderUseCase {
                 throw new SpotFolderNotFoundError();
             }
         }
+
+        const totalFavorites = await this.favoriteRepository.countBy({
+            subject: FavoritableSubject.SPOT_FOLDER,
+            subjectId: spotFolder.id(),
+        });
+
+        const favorited = (await this.favoriteRepository.findBy({
+            subject: FavoritableSubject.SPOT_FOLDER,
+            subjectId: spotFolder.id(),
+            userId: authenticatedUser.id(),
+        })).length > 0;
 
         return new GetSpotFolderDto(
             spotFolder.id(),
@@ -93,6 +108,8 @@ export class GetSpotFolderService implements GetSpotFolderUseCase {
             },
             spotFolder.createdAt(),
             spotFolder.updatedAt(),
+            totalFavorites,
+            favorited,
         );
     }
 }

@@ -4,7 +4,7 @@ export class RemoveSpotCommand extends Command
 {
     constructor(
         readonly id: string,
-        readonly spotIds: string[],
+        readonly spotId: string,
     ) 
     {super();}
 }

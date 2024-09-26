@@ -21,7 +21,6 @@ import { SpotFolderRequestMapper } from "./mappers/spot-folder-request.mapper";
 import { AddSpotRequest } from "./requests/add-spot.request";
 import { CreateSpotFolderRequest } from "./requests/create-spot-folder.request";
 import { ListSpotFoldersQueryRequest } from "./requests/list-spot-folders-query.request";
-import { RemoveSpotRequest } from "./requests/remove-spot.request";
 import { SortItemsRequest } from "./requests/sort-items.request";
 import { UpdateSpotFolderRequest } from "./requests/update-spot-folder.request";
 
@@ -42,7 +41,7 @@ import { UpdateSpotFolderRequest } from "./requests/update-spot-folder.request";
 		'string',
 	),
 })
-@Controller('spot-folder')
+@Controller('spot-folders')
 @UseFilters(new SpotFolderErrorHandler())
 export class SpotFolderController extends ApiController {
     constructor(
@@ -118,6 +117,8 @@ export class SpotFolderController extends ApiController {
                     },
                     new Date(),
                     new Date(),
+                    0,
+                    false,
                 )
             ], 1, 1, 12)
         }
@@ -192,6 +193,8 @@ export class SpotFolderController extends ApiController {
                 },
                 new Date(),
                 new Date(),
+                0, 
+                false,
             )
         }
     })
@@ -358,6 +361,8 @@ export class SpotFolderController extends ApiController {
                 },
                 new Date(),
                 new Date(),
+                0,
+                false,
             )
         }
     })
@@ -427,14 +432,14 @@ export class SpotFolderController extends ApiController {
     })
     @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
-    @Delete(':id/spots')
+    @Delete(':id/spots/:spot_id')
     public async removeSpots(
         @Param('id') id: string,
-        @Body() body: RemoveSpotRequest,
+        @Param('spot_id') spotId: string,
         @Req() req: Request,
         @Res() res: Response,
     ) {
-        const command = SpotFolderRequestMapper.removeSpotCommand(id, body);
+        const command = SpotFolderRequestMapper.removeSpotCommand(id, spotId);
 
         const data = await this.removeSpotUseCase.execute(command);
 

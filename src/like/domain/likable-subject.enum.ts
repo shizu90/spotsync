@@ -3,6 +3,6 @@ export enum LikableSubject {
 	RATING = 'rating',
 	COMMENT = 'comment',
 	SPOT = 'spot',
-	SPOT_FOLDER = 'spot_folder',
-	SPOT_EVENT = 'spot_event',
+	SPOT_FOLDER = 'spot-folder',
+	SPOT_EVENT = 'spot-event',
 }

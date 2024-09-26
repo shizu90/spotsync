@@ -148,7 +148,7 @@ export class SpotFolder extends Model implements Favoritable {
 
 	public removeItemBySpotId(id: string): void {
 		const idx = this._items.findIndex((item) => item.spot().id() === id);
-		this._items = this._items.splice(idx, 1);
+		this._items.splice(idx, 1);
 		this._updatedAt = new Date();
 	}
 
@@ -156,7 +156,7 @@ export class SpotFolder extends Model implements Favoritable {
 		const idx = this._items.findIndex(
 			(item) => item.spot().id() === spot.id(),
 		);
-		this._items = this._items.splice(idx, 1);
+		this._items.splice(idx, 1);
 		this._updatedAt = new Date();
 	}
 

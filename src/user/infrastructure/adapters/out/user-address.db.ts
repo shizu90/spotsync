@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import {
-    PaginateParameters,
-    Pagination,
+	PaginateParameters,
+	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -33,7 +33,10 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		}
 
 		if (name) {
-			query['name'] = name;
+			query['name'] = {
+				contains: name,
+				mode: 'insensitive',
+			};
 		}
 
 		if (isDeleted !== undefined && isDeleted !== null) {

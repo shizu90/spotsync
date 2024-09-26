@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comment/comment.module';
+import { FavoriteModule } from './favorite/favorite.module';
 import { FollowerModule } from './follower/follower.module';
 import { GeolocationModule } from './geolocation/geolocation.module';
 import { GroupModule } from './group/group.module';
@@ -26,7 +27,7 @@ import { UserModule } from './user/user.module';
 		SpotEventModule,
 		MailModule,
 		CommentModule,
-		//FavoriteModule,
+		FavoriteModule,
 	],
 })
 export class AppModule {}

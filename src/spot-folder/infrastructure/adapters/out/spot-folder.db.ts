@@ -16,6 +16,35 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
         protected prismaService: PrismaService
     ) {}
 
+    private _mountInclude(): Object {
+        return {
+            creator: {
+                include: {
+                    credentials: true,
+                    visibility_settings: true,
+                    profile: true,
+                }
+            },
+            spots: {
+                include: {
+                    spot: {
+                        include: {
+                            address: true,
+                            photos: true,
+                            creator: {
+                                include: {
+                                    credentials: true,
+                                    visibility_settings: true,
+                                    profile: true,
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        };
+    }
+
     private _mountQuery(values: Object): Object {
         const name = values['name'] ?? null;
         const userId = values['userId'] ?? null;
@@ -24,7 +53,10 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
         let query = {};
 
         if (name) {
-            query['name'] = name;
+            query['name'] = {
+                contains: name,
+                mode: 'insensitive',
+            };
         }
 
         if (userId) {
@@ -71,24 +103,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
             items = await this.prismaService.spotFolder.findMany({
                 where: query,
                 orderBy: orderBy,
-                include: {
-                    creator: {
-                        include: {
-                            credentials: true,
-                            visibility_settings: true,
-                            profile: true,
-                        }
-                    },
-                    spots: {
-                        include: {
-                            spot: {
-                                include: {
-                                    address: true
-                                }
-                            }
-                        }
-                    }
-                },
+                include: this._mountInclude(),
                 skip: page * limit,
                 take: limit
             });
@@ -96,24 +111,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
             items = await this.prismaService.spotFolder.findMany({
                 where: query,
                 orderBy: orderBy,
-                include: {
-                    creator: {
-                        include: {
-                            credentials: true,
-                            visibility_settings: true,
-                            profile: true,
-                        }
-                    },
-                    spots: {
-                        include: {
-                            spot: {
-                                include: {
-                                    address: true
-                                }
-                            }
-                        }
-                    }
-                }
+                include: this._mountInclude()
             });
         }
 
@@ -129,24 +127,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
         const query = this._mountQuery(values);
         const items = await this.prismaService.spotFolder.findMany({
             where: query,
-            include: {
-                creator: {
-                    include: {
-                        credentials: true,
-                        visibility_settings: true,
-                        profile: true,
-                    }
-                },
-                spots: {
-                    include: {
-                        spot: {
-                            include: {
-                                address: true
-                            }
-                        }
-                    }
-                }
-            }
+            include: this._mountInclude(),
         });
 
         return items.map(item => this._spotFolderEntityMapper.toModel(item));
@@ -163,24 +144,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
 
     public async findAll(): Promise<SpotFolder[]> {
         const items = await this.prismaService.spotFolder.findMany({
-            include: {
-                creator: {
-                    include: {
-                        credentials: true,
-                        visibility_settings: true,
-                        profile: true,
-                    }
-                },
-                spots: {
-                    include: {
-                        spot: {
-                            include: {
-                                address: true
-                            }
-                        }
-                    }
-                }
-            }
+            include: this._mountInclude(),
         });
 
         return items.map(item => this._spotFolderEntityMapper.toModel(item));
@@ -191,24 +155,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
             where: {
                 id: id
             },
-            include: {
-                creator: {
-                    include: {
-                        credentials: true,
-                        visibility_settings: true,
-                        profile: true,
-                    }
-                },
-                spots: {
-                    include: {
-                        spot: {
-                            include: {
-                                address: true
-                            }
-                        }
-                    }
-                }
-            }
+            include: this._mountInclude(),
         });
 
         return this._spotFolderEntityMapper.toModel(item);
@@ -237,24 +184,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
                     }
                 }
             },
-            include: {
-                creator: {
-                    include: {
-                        credentials: true,
-                        visibility_settings: true,
-                        profile: true,
-                    }
-                },
-                spots: {
-                    include: {
-                        spot: {
-                            include: {
-                                address: true
-                            }
-                        }
-                    }
-                }
-            }
+            include: this._mountInclude(),
         });
 
         return this._spotFolderEntityMapper.toModel(spotFolder);
@@ -274,22 +204,19 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository
             }
         });
 
+        await this.prismaService.spotFolderItem.deleteMany({
+            where: {
+                spot_folder_id: model.id(),
+            }
+        });
+
         for (const item of model.items()) {
-            await this.prismaService.spotFolderItem.upsert({
-                create: {
+            await this.prismaService.spotFolderItem.create({
+                data: {
                     spot_id: item.spot().id(),
                     order_number: item.orderNumber(),
                     added_at: item.addedAt(),
                     spot_folder_id: model.id(),
-                },
-                update: {
-                    order_number: item.orderNumber(),
-                },
-                where: {
-                    spot_folder_id_spot_id: {
-                        spot_folder_id: model.id(),
-                        spot_id: item.spot().id(),
-                    }
                 }
             });
         }

@@ -29,7 +29,7 @@ export class ListFavoritesService implements ListFavoritesUseCase {
     public async execute(command: ListFavoritesCommand): Promise<Pagination<GetFavoriteDto> | Array<GetFavoriteDto>> {
         const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
-        const favoritedById = command.favoritedBy ?? authenticatedUser.id();
+        const favoritedById = command.userId ?? authenticatedUser.id();
 
         if (favoritedById !== authenticatedUser.id()) {
             let visibility = UserVisibility.PUBLIC;
@@ -67,7 +67,7 @@ export class ListFavoritesService implements ListFavoritesUseCase {
             filters: {
                 subject: command.subject,
                 subjectId: command.subjectId,
-                favoritedBy: favoritedById,
+                userId: favoritedById,
             },
             page: command.page,
             limit: command.limit,
@@ -81,6 +81,7 @@ export class ListFavoritesService implements ListFavoritesUseCase {
 
             return new GetFavoriteDto(
                 i.id(),
+                i.createdAt().toISOString(),
                 favoritable instanceof Spot ? 
                     {
                         id: favoritable.id(),

@@ -1,6 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
 import { Pagination } from "src/common/core/common.repository";
+import { FavoriteRepository, FavoriteRepositoryProvider } from "src/favorite/application/ports/out/favorite.repository";
+import { FavoritableSubject } from "src/favorite/domain/favoritable-subject.enum";
 import { FollowRepository, FollowRepositoryProvider } from "src/follower/application/ports/out/follow.repository";
 import { SpotFolderVisibility } from "src/spot-folder/domain/spot-folder-visibility.enum";
 import { ListSpotFoldersCommand } from "../ports/in/commands/list-spot-folders.command";
@@ -17,6 +19,8 @@ export class ListSpotFoldersService implements ListSpotFoldersUseCase {
         protected followRepository: FollowRepository,
         @Inject(GetAuthenticatedUserUseCaseProvider)
         protected getAuthenticatedUserUseCase: GetAuthenticatedUserUseCase,
+        @Inject(FavoriteRepositoryProvider)
+        protected favoriteRepository: FavoriteRepository,
     ) 
     {}
 
@@ -50,6 +54,17 @@ export class ListSpotFoldersService implements ListSpotFoldersUseCase {
                     if ((isFollowing === null || isFollowing === undefined) && spotFolder.creator().id() !== authenticatedUser.id()) return null;
                 }
             }
+
+            const totalFavorites = await this.favoriteRepository.countBy({
+                subject: FavoritableSubject.SPOT_FOLDER,
+                subjectId: spotFolder.id(),
+            });
+    
+            const favorited = (await this.favoriteRepository.findBy({
+                subject: FavoritableSubject.SPOT_FOLDER,
+                subjectId: spotFolder.id(),
+                userId: authenticatedUser.id(),
+            })).length > 0;
 
             return new GetSpotFolderDto(
                 spotFolder.id(),
@@ -101,6 +116,8 @@ export class ListSpotFoldersService implements ListSpotFoldersUseCase {
                 },
                 spotFolder.createdAt(),
                 spotFolder.updatedAt(),
+                totalFavorites,
+                favorited,
             )
         }));
 

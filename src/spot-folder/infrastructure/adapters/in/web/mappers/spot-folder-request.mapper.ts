@@ -9,7 +9,6 @@ import { UpdateSpotFolderCommand } from "src/spot-folder/application/ports/in/co
 import { AddSpotRequest } from "../requests/add-spot.request";
 import { CreateSpotFolderRequest } from "../requests/create-spot-folder.request";
 import { ListSpotFoldersQueryRequest } from "../requests/list-spot-folders-query.request";
-import { RemoveSpotRequest } from "../requests/remove-spot.request";
 import { SortItemsRequest } from "../requests/sort-items.request";
 import { UpdateSpotFolderRequest } from "../requests/update-spot-folder.request";
 
@@ -57,8 +56,8 @@ export class SpotFolderRequestMapper {
         return new AddSpotCommand(id, body.spots);
     }
 
-    public static removeSpotCommand(id: string, body: RemoveSpotRequest): RemoveSpotCommand {
-        return new RemoveSpotCommand(id, body.spots)
+    public static removeSpotCommand(id: string, spotId: string): RemoveSpotCommand {
+        return new RemoveSpotCommand(id, spotId);
     }
 
     public static sortItemsCommand(id: string, body: SortItemsRequest): SortItemsCommand {

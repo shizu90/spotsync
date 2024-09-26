@@ -36,21 +36,19 @@ export class RemoveSpotService implements RemoveSpotUseCase
             throw new UnauthorizedAccessError();
         }
 
-        for (const spotId of command.spotIds) {
-            const spot = await this.spotRepository.findById(spotId);
+        const spot = await this.spotRepository.findById(command.spotId);
 
-            if (spot === null || spot === undefined || spot.isDeleted()) {
-                throw new SpotNotFoundError();
-            }
-
-            const spotAlreadyAdded = spotFolder.findItemBySpotId(spot.id());
-
-            if (spotAlreadyAdded === null || spotAlreadyAdded === undefined) {
-                throw new SpotNotAddedError();
-            }
-
-            spotFolder.removeItem(spot);
+        if (spot === null || spot === undefined || spot.isDeleted()) {
+            throw new SpotNotFoundError();
         }
+
+        const spotAlreadyAdded = spotFolder.findItemBySpotId(spot.id());
+
+        if (spotAlreadyAdded === null || spotAlreadyAdded === undefined) {
+            throw new SpotNotAddedError();
+        }
+
+        spotFolder.removeItemBySpotId(spot.id());
 
         await this.spotFolderRepository.update(spotFolder);
     }

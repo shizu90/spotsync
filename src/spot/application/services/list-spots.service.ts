@@ -151,8 +151,8 @@ export class ListSpotsService implements ListSpotsUseCase {
 
 				const totalFavorites =
 					await this.favoriteRepository.countBy({
-						favoritableId: s.id(),
-						favoritableSubject: FavoritableSubject.SPOT,
+						subjectId: s.id(),
+						subject: FavoritableSubject.SPOT,
 					});
 
 				const visited = (
@@ -165,8 +165,8 @@ export class ListSpotsService implements ListSpotsUseCase {
 				const favorited = (
 					await this.favoriteRepository.findBy({
 						userId: authenticatedUser.id(),
-						favoritableId: s.id(),
-						favoritableSubject: FavoritableSubject.SPOT,
+						subjectId: s.id(),
+						subject: FavoritableSubject.SPOT,
 					})
 				).at(0);
 

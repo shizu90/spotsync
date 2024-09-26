@@ -3,6 +3,7 @@ import { Dto } from "src/common/core/common.dto";
 export class GetFavoriteDto extends Dto {
     constructor(
         readonly id: string,
+        readonly created_at: string,
         readonly spot: {
             id: string,
             name: string,
