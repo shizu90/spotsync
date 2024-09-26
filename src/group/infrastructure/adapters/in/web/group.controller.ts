@@ -19,6 +19,7 @@ import {
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -286,7 +287,7 @@ export class GroupController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id')
@@ -322,7 +323,7 @@ export class GroupController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id/visibility')
@@ -353,7 +354,7 @@ export class GroupController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id')
 	public async delete(

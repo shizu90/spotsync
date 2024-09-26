@@ -19,6 +19,7 @@ import {
 	ApiConflictResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -208,7 +209,7 @@ export class FollowController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':from_id/unfollow/:to_id')
 	public async unfollow(
@@ -246,7 +247,7 @@ export class FollowController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Put('requests/:follow_request_id/accept')
 	public async acceptFollowRequest(
@@ -281,7 +282,7 @@ export class FollowController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Put('requests/:follow_request_id/refuse')
 	public async refuseFollowRequest(

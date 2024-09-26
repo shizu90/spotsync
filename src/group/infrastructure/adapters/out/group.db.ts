@@ -33,7 +33,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			query['name'] = name;
 		}
 
-		if (isDeleted !== undefined) {
+		if (isDeleted !== undefined && isDeleted !== null) {
 			query['is_deleted'] = isDeleted;
 		}
 

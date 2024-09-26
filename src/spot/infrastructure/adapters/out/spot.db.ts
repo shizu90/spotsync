@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-	PaginateParameters,
-	Pagination,
+    PaginateParameters,
+    Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -55,7 +55,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			query['creator_id'] = creatorId;
 		}
 
-		if (isDeleted !== undefined) {
+		if (isDeleted !== undefined && isDeleted !== null) {
 			query['is_deleted'] = isDeleted;
 		}
 

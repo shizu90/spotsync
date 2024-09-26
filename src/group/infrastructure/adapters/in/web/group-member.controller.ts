@@ -20,6 +20,7 @@ import {
 	ApiConflictResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -237,7 +238,7 @@ export class GroupMemberController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id/leave')
 	public async leaveGroup(
@@ -255,7 +256,7 @@ export class GroupMemberController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Change member role' })
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Patch(':id/members/:member_id/change-role')
 	public async changeMemberRole(
@@ -339,7 +340,7 @@ export class GroupMemberController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id/join-requests/:request_id/refuse')
 	public async refuseGroupRequest(
@@ -369,7 +370,7 @@ export class GroupMemberController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id/members/:member_id')
 	public async removeGroupMember(

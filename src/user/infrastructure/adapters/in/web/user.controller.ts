@@ -20,6 +20,7 @@ import {
 	ApiConflictResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -389,10 +390,10 @@ export class UserController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
-	@Put(':id')
+	@Put(':id/profile')
 	public async updateProfile(
 		@Param('id') id: string,
 		@Body() body: UpdateUserProfileRequest,
@@ -401,7 +402,7 @@ export class UserController extends ApiController {
 	) {
 		const command = UserRequestMapper.updateUserProfileCommand(id, body);
 
-		this.updateUserProfileUseCase.execute(command);
+		await this.updateUserProfileUseCase.execute(command);
 
 		res.status(HttpStatus.NO_CONTENT).json({
 			data: {},
@@ -449,7 +450,7 @@ export class UserController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id/credentials')
@@ -504,7 +505,7 @@ export class UserController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Put(':id/visibility-settings')
@@ -551,7 +552,7 @@ export class UserController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({ example: { data: {} } })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id')
 	public async delete(
