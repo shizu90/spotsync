@@ -15,7 +15,7 @@ import { User } from 'src/user/domain/user.model';
 import { CreateUserCommand } from '../ports/in/commands/create-user.command';
 import { CreateUserUseCase } from '../ports/in/use-cases/create-user.use-case';
 import { ActivationRequestRepository, ActivationRequestRepositoryProvider } from '../ports/out/activation-request.repository';
-import { CreateUserDto } from '../ports/out/dto/create-user.dto';
+import { UserDto } from '../ports/out/dto/user.dto';
 import {
 	EncryptPasswordService,
 	EncryptPasswordServiceProvider,
@@ -44,7 +44,7 @@ export class CreateUserService implements CreateUserUseCase {
 		protected mail: Mail
 	) {}
 
-	public async execute(command: CreateUserCommand): Promise<CreateUserDto> {
+	public async execute(command: CreateUserCommand): Promise<UserDto> {
 		if ((await this.userRepository.findByEmail(command.email)) !== null) {
 			throw new UserAlreadyExistsError("E-mail already in use.");
 		}
@@ -136,35 +136,6 @@ export class CreateUserService implements CreateUserUseCase {
 			activationCode: activationRequest.code(),
 		})).send();
 
-		return new CreateUserDto(
-			user.id(),
-			user.status(),
-			user.createdAt(),
-			user.updatedAt(),
-			{
-				profile: user.visibilitySettings().profile(),
-				addresses: user.visibilitySettings().addresses(),
-				spot_folders: user.visibilitySettings().spotFolders(),
-				visited_spots: user.visibilitySettings().visitedSpots(),
-				posts: user.visibilitySettings().posts(),
-				favorite_spots: user.visibilitySettings().favoriteSpots(),
-				favorite_spot_folders: user.visibilitySettings().favoriteSpotFolders(),
-				favorite_spot_events: user.visibilitySettings().favoriteSpotEvents(),
-			},
-			{
-				name: user.credentials().name(),
-				email: user.credentials().email(),
-				phone_number: user.credentials().phoneNumber(),
-			},
-			{
-				birth_date: user.profile().birthDate(),
-				display_name: user.profile().displayName(),
-				theme_color: user.profile().themeColor(),
-				biograph: user.profile().biograph(),
-				profile_picture: user.profile().profilePicture(),
-				banner_picture: user.profile().bannerPicture(),
-				visibility: user.profile().visibility(),
-			}
-		);
+		return UserDto.fromModel(user).removeSensitiveData();
 	}
 }

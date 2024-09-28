@@ -1,25 +1,25 @@
 import { TestBed } from '@automock/jest';
 import { randomUUID } from 'crypto';
 import {
-	GetAuthenticatedUserUseCase,
-	GetAuthenticatedUserUseCaseProvider,
+    GetAuthenticatedUserUseCase,
+    GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import {
-	FollowRepository,
-	FollowRepositoryProvider,
+    FollowRepository,
+    FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
-import { GetUserProfileCommand } from '../../ports/in/commands/get-user-profile.command';
+import { GetUserProfileCommand } from '../../ports/in/commands/get-user.command';
 import { GetUserProfileDto } from '../../ports/out/dto/get-user-profile.dto';
 import {
-	UserAddressRepository,
-	UserAddressRepositoryProvider,
+    UserAddressRepository,
+    UserAddressRepositoryProvider,
 } from '../../ports/out/user-address.repository';
 import {
-	UserRepository,
-	UserRepositoryProvider,
+    UserRepository,
+    UserRepositoryProvider,
 } from '../../ports/out/user.repository';
 import { UserNotFoundError } from '../errors/user-not-found.error';
-import { GetUserProfileService } from '../get-user-profile.service';
+import { GetUserProfileService } from '../get-user.service';
 import { mockUser, mockUserAddress } from './user-mock.helper';
 
 describe('GetUserProfileService', () => {

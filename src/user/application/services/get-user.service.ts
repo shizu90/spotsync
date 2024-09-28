@@ -8,9 +8,9 @@ import {
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
-import { GetUserProfileCommand } from '../ports/in/commands/get-user-profile.command';
-import { GetUserProfileUseCase } from '../ports/in/use-cases/get-user-profile.use-case';
-import { GetUserProfileDto } from '../ports/out/dto/get-user-profile.dto';
+import { GetUserCommand } from '../ports/in/commands/get-user.command';
+import { GetUserUseCase } from '../ports/in/use-cases/get-user-profile.use-case';
+import { UserDto } from '../ports/out/dto/user.dto';
 import {
 	UserAddressRepository,
 	UserAddressRepositoryProvider,
@@ -22,7 +22,7 @@ import {
 import { UserNotFoundError } from './errors/user-not-found.error';
 
 @Injectable()
-export class GetUserProfileService implements GetUserProfileUseCase {
+export class GetUserService implements GetUserUseCase {
 	constructor(
 		@Inject(UserRepositoryProvider)
 		protected userRepository: UserRepository,
@@ -35,8 +35,8 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 	) {}
 
 	public async execute(
-		command: GetUserProfileCommand,
-	): Promise<GetUserProfileDto> {
+		command: GetUserCommand,
+	): Promise<UserDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const user = await (command.id
@@ -53,9 +53,7 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 					fromUserId: authenticatedUser.id(),
 					toUserId: user.id(),
 				})
-			).length > 0
-				? true
-				: false;
+			).length > 0;
 
 		let userMainAddress = (
 			await this.userAddressRepository.findBy({
@@ -87,48 +85,11 @@ export class GetUserProfileService implements GetUserProfileUseCase {
 			fromUserId: user.id(),
 		});
 
-		return new GetUserProfileDto(
-			user.id(),
-			user.status(),
-			user.createdAt(),
-			user.updatedAt(),
-			{
-				name: user.credentials().name(),
-			},
-			{
-				birth_date: user.profile().birthDate(),
-				display_name: user.profile().displayName(),
-				theme_color: user.profile().themeColor(),
-				biograph: user.profile().biograph(),
-				profile_picture: user.profile().profilePicture(),
-				banner_picture: user.profile().bannerPicture(),
-				visibility: user.profile().visibility(),
-			},
-			{
-				profile: user.visibilitySettings().profile(),
-				addresses: user.visibilitySettings().addresses(),
-				visited_spots: user.visibilitySettings().visitedSpots(),
-				posts: user.visibilitySettings().posts(),
-				favorite_spots: user.visibilitySettings().favoriteSpots(),
-				favorite_spot_events: user.visibilitySettings().favoriteSpotEvents(),
-				favorite_spot_folders: user.visibilitySettings().favoriteSpotFolders(),
-				spot_folders: user.visibilitySettings().spotFolders(),
-			},
-			totalFollowers,
-			totalFollowing,
-			userMainAddress && {
-				id: userMainAddress.id(),
-				name: userMainAddress.name(),
-				area: userMainAddress.area(),
-				sub_area: userMainAddress.subArea(),
-				locality: userMainAddress.locality(),
-				latitude: userMainAddress.latitude(),
-				longitude: userMainAddress.longitude(),
-				country_code: userMainAddress.countryCode(),
-				created_at: userMainAddress.createdAt(),
-				updated_at: userMainAddress.updatedAt(),
-			},
-			isFollowing,
-		);
+		return UserDto.fromModel(user)
+			.removeSensitiveData()
+			.setFollowing(isFollowing)
+			.setMainAddress(userMainAddress)
+			.setTotalFollowers(totalFollowers)
+			.setTotalFollowing(totalFollowing);
 	}
 }

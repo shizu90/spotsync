@@ -43,8 +43,8 @@ import {
 	DeleteUserUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/delete-user.use-case';
 import {
-	GetUserProfileUseCase,
-	GetUserProfileUseCaseProvider,
+	GetUserUseCase,
+	GetUserUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/get-user-profile.use-case';
 import {
 	ListUsersUseCase,
@@ -91,8 +91,8 @@ import { UpdateUserVisibilitySettingsRequest } from './requests/update-user-visi
 @UseFilters(new UserErrorHandler())
 export class UserController extends ApiController {
 	constructor(
-		@Inject(GetUserProfileUseCaseProvider)
-		protected readonly getUserProfileUseCase: GetUserProfileUseCase,
+		@Inject(GetUserUseCaseProvider)
+		protected readonly getUserUseCase: GetUserUseCase,
 		@Inject(ListUsersUseCaseProvider)
 		protected readonly listUsersUseCase: ListUsersUseCase,
 		@Inject(CreateUserUseCaseProvider)
@@ -275,15 +275,15 @@ export class UserController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@Get(':id/profile')
+	@Get(':id')
 	public async get(
 		@Param('id') id: string,
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = UserRequestMapper.getUserProfileCommand(id, undefined);
+		const command = UserRequestMapper.getUserCommand(id, undefined);
 
-		const data = await this.getUserProfileUseCase.execute(command);
+		const data = await this.getUserUseCase.execute(command);
 
 		res.status(HttpStatus.OK).json({
 			data: data,

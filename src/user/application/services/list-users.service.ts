@@ -11,7 +11,7 @@ import {
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { ListUsersCommand } from '../ports/in/commands/list-users.command';
 import { ListUsersUseCase } from '../ports/in/use-cases/list-users.use-case';
-import { GetUserProfileDto } from '../ports/out/dto/get-user-profile.dto';
+import { UserDto } from '../ports/out/dto/user.dto';
 import {
 	UserAddressRepository,
 	UserAddressRepositoryProvider,
@@ -36,7 +36,7 @@ export class ListUsersService implements ListUsersUseCase {
 
 	public async execute(
 		command: ListUsersCommand,
-	): Promise<Pagination<GetUserProfileDto> | Array<GetUserProfileDto>> {
+	): Promise<Pagination<UserDto> | Array<UserDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const pagination = await this.userRepository.paginate({
@@ -59,7 +59,7 @@ export class ListUsersService implements ListUsersUseCase {
 						fromUserId: authenticatedUser.id(),
 						toUserId: u.id(),
 					})
-				).at(0);
+				).length > 0;
 
 				let userMainAddress = (
 					await this.userAddressRepository.findBy({
@@ -91,48 +91,12 @@ export class ListUsersService implements ListUsersUseCase {
 					fromUserId: u.id(),
 				});
 
-				return new GetUserProfileDto(
-					u.id(),
-					u.status(),
-					u.createdAt(),
-					u.updatedAt(),
-					{
-						name: u.credentials().name(),
-					},
-					{
-						birth_date: u.profile().birthDate(),
-						display_name: u.profile().displayName(),
-						theme_color: u.profile().themeColor(),
-						biograph: u.profile().biograph(),
-						profile_picture: u.profile().profilePicture(),
-						banner_picture: u.profile().bannerPicture(),
-						visibility: u.profile().visibility(),
-					},
-					{
-						profile: u.visibilitySettings().profile(),
-						addresses: u.visibilitySettings().addresses(),
-						visited_spots: u.visibilitySettings().visitedSpots(),
-						posts: u.visibilitySettings().posts(),
-						favorite_spots: u.visibilitySettings().favoriteSpots(),
-						favorite_spot_events: u.visibilitySettings().favoriteSpotEvents(),
-						favorite_spot_folders: u.visibilitySettings().favoriteSpotFolders(),
-						spot_folders: u.visibilitySettings().spotFolders(),
-					},
-					totalFollowers,
-					totalFollowing,
-					userMainAddress && {
-						id: userMainAddress.id(),
-						name: userMainAddress.name(),
-						area: userMainAddress.area(),
-						sub_area: userMainAddress.subArea(),
-						locality: userMainAddress.locality(),
-						latitude: userMainAddress.latitude(),
-						longitude: userMainAddress.longitude(),
-						country_code: userMainAddress.countryCode(),
-						created_at: userMainAddress.createdAt(),
-						updated_at: userMainAddress.updatedAt(),
-					}
-				);
+				return UserDto.fromModel(u)
+					.removeSensitiveData()
+					.setFollowing(isFollowing)
+					.setMainAddress(userMainAddress)
+					.setTotalFollowers(totalFollowers)
+					.setTotalFollowing(totalFollowing);
 			}),
 		);
 

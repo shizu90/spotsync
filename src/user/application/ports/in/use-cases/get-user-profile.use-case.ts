@@ -1,8 +1,8 @@
 import { UseCase } from 'src/common/core/common.use-case';
-import { GetUserProfileDto } from '../../out/dto/get-user-profile.dto';
-import { GetUserProfileCommand } from '../commands/get-user-profile.command';
+import { UserDto } from '../../out/dto/user.dto';
+import { GetUserCommand } from '../commands/get-user.command';
 
-export const GetUserProfileUseCaseProvider = 'GetUserProfileUseCase';
+export const GetUserUseCaseProvider = 'GetUserUseCase';
 
-export interface GetUserProfileUseCase
-	extends UseCase<GetUserProfileCommand, Promise<GetUserProfileDto>> {}
+export interface GetUserUseCase
+	extends UseCase<GetUserCommand, Promise<UserDto>> {}

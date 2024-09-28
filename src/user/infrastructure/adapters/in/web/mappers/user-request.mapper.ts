@@ -3,7 +3,7 @@ import { ChangePasswordCommand } from 'src/user/application/ports/in/commands/ch
 import { CreateUserCommand } from 'src/user/application/ports/in/commands/create-user.command';
 import { DeleteUserCommand } from 'src/user/application/ports/in/commands/delete-user.command';
 import { ForgotPasswordCommand } from 'src/user/application/ports/in/commands/forgot-password.command';
-import { GetUserProfileCommand } from 'src/user/application/ports/in/commands/get-user-profile.command';
+import { GetUserCommand } from 'src/user/application/ports/in/commands/get-user.command';
 import { ListUsersCommand } from 'src/user/application/ports/in/commands/list-users.command';
 import { UpdateUserCredentialsCommand } from 'src/user/application/ports/in/commands/update-user-credentials.command';
 import { UpdateUserProfileCommand } from 'src/user/application/ports/in/commands/update-user-profile.command';
@@ -18,11 +18,11 @@ import { UpdateUserProfileRequest } from '../requests/update-user-profile.reques
 import { UpdateUserVisibilitySettingsRequest } from '../requests/update-user-visibility-settings.request';
 
 export class UserRequestMapper {
-	public static getUserProfileCommand(
+	public static getUserCommand(
 		id: string,
 		name: string,
-	): GetUserProfileCommand {
-		return new GetUserProfileCommand(id, name);
+	): GetUserCommand {
+		return new GetUserCommand(id, name);
 	}
 
 	public static listUsersCommand(

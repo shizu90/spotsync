@@ -7,7 +7,7 @@ import { DeleteUserAddressUseCaseProvider } from './application/ports/in/use-cas
 import { DeleteUserUseCaseProvider } from './application/ports/in/use-cases/delete-user.use-case';
 import { ForgotPasswordUseCaseProvider } from './application/ports/in/use-cases/forgot-password.use-case';
 import { GetUserAddressUseCaseProvider } from './application/ports/in/use-cases/get-user-address.use-case';
-import { GetUserProfileUseCaseProvider } from './application/ports/in/use-cases/get-user-profile.use-case';
+import { GetUserUseCaseProvider } from './application/ports/in/use-cases/get-user-profile.use-case';
 import { ListUserAddressesUseCaseProvider } from './application/ports/in/use-cases/list-user-addresses.use-case';
 import { ListUsersUseCaseProvider } from './application/ports/in/use-cases/list-users.use-case';
 import { UpdateUserAddressUseCaseProvider } from './application/ports/in/use-cases/update-user-address.use-case';
@@ -29,7 +29,7 @@ import { DeleteUserAddressService } from './application/services/delete-user-add
 import { DeleteUserService } from './application/services/delete-user.service';
 import { ForgotPasswordService } from './application/services/forgot-password.service';
 import { GetUserAddressService } from './application/services/get-user-address.service';
-import { GetUserProfileService } from './application/services/get-user-profile.service';
+import { GetUserService } from './application/services/get-user.service';
 import { ListUserAddressesService } from './application/services/list-user-addresses.service';
 import { ListUsersService } from './application/services/list-users.service';
 import { UpdateUserAddressService } from './application/services/update-user-address.service';
@@ -74,8 +74,8 @@ export const Providers: Provider[] = [
 		useClass: UploadBannerPictureService,
 	},
 	{
-		provide: GetUserProfileUseCaseProvider,
-		useClass: GetUserProfileService,
+		provide: GetUserUseCaseProvider,
+		useClass: GetUserService,
 	},
 	{
 		provide: ListUsersUseCaseProvider,
