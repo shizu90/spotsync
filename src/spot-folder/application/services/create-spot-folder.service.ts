@@ -6,7 +6,7 @@ import { SpotFolder } from "src/spot-folder/domain/spot-folder.model";
 import { UserVisibility } from "src/user/domain/user-visibility.enum";
 import { CreateSpotFolderCommand } from "../ports/in/commands/create-spot-folder.command";
 import { CreateSpotFolderUseCase } from "../ports/in/use-cases/create-spot-folder.use-case";
-import { CreateSpotFolderDto } from "../ports/out/dto/create-spot-folder.dto";
+import { SpotFolderDto } from "../ports/out/dto/spot-folder.dto";
 import { SpotFolderRepository, SpotFolderRepositoryProvider } from "../ports/out/spot-folder.repository";
 
 @Injectable()
@@ -20,7 +20,7 @@ export class CreateSpotFolderService implements CreateSpotFolderUseCase
     ) 
     {}
 
-    public async execute(command: CreateSpotFolderCommand): Promise<CreateSpotFolderDto> 
+    public async execute(command: CreateSpotFolderCommand): Promise<SpotFolderDto> 
     {
         const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
@@ -54,16 +54,6 @@ export class CreateSpotFolderService implements CreateSpotFolderUseCase
 
         await this.spotFolderRepository.store(spotFolder);
 
-        return new CreateSpotFolderDto(
-            spotFolder.id(),
-            spotFolder.name(),
-            spotFolder.description(),
-            spotFolder.hexColor(),
-            spotFolder.visibility(),
-            spotFolder.items().map(i => {return {spot_id: i.spot().id()};}),
-            spotFolder.creator().id(),
-            spotFolder.createdAt(),
-            spotFolder.updatedAt(),
-        );
+        return SpotFolderDto.fromModel(spotFolder);
     }
 }

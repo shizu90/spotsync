@@ -5,7 +5,7 @@ import { FavoriteRepository, FavoriteRepositoryProvider } from "src/favorite/app
 import { FavoritableSubject } from "src/favorite/domain/favoritable-subject.enum";
 import { SortItemsCommand } from "../ports/in/commands/sort-items.command";
 import { SortItemsUseCase } from "../ports/in/use-cases/sort-items.use-case";
-import { GetSpotFolderDto } from "../ports/out/dto/get-spot-folder.dto";
+import { SpotFolderDto } from "../ports/out/dto/spot-folder.dto";
 import { SpotFolderRepository, SpotFolderRepositoryProvider } from "../ports/out/spot-folder.repository";
 import { SpotFolderNotFoundError } from "./errors/spot-folder-not-found.error";
 
@@ -20,7 +20,7 @@ export class SortItemsService implements SortItemsUseCase {
         protected favoriteRepository: FavoriteRepository,
     ) {}
 
-    public async execute(command: SortItemsCommand): Promise<GetSpotFolderDto> {
+    public async execute(command: SortItemsCommand): Promise<SpotFolderDto> {
         const authenticatedUser = await this.getAuthentiatedUser.execute(null);
 
         const spotFolder = await this.spotFolderRepository.findById(command.spotFolderId);
@@ -46,60 +46,10 @@ export class SortItemsService implements SortItemsUseCase {
             subject: FavoritableSubject.SPOT_FOLDER,
             subjectId: spotFolder.id(),
             userId: authenticatedUser.id(),
-        })).length > 0;
+        })).at(0)
 
-        return new GetSpotFolderDto(
-            spotFolder.id(),
-            spotFolder.name(),
-            spotFolder.description(),
-            spotFolder.hexColor(),
-            spotFolder.visibility(),
-            spotFolder.items().map(i => {
-                return {
-                    added_at: i.addedAt(),
-                    order_number: i.orderNumber(),
-                    spot: {
-                        id: i.spot().id(),
-                        name: i.spot().name(),
-                        description: i.spot().description(),
-                        type: i.spot().type(),
-                        photos: i.spot().photos().map(p => {
-                            return {
-                                id: p.id(),
-                                file_path: p.filePath(),
-                            }
-                        }),
-                        creator: {
-                            id: i.spot().creator().id(),
-                            display_name: i.spot().creator().profile().displayName(),
-                            profile_picture: i.spot().creator().profile().profilePicture(),
-                            credentials: {
-                                name: i.spot().creator().credentials().name(),
-                            }
-                        },
-                        address: {
-                            area: i.spot().address().area(),
-                            country_code: i.spot().address().countryCode(),
-                            latitude: i.spot().address().latitude(),
-                            longitude: i.spot().address().longitude(),
-                            locality: i.spot().address().locality(),
-                            sub_area: i.spot().address().subArea(),
-                        }
-                    }
-                }
-            }),
-            {
-                id: spotFolder.creator().id(),
-                display_name: spotFolder.creator().profile().displayName(),
-                profile_picture: spotFolder.creator().profile().profilePicture(),
-                credentials: {
-                    name: spotFolder.creator().credentials().name(),
-                }
-            },
-            spotFolder.createdAt(),
-            spotFolder.updatedAt(),
-            totalFavorites,
-            favorited,
-        );
+        return SpotFolderDto.fromModel(spotFolder)
+            .setTotalFavorites(totalFavorites)
+            .setFavoritedAt(favorited?.createdAt());
     }
 }

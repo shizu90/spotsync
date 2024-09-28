@@ -23,7 +23,7 @@ import {
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { ListSpotsCommand } from '../ports/in/commands/list-spots.command';
 import { ListSpotsUseCase } from '../ports/in/use-cases/list-spots.use-case';
-import { GetSpotDto } from '../ports/out/dto/get-spot.dto';
+import { SpotDto } from '../ports/out/dto/spot.dto';
 import {
 	SpotRepository,
 	SpotRepositoryProvider,
@@ -48,7 +48,7 @@ export class ListSpotsService implements ListSpotsUseCase {
 
 	public async execute(
 		command: ListSpotsCommand,
-	): Promise<Pagination<GetSpotDto> | Array<GetSpotDto>> {
+	): Promise<Pagination<SpotDto> | Array<SpotDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 		const mainAddress = (
 			await this.userAddressRepository.findBy({
@@ -185,48 +185,12 @@ export class ListSpotsService implements ListSpotsUseCase {
 					);
 				}
 
-				return new GetSpotDto(
-					s.id(),
-					s.name(),
-					s.description(),
-					s.type(),
-					{
-						area: s.address().area(),
-						sub_area: s.address().subArea(),
-						locality: s.address().locality(),
-						country_code: s.address().countryCode(),
-						latitude: s.address().latitude(),
-						longitude: s.address().longitude(),
-					},
-					s.photos().map((p) => {
-						return { id: p.id(), file_path: p.filePath() };
-					}),
-					{
-						id: s.creator().id(),
-						display_name: s.creator().profile().displayName(),
-						banner_picture: s.creator().profile().bannerPicture(),
-						credentials: {
-							name: s.creator().credentials().name(),
-						},
-						profile_picture: s.creator().profile().profilePicture(),
-					},
-					distance,
-					visited !== null && visited !== undefined,
-					visited !== null && visited !== undefined
-						? visited.visitedAt()
-						: null,
-					favorited !== null && favorited !== undefined,
-					favorited !== null && favorited !== undefined
-						? favorited.createdAt()
-						: null,
-					0,
-					0,
-					totalSpotVisits,
-					totalFavorites,
-					0,
-					s.createdAt(),
-					s.updatedAt(),
-				);
+				return SpotDto.fromModel(s)
+					.setVisitedAt(visited?.visitedAt())
+					.setFavoritedAt(favorited?.createdAt())
+					.setTotalFavorites(totalFavorites)
+					.setTotalSpotVisits(totalSpotVisits)
+					.setDistance(distance);
 			}),
 		);
 

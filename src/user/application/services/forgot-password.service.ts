@@ -5,7 +5,7 @@ import { ForgotPasswordMailTemplate } from "src/mail/templates/forgot-password-m
 import { PasswordRecovery } from "src/user/domain/password-recovery.model";
 import { ForgotPasswordCommand } from "../ports/in/commands/forgot-password.command";
 import { ForgotPasswordUseCase } from "../ports/in/use-cases/forgot-password.use-case";
-import { ForgotPasswordDto } from "../ports/out/dto/forgot-password.dto";
+import { PasswordRecoveryDto } from "../ports/out/dto/password-recovery.dto";
 import { PasswordRecoveryRepository, PasswordRecoveryRepositoryProvider } from "../ports/out/password-recovery.repository";
 import { UserRepository, UserRepositoryProvider } from "../ports/out/user.repository";
 import { UserNotFoundError } from "./errors/user-not-found.error";
@@ -22,7 +22,7 @@ export class ForgotPasswordService implements ForgotPasswordUseCase {
     ) 
     {}
 
-    public async execute(command: ForgotPasswordCommand): Promise<ForgotPasswordDto> {
+    public async execute(command: ForgotPasswordCommand): Promise<PasswordRecoveryDto> {
         const user = await this.userRepository.findByEmail(command.email);
 
         if (user === null || user === undefined) {
@@ -39,12 +39,6 @@ export class ForgotPasswordService implements ForgotPasswordUseCase {
             userName: user.credentials().name(),
         })).send();
 
-        return new ForgotPasswordDto(
-            passwordRecovery.id(),
-            passwordRecovery.token(),
-            passwordRecovery.status(),
-            passwordRecovery.createdAt(),
-            passwordRecovery.expiresAt(),
-        );
+        return PasswordRecoveryDto.fromModel(passwordRecovery);
     }
 }

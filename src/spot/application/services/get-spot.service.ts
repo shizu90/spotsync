@@ -1,21 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { FavoriteRepository, FavoriteRepositoryProvider } from 'src/favorite/application/ports/out/favorite.repository';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import {
-    UserAddressRepository,
-    UserAddressRepositoryProvider,
+	UserAddressRepository,
+	UserAddressRepositoryProvider,
 } from 'src/user/application/ports/out/user-address.repository';
 import { GetSpotCommand } from '../ports/in/commands/get-spot.command';
 import { GetSpotUseCase } from '../ports/in/use-cases/get-spot.use-case';
-import { GetSpotDto } from '../ports/out/dto/get-spot.dto';
+import { SpotDto } from '../ports/out/dto/spot.dto';
 import {
-    SpotRepository,
-    SpotRepositoryProvider,
+	SpotRepository,
+	SpotRepositoryProvider,
 } from '../ports/out/spot.repository';
 import { SpotNotFoundError } from './errors/spot-not-found.error';
 
@@ -32,7 +32,7 @@ export class GetSpotService implements GetSpotUseCase {
 		protected favoriteRepository: FavoriteRepository,
 	) {}
 
-	public async execute(command: GetSpotCommand): Promise<GetSpotDto> {
+	public async execute(command: GetSpotCommand): Promise<SpotDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 		const mainAddress = (
 			await this.userAddressRepository.findBy({
@@ -83,47 +83,11 @@ export class GetSpotService implements GetSpotUseCase {
 			);
 		}
 
-		return new GetSpotDto(
-			spot.id(),
-			spot.name(),
-			spot.description(),
-			spot.type(),
-			{
-				area: spot.address().area(),
-				sub_area: spot.address().subArea(),
-				locality: spot.address().locality(),
-				country_code: spot.address().countryCode(),
-				latitude: spot.address().latitude(),
-				longitude: spot.address().longitude(),
-			},
-			spot.photos().map((p) => {
-				return { id: p.id(), file_path: p.filePath() };
-			}),
-			{
-				id: spot.creator().id(),
-				display_name: spot.creator().profile().displayName(),
-				banner_picture: spot.creator().profile().bannerPicture(),
-				credentials: {
-					name: spot.creator().credentials().name(),
-				},
-				profile_picture: spot.creator().profile().profilePicture(),
-			},
-			distance,
-			visited !== null && visited !== undefined,
-			visited !== null && visited !== undefined
-				? visited.visitedAt()
-				: null,
-			favorited !== null && favorited !== undefined,
-			favorited !== null && favorited !== undefined
-				? favorited.createdAt()
-				: null,
-			0,
-			0,
-			totalSpotVisits,
-			totalFavorites,
-			0,
-			spot.createdAt(),
-			spot.updatedAt(),
-		);
+		return SpotDto.fromModel(spot)
+			.setTotalFavorites(totalFavorites)
+			.setTotalSpotVisits(totalSpotVisits)
+			.setVisitedAt(visited?.visitedAt())
+			.setFavoritedAt(favorited?.createdAt())
+			.setDistance(distance);
 	}
 }

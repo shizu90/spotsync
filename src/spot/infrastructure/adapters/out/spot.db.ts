@@ -162,6 +162,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},
@@ -181,6 +182,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},
@@ -248,6 +250,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},
@@ -266,6 +269,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},
@@ -303,6 +307,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},
@@ -330,6 +335,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},

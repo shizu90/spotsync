@@ -7,7 +7,7 @@ import { FollowRepository, FollowRepositoryProvider } from "src/follower/applica
 import { SpotFolderVisibility } from "src/spot-folder/domain/spot-folder-visibility.enum";
 import { ListSpotFoldersCommand } from "../ports/in/commands/list-spot-folders.command";
 import { ListSpotFoldersUseCase } from "../ports/in/use-cases/list-spot-folders.use-case";
-import { GetSpotFolderDto } from "../ports/out/dto/get-spot-folder.dto";
+import { SpotFolderDto } from "../ports/out/dto/spot-folder.dto";
 import { SpotFolderRepository, SpotFolderRepositoryProvider } from "../ports/out/spot-folder.repository";
 
 @Injectable()
@@ -24,7 +24,7 @@ export class ListSpotFoldersService implements ListSpotFoldersUseCase {
     ) 
     {}
 
-    public async execute(command: ListSpotFoldersCommand): Promise<Pagination<GetSpotFolderDto> | Array<GetSpotFolderDto>> {
+    public async execute(command: ListSpotFoldersCommand): Promise<Pagination<SpotFolderDto> | Array<SpotFolderDto>> {
         const authenticatedUser = await this.getAuthenticatedUserUseCase.execute(null);
 
         const pagination = await this.spotFolderRepository.paginate({
@@ -64,61 +64,11 @@ export class ListSpotFoldersService implements ListSpotFoldersUseCase {
                 subject: FavoritableSubject.SPOT_FOLDER,
                 subjectId: spotFolder.id(),
                 userId: authenticatedUser.id(),
-            })).length > 0;
+            })).at(0);
 
-            return new GetSpotFolderDto(
-                spotFolder.id(),
-                spotFolder.name(),
-                spotFolder.description(),
-                spotFolder.hexColor(),
-                spotFolder.visibility(),
-                spotFolder.items().map(i => {
-                    return {
-                        added_at: i.addedAt(),
-                        order_number: i.orderNumber(),
-                        spot: {
-                            id: i.spot().id(),
-                            name: i.spot().name(),
-                            description: i.spot().description(),
-                            type: i.spot().type(),
-                            photos: i.spot().photos().map(p => {
-                                return {
-                                    id: p.id(),
-                                    file_path: p.filePath(),
-                                }
-                            }),
-                            creator: {
-                                id: i.spot().creator().id(),
-                                display_name: i.spot().creator().profile().displayName(),
-                                profile_picture: i.spot().creator().profile().profilePicture(),
-                                credentials: {
-                                    name: i.spot().creator().credentials().name(),
-                                }
-                            },
-                            address: {
-                                area: i.spot().address().area(),
-                                country_code: i.spot().address().countryCode(),
-                                latitude: i.spot().address().latitude(),
-                                longitude: i.spot().address().longitude(),
-                                locality: i.spot().address().locality(),
-                                sub_area: i.spot().address().subArea(),
-                            }
-                        }
-                    }
-                }),
-                {
-                    id: spotFolder.creator().id(),
-                    display_name: spotFolder.creator().profile().displayName(),
-                    profile_picture: spotFolder.creator().profile().profilePicture(),
-                    credentials: {
-                        name: spotFolder.creator().credentials().name(),
-                    }
-                },
-                spotFolder.createdAt(),
-                spotFolder.updatedAt(),
-                totalFavorites,
-                favorited,
-            )
+            return SpotFolderDto.fromModel(spotFolder)
+                .setFavoritedAt(favorited?.createdAt())
+                .setTotalFavorites(totalFavorites);
         }));
 
         if (command.paginate) {

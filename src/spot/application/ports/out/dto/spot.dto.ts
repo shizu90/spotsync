@@ -147,15 +147,15 @@ export class SpotDto extends Dto {
     }
 
     public setVisitedAt(visited_at: Date): SpotDto {
-        this.visited_at = visited_at.toISOString();
-        this.visited = true;
+        this.visited_at = (visited_at?.toISOString()) ?? null;
+        this.visited = visited_at !== null && visited_at !== undefined;
 
         return this;
     }
 
     public setFavoritedAt(favorited_at: Date): SpotDto {
-        this.favorited_at = favorited_at.toISOString();
-        this.favorited = true;
+        this.favorited_at = (favorited_at?.toISOString()) ?? null;
+        this.favorited = favorited_at !== null && favorited_at !== undefined;
 
         return this;
     }

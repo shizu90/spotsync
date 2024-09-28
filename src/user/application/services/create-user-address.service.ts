@@ -15,7 +15,7 @@ import { UserAddress } from 'src/user/domain/user-address.model';
 import { User } from 'src/user/domain/user.model';
 import { CreateUserAddressCommand } from '../ports/in/commands/create-user-address.command';
 import { CreateUserAddressUseCase } from '../ports/in/use-cases/create-user-address.use-case';
-import { CreateUserAddressDto } from '../ports/out/dto/create-user-address.dto';
+import { UserAddressDto } from '../ports/out/dto/user-address.dto';
 import {
 	UserAddressRepository,
 	UserAddressRepositoryProvider,
@@ -34,7 +34,7 @@ export class CreateUserAddressService implements CreateUserAddressUseCase {
 
 	public async execute(
 		command: CreateUserAddressCommand,
-	): Promise<CreateUserAddressDto> {
+	): Promise<UserAddressDto> {
 		const user: User = await this.getAuthenticatedUser.execute(null);
 
 		if (command.userId !== user.id()) {
@@ -79,18 +79,6 @@ export class CreateUserAddressService implements CreateUserAddressUseCase {
 
 		this.userAddressRepository.store(userAddress);
 
-		return new CreateUserAddressDto(
-			userAddress.id(),
-			userAddress.name(),
-			userAddress.area(),
-			userAddress.subArea(),
-			userAddress.locality(),
-			userAddress.countryCode(),
-			userAddress.latitude(),
-			userAddress.longitude(),
-			userAddress.main(),
-			userAddress.createdAt(),
-			userAddress.updatedAt(),
-		);
+		return UserAddressDto.fromModel(userAddress);
 	}
 }

@@ -22,15 +22,13 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
-	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import { ActivateUserUseCase, ActivateUserUseCaseProvider } from 'src/user/application/ports/in/use-cases/activate-user.use-case';
@@ -67,8 +65,6 @@ import {
 	UploadProfilePictureUseCase,
 	UploadProfilePictureUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/upload-profile-picture.use-case';
-import { CreateUserDto } from 'src/user/application/ports/out/dto/create-user.dto';
-import { GetUserProfileDto } from 'src/user/application/ports/out/dto/get-user-profile.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
 import { UserRequestMapper } from './mappers/user-request.mapper';
 import { ActivateUserRequest } from './requests/activate-user.request';
@@ -132,59 +128,6 @@ export class UserController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetUserProfileDto(
-						'uuid',
-						'act',
-						new Date(),
-						new Date(),
-						{
-							name: 'string',
-						},
-						{
-							birth_date: new Date(),
-							banner_picture: 'string',
-							biograph: 'string',
-							display_name: 'string',
-							profile_picture: 'string',
-							theme_color: 'string',
-							visibility: 'public',
-						},
-						{
-							addresses: 'public',
-							favorite_spot_events: 'public',
-							favorite_spot_folders: 'public',
-							favorite_spots: 'public',
-							posts: 'public',
-							spot_folders: 'public',
-							visited_spots: 'public',
-							profile: 'public',
-						},
-						0,
-						0,
-						{
-							id: 'uuid',
-							name: 'string',
-							area: 'string',
-							sub_area: 'string',
-							locality: 'string',
-							country_code: 'BR',
-							latitude: 0,
-							longitude: 0,
-							created_at: new Date(),
-							updated_at: new Date(),
-						},
-						false
-					)	
-				],
-				10,
-				1
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get()
@@ -227,53 +170,6 @@ export class UserController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({
-		example: {
-			data: new GetUserProfileDto(
-				'uuid',
-				'act',
-				new Date(),
-				new Date(),
-				{
-					name: 'string',
-				},
-				{
-					birth_date: new Date(),
-					banner_picture: 'string',
-					biograph: 'string',
-					display_name: 'string',
-					profile_picture: 'string',
-					theme_color: 'string',
-					visibility: 'public',
-				},
-				{
-					addresses: 'public',
-					favorite_spot_events: 'public',
-					favorite_spot_folders: 'public',
-					favorite_spots: 'public',
-					posts: 'public',
-					spot_folders: 'public',
-					visited_spots: 'public',
-					profile: 'public',
-				},
-				0,
-				0,
-				{
-					id: 'uuid',
-					name: 'string',
-					area: 'string',
-					sub_area: 'string',
-					locality: 'string',
-					country_code: 'BR',
-					latitude: 0,
-					longitude: 0,
-					created_at: new Date(),
-					updated_at: new Date(),
-				},
-				false
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async get(
@@ -306,40 +202,6 @@ export class UserController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new CreateUserDto(
-				'uuid',
-				'act',
-				new Date(),
-				new Date(),
-				{
-					profile: 'public',
-					addresses: 'public',
-					spot_folders: 'public',
-					visited_spots: 'public',
-					posts: 'public',
-					favorite_spots: 'public',
-					favorite_spot_folders: 'public',
-					favorite_spot_events: 'public',
-				},
-				{
-					name: 'string',
-					email: 'string',
-					phone_number: 'string',
-				},
-				{
-					birth_date: new Date(),
-					display_name: 'string',
-					theme_color: 'string',
-					biograph: 'string',
-					profile_picture: 'string',
-					banner_picture: 'string',
-					visibility: 'public',
-				}
-			),
-		},
 	})
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Post()

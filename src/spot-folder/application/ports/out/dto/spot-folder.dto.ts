@@ -35,6 +35,10 @@ export class SpotFolderDto extends Dto {
     public hex_color: string = undefined;
     public visibility: string = undefined;
     public items: SpotFolderItemDto[] = undefined;
+    public favorited: boolean = undefined;
+    public favorited_at: string = undefined;
+    public total_favorites: number = undefined;
+    public total_spots: number = undefined;
 
     private constructor(
         id?: string,
@@ -51,6 +55,7 @@ export class SpotFolderDto extends Dto {
         this.hex_color = hex_color;
         this.visibility = visibility;
         this.items = items;
+        this.total_spots = items.length;
     }
 
     public static fromModel(model: SpotFolder): SpotFolderDto {
@@ -62,5 +67,18 @@ export class SpotFolderDto extends Dto {
             model.visibility(),
             model.items().map((item) => SpotFolderItemDto.fromModel(item)),
         );
+    }
+
+    public setFavoritedAt(favorited_at: Date): SpotFolderDto {
+        this.favorited_at = (favorited_at?.toISOString()) ?? null;
+        this.favorited = favorited_at !== null && favorited_at !== undefined;
+
+        return this;
+    }
+
+    public setTotalFavorites(totalFavorites: number): SpotFolderDto {
+        this.total_favorites = totalFavorites;
+
+        return this;
     }
 }

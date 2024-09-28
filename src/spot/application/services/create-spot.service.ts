@@ -13,7 +13,7 @@ import { SpotAddress } from 'src/spot/domain/spot-address.model';
 import { Spot } from 'src/spot/domain/spot.model';
 import { CreateSpotCommand } from '../ports/in/commands/create-spot.command';
 import { CreateSpotUseCase } from '../ports/in/use-cases/create-spot.use-case';
-import { CreateSpotDto } from '../ports/out/dto/create-spot.dto';
+import { SpotDto } from '../ports/out/dto/spot.dto';
 import {
 	SpotRepository,
 	SpotRepositoryProvider,
@@ -31,7 +31,7 @@ export class CreateSpotService implements CreateSpotUseCase {
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 	) {}
 
-	public async execute(command: CreateSpotCommand): Promise<CreateSpotDto> {
+	public async execute(command: CreateSpotCommand): Promise<SpotDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		if ((await this.spotRepository.findByName(command.name)) !== null) {
@@ -82,25 +82,6 @@ export class CreateSpotService implements CreateSpotUseCase {
 
 		await this.spotRepository.store(spot);
 
-		return new CreateSpotDto(
-			spot.id(),
-			spot.name(),
-			spot.description(),
-			spot.type(),
-			{
-				area: spot.address().area(),
-				sub_area: spot.address().subArea(),
-				latitude: spot.address().latitude(),
-				longitude: spot.address().longitude(),
-				country_code: spot.address().countryCode(),
-				locality: spot.address().locality(),
-			},
-			spot.photos().map((p) => {
-				return { id: p.id(), file_path: p.filePath() };
-			}),
-			spot.creator().id(),
-			spot.createdAt(),
-			spot.updatedAt(),
-		);
+		return SpotDto.fromModel(spot);
 	}
 }

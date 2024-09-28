@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Patch, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
-import { ApiForbiddenResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
+import { ApiForbiddenResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
-import { Pagination } from "src/common/core/common.repository";
 import { ApiController } from "src/common/web/common.controller";
 import { ErrorResponse } from "src/common/web/common.error";
 import { AddSpotUseCase, AddSpotUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/add-spot.use-case";
@@ -13,9 +12,6 @@ import { ListSpotFoldersUseCase, ListSpotFoldersUseCaseProvider } from "src/spot
 import { RemoveSpotUseCase, RemoveSpotUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/remove-spot.use-case";
 import { SortItemsUseCase, SortItemsUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/sort-items.use-case";
 import { UpdateSpotFolderUseCase, UpdateSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/update-spot-folder.use-case";
-import { CreateSpotFolderDto } from "src/spot-folder/application/ports/out/dto/create-spot-folder.dto";
-import { GetSpotFolderDto } from "src/spot-folder/application/ports/out/dto/get-spot-folder.dto";
-import { SpotFolderVisibility } from "src/spot-folder/domain/spot-folder-visibility.enum";
 import { SpotFolderErrorHandler } from "./handlers/spot-folder-error.handler";
 import { SpotFolderRequestMapper } from "./mappers/spot-folder-request.mapper";
 import { AddSpotRequest } from "./requests/add-spot.request";
@@ -64,65 +60,6 @@ export class SpotFolderController extends ApiController {
     ) {super();}
 
     @ApiOperation({ summary: 'List spot folders' })
-    @ApiOkResponse({
-        example: {
-            data: new Pagination([
-                new GetSpotFolderDto(
-                    'uuid',
-                    'string',
-                    'string',
-                    '#000000',
-                    SpotFolderVisibility.PUBLIC,
-                    [
-                        {
-                            spot: {
-                                id: 'uuid',
-                                name: 'string',
-                                description: 'string',
-                                photos: [
-                                    {
-                                        id: 'uuid',
-                                        file_path: 'string',
-                                    }
-                                ],
-                                type: 'string',
-                                address: {
-                                    area: 'string',
-                                    sub_area: 'string',
-                                    country_code: 'BR',
-                                    latitude: 0,
-                                    locality: 'string',
-                                    longitude: 0
-                                },
-                                creator: {
-                                    id: 'uuid',
-                                    display_name: 'string',
-                                    profile_picture: 'string',
-                                    credentials: {
-                                        name: 'string'
-                                    }
-                                }
-                            },
-                            added_at: new Date(),
-                            order_number: 1,
-                        }
-                    ],
-                    {
-                        id: 'uuid',
-                        display_name: 'string',
-                        profile_picture: 'string',
-                        credentials: {
-                            name: 'string'
-                        }
-                    },
-                    new Date(),
-                    new Date(),
-                    0,
-                    false,
-                )
-            ], 1, 1, 12)
-        }
-    })
     @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
     @Get()
@@ -141,63 +78,6 @@ export class SpotFolderController extends ApiController {
     }
 
     @ApiOperation({ summary: 'Get spot folder' })
-    @ApiOkResponse({
-        example: {
-            data: new GetSpotFolderDto(
-                'uuid',
-                'string',
-                'string',
-                '#000000',
-                SpotFolderVisibility.PUBLIC,
-                [
-                    {
-                        spot: {
-                            id: 'uuid',
-                            name: 'string',
-                            description: 'string',
-                            photos: [
-                                {
-                                    id: 'uuid',
-                                    file_path: 'string',
-                                }
-                            ],
-                            type: 'string',
-                            address: {
-                                area: 'string',
-                                sub_area: 'string',
-                                country_code: 'BR',
-                                latitude: 0,
-                                locality: 'string',
-                                longitude: 0
-                            },
-                            creator: {
-                                id: 'uuid',
-                                display_name: 'string',
-                                profile_picture: 'string',
-                                credentials: {
-                                    name: 'string'
-                                }
-                            }
-                        },
-                        added_at: new Date(),
-                        order_number: 1,
-                    }
-                ],
-                {
-                    id: 'uuid',
-                    display_name: 'string',
-                    profile_picture: 'string',
-                    credentials: {
-                        name: 'string'
-                    }
-                },
-                new Date(),
-                new Date(),
-                0, 
-                false,
-            )
-        }
-    })
     @ApiNotFoundResponse({
         example: new ErrorResponse(
             'string',
@@ -224,19 +104,6 @@ export class SpotFolderController extends ApiController {
     }
 
     @ApiOperation({ summary: 'Create spot folder' })
-    @ApiOkResponse({
-        example: new CreateSpotFolderDto(
-            'uuid',
-            'string',
-            'string',
-            '#000000',
-            SpotFolderVisibility.PUBLIC,
-            [{ spot_id: 'uuid' }],
-            'uuid',
-            new Date(),
-            new Date(),
-        )
-    })
     @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
     @Post()
@@ -309,63 +176,6 @@ export class SpotFolderController extends ApiController {
     }
 
     @ApiOperation({ summary: 'Sort items' })
-    @ApiOkResponse({
-        example: {
-            data: new GetSpotFolderDto(
-                'uuid',
-                'string',
-                'string',
-                '#000000',
-                SpotFolderVisibility.PUBLIC,
-                [
-                    {
-                        spot: {
-                            id: 'uuid',
-                            name: 'string',
-                            description: 'string',
-                            photos: [
-                                {
-                                    id: 'uuid',
-                                    file_path: 'string',
-                                }
-                            ],
-                            type: 'string',
-                            address: {
-                                area: 'string',
-                                sub_area: 'string',
-                                country_code: 'BR',
-                                latitude: 0,
-                                locality: 'string',
-                                longitude: 0
-                            },
-                            creator: {
-                                id: 'uuid',
-                                display_name: 'string',
-                                profile_picture: 'string',
-                                credentials: {
-                                    name: 'string'
-                                }
-                            }
-                        },
-                        added_at: new Date(),
-                        order_number: 1,
-                    }
-                ],
-                {
-                    id: 'uuid',
-                    display_name: 'string',
-                    profile_picture: 'string',
-                    credentials: {
-                        name: 'string'
-                    }
-                },
-                new Date(),
-                new Date(),
-                0,
-                false,
-            )
-        }
-    })
     @ApiNotFoundResponse({
         example: new ErrorResponse(
             'string',

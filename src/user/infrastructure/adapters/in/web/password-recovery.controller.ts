@@ -5,7 +5,6 @@ import { ApiController } from "src/common/web/common.controller";
 import { ErrorResponse } from "src/common/web/common.error";
 import { ChangePasswordUseCase, ChangePasswordUseCaseProvider } from "src/user/application/ports/in/use-cases/change-password.use-case";
 import { ForgotPasswordUseCase, ForgotPasswordUseCaseProvider } from "src/user/application/ports/in/use-cases/forgot-password.use-case";
-import { ForgotPasswordDto } from "src/user/application/ports/out/dto/forgot-password.dto";
 import { UserErrorHandler } from "./handlers/user-error.handler";
 import { UserRequestMapper } from "./mappers/user-request.mapper";
 import { ChangePasswordRequest } from "./requests/change-password.request";
@@ -32,17 +31,6 @@ export class PasswordRecoveryController extends ApiController {
     {super();}
 
     @ApiOperation({ summary: 'Forgot password' })
-    @ApiOkResponse({
-        example: {
-            data: new ForgotPasswordDto(
-                'uuid',
-                'string',
-                'new',
-                new Date(),
-                new Date(),
-            )
-        }
-    })
     @UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
     @Post()
     public async forgotPassword(

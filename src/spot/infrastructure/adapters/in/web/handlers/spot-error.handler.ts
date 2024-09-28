@@ -84,6 +84,7 @@ export class SpotErrorHandler implements ExceptionFilter {
 								new Date().toISOString(),
 								error.message,
 								error.constructor.name,
+								error.stack
 							),
 						);
 				}

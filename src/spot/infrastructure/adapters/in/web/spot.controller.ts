@@ -26,7 +26,6 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -57,8 +56,6 @@ import {
 	VisitSpotUseCase,
 	VisitSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/visit-spot.use.case';
-import { CreateSpotDto } from 'src/spot/application/ports/out/dto/create-spot.dto';
-import { GetSpotDto } from 'src/spot/application/ports/out/dto/get-spot.dto';
 import { SpotErrorHandler } from './handlers/spot-error.handler';
 import { SpotRequestMapper } from './mappers/spot-request.mapper';
 import { CreateSpotRequest } from './requests/create-spot.request';
@@ -105,53 +102,6 @@ export class SpotController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List spots' })
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetSpotDto(
-						'uuid',
-						'string',
-						'string',
-						'string',
-						{
-							area: 'string',
-							sub_area: 'string',
-							locality: 'string',
-							longitude: 0,
-							latitude: 0,
-							country_code: 'BR',
-						},
-						[{ id: 'uuid', file_path: 'string' }],
-						{
-							id: 'uuid',
-							display_name: 'string',
-							banner_picture: 'string',
-							credentials: {
-								name: 'string',
-							},
-							profile_picture: 'string',
-						},
-						0,
-						false,
-						new Date(),
-						false,
-						new Date(),
-						0,
-						0,
-						0,
-						0,
-						0,
-						new Date(),
-						new Date(),
-					),
-				],
-				0,
-				0,
-				10,
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get()
@@ -178,46 +128,6 @@ export class SpotController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({
-		example: {
-			data: new GetSpotDto(
-				'uuid',
-				'string',
-				'string',
-				'string',
-				{
-					area: 'string',
-					sub_area: 'string',
-					locality: 'string',
-					longitude: 0,
-					latitude: 0,
-					country_code: 'BR',
-				},
-				[{ id: 'uuid', file_path: 'string' }],
-				{
-					id: 'uuid',
-					display_name: 'string',
-					banner_picture: 'string',
-					credentials: {
-						name: 'string',
-					},
-					profile_picture: 'string',
-				},
-				0,
-				false,
-				new Date(),
-				false,
-				new Date(),
-				0,
-				0,
-				0,
-				0,
-				0,
-				new Date(),
-				new Date(),
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async get(
@@ -235,28 +145,6 @@ export class SpotController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Create spot' })
-	@ApiOkResponse({
-		example: {
-			data: new CreateSpotDto(
-				'uuid',
-				'string',
-				'string',
-				'string',
-				{
-					area: 'string',
-					sub_area: 'string',
-					locality: 'string',
-					longitude: 0,
-					latitude: 0,
-					country_code: 'BR',
-				},
-				[{ id: 'uuid', file_path: 'string' }],
-				'uuid',
-				new Date(),
-				new Date(),
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Post()

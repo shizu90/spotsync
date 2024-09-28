@@ -21,15 +21,13 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
-	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -52,8 +50,6 @@ import {
 	UpdateUserAddressUseCase,
 	UpdateUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/update-user-address.use-case';
-import { CreateUserAddressDto } from 'src/user/application/ports/out/dto/create-user-address.dto';
-import { GetUserAddressDto } from 'src/user/application/ports/out/dto/get-user-address.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
 import { UserAddressRequestMapper } from './mappers/user-address-request.mapper';
 import { CreateUserAddressRequest } from './requests/create-user-address.request';
@@ -104,30 +100,6 @@ export class UserAddressController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List user addresses' })
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetUserAddressDto(
-						'uuid',
-						'string',
-						'string',
-						'string',
-						'string',
-						'BR',
-						0,
-						0,
-						false,
-						new Date(),
-						new Date(),
-					),
-				],
-				1,
-				0,
-				10,
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get(':id/addresses')
@@ -157,23 +129,6 @@ export class UserAddressController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new GetUserAddressDto(
-				'uuid',
-				'string',
-				'string',
-				'string',
-				'string',
-				'BR',
-				0,
-				0,
-				false,
-				new Date(),
-				new Date(),
-			),
-		},
 	})
 	@UseGuards(AuthGuard)
 	@Get(':id/addresses/:address_id')
@@ -211,23 +166,6 @@ export class UserAddressController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new CreateUserAddressDto(
-				'uuid',
-				'string',
-				'string',
-				'string',
-				'string',
-				'BR',
-				0,
-				0,
-				false,
-				new Date(),
-				new Date(),
-			),
-		},
 	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
