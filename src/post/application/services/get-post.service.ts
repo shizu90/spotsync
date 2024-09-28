@@ -1,30 +1,29 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import {
-    FollowRepository,
-    FollowRepositoryProvider,
+	FollowRepository,
+	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import {
-    GroupMemberRepository,
-    GroupMemberRepositoryProvider,
+	GroupMemberRepository,
+	GroupMemberRepositoryProvider,
 } from 'src/group/application/ports/out/group-member.repository';
 import {
-    LikeRepository,
-    LikeRepositoryProvider,
+	LikeRepository,
+	LikeRepositoryProvider,
 } from 'src/like/application/ports/out/like.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
-import { Post } from 'src/post/domain/post.model';
 import { GetPostCommand } from '../ports/in/commands/get-post.command';
 import { GetPostUseCase } from '../ports/in/use-cases/get-post.use-case';
-import { GetPostDto } from '../ports/out/dto/get-post.dto';
+import { PostDto } from '../ports/out/dto/post.dto';
 import {
-    PostRepository,
-    PostRepositoryProvider,
+	PostRepository,
+	PostRepositoryProvider,
 } from '../ports/out/post.repository';
 import { PostNotFoundError } from './errors/post-not-found.error';
 
@@ -43,7 +42,7 @@ export class GetPostService implements GetPostUseCase {
 		protected likeRepository: LikeRepository,
 	) {}
 
-	public async execute(command: GetPostCommand): Promise<GetPostDto> {
+	public async execute(command: GetPostCommand): Promise<PostDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const post = await this.postRepository.findById(command.id);
@@ -109,54 +108,8 @@ export class GetPostService implements GetPostUseCase {
 				})
 			).at(0) !== undefined;
 
-		const toGetPostDto = (post: Post) => {
-			return new GetPostDto(
-				post.id(),
-				post.title(),
-				post.content(),
-				post.attachments().map((a) => {
-					return {
-						id: a.id(),
-						file_path: a.filePath(),
-						file_type: a.fileType(),
-					};
-				}),
-				{
-					id: post.creator().id(),
-					banner_picture: post.creator().profile().bannerPicture(),
-					profile_picture: post.creator().profile().profilePicture(),
-					credentials: { name: post.creator().credentials().name() },
-					display_name: post.creator().profile().displayName(),
-					profile_theme_color: post.creator().profile().themeColor(),
-				},
-				post.visibility(),
-				post.depthLevel(),
-				post.thread().id(),
-				post.createdAt(),
-				post.updatedAt(),
-				post.parent() ? post.parent().id() : null,
-				post.group() ? post.group().id() : null,
-				command.maxDepthLevel
-					? post
-							.childrens()
-							.some(
-								(children_post) =>
-									children_post.depthLevel() <=
-									command.maxDepthLevel,
-							)
-						? post.childrens().map((p) => {
-								return toGetPostDto(p);
-							})
-						: []
-					: post.childrens().map((p) => {
-							return toGetPostDto(p);
-						}),
-				post.childrens().length,
-				totalLikes,
-				liked,
-			);
-		};
-
-		return toGetPostDto(post);
+		return PostDto.fromModel(post)
+			.setLiked(liked)
+			.setTotalLikes(totalLikes);
 	}
 }

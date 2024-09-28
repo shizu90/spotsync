@@ -1,42 +1,42 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
 import {
-    FollowRepository,
-    FollowRepositoryProvider,
+	FollowRepository,
+	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import {
-    GroupMemberRepository,
-    GroupMemberRepositoryProvider,
+	GroupMemberRepository,
+	GroupMemberRepositoryProvider,
 } from 'src/group/application/ports/out/group-member.repository';
 import {
-    GroupRepository,
-    GroupRepositoryProvider,
+	GroupRepository,
+	GroupRepositoryProvider,
 } from 'src/group/application/ports/out/group.repository';
 import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import {
-    LikeRepository,
-    LikeRepositoryProvider,
+	LikeRepository,
+	LikeRepositoryProvider,
 } from 'src/like/application/ports/out/like.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import {
-    UserRepository,
-    UserRepositoryProvider,
+	UserRepository,
+	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { ListThreadsCommand } from '../ports/in/commands/list-threads.command';
 import { ListThreadsUseCase } from '../ports/in/use-cases/list-threads.use-case';
-import { GetPostDto } from '../ports/out/dto/get-post.dto';
+import { PostDto } from '../ports/out/dto/post.dto';
 import {
-    PostRepository,
-    PostRepositoryProvider,
+	PostRepository,
+	PostRepositoryProvider,
 } from '../ports/out/post.repository';
 
 @Injectable()
@@ -60,7 +60,7 @@ export class ListThreadsService implements ListThreadsUseCase {
 
 	public async execute(
 		command: ListThreadsCommand,
-	): Promise<Pagination<GetPostDto> | Array<GetPostDto>> {
+	): Promise<Pagination<PostDto> | Array<PostDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		let visibilitiesToFilter = [PostVisibility.PUBLIC];
@@ -170,37 +170,9 @@ export class ListThreadsService implements ListThreadsUseCase {
 					parentId: i.id(),
 				});
 
-				return new GetPostDto(
-					i.id(),
-					i.title(),
-					i.content(),
-					i.attachments().map((i) => {
-						return {
-							id: i.id(),
-							file_path: i.filePath(),
-							file_type: i.fileType(),
-						};
-					}),
-					{
-						id: i.creator().id(),
-						banner_picture: i.creator().profile().bannerPicture(),
-						profile_picture: i.creator().profile().profilePicture(),
-						credentials: { name: i.creator().credentials().name() },
-						display_name: i.creator().profile().displayName(),
-						profile_theme_color: i.creator().profile().themeColor(),
-					},
-					i.visibility(),
-					i.depthLevel(),
-					i.thread().id(),
-					i.createdAt(),
-					i.updatedAt(),
-					i.parent() ? i.parent().id() : null,
-					i.group() ? i.group().id() : null,
-					[],
-					totalChildrens,
-					totalLikes,
-					liked,
-				);
+				return PostDto.fromModel(i)
+					.setTotalLikes(totalLikes)
+					.setLiked(liked);
 			}),
 		);
 

@@ -43,6 +43,7 @@ export class RefuseGroupRequestService implements RefuseGroupRequestUseCase {
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
 				userId: authenticatedUser.id(),
+				status: GroupMemberStatus.ACTIVE,
 			})
 		).at(0);
 

@@ -4,6 +4,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { UpdateGroupCommand } from '../ports/in/commands/update-group.command';
 import { UpdateGroupUseCase } from '../ports/in/use-cases/update-group.use-case';
@@ -41,6 +42,7 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
 				userId: authenticatedUser.id(),
+				status: GroupMemberStatus.ACTIVE,
 			})
 		).at(0);
 

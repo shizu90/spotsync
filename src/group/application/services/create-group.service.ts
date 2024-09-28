@@ -12,7 +12,7 @@ import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
 import { CreateGroupCommand } from '../ports/in/commands/create-group.command';
 import { CreateGroupUseCase } from '../ports/in/use-cases/create-group.use-case';
-import { CreateGroupDto } from '../ports/out/dto/create-group.dto';
+import { GroupDto } from '../ports/out/dto/group.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -40,7 +40,7 @@ export class CreateGroupService implements CreateGroupUseCase {
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 	) {}
 
-	public async execute(command: CreateGroupCommand): Promise<CreateGroupDto> {
+	public async execute(command: CreateGroupCommand): Promise<GroupDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const adminRole = await this.groupRoleRepository.findByName(
@@ -82,19 +82,6 @@ export class CreateGroupService implements CreateGroupUseCase {
 
 		this.groupMemberRepository.store(creatorGroupMember);
 
-		return new CreateGroupDto(
-			group.id(),
-			group.name(),
-			group.about(),
-			group.groupPicture(),
-			group.bannerPicture(),
-			{
-				post_visibility: group.visibilitySettings().posts(),
-				event_visibility: group.visibilitySettings().spotEvents(),
-				group_visibility: group.visibilitySettings().groups(),
-			},
-			group.createdAt(),
-			group.updatedAt(),
-		);
+		return GroupDto.fromModel(group);
 	}
 }

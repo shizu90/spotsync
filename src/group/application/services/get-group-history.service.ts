@@ -5,9 +5,10 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GetGroupHistoryCommand } from '../ports/in/commands/get-group-history.command';
 import { GetGroupHistoryUseCase } from '../ports/in/use-cases/get-group-history.use-case';
-import { GetGroupLogDto } from '../ports/out/dto/get-group-log.dto';
+import { GroupLogDto } from '../ports/out/dto/group-log.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -31,7 +32,7 @@ export class GetGroupHistoryService implements GetGroupHistoryUseCase {
 
 	public async execute(
 		command: GetGroupHistoryCommand,
-	): Promise<Pagination<GetGroupLogDto> | Array<GetGroupLogDto>> {
+	): Promise<Pagination<GroupLogDto> | Array<GroupLogDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
@@ -44,6 +45,7 @@ export class GetGroupHistoryService implements GetGroupHistoryUseCase {
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
 				userId: authenticatedUser.id(),
+				status: GroupMemberStatus.ACTIVE,
 			})
 		).at(0);
 
@@ -64,12 +66,7 @@ export class GetGroupHistoryService implements GetGroupHistoryUseCase {
 		});
 
 		const items = pagination.items.map((log) => {
-			return new GetGroupLogDto(
-				log.id(),
-				log.text(),
-				log.group().id(),
-				log.occurredAt(),
-			);
+			return GroupLogDto.fromModel(log);
 		});
 
 		if (!command.paginate) {

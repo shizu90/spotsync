@@ -5,11 +5,12 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { GroupRole } from 'src/group/domain/group-role.model';
 import { CreateGroupRoleCommand } from '../ports/in/commands/create-group-role.command';
 import { CreateGroupRoleUseCase } from '../ports/in/use-cases/create-group-role.use-case';
-import { CreateGroupRoleDto } from '../ports/out/dto/create-group-role.dto';
+import { GroupRoleDto } from '../ports/out/dto/group-role.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -40,7 +41,7 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 
 	public async execute(
 		command: CreateGroupRoleCommand,
-	): Promise<CreateGroupRoleDto> {
+	): Promise<GroupRoleDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
@@ -53,6 +54,7 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
 				userId: authenticatedUser.id(),
+				status: GroupMemberStatus.ACTIVE,
 			})
 		).at(0);
 
@@ -103,16 +105,6 @@ export class CreateGroupRoleService implements CreateGroupRoleUseCase {
 		this.groupRoleRepository.store(groupRole);
 		this.groupRepository.storeLog(log);
 
-		return new CreateGroupRoleDto(
-			groupRole.id(),
-			groupRole.name(),
-			groupRole.hexColor(),
-			groupRole.permissions().map((p) => {
-				return { id: p.id(), name: p.name() };
-			}),
-			groupRole.createdAt(),
-			groupRole.updatedAt(),
-			groupRole.isImmutable(),
-		);
+		return GroupRoleDto.fromModel(groupRole);
 	}
 }

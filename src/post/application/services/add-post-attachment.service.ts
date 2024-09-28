@@ -1,17 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { LikeRepository, LikeRepositoryProvider } from 'src/like/application/ports/out/like.repository';
+import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostAttachment } from 'src/post/domain/post-attachment.model';
 import { AddPostAttachmentCommand } from '../ports/in/commands/add-post-attachment.command';
 import { AddPostAttachmentUseCase } from '../ports/in/use-cases/add-post-attachment.use-case';
-import { AddPostAttachmentDto } from '../ports/out/dto/add-post-attachment.dto';
+import { PostDto } from '../ports/out/dto/post.dto';
 import {
-    PostRepository,
-    PostRepositoryProvider,
+	PostRepository,
+	PostRepositoryProvider,
 } from '../ports/out/post.repository';
 import { PostNotFoundError } from './errors/post-not-found.error';
 
@@ -22,11 +24,13 @@ export class AddPostAttachmentService implements AddPostAttachmentUseCase {
 		protected postRepository: PostRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+		@Inject(LikeRepositoryProvider)
+		protected likeRepository: LikeRepository
 	) {}
 
 	public async execute(
 		command: AddPostAttachmentCommand,
-	): Promise<AddPostAttachmentDto> {
+	): Promise<PostDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const post = await this.postRepository.findById(command.postId);
@@ -45,11 +49,19 @@ export class AddPostAttachmentService implements AddPostAttachmentUseCase {
 
 		await this.postRepository.update(post);
 
-		return new AddPostAttachmentDto(
-			attachment.id(),
-			post.id(),
-			attachment.filePath(),
-			attachment.fileType(),
-		);
+		const liked = (await this.likeRepository.findBy({
+			subjectId: post.id(),
+			subject: LikableSubject.POST,
+			userId: authenticatedUser.id(),
+		})).length > 0;
+
+		const totalLikes = await this.likeRepository.countBy({
+			subjectId: post.id(),
+			subject: LikableSubject.POST,
+		});
+
+		return PostDto.fromModel(post)
+			.setLiked(liked)
+			.setTotalLikes(totalLikes);
 	}
 }

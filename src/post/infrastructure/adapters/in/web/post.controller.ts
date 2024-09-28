@@ -20,10 +20,9 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
-	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
-	ApiUnauthorizedResponse,
+	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -52,8 +51,6 @@ import {
 	UpdatePostUseCase,
 	UpdatePostUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/update-post.use-case';
-import { CreatePostDto } from 'src/post/application/ports/out/dto/create-post.dto';
-import { GetPostDto } from 'src/post/application/ports/out/dto/get-post.dto';
 import { PostErrorHandler } from './handlers/post-error.handler';
 import { PostRequestMapper } from './mappers/post-request.mapper';
 import { CreatePostRequest } from './requests/create-post.request';
@@ -110,73 +107,6 @@ export class PostController {
 			'string',
 		),
 	})
-	@ApiOkResponse({
-		example: {
-			data: new GetPostDto(
-				'uuid',
-				'string',
-				'string',
-				[
-					{
-						id: 'uuid',
-						file_path: 'string',
-						file_type: 'string',
-					},
-				],
-				{
-					id: 'uuid',
-					display_name: 'string',
-					profile_theme_color: '#000000',
-					profile_picture: 'string',
-					banner_picture: 'string',
-					credentials: { name: 'string' },
-				},
-				'public',
-				0,
-				'uuid',
-				new Date(),
-				new Date(),
-				'uuid',
-				'uuid',
-				[
-					new GetPostDto(
-						'uuid',
-						'string',
-						'string',
-						[
-							{
-								id: 'uuid',
-								file_path: 'string',
-								file_type: 'string',
-							},
-						],
-						{
-							id: 'uuid',
-							display_name: 'string',
-							profile_theme_color: '#000000',
-							profile_picture: 'string',
-							banner_picture: 'string',
-							credentials: { name: 'string' },
-						},
-						'public',
-						0,
-						'uuid',
-						new Date(),
-						new Date(),
-						'uuid',
-						'uuid',
-						[],
-						0,
-						0,
-						false,
-					),
-				],
-				1,
-				0,
-				false,
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async get(
@@ -201,22 +131,6 @@ export class PostController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new CreatePostDto(
-				'uuid',
-				'string',
-				'string',
-				'public',
-				[{ id: 'uuid', file_path: 'string', file_type: 'string' }],
-				'uuid',
-				0,
-				'uuid',
-				'uuid',
-				'uuid',
-			),
-		},
 	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))

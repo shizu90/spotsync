@@ -46,10 +46,6 @@ export class LikeService implements LikeUseCase {
 
 		await this.likeRepository.store(like);
 
-		return new LikeDto(
-			like.id(),
-			like.likableSubject(),
-			like.likable().id(),
-		);
+		return LikeDto.fromModel(like);
 	}
 }

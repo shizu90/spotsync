@@ -4,14 +4,14 @@ import { Pagination } from 'src/common/core/common.repository';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { ListGroupMembersCommand } from '../ports/in/commands/list-group-members.command';
 import { ListGroupMembersUseCase } from '../ports/in/use-cases/list-group-members.use-case';
-import { GetGroupMemberDto } from '../ports/out/dto/get-group-member.dto';
+import { GroupMemberDto } from '../ports/out/dto/group-member.dto';
 import {
-    GroupMemberRepository,
-    GroupMemberRepositoryProvider,
+	GroupMemberRepository,
+	GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
 import {
-    GroupRepository,
-    GroupRepositoryProvider,
+	GroupRepository,
+	GroupRepositoryProvider,
 } from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
 
@@ -26,7 +26,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 
 	public async execute(
 		command: ListGroupMembersCommand,
-	): Promise<Pagination<GetGroupMemberDto> | Array<GetGroupMemberDto>> {
+	): Promise<Pagination<GroupMemberDto> | Array<GroupMemberDto>> {
 		const group = await this.groupRepository.findById(command.groupId);
 
 		if (group === null || group === undefined || group.isDeleted()) {
@@ -53,30 +53,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 			});
 
 			const items = pagination.items.map((gm) => {
-				return new GetGroupMemberDto(
-					gm.id(),
-					{
-						id: gm.user().id(),
-						display_name: gm.user().profile().displayName(),
-						banner_picture: gm.user().profile().bannerPicture(),
-						profile_picture: gm.user().profile().profilePicture(),
-						credentials: { name: gm.user().credentials().name() },
-					},
-					gm.group().id(),
-					{
-						id: gm.role().id(),
-						name: gm.role().name(),
-						hex_color: gm.role().hexColor(),
-						permissions: gm
-							.role()
-							.permissions()
-							.map((p) => {
-								return { id: p.id(), name: p.name() };
-							}),
-					},
-					gm.joinedAt(),
-					gm.isCreator(),
-				);
+				return GroupMemberDto.fromModel(gm);
 			});
 
 			if (!command.paginate) {

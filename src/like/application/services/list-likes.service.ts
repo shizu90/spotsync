@@ -6,7 +6,7 @@ import {
 import { Pagination } from 'src/common/core/common.repository';
 import { ListLikesCommand } from '../ports/in/commands/list-likes.command';
 import { ListLikesUseCase } from '../ports/in/use-cases/list-likes.use-case';
-import { GetLikeDto } from '../ports/out/dto/get-like.dto';
+import { LikeDto } from '../ports/out/dto/like.dto';
 import {
 	LikeRepository,
 	LikeRepositoryProvider,
@@ -23,7 +23,7 @@ export class ListLikesService implements ListLikesUseCase {
 
 	public async execute(
 		command: ListLikesCommand,
-	): Promise<Pagination<GetLikeDto> | Array<GetLikeDto>> {
+	): Promise<Pagination<LikeDto> | Array<LikeDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const pagination = await this.likeRepository.paginate({
@@ -39,20 +39,7 @@ export class ListLikesService implements ListLikesUseCase {
 		});
 
 		const items = pagination.items.map((i) => {
-			return new GetLikeDto(
-				i.id(),
-				i.likableSubject(),
-				i.likable().id(),
-				{
-					id: i.user().id(),
-					display_name: i.user().profile().displayName(),
-					banner_picture: i.user().profile().bannerPicture(),
-					credentials: { name: i.user().credentials().name() },
-					profile_picture: i.user().profile().profilePicture(),
-					theme_color: i.user().profile().themeColor(),
-				},
-				i.createdAt(),
-			);
+			return LikeDto.fromModel(i);
 		});
 
 		if (!command.paginate) {

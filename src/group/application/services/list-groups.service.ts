@@ -4,9 +4,10 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { Pagination } from 'src/common/core/common.repository';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { ListGroupsCommand } from '../ports/in/commands/list-groups.command';
 import { ListGroupsUseCase } from '../ports/in/use-cases/list-groups.use-case';
-import { GetGroupDto } from '../ports/out/dto/get-group.dto';
+import { GroupDto } from '../ports/out/dto/group.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -29,7 +30,7 @@ export class ListGroupsService implements ListGroupsUseCase {
 
 	public async execute(
 		command: ListGroupsCommand,
-	): Promise<Pagination<GetGroupDto> | Array<GetGroupDto>> {
+	): Promise<Pagination<GroupDto> | Array<GroupDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const pagination = await this.groupRepository.paginate({
@@ -53,47 +54,12 @@ export class ListGroupsService implements ListGroupsUseCase {
 					await this.groupMemberRepository.findBy({
 						groupId: g.id(),
 						userId: authenticatedUser.id(),
+						status: GroupMemberStatus.ACTIVE,
 					})
 				).at(0);
 
-				return new GetGroupDto(
-					g.id(),
-					g.name(),
-					g.about(),
-					g.groupPicture(),
-					g.bannerPicture(),
-					{
-						group_visibility: g.visibilitySettings().groups(),
-						post_visibility: g.visibilitySettings().posts(),
-						event_visibility: g
-							.visibilitySettings()
-							.spotEvents(),
-					},
-					g.createdAt(),
-					g.updatedAt(),
-					groupMember ? true : false,
-					groupMember
-						? {
-								id: groupMember.id(),
-								user_id: groupMember.user().id(),
-								is_creator: groupMember.isCreator(),
-								joined_at: groupMember.joinedAt(),
-								role: {
-									id: groupMember.role().id(),
-									name: groupMember.role().name(),
-									permissions: groupMember
-										.role()
-										.permissions()
-										.map((p) => {
-											return {
-												id: p.id(),
-												name: p.name(),
-											};
-										}),
-								},
-							}
-						: null,
-				);
+				return GroupDto.fromModel(g)
+					.setGroupMember(groupMember);
 			}),
 		);
 

@@ -5,9 +5,10 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { ListGroupRolesCommand } from '../ports/in/commands/list-group-roles.command';
 import { ListGroupRolesUseCase } from '../ports/in/use-cases/list-group-roles.use-case';
-import { GetGroupRoleDto } from '../ports/out/dto/get-group-role.dto';
+import { GroupRoleDto } from '../ports/out/dto/group-role.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -37,7 +38,7 @@ export class ListGroupRolesService implements ListGroupRolesUseCase {
 
 	public async execute(
 		command: ListGroupRolesCommand,
-	): Promise<Pagination<GetGroupRoleDto> | Array<GetGroupRoleDto>> {
+	): Promise<Pagination<GroupRoleDto> | Array<GroupRoleDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
@@ -50,6 +51,7 @@ export class ListGroupRolesService implements ListGroupRolesUseCase {
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
 				userId: authenticatedUser.id(),
+				status: GroupMemberStatus.ACTIVE,
 			})
 		).at(0);
 
@@ -74,18 +76,7 @@ export class ListGroupRolesService implements ListGroupRolesUseCase {
 		});
 
 		const items = pagination.items.map((gr) => {
-			return new GetGroupRoleDto(
-				gr.id(),
-				gr.group() ? gr.group().id() : null,
-				gr.name(),
-				gr.isImmutable(),
-				gr.hexColor(),
-				gr.permissions().map((p) => {
-					return { id: p.id(), name: p.name() };
-				}),
-				gr.createdAt(),
-				gr.updatedAt(),
-			);
+			return GroupRoleDto.fromModel(gr);
 		});
 
 		if (!command.paginate) {

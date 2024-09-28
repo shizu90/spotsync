@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import {
-    GroupRepository,
-    GroupRepositoryProvider,
+	GroupRepository,
+	GroupRepositoryProvider,
 } from 'src/group/application/ports/out/group.repository';
 import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
@@ -16,14 +16,14 @@ import { Post } from 'src/post/domain/post.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { CreatePostCommand } from '../ports/in/commands/create-post.command';
 import { CreatePostUseCase } from '../ports/in/use-cases/create-post.use-case';
-import { CreatePostDto } from '../ports/out/dto/create-post.dto';
+import { PostDto } from '../ports/out/dto/post.dto';
 import {
-    PostThreadRepository,
-    PostThreadRepositoryProvider,
+	PostThreadRepository,
+	PostThreadRepositoryProvider,
 } from '../ports/out/post-thread.repository';
 import {
-    PostRepository,
-    PostRepositoryProvider,
+	PostRepository,
+	PostRepositoryProvider,
 } from '../ports/out/post.repository';
 import { PostNotFoundError } from './errors/post-not-found.error';
 
@@ -40,7 +40,7 @@ export class CreatePostService implements CreatePostUseCase {
 		protected groupRepository: GroupRepository,
 	) {}
 
-	public async execute(command: CreatePostCommand): Promise<CreatePostDto> {
+	public async execute(command: CreatePostCommand): Promise<PostDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		let visibility = command.visibility;
@@ -117,17 +117,6 @@ export class CreatePostService implements CreatePostUseCase {
 		this.postRepository.store(newPost);
 		this.postThreadRepository.update(newPost.thread());
 
-		return new CreatePostDto(
-			newPost.id(),
-			newPost.title(),
-			newPost.content(),
-			newPost.visibility(),
-			[],
-			newPost.thread().id(),
-			newPost.depthLevel(),
-			parent ? parent.id() : null,
-			newPost.creator().id(),
-			newPost.group() ? newPost.group().id() : null,
-		);
+		return PostDto.fromModel(newPost);
 	}
 }

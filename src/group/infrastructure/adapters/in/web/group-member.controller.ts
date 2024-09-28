@@ -22,15 +22,13 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
-	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -61,8 +59,6 @@ import {
 	RemoveGroupMemberUseCase,
 	RemoveGroupMemberUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/remove-group-member.use-case';
-import { GetGroupMemberDto } from 'src/group/application/ports/out/dto/get-group-member.dto';
-import { JoinGroupDto } from 'src/group/application/ports/out/dto/join-group.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
 import { GroupMemberRequestMapper } from './mappers/group-member-request.mapper';
 import { ChangeMemberRoleRequest } from './requests/change-member-role.request';
@@ -124,36 +120,6 @@ export class GroupMemberController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List group members' })
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetGroupMemberDto(
-						'uuid',
-						{
-							id: 'uuid',
-							credentials: { name: 'string' },
-							display_name: 'string',
-							banner_picture: 'string',
-							profile_picture: 'string',
-						},
-						'uuid',
-						{
-							id: 'uuid',
-							name: 'string',
-							hex_color: '#000000',
-							permissions: [{ id: 'uuid', name: 'string' }],
-						},
-						new Date(),
-						false,
-					),
-				],
-				1,
-				0,
-				10,
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get(':id/members')
@@ -183,35 +149,6 @@ export class GroupMemberController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		content: {
-			'application/json': {
-				example: {
-					data: {
-						value: new JoinGroupDto(
-							'uuid',
-							'uuid',
-							{
-								id: 'uuid',
-								display_name: 'string',
-								profile_picture: 'string',
-								banner_picture: 'string',
-								credentials: { name: 'string' },
-							},
-							{
-								name: 'string',
-								hex_color: 'string',
-								permissions: [{ id: 'uuid', name: 'string' }],
-							},
-							new Date(),
-							new Date(),
-							'req',
-						),
-					},
-				},
-			},
-		},
 	})
 	@UseGuards(AuthGuard)
 	@Post(':id/join')
@@ -287,29 +224,6 @@ export class GroupMemberController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new JoinGroupDto(
-				'uuid',
-				'uuid',
-				{
-					id: 'uuid',
-					display_name: 'string',
-					profile_picture: 'string',
-					banner_picture: 'string',
-					credentials: { name: 'string' },
-				},
-				{
-					name: 'string',
-					hex_color: 'string',
-					permissions: [{ id: 'uuid', name: 'string' }],
-				},
-				new Date(),
-				new Date(),
-				'req',
-			),
-		},
 	})
 	@UseGuards(AuthGuard)
 	@Patch(':id/join-requests/:request_id/accept')

@@ -4,9 +4,10 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GetGroupRoleCommand } from '../ports/in/commands/get-group-role.command';
 import { GetGroupRoleUseCase } from '../ports/in/use-cases/get-group-role.use-case';
-import { GetGroupRoleDto } from '../ports/out/dto/get-group-role.dto';
+import { GroupRoleDto } from '../ports/out/dto/group-role.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -37,7 +38,7 @@ export class GetGroupRoleService implements GetGroupRoleUseCase {
 
 	public async execute(
 		command: GetGroupRoleCommand,
-	): Promise<GetGroupRoleDto> {
+	): Promise<GroupRoleDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
@@ -50,6 +51,7 @@ export class GetGroupRoleService implements GetGroupRoleUseCase {
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
 				userId: authenticatedUser.id(),
+				status: GroupMemberStatus.ACTIVE,
 			});
 
 		if (
@@ -70,17 +72,6 @@ export class GetGroupRoleService implements GetGroupRoleUseCase {
 			throw new GroupRoleNotFoundError();
 		}
 
-		return new GetGroupRoleDto(
-			groupRole.id(),
-			group.id(),
-			groupRole.name(),
-			groupRole.isImmutable(),
-			groupRole.hexColor(),
-			groupRole.permissions().map((p) => {
-				return { id: p.id(), name: p.name() };
-			}),
-			groupRole.createdAt(),
-			groupRole.updatedAt(),
-		);
+		return GroupRoleDto.fromModel(groupRole);
 	}
 }

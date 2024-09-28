@@ -26,7 +26,6 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -41,8 +40,6 @@ import {
 	UnlikeUseCase,
 	UnlikeUseCaseProvider,
 } from 'src/like/application/ports/in/use-cases/unlike.use-case';
-import { GetLikeDto } from 'src/like/application/ports/out/dto/get-like.dto';
-import { LikeDto } from 'src/like/application/ports/out/dto/like.dto';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { LikeErrorHandler } from './handlers/like-error.handler';
 import { LikeRequestMapper } from './mappers/like-request.mapper';
@@ -81,31 +78,6 @@ export class LikeController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List likes of a subject' })
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetLikeDto(
-						'uuid',
-						'POST',
-						'uuid',
-						{
-							id: 'uuid',
-							display_name: 'string',
-							theme_color: '#000000',
-							profile_picture: 'string',
-							banner_picture: 'string',
-							credentials: { name: 'string' },
-						},
-						new Date(),
-					),
-				],
-				1,
-				0,
-				10,
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@Get()
 	public async list(
@@ -130,11 +102,6 @@ export class LikeController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new LikeDto('uuid', 'POST', 'uuid'),
-		},
 	})
 	@UseGuards(AuthGuard)
 	@Post()

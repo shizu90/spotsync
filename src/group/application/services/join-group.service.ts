@@ -10,7 +10,7 @@ import { GroupMember } from 'src/group/domain/group-member.model';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { JoinGroupCommand } from '../ports/in/commands/join-group.command';
 import { JoinGroupUseCase } from '../ports/in/use-cases/join-group.use-case';
-import { JoinGroupDto } from '../ports/out/dto/join-group.dto';
+import { GroupMemberDto } from '../ports/out/dto/group-member.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -42,7 +42,7 @@ export class JoinGroupService implements JoinGroupUseCase {
 
 	public async execute(
 		command: JoinGroupCommand,
-	): Promise<JoinGroupDto> {
+	): Promise<GroupMemberDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.id);
@@ -99,31 +99,6 @@ export class JoinGroupService implements JoinGroupUseCase {
 
 		this.groupRepository.storeLog(log);
 
-		return new JoinGroupDto(
-			groupMember.id(),
-			groupMember.group().id(),
-			{
-				id: groupMember.user().id(),
-				display_name: groupMember.user().profile().displayName(),
-				profile_picture: groupMember.user().profile().profilePicture(),
-				banner_picture: groupMember.user().profile().bannerPicture(),
-				credentials: {
-					name: groupMember.user().credentials().name(),
-				},
-			},
-			{
-				name: groupMember.role().name(),
-				hex_color: groupMember.role().hexColor(),
-				permissions: groupMember.role().permissions().map((permission) => {
-					return {
-						id: permission.id(),
-						name: permission.name(),
-					};
-				}),
-			},
-			groupMember.joinedAt(),
-			groupMember.requestedAt(),
-			groupMember.status(),
-		)
+		return GroupMemberDto.fromModel(groupMember);
 	}
 }

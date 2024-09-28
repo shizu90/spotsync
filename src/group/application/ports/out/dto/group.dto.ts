@@ -79,13 +79,8 @@ export class GroupDto extends Dto {
         );
     }
 
-    public setIsMember(isMember: boolean): GroupDto {
-        this.is_member = isMember;
-
-        return this;
-    }
-
     public setGroupMember(groupMember: GroupMember): GroupDto {
+        this.is_member = true;
         this.group_member = GroupMemberDto.fromModel(groupMember);
 
         return this

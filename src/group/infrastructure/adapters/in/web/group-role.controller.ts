@@ -22,15 +22,13 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
-	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -53,8 +51,6 @@ import {
 	UpdateGroupRoleUseCase,
 	UpdateGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group-role.use-case';
-import { CreateGroupRoleDto } from 'src/group/application/ports/out/dto/create-group-role.dto';
-import { GetGroupRoleDto } from 'src/group/application/ports/out/dto/get-group-role.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
 import { GroupRoleRequestMapper } from './mappers/group-role-request.mapper';
 import { CreateGroupRoleRequest } from './requests/create-group-role.request';
@@ -105,27 +101,6 @@ export class GroupRoleController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List group roles' })
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetGroupRoleDto(
-						'uuid',
-						'uuid',
-						'string',
-						false,
-						'#000000',
-						[{ id: 'uuid', name: 'string' }],
-						new Date(),
-						new Date(),
-					),
-				],
-				1,
-				0,
-				10,
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get(':id/roles')
@@ -155,20 +130,6 @@ export class GroupRoleController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new GetGroupRoleDto(
-				'uuid',
-				'uuid',
-				'string',
-				false,
-				'#000000',
-				[{ id: 'uuid', name: 'string' }],
-				new Date(),
-				new Date(),
-			),
-		},
 	})
 	@UseGuards(AuthGuard)
 	@Get(':id/roles/:role_id')
@@ -214,19 +175,6 @@ export class GroupRoleController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new CreateGroupRoleDto(
-				'uuid',
-				'string',
-				'#000000',
-				[{ id: 'uuid', name: 'string' }],
-				new Date(),
-				new Date(),
-				false,
-			),
-		},
 	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))

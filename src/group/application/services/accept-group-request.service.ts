@@ -9,7 +9,7 @@ import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
 import { AcceptGroupRequestCommand } from '../ports/in/commands/accept-group-request.command';
 import { AcceptGroupRequestUseCase } from '../ports/in/use-cases/accept-group-request.use-case';
-import { JoinGroupDto } from '../ports/out/dto/join-group.dto';
+import { GroupMemberDto } from '../ports/out/dto/group-member.dto';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -40,7 +40,7 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 
 	public async execute(
 		command: AcceptGroupRequestCommand,
-	): Promise<JoinGroupDto> {
+	): Promise<GroupMemberDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);
@@ -95,31 +95,6 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 
 		this.groupRepository.storeLog(log);
 
-		return new JoinGroupDto(
-			groupMemberRequest.id(),
-			groupMemberRequest.group().id(),
-			{
-				id: groupMemberRequest.user().id(),
-				display_name: groupMemberRequest.user().profile().displayName(),
-				profile_picture: groupMemberRequest.user().profile().profilePicture(),
-				banner_picture: groupMemberRequest.user().profile().bannerPicture(),
-				credentials: {
-					name: groupMemberRequest.user().credentials().name(),
-				},
-			},
-			{
-				name: groupMemberRequest.role().name(),
-				hex_color: groupMemberRequest.role().hexColor(),
-				permissions: groupMemberRequest.role().permissions().map((permission) => {
-					return {
-						id: permission.id(),
-						name: permission.name(),
-					};
-				}),
-			},
-			groupMemberRequest.joinedAt(),
-			groupMemberRequest.requestedAt(),
-			groupMemberRequest.status(),
-		)
+		return GroupMemberDto.fromModel(groupMemberRequest);
 	}
 }

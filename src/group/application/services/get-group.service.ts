@@ -1,18 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GetGroupCommand } from '../ports/in/commands/get-group.command';
 import { GetGroupUseCase } from '../ports/in/use-cases/get-group.use-case';
-import { GetGroupDto } from '../ports/out/dto/get-group.dto';
+import { GroupDto } from '../ports/out/dto/group.dto';
 import {
-    GroupMemberRepository,
-    GroupMemberRepositoryProvider,
+	GroupMemberRepository,
+	GroupMemberRepositoryProvider,
 } from '../ports/out/group-member.repository';
 import {
-    GroupRepository,
-    GroupRepositoryProvider,
+	GroupRepository,
+	GroupRepositoryProvider,
 } from '../ports/out/group.repository';
 import { GroupNotFoundError } from './errors/group-not-found.error';
 
@@ -27,7 +28,7 @@ export class GetGroupService implements GetGroupUseCase {
 		protected groupRepository: GroupRepository,
 	) {}
 
-	public async execute(command: GetGroupCommand): Promise<GetGroupDto> {
+	public async execute(command: GetGroupCommand): Promise<GroupDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.id);
@@ -40,42 +41,11 @@ export class GetGroupService implements GetGroupUseCase {
 			await this.groupMemberRepository.findBy({
 				groupId: group.id(),
 				userId: authenticatedUser.id(),
+				status: GroupMemberStatus.ACTIVE,
 			})
 		).at(0);
 
-		return new GetGroupDto(
-			group.id(),
-			group.name(),
-			group.about(),
-			group.groupPicture(),
-			group.bannerPicture(),
-			{
-				group_visibility: group.visibilitySettings().groups(),
-				post_visibility: group.visibilitySettings().posts(),
-				event_visibility: group.visibilitySettings().spotEvents(),
-			},
-			group.createdAt(),
-			group.updatedAt(),
-			groupMember ? true : false,
-			groupMember
-				? {
-						id: groupMember.id(),
-						user_id: groupMember.user().id(),
-						is_creator: groupMember.isCreator(),
-						joined_at: groupMember.joinedAt(),
-						role: {
-							id: groupMember.role().id(),
-							name: groupMember.role().name(),
-							permissions: groupMember
-								.role()
-								.permissions()
-								.map((p) => {
-									return { id: p.id(), name: p.name() };
-								}),
-						},
-					}
-				: null,
-				groupMember.requestedAt(),
-		);
+		return GroupDto.fromModel(group)
+			.setGroupMember(groupMember);
 	}
 }

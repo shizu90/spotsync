@@ -21,15 +21,13 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
-	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -57,9 +55,6 @@ import {
 	UpdateGroupUseCase,
 	UpdateGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group.use-case';
-import { CreateGroupDto } from 'src/group/application/ports/out/dto/create-group.dto';
-import { GetGroupLogDto } from 'src/group/application/ports/out/dto/get-group-log.dto';
-import { GetGroupDto } from 'src/group/application/ports/out/dto/get-group.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
 import { GroupRequestMapper } from './mappers/group-request.mapper';
 import { CreateGroupRequest } from './requests/create-group.request';
@@ -115,44 +110,6 @@ export class GroupController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List groups' })
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetGroupDto(
-						'uuid',
-						'string',
-						'string',
-						'string',
-						'string',
-						{
-							event_visibility: 'public',
-							group_visibility: 'public',
-							post_visibility: 'public',
-						},
-						new Date(),
-						new Date(),
-						true,
-						{
-							id: 'uuid',
-							is_creator: false,
-							joined_at: new Date(),
-							role: {
-								id: 'uuid',
-								name: 'string',
-								permissions: [{ id: 'uuid', name: 'string' }],
-							},
-							user_id: 'uuid',
-						},
-						new Date(),
-					),
-				],
-				1,
-				0,
-				10,
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get()
@@ -179,37 +136,6 @@ export class GroupController extends ApiController {
 			'string',
 		),
 	})
-	@ApiOkResponse({
-		example: {
-			data: new GetGroupDto(
-				'uuid',
-				'string',
-				'string',
-				'string',
-				'string',
-				{
-					event_visibility: 'public',
-					group_visibility: 'public',
-					post_visibility: 'public',
-				},
-				new Date(),
-				new Date(),
-				true,
-				{
-					id: 'uuid',
-					is_creator: false,
-					joined_at: new Date(),
-					role: {
-						id: 'uuid',
-						name: 'string',
-						permissions: [{ id: 'uuid', name: 'string' }],
-					},
-					user_id: 'uuid',
-				},
-				new Date(),
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async getById(
@@ -234,24 +160,6 @@ export class GroupController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new CreateGroupDto(
-				'uuid',
-				'string',
-				'string',
-				'string',
-				'string',
-				{
-					event_visibility: 'public',
-					group_visibility: 'public',
-					post_visibility: 'public',
-				},
-				new Date(),
-				new Date(),
-			),
-		},
 	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
@@ -379,18 +287,6 @@ export class GroupController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new Pagination([
-				new GetGroupLogDto(
-					'uuid',
-					'string',
-					'uuid',
-					new Date(),
-				)
-			], 1, 1, 12)
-		}
 	})
 	@UseGuards(AuthGuard)
 	@Get(':id/history')
