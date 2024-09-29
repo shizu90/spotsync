@@ -1,4 +1,7 @@
 import { randomUUID } from 'crypto';
+import { CommentSubject } from 'src/comment/domain/comment-subject.model.';
+import { Comment } from 'src/comment/domain/comment.model';
+import { Commentable } from 'src/comment/domain/commentable.interface';
 import { Model } from 'src/common/core/common.model';
 import { Favoritable } from 'src/favorite/domain/favoritable.interface';
 import { Favorite } from 'src/favorite/domain/favorite.model';
@@ -8,7 +11,7 @@ import { SpotPhoto } from './spot-photo.model';
 import { SpotType } from './spot-type.enum';
 import { VisitedSpot } from './visited-spot.model';
 
-export class Spot extends Model implements Favoritable {
+export class Spot extends Model implements Favoritable, Commentable {
 	private _id: string;
 	private _name: string;
 	private _description: string;
@@ -151,6 +154,10 @@ export class Spot extends Model implements Favoritable {
 
 	public favorite(user: User): Favorite {
 		return Favorite.createForSpot(randomUUID(), user, this);
+	}
+
+	public comment(user: User, text: string): Comment {
+		return Comment.create(randomUUID(), text, user, CommentSubject.SPOT, this)
 	}
 
 	public delete(): void {

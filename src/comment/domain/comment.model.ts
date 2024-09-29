@@ -1,13 +1,14 @@
 import { Model } from "src/common/core/common.model";
 import { User } from "src/user/domain/user.model";
 import { CommentSubject } from "./comment-subject.model.";
+import { Commentable } from "./commentable.interface";
 
 export class Comment extends Model {
     private _id: string;
     private _text: string;
     private _user: User;
     private _subject: CommentSubject;
-    private _subjectId: string;
+    private _commentable: Commentable;
     private _createdAt: Date;
     private _updatedAt: Date;
 
@@ -16,7 +17,7 @@ export class Comment extends Model {
         text: string,
         user: User,
         subject: CommentSubject,
-        subjectId: string,
+        commentable: Commentable,
         createdAt?: Date,
         updatedAt?: Date
     ) {
@@ -26,7 +27,7 @@ export class Comment extends Model {
         this._text = text;
         this._user = user;
         this._subject = subject;
-        this._subjectId = subjectId;
+        this._commentable = commentable;
         this._createdAt = createdAt;
         this._updatedAt = updatedAt;
     }
@@ -36,11 +37,11 @@ export class Comment extends Model {
         text: string,
         user: User,
         subject: CommentSubject,
-        subjectId: string,
+        commentable: Commentable,
         createdAt?: Date,
         updatedAt?: Date
     ) {
-        return new Comment(id, text, user, subject, subjectId, createdAt, updatedAt);
+        return new Comment(id, text, user, subject, commentable, createdAt, updatedAt);
     }
 
     public id(): string {
@@ -59,8 +60,8 @@ export class Comment extends Model {
         return this._subject;
     }
 
-    public subjectId(): string {
-        return this._subjectId;
+    public commentable(): Commentable {
+        return this._commentable;
     }
 
     public createdAt(): Date {
