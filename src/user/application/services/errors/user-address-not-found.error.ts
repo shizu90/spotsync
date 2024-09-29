@@ -3,6 +3,5 @@ export class UserAddressNotFoundError extends Error {
 
 	public constructor(message = "User address not found.") {
 		super(message);
-		this.code = 404;
 	}
 }
