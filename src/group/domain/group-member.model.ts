@@ -32,8 +32,8 @@ export class GroupMember extends Model {
 		this._role = role;
 		this._isCreator = isCreator;
 		this._status = status ?? GroupMemberStatus.REQUESTED;
-		this._joinedAt = joinedAt ?? null;
-		this._requestedAt = requestedAt ?? new Date();
+		this._joinedAt = joinedAt;
+		this._requestedAt = requestedAt;
 	}
 
 	public static create(

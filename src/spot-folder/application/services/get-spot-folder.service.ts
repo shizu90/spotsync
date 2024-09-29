@@ -3,6 +3,7 @@ import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from
 import { FavoriteRepository, FavoriteRepositoryProvider } from "src/favorite/application/ports/out/favorite.repository";
 import { FavoritableSubject } from "src/favorite/domain/favoritable-subject.enum";
 import { FollowRepository, FollowRepositoryProvider } from "src/follower/application/ports/out/follow.repository";
+import { FollowStatus } from "src/follower/domain/follow-status.enum";
 import { SpotFolderVisibility } from "src/spot-folder/domain/spot-folder-visibility.enum";
 import { GetSpotFolderCommand } from "../ports/in/commands/get-spot-folder.command";
 import { GetSpotFolderUseCase } from "../ports/in/use-cases/get-spot-folder.use-case";
@@ -40,9 +41,10 @@ export class GetSpotFolderService implements GetSpotFolderUseCase {
             const isFollowing = (await this.followRepository.findBy({
                 fromUserId: authenticatedUser.id(),
                 toUserId: spotFolder.creator().id(),
-            })).at(0);
+                status: FollowStatus.ACTIVE,
+            })).length > 0;
 
-            if ((isFollowing === null || isFollowing === undefined) && spotFolder.creator().id() !== authenticatedUser.id()) {
+            if (!isFollowing && authenticatedUser.id() !== spotFolder.creator().id()) {
                 throw new SpotFolderNotFoundError();
             }
         }

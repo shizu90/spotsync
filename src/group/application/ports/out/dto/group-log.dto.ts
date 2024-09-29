@@ -14,6 +14,8 @@ export class GroupLogDto extends Dto {
     }
 
     public static fromModel(model: GroupLog): GroupLogDto {
+        if (model === null || model === undefined) return null;
+
         return new GroupLogDto(
             model.id(),
             model.text(),

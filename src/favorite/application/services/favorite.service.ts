@@ -44,12 +44,6 @@ export class FavoriteService implements FavoriteUseCase {
 
         await this.favoriteRepository.store(favorite);
 
-        return new FavoriteDto(
-            favorite.id(),
-            favorite.favoritableSubject(),
-            favorite.favoritable().id(),
-            favorite.user().id(),
-            favorite.createdAt().toISOString(),
-        );
+        return FavoriteDto.fromModel(favorite);
     }
 }

@@ -20,6 +20,8 @@ class SpotFolderItemDto extends Dto {
     }
 
     public static fromModel(model: SpotFolderItem): SpotFolderItemDto {
+        if (model === null || model === undefined) return null;
+
         return new SpotFolderItemDto(
             SpotDto.fromModel(model.spot()),
             model.orderNumber(),
@@ -59,6 +61,8 @@ export class SpotFolderDto extends Dto {
     }
 
     public static fromModel(model: SpotFolder): SpotFolderDto {
+        if (model === null || model === undefined) return null;
+
         return new SpotFolderDto(
             model.id(),
             model.name(),

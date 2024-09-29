@@ -11,6 +11,7 @@ import {
 	FollowRepository,
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
+import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import {
 	UserAddressRepository,
@@ -65,27 +66,24 @@ export class ListSpotsService implements ListSpotsUseCase {
 				command.favoritedById,
 			);
 
-			if (favoritedBy !== null && favoritedBy !== undefined) {
+			if ((favoritedBy !== null && favoritedBy !== undefined) && (favoritedBy.id() !== authenticatedUser.id())) {
 				switch (favoritedBy.visibilitySettings().favoriteSpots()) {
 					case UserVisibility.FOLLOWERS:
-						const follow = (
+						const isFollowing = (
 							await this.followRepository.findBy({
 								fromUserId: authenticatedUser.id(),
 								toUserId: favoritedBy.id(),
+								status: FollowStatus.ACTIVE,
 							})
-						).at(0);
+						).length > 0;
 
-						if (follow === null || follow === undefined) {
-							throw new UnauthorizedAccessError(
-								`Unauthorized access`,
-							);
+						if (!isFollowing) {
+							throw new UnauthorizedAccessError();
 						}
 
 						break;
 					case UserVisibility.PRIVATE:
-						throw new UnauthorizedAccessError(
-							`Unauthorized access`,
-						);
+						throw new UnauthorizedAccessError();
 					case UserVisibility.PUBLIC:
 					default:
 						break;
@@ -93,7 +91,7 @@ export class ListSpotsService implements ListSpotsUseCase {
 			}
 		}
 
-		if (command.visitedById !== null && command.visitedById !== undefined) {
+		if ((command.visitedById !== null && command.visitedById !== undefined) && (command.visitedById !== authenticatedUser.id())) {
 			const visitedBy = await this.userRepository.findById(
 				command.visitedById,
 			);
@@ -101,24 +99,21 @@ export class ListSpotsService implements ListSpotsUseCase {
 			if (visitedBy !== null && visitedBy !== undefined) {
 				switch (visitedBy.visibilitySettings().visitedSpots()) {
 					case UserVisibility.FOLLOWERS:
-						const follow = (
+						const isFollowing = (
 							await this.followRepository.findBy({
 								fromUserId: authenticatedUser.id(),
 								toUserId: visitedBy.id(),
+								status: FollowStatus.ACTIVE,
 							})
-						).at(0);
+						).length > 0;
 
-						if (follow === null || follow === undefined) {
-							throw new UnauthorizedAccessError(
-								`Unauthorized access`,
-							);
+						if (!isFollowing) {
+							throw new UnauthorizedAccessError();
 						}
 
 						break;
 					case UserVisibility.PRIVATE:
-						throw new UnauthorizedAccessError(
-							`Unauthorized access`,
-						);
+						throw new UnauthorizedAccessError();
 					case UserVisibility.PUBLIC:
 					default:
 						break;

@@ -33,6 +33,8 @@ export class UserAddressDto extends Dto {
     }
 
     public static fromModel(model: UserAddress): UserAddressDto {
+        if (model === null || model === undefined) return null;
+
         return new UserAddressDto(
             model.name(),
             model.area(),

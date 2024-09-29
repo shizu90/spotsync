@@ -1,15 +1,12 @@
 import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Post, Query, Req, Res, UseFilters, UseGuards } from "@nestjs/common";
-import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
+import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNoContentResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
-import { Pagination } from "src/common/core/common.repository";
 import { ApiController } from "src/common/web/common.controller";
 import { ErrorResponse } from "src/common/web/common.error";
 import { FavoriteUseCase, FavoriteUseCaseProvider } from "src/favorite/application/ports/in/use-cases/favorite.use-case";
 import { ListFavoritesUseCase, ListFavoritesUseCaseProvider } from "src/favorite/application/ports/in/use-cases/list-favorites.use-case";
 import { UnfavoriteUseCase, UnfavoriteUseCaseProvider } from "src/favorite/application/ports/in/use-cases/unfavorite.use-case";
-import { FavoriteDto } from "src/favorite/application/ports/out/dto/favorite.dto";
-import { GetFavoriteDto } from "src/favorite/application/ports/out/dto/get-favorite.dto";
 import { FavoritableSubject } from "src/favorite/domain/favoritable-subject.enum";
 import { FavoriteErrorHandler } from "./handlers/favorite-error.handler";
 import { FavoriteRequestMapper } from "./mappers/favorite-request.mapper";
@@ -54,44 +51,6 @@ export class FavoriteController extends ApiController {
 	) {super();}
 
 	@ApiOperation({ summary: "List favorites of a subject"})
-	@ApiOkResponse({
-		example: {
-			data: new Pagination([
-				new GetFavoriteDto(
-					'uuid',
-					new Date().toISOString(),
-					{
-						id: 'uuid',
-						name: 'string',
-						description: 'description',
-						type: 'string',
-						creator: {
-							id: 'uuid',
-							display_name: 'string',
-							credentials: {
-								name: 'string',
-							},
-							profile_picture: 'string',
-						},
-						address: {
-							area: 'string',
-							country_code: 'BR',
-							latitude: 0,
-							locality: 'string',
-							longitude: 0,
-							sub_area: 'string',
-						},
-						photos: [
-							{
-								file_path: 'string',
-								id: 'uuid',
-							}
-						]
-					},
-				)
-			], 1, 1, 12)
-		}
-	})
 	@UseGuards(AuthGuard)
 	@Get()
 	public async list(
@@ -110,17 +69,6 @@ export class FavoriteController extends ApiController {
 	}
 
 	@ApiOperation({ summary: "Favorite a subject" })
-	@ApiOkResponse({
-		example: {
-			data: new FavoriteDto(
-				'uuid',
-				'string',
-				'uuid',
-				'uuid',
-				new Date().toISOString(),
-			)
-		}
-	})
 	@UseGuards(AuthGuard)
 	@Post()
 	public async favorite(

@@ -21,14 +21,12 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
-	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
-	ApiUnauthorizedResponse,
+	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -51,8 +49,6 @@ import {
 	UnfollowUseCase,
 	UnfollowUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/unfollow.use-case';
-import { FollowDto } from 'src/follower/application/ports/out/dto/follow.dto';
-import { GetFollowDto } from 'src/follower/application/ports/out/dto/get-follow.dto';
 import { FollowErrorHandler } from './handlers/follow-error.handler';
 import { FollowRequestMapper } from './mappers/follow-request.mapper';
 import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
@@ -101,41 +97,6 @@ export class FollowController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List follows' })
-	@ApiOkResponse({
-		example: {
-			data: new Pagination(
-				[
-					new GetFollowDto(
-						'uuid',
-						'req',
-						{
-							id: 'uuid',
-							banner_picture: 'string',
-							birth_date: new Date(),
-							credentials: { name: 'string' },
-							display_name: 'string',
-							profile_picture: 'string',
-							theme_color: '#000000',
-						},
-						{
-							id: 'uuid',
-							banner_picture: 'string',
-							birth_date: new Date(),
-							credentials: { name: 'string' },
-							display_name: 'string',
-							profile_picture: 'string',
-							theme_color: '#000000',
-						},
-						new Date(),
-						new Date(),
-					),
-				],
-				1,
-				0,
-				10,
-			),
-		},
-	})
 	@UseGuards(AuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
 	@Get()
@@ -169,11 +130,6 @@ export class FollowController extends ApiController {
 			'string',
 			'string',
 		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: new FollowDto('uuid', 'uuid', 'uuid', 'req', new Date(), new Date()),
-		},
 	})
 	@UseGuards(AuthGuard)
 	@Post(':from_id/follow/:to_id')

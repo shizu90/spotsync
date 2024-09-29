@@ -1,9 +1,9 @@
 import {
-    ArgumentsHost,
-    BadRequestException,
-    ExceptionFilter,
-    HttpException,
-    HttpStatus,
+	ArgumentsHost,
+	BadRequestException,
+	ExceptionFilter,
+	HttpException,
+	HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ErrorResponse } from 'src/common/web/common.error';
@@ -74,6 +74,7 @@ export class FavoriteErrorHandler implements ExceptionFilter {
 								new Date().toISOString(),
 								error.message,
 								error.constructor.name,
+								error.stack,
 							),
 						);
 				}

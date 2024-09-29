@@ -31,6 +31,13 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 
     private _mountInclude(): Object {
         return {
+            user: {
+                include: {
+                    credentials: true,
+                    profile: true,
+                    visibility_settings: true,
+                }
+            },
             spot: {
                 include: {
                     address: true,

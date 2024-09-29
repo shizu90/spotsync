@@ -1,9 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
+import { UnauthorizedAccessError } from "src/auth/application/services/errors/unauthorized-access.error";
 import { Pagination } from "src/common/core/common.repository";
 import { FavoriteRepository, FavoriteRepositoryProvider } from "src/favorite/application/ports/out/favorite.repository";
 import { FavoritableSubject } from "src/favorite/domain/favoritable-subject.enum";
 import { FollowRepository, FollowRepositoryProvider } from "src/follower/application/ports/out/follow.repository";
+import { FollowStatus } from "src/follower/domain/follow-status.enum";
 import { SpotFolderVisibility } from "src/spot-folder/domain/spot-folder-visibility.enum";
 import { ListSpotFoldersCommand } from "../ports/in/commands/list-spot-folders.command";
 import { ListSpotFoldersUseCase } from "../ports/in/use-cases/list-spot-folders.use-case";
@@ -42,16 +44,19 @@ export class ListSpotFoldersService implements ListSpotFoldersUseCase {
         const spotFolders = await Promise.all(pagination.items.map(async spotFolder => {
             if (spotFolder.creator().id() !== authenticatedUser.id()) {
                 if (spotFolder.visibility() === SpotFolderVisibility.PRIVATE) {
-                    return null;
+                    throw new UnauthorizedAccessError();
                 }
 
                 if (spotFolder.visibility() === SpotFolderVisibility.FOLLOWERS) {
                     const isFollowing = (await this.followRepository.findBy({
                         fromUserId: authenticatedUser.id(),
                         toUserId: spotFolder.creator().id(),
-                    })).at(0);
+                        status: FollowStatus.ACTIVE,
+                    })).length > 0;
 
-                    if ((isFollowing === null || isFollowing === undefined) && spotFolder.creator().id() !== authenticatedUser.id()) return null;
+                    if (
+                        !isFollowing && authenticatedUser.id() !== spotFolder.creator().id()
+                    ) throw new UnauthorizedAccessError();
                 }
             }
 

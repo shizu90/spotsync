@@ -7,6 +7,7 @@ import {
 	FollowRepository,
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
+import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { GetUserCommand } from '../ports/in/commands/get-user.command';
 import { GetUserUseCase } from '../ports/in/use-cases/get-user-profile.use-case';
@@ -47,13 +48,13 @@ export class GetUserService implements GetUserUseCase {
 			throw new UserNotFoundError();
 		}
 
-		const isFollowing =
+		const follow =
 			(
 				await this.followRepository.findBy({
 					fromUserId: authenticatedUser.id(),
 					toUserId: user.id(),
 				})
-			).length > 0;
+			).at(0);
 
 		let userMainAddress = (
 			await this.userAddressRepository.findBy({
@@ -72,7 +73,7 @@ export class GetUserService implements GetUserUseCase {
 			if (
 				user.visibilitySettings().addresses() ===
 					UserVisibility.FOLLOWERS &&
-				!isFollowing
+				(!follow || !follow?.isActive())
 			) {
 				userMainAddress = undefined;
 			}
@@ -80,14 +81,17 @@ export class GetUserService implements GetUserUseCase {
 
 		const totalFollowers = await this.followRepository.countBy({
 			toUserId: user.id(),
+			status: FollowStatus.ACTIVE,
 		});
 		const totalFollowing = await this.followRepository.countBy({
 			fromUserId: user.id(),
+			status: FollowStatus.ACTIVE,
 		});
 
 		return UserDto.fromModel(user)
 			.removeSensitiveData()
-			.setFollowing(isFollowing)
+			.setFollowedAt(follow?.followedAt())
+			.setRequestedToFollowAt(follow?.requestedAt())
 			.setMainAddress(userMainAddress)
 			.setTotalFollowers(totalFollowers)
 			.setTotalFollowing(totalFollowing);

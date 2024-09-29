@@ -30,6 +30,8 @@ class SpotAddressDto extends Dto {
     }
 
     public static fromModel(model: SpotAddress): SpotAddressDto {
+        if (model === null || model === undefined) return null;
+
         return new SpotAddressDto(
             model.area(),
             model.subArea(),
@@ -55,6 +57,8 @@ class SpotPhotoDto extends Dto {
     }
 
     public static fromModel(model: SpotPhoto): SpotPhotoDto {
+        if (model === null || model === undefined) return null;
+
         return new SpotPhotoDto(
             model.id(),
             model.filePath(),
@@ -127,6 +131,8 @@ export class SpotDto extends Dto {
     }
 
     public static fromModel(model: Spot): SpotDto {
+        if (model === null || model === undefined) return null;
+
         return new SpotDto(
             model.id(),
             model.name(),

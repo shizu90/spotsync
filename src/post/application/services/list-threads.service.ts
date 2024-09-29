@@ -9,6 +9,7 @@ import {
 	FollowRepository,
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
+import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -82,12 +83,10 @@ export class ListThreadsService implements ListThreadsUseCase {
 					);
 
 					if (groupMember === null || groupMember === undefined) {
-						throw new UnauthorizedAccessError(
-							`Unauthorized access`,
-						);
+						throw new UnauthorizedAccessError();
 					}
 
-					visibilitiesToFilter = [PostVisibility.PRIVATE];
+					visibilitiesToFilter.push(PostVisibility.PRIVATE);
 
 					break;
 				case GroupVisibility.PUBLIC:
@@ -107,30 +106,34 @@ export class ListThreadsService implements ListThreadsUseCase {
 				throw new UserNotFoundError();
 			}
 
-			switch (user.visibilitySettings().posts()) {
-				case UserVisibility.FOLLOWERS:
-					const follow = (
-						await this.followRepository.findBy({
-							fromUserId: authenticatedUser.id(),
-							toUserId: user.id(),
-						})
-					).at(0);
+			if (user.id() !== authenticatedUser.id()) {
+				switch (user.visibilitySettings().posts()) {
+					case UserVisibility.FOLLOWERS:
+						const isFollowing = (
+							await this.followRepository.findBy({
+								fromUserId: authenticatedUser.id(),
+								toUserId: user.id(),
+								status: FollowStatus.ACTIVE,
+							})
+						).at(0);
 
-					if (follow === null || follow === undefined) {
-						throw new UnauthorizedAccessError(
-							`Unauthorized access`,
-						);
-					}
+						if (!isFollowing) {
+							throw new UnauthorizedAccessError(
+								`Unauthorized access`,
+							);
+						}
 
-					visibilitiesToFilter = [
-						PostVisibility.PUBLIC,
-						PostVisibility.FOLLOWERS,
-					];
+						visibilitiesToFilter.push(PostVisibility.FOLLOWERS);
 
-					break;
-				case UserVisibility.PRIVATE:
-				case UserVisibility.PUBLIC:
-					break;
+						break;
+					case UserVisibility.PRIVATE:
+					case UserVisibility.PUBLIC:
+						break;
+				}
+			} else {
+				visibilitiesToFilter.push(PostVisibility.PUBLIC);
+				visibilitiesToFilter.push(PostVisibility.PRIVATE);
+				visibilitiesToFilter.push(PostVisibility.FOLLOWERS);
 			}
 		}
 

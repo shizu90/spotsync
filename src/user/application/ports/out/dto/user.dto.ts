@@ -149,6 +149,9 @@ export class UserDto extends Dto {
     public total_followers: number = undefined;
     public total_following: number = undefined;
     public following: boolean = undefined;
+    public followed_at: string = undefined;
+    public requested_to_follow: boolean = undefined;
+    public requested_to_follow_at: string = undefined;
 
     constructor(
         id?: string,
@@ -161,7 +164,10 @@ export class UserDto extends Dto {
         main_address?: UserAddressDto,
         total_followers?: number,
         total_following?: number,
-        following?: boolean
+        following?: boolean,
+        followed_at?: string,
+        requested_to_follow?: boolean,
+        requested_to_follow_at?: string,
     ) {
         super();
         this.id = id;
@@ -175,9 +181,14 @@ export class UserDto extends Dto {
         this.total_followers = total_followers;
         this.total_following = total_following;
         this.following = following;
+        this.followed_at = followed_at;
+        this.requested_to_follow = requested_to_follow;
+        this.requested_to_follow_at = requested_to_follow_at;
     }
 
     public static fromModel(model: User): UserDto {
+        if (model === null || model === undefined) return null;
+
         return new UserDto(
             model.id(),
             model.status(),
@@ -213,8 +224,16 @@ export class UserDto extends Dto {
         return this;
     }
 
-    public setFollowing(following: boolean): UserDto {
-        this.following = following;
+    public setFollowedAt(followed_at: Date): UserDto {
+        this.followed_at = followed_at?.toISOString();
+        this.following = followed_at !== null && followed_at !== undefined;
+
+        return this;
+    }
+
+    public setRequestedToFollowAt(requested_to_follow_at: Date): UserDto {
+        this.requested_to_follow_at = requested_to_follow_at?.toISOString();
+        this.requested_to_follow = requested_to_follow_at !== null && requested_to_follow_at !== undefined;
 
         return this;
     }

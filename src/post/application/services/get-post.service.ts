@@ -8,6 +8,7 @@ import {
 	FollowRepository,
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
+import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -65,9 +66,7 @@ export class GetPostService implements GetPostUseCase {
 						authenticatedGroupMember === null ||
 						authenticatedGroupMember === undefined
 					) {
-						throw new UnauthorizedAccessError(
-							`Unauthorized access`,
-						);
+						throw new UnauthorizedAccessError();
 					}
 				} else if (post.creator().id() !== authenticatedUser.id()) {
 					throw new UnauthorizedAccessError();
@@ -75,14 +74,15 @@ export class GetPostService implements GetPostUseCase {
 
 				break;
 			case PostVisibility.FOLLOWERS:
-				const follow = (
+				const isFollowing = (
 					await this.followRepository.findBy({
 						fromUserId: authenticatedUser.id(),
 						toUserId: post.creator().id(),
+						status: FollowStatus.ACTIVE
 					})
-				).at(0);
+				).length > 0;
 
-				if (follow === null || follow === undefined) {
+				if (!isFollowing) {
 					throw new UnauthorizedAccessError();
 				}
 

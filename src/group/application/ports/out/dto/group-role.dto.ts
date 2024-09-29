@@ -16,6 +16,8 @@ class GroupPermissionDto extends Dto {
     }
 
     public static fromModel(model: GroupPermission): GroupPermissionDto {
+        if (model === null || model === undefined) return null;
+
         return new GroupPermissionDto(
             model.id(),
             model.name(),
@@ -52,6 +54,8 @@ export class GroupRoleDto extends Dto {
     }
 
     public static fromModel(model: GroupRole): GroupRoleDto {
+        if (model === null || model === undefined) return null;
+
         return new GroupRoleDto(
             model.id(),
             model.name(),

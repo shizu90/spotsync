@@ -16,8 +16,8 @@ export class Follow extends Model {
 		this._from = from;
 		this._to = to;
 		this._status = status ?? FollowStatus.REQUESTED;
-		this._followedAt = followedAt ?? new Date();
-		this._requestedAt = requestedAt ?? new Date();
+		this._followedAt = followedAt;
+		this._requestedAt = requestedAt;
 	}
 
 	public static create(
@@ -57,5 +57,13 @@ export class Follow extends Model {
 
 	public accept(): void {
 		this._status = FollowStatus.ACTIVE;
+	}
+
+	public isRequested(): boolean {
+		return this._status === FollowStatus.REQUESTED;
+	}
+
+	public isActive(): boolean {
+		return this._status === FollowStatus.ACTIVE;
 	}
 }

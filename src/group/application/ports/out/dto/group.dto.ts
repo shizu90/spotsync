@@ -67,6 +67,8 @@ export class GroupDto extends Dto {
     }
 
     public static fromModel(model: Group): GroupDto {
+        if (model === null || model === undefined) return null;
+
         return new GroupDto(
             model.id(),
             model.name(),

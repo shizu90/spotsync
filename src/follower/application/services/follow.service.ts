@@ -92,13 +92,6 @@ export class FollowService implements FollowUseCase {
 
 		await this.followRepository.store(follow);
 
-		return new FollowDto(
-			follow.id(),
-			follow.from().id(),
-			follow.to().id(),
-			follow.status(),
-			follow.followedAt(),
-			follow.requestedAt(),
-		);
+		return FollowDto.fromModel(follow);
 	}
 }

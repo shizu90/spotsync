@@ -29,6 +29,8 @@ export class GroupMemberDto extends Dto {
     }
 
     public static fromModel(model: GroupMember): GroupMemberDto {
+        if (model === null || model === undefined) return null;
+
         return new GroupMemberDto(
             model.id(),
             UserDto.fromModel(model.user()).removeSensitiveData(),

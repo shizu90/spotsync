@@ -24,6 +24,8 @@ export class PasswordRecoveryDto extends Dto {
     }
 
     public static fromModel(model: PasswordRecovery): PasswordRecoveryDto {
+        if (model === null || model === undefined) return null;
+
         return new PasswordRecoveryDto(
             model.id(),
             model.token(),

@@ -20,6 +20,8 @@ class PostAttachmentDto extends Dto {
     }
 
     public static fromModel(model: PostAttachment): PostAttachmentDto {
+        if (model === null || model === undefined) return null;
+
         return new PostAttachmentDto(
             model.id(),
             model.filePath(),
@@ -84,6 +86,8 @@ export class PostDto extends Dto {
     }
 
     public static fromModel(model: Post): PostDto {
+        if (model === null || model === undefined) return null;
+
         return new PostDto(
             model.id(),
             model.title(),

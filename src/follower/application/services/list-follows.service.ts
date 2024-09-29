@@ -1,22 +1,23 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
+import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import {
-    UserRepository,
-    UserRepositoryProvider,
+	UserRepository,
+	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
 import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { ListFollowsCommand } from '../ports/in/commands/list-follows.command';
 import { ListFollowsUseCase } from '../ports/in/use-cases/list-follows.use-case';
-import { GetFollowDto } from '../ports/out/dto/get-follow.dto';
+import { FollowDto } from '../ports/out/dto/follow.dto';
 import {
-    FollowRepository,
-    FollowRepositoryProvider,
+	FollowRepository,
+	FollowRepositoryProvider,
 } from '../ports/out/follow.repository';
 
 @Injectable()
@@ -32,7 +33,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 
 	public async execute(
 		command: ListFollowsCommand,
-	): Promise<Pagination<GetFollowDto> | Array<GetFollowDto>> {
+	): Promise<Pagination<FollowDto> | Array<FollowDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		if (
@@ -52,8 +53,9 @@ export class ListFollowsService implements ListFollowsUseCase {
 					await this.followRepository.findBy({
 						fromUserId: authenticatedUser.id(),
 						toUserId: user.id(),
+						status: FollowStatus.ACTIVE
 					})
-				).at(0) !== undefined;
+				).length > 0;
 
 			if (
 				user.visibilitySettings().profile() ===
@@ -87,8 +89,9 @@ export class ListFollowsService implements ListFollowsUseCase {
 					await this.followRepository.findBy({
 						fromUserId: authenticatedUser.id(),
 						toUserId: user.id(),
+						status: FollowStatus.ACTIVE
 					})
-				).at(0) !== undefined;
+				).length > 0;
 
 			if (
 				user.visibilitySettings().profile() ===
@@ -122,30 +125,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 		});
 
 		const items = pagination.items.map((i) => {
-			return new GetFollowDto(
-				i.id(),
-				i.status(),
-				{
-					id: i.from().id(),
-					display_name: i.from().profile().displayName(),
-					theme_color: i.from().profile().themeColor(),
-					profile_picture: i.from().profile().profilePicture(),
-					banner_picture: i.from().profile().bannerPicture(),
-					birth_date: i.from().profile().birthDate(),
-					credentials: { name: i.from().credentials().name() },
-				},
-				{
-					id: i.to().id(),
-					display_name: i.to().profile().displayName(),
-					theme_color: i.to().profile().themeColor(),
-					profile_picture: i.to().profile().profilePicture(),
-					banner_picture: i.to().profile().bannerPicture(),
-					birth_date: i.to().profile().birthDate(),
-					credentials: { name: i.to().credentials().name() },
-				},
-				i.followedAt(),
-				i.requestedAt(),
-			);
+			return FollowDto.fromModel(i);
 		});
 
 		if (!command.paginate) {
