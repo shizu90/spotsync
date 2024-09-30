@@ -1,5 +1,5 @@
-import { CommentableSubject } from 'src/comment/domain/comment-subject.model.';
 import { Comment } from 'src/comment/domain/comment.model';
+import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import { Dto } from 'src/common/core/common.dto';
 import { SpotDto } from 'src/spot/application/ports/out/dto/spot.dto';
 import { Spot } from 'src/spot/domain/spot.model';

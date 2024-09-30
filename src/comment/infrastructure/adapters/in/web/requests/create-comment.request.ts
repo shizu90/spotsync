@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString, IsUUID, MaxLength } from 'class-validator';
-import { CommentableSubject } from 'src/comment/domain/comment-subject.model.';
+import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import { ApiRequest } from 'src/common/web/common.request';
 
 export class CreateCommentRequest extends ApiRequest {

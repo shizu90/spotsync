@@ -1,4 +1,4 @@
-import { CommentableSubject } from 'src/comment/domain/comment-subject.model.';
+import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import { Command } from 'src/common/core/common.command';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 

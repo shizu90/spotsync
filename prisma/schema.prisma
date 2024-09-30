@@ -297,12 +297,12 @@ model Comment {
   text         String   @db.VarChar(400)
   subject      String   @db.VarChar(20)
   user_id      String
-  spot_id      String
-  spot_event_id String
+  spot_id      String?
+  spot_event_id String?
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now())
   user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  spot         Spot     @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+  spot         Spot?     @relation(fields: [spot_id], references: [id], onDelete: Cascade)
   likes        Like[]
 
   @@map("comments")

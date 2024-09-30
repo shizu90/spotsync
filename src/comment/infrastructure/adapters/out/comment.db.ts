@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CommentRepository } from 'src/comment/application/ports/out/comment.repository';
-import { CommentableSubject } from 'src/comment/domain/comment-subject.model.';
 import { Comment } from 'src/comment/domain/comment.model';
+import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import {
 	PaginateParameters,
 	Pagination,

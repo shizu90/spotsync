@@ -3,7 +3,7 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { CommentableSubject } from 'src/comment/domain/comment-subject.model.';
+import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import { Commentable } from 'src/comment/domain/commentable.interface';
 import {
 	SpotRepository,

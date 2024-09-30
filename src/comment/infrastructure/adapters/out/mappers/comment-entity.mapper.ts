@@ -1,6 +1,6 @@
 import { Comment as CommentPrisma } from '@prisma/client';
-import { CommentableSubject } from 'src/comment/domain/comment-subject.model.';
 import { Comment } from 'src/comment/domain/comment.model';
+import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import { EntityMapper } from 'src/common/core/entity.mapper';
 import {
 	SpotEntity,

@@ -7,7 +7,7 @@ import {
 	IsString,
 	IsUUID,
 } from 'class-validator';
-import { CommentableSubject } from 'src/comment/domain/comment-subject.model.';
+import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { ApiRequest } from 'src/common/web/common.request';
 

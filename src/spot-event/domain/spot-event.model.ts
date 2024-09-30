@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
-import { CommentableSubject } from 'src/comment/domain/comment-subject.model.';
 import { Comment } from 'src/comment/domain/comment.model';
+import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import { Commentable } from 'src/comment/domain/commentable.interface';
 import { Model } from 'src/common/core/common.model';
 import { Favoritable } from 'src/favorite/domain/favoritable.interface';
