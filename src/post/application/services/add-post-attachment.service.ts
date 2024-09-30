@@ -65,7 +65,6 @@ export class AddPostAttachmentService implements AddPostAttachmentUseCase {
 		});
 
 		return PostDto.fromModel(post)
-			.setLiked(liked)
-			.setTotalLikes(totalLikes);
+			.setLiked(liked);
 	}
 }

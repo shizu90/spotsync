@@ -2,6 +2,7 @@ import { Dto } from 'src/common/core/common.dto';
 import { SpotFolderItem } from 'src/spot-folder/domain/spot-folder-item.model';
 import { SpotFolder } from 'src/spot-folder/domain/spot-folder.model';
 import { SpotDto } from 'src/spot/application/ports/out/dto/spot.dto';
+import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 
 class SpotFolderItemDto extends Dto {
 	public spot: SpotDto = undefined;
@@ -41,6 +42,7 @@ export class SpotFolderDto extends Dto {
 	public favorited_at: string = undefined;
 	public total_favorites: number = undefined;
 	public total_spots: number = undefined;
+	public creator: UserDto = undefined;
 
 	private constructor(
 		id?: string,
@@ -49,6 +51,7 @@ export class SpotFolderDto extends Dto {
 		hex_color?: string,
 		visibility?: string,
 		items?: SpotFolderItemDto[],
+		creator?: UserDto,
 	) {
 		super();
 		this.id = id;
@@ -58,6 +61,7 @@ export class SpotFolderDto extends Dto {
 		this.visibility = visibility;
 		this.items = items;
 		this.total_spots = items.length;
+		this.creator = creator;
 	}
 
 	public static fromModel(model: SpotFolder): SpotFolderDto {
@@ -70,6 +74,7 @@ export class SpotFolderDto extends Dto {
 			model.hexColor(),
 			model.visibility(),
 			model.items().map((item) => SpotFolderItemDto.fromModel(item)),
+			model.creator() ? UserDto.fromModel(model.creator()).removeSensitiveData() : undefined
 		);
 	}
 

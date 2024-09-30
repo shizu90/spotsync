@@ -29,8 +29,8 @@ export class FollowDto extends Dto {
 
 		return new FollowDto(
 			model.id(),
-			UserDto.fromModel(model.from()),
-			UserDto.fromModel(model.to()),
+			model.from() ? UserDto.fromModel(model.from()).removeSensitiveData() : undefined,
+			model.to() ? UserDto.fromModel(model.to()).removeSensitiveData() : undefined,
 			model.followedAt()?.toISOString(),
 			model.requestedAt()?.toISOString(),
 		);

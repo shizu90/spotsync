@@ -89,7 +89,7 @@ export class PostDto extends Dto {
 			model.title(),
 			model.content(),
 			model.attachments().map((a) => PostAttachmentDto.fromModel(a)),
-			UserDto.fromModel(model.creator()),
+			model.creator() ? UserDto.fromModel(model.creator()).removeSensitiveData() : undefined,
 			model.visibility(),
 			model.depthLevel(),
 			model.thread().id(),

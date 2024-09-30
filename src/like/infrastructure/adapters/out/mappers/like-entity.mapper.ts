@@ -1,4 +1,5 @@
 import { Like as LikePrisma } from '@prisma/client';
+import { CommentEntity, CommentEntityMapper } from 'src/comment/infrastructure/adapters/out/mappers/comment-entity.mapper';
 import { EntityMapper } from 'src/common/core/entity.mapper';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { Likable } from 'src/like/domain/likable.interface';
@@ -16,12 +17,13 @@ import {
 export type LikeEntity = LikePrisma & {
 	user?: UserEntity;
 	post?: PostEntity;
-	comment?: any;
+	comment?: CommentEntity;
 };
 
 export class LikeEntityMapper implements EntityMapper<Like, LikeEntity> {
 	private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 	private _postEntityMapper: PostEntityMapper = new PostEntityMapper();
+	private _commentEntityMapper: CommentEntityMapper = new CommentEntityMapper();
 
 	public toEntity(like: Like): LikeEntity {
 		if (like === null || like === undefined) return null;
@@ -59,6 +61,11 @@ export class LikeEntityMapper implements EntityMapper<Like, LikeEntity> {
 			case LikableSubject.POST.toString():
 				likable = entity.post
 					? this._postEntityMapper.toModel(entity.post)
+					: null;
+				break;
+			case LikableSubject.COMMENT.toString():
+				likable = entity.comment
+					? this._commentEntityMapper.toModel(entity.comment)
 					: null;
 				break;
 			default:

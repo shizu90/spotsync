@@ -47,7 +47,7 @@ export class CommentDto extends Dto {
 		return new CommentDto(
 			model.id(),
 			model.text(),
-			model.user() ? UserDto.fromModel(model.user()) : undefined,
+			model.user() ? UserDto.fromModel(model.user()).removeSensitiveData() : undefined,
 			commentable,
 			model.totalLikes(),
 			model.createdAt()?.toISOString(),

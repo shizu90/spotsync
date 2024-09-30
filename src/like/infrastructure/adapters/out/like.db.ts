@@ -51,6 +51,31 @@ export class LikeRepositoryImpl implements LikeRepository {
 		return query;
 	}
 
+	private _mountInclude(): Object {
+		return {
+			user: {
+				include: {
+					credentials: true,
+					visibility_settings: true,
+					profile: true,
+				},
+			},
+			post: {
+				include: {
+					attachments: true,
+					creator: true,
+					thread: true,
+					group: true,
+				},
+			},
+			comment: {
+				include: {
+					user: true,
+				},
+			},
+		};
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Like>> {
@@ -79,28 +104,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			items = await this.prismaService.like.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					user: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-					post: {
-						include: {
-							attachments: true,
-							creator: true,
-							thread: true,
-							group: true,
-						},
-					},
-					comment: {
-						include: {
-							user: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 				skip: limit * page,
 				take: limit,
 			});
@@ -108,28 +112,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			items = await this.prismaService.like.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					user: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-					post: {
-						include: {
-							attachments: true,
-							creator: true,
-							thread: true,
-							group: true,
-						},
-					},
-					comment: {
-						include: {
-							user: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 			});
 		}
 
@@ -145,28 +128,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 		const query = this._mountQuery(values);
 		const likes = await this.prismaService.like.findMany({
 			where: query,
-			include: {
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				post: {
-					include: {
-						attachments: true,
-						creator: true,
-						thread: true,
-						group: true,
-					},
-				},
-				comment: {
-					include: {
-						user: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
 
 		return likes.map((like) => this._likeEntityMapper.toModel(like));
@@ -183,28 +145,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 
 	public async findAll(): Promise<Like[]> {
 		const likes = await this.prismaService.like.findMany({
-			include: {
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				post: {
-					include: {
-						attachments: true,
-						creator: true,
-						thread: true,
-						group: true,
-					},
-				},
-				comment: {
-					include: {
-						user: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
 
 		return likes.map((like) => this._likeEntityMapper.toModel(like));
@@ -213,28 +154,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 	public async findById(id: string): Promise<Like> {
 		const like = await this.prismaService.like.findFirst({
 			where: { id: id },
-			include: {
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				post: {
-					include: {
-						attachments: true,
-						creator: true,
-						thread: true,
-						group: true,
-					},
-				},
-				comment: {
-					include: {
-						user: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
 
 		return this._likeEntityMapper.toModel(like);
@@ -256,28 +176,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 				created_at: model.createdAt(),
 				user_id: model.user().id(),
 			},
-			include: {
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				post: {
-					include: {
-						attachments: true,
-						creator: true,
-						thread: true,
-						group: true,
-					},
-				},
-				comment: {
-					include: {
-						user: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
 
 		return this._likeEntityMapper.toModel(like);

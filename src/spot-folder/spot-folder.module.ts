@@ -11,7 +11,7 @@ import { Providers } from './spot-folder.provider';
 	imports: [
 		AuthModule,
 		FollowerModule,
-		SpotModule,
+		forwardRef(() => SpotModule),
 		PrismaModule,
 		forwardRef(() => FavoriteModule),
 	],

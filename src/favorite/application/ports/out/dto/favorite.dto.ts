@@ -47,7 +47,7 @@ export class FavoriteDto extends Dto {
 
 		return new FavoriteDto(
 			model.id(),
-			UserDto.fromModel(model.user()),
+			model.user() ? UserDto.fromModel(model.user()).removeSensitiveData() : undefined,
 			favoritable,
 			model.createdAt()?.toISOString(),
 		);

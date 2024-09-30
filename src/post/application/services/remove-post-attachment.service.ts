@@ -65,7 +65,6 @@ export class RemovePostAttachmentService
 		});
 
 		return PostDto.fromModel(post)
-			.setLiked(liked)
-			.setTotalLikes(totalLikes);
+			.setLiked(liked);
 	}
 }

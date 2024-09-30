@@ -134,9 +134,9 @@ export class SpotDto extends Dto {
 			model.type(),
 			model.createdAt().toISOString(),
 			model.updatedAt().toISOString(),
-			SpotAddressDto.fromModel(model.address()),
+			model.address() ? SpotAddressDto.fromModel(model.address()) : undefined,
 			model.photos().map((photo) => SpotPhotoDto.fromModel(photo)),
-			UserDto.fromModel(model.creator()).removeSensitiveData(),
+			model.creator() ? UserDto.fromModel(model.creator()).removeSensitiveData() : undefined,
 		);
 	}
 

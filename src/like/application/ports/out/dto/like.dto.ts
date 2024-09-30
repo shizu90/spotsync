@@ -38,7 +38,7 @@ export class LikeDto extends Dto {
 
 		return new LikeDto(
 			model.id(),
-			UserDto.fromModel(model.user()),
+			model.user() ? UserDto.fromModel(model.user()).removeSensitiveData() : undefined,
 			subject,
 			model.createdAt()?.toISOString(),
 		);
