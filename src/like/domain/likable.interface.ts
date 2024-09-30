@@ -4,4 +4,5 @@ import { Like } from './like.model';
 export interface Likable {
 	id(): string;
 	like(user: User): Like;
+	unlike(): void;
 }

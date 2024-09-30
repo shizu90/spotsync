@@ -93,13 +93,6 @@ export class GetPostService implements GetPostUseCase {
 				break;
 		}
 
-		const totalLikes = (
-			await this.likeRepository.findBy({
-				subject: LikableSubject.POST,
-				subjectId: post.id(),
-			})
-		).length;
-
 		const liked =
 			(
 				await this.likeRepository.findBy({
@@ -107,10 +100,9 @@ export class GetPostService implements GetPostUseCase {
 					subjectId: post.id(),
 					userId: authenticatedUser.id(),
 				})
-			).at(0) !== undefined;
+			).length > 0;
 
 		return PostDto.fromModel(post)
-			.setLiked(liked)
-			.setTotalLikes(totalLikes);
+			.setLiked(liked);
 	}
 }

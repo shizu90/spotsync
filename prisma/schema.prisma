@@ -207,6 +207,7 @@ model Post {
   updated_at     DateTime         @default(now())
   depth_level    Int              @default(0)
   thread_id      String
+  total_likes    Int              @default(0)
   attachments    PostAttachment[]
   group          Group?           @relation(fields: [group_id], references: [id], onDelete: Cascade)
   parent_post    Post?            @relation("parent_post", fields: [parent_id], references: [id], onDelete: Cascade)
@@ -299,6 +300,7 @@ model Comment {
   user_id      String
   spot_id      String?
   spot_event_id String?
+  total_likes  Int      @default(0)
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now())
   user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)

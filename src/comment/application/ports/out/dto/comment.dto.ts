@@ -12,6 +12,8 @@ export class CommentDto extends Dto {
 	public text: string = undefined;
 	public user: UserDto = undefined;
 	public commentable: CommentableDto = undefined;
+	public total_likes: number = undefined;
+	public liked: boolean = undefined;
 	public created_at: string = undefined;
 
 	private constructor(
@@ -19,13 +21,17 @@ export class CommentDto extends Dto {
 		text: string,
 		user: UserDto,
 		commentable: CommentableDto,
+		total_likes: number,
 		created_at: string,
+		liked: boolean,
 	) {
 		super();
 		this.id = id;
 		this.text = text;
 		this.user = user;
 		this.commentable = commentable;
+		this.total_likes = total_likes;
+		this.liked = liked;
 		this.created_at = created_at;
 	}
 
@@ -43,7 +49,14 @@ export class CommentDto extends Dto {
 			model.text(),
 			model.user() ? UserDto.fromModel(model.user()) : undefined,
 			commentable,
+			model.totalLikes(),
 			model.createdAt()?.toISOString(),
+			undefined,
 		);
+	}
+
+	public setLiked(liked: boolean): CommentDto {
+		this.liked = liked;
+		return this;
 	}
 }

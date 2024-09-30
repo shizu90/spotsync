@@ -1,3 +1,4 @@
+import { Comment } from 'src/comment/domain/comment.model';
 import { Model } from 'src/common/core/common.model';
 import { Post } from 'src/post/domain/post.model';
 import { User } from 'src/user/domain/user.model';
@@ -44,6 +45,15 @@ export class Like extends Model {
 		createdAt?: Date,
 	) {
 		return new Like(id, LikableSubject.POST, spot, user, createdAt);
+	}
+
+	public static createForComment(
+		id: string,
+		comment: Comment,
+		user: User,
+		createdAt?: Date,
+	) {
+		return new Like(id, LikableSubject.COMMENT, comment, user, createdAt);
 	}
 
 	public id(): string {

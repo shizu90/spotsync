@@ -99,13 +99,8 @@ export class PostDto extends Dto {
 			model.group() ? model.group().id() : null,
 			model.childrens().map((p) => PostDto.fromModel(p)),
 			model.childrens().length,
+			model.totalLikes(),
 		);
-	}
-
-	public setTotalLikes(totalLikes: number): PostDto {
-		this.total_likes = totalLikes;
-
-		return this;
 	}
 
 	public setLiked(liked: boolean): PostDto {

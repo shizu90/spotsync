@@ -176,6 +176,7 @@ export class CommentRepositoryImpl implements CommentRepository {
 						: null,
 				created_at: model.createdAt(),
 				updated_at: model.updatedAt(),
+				total_likes: model.totalLikes(),
 			},
 		});
 
@@ -190,6 +191,7 @@ export class CommentRepositoryImpl implements CommentRepository {
 			data: {
 				text: model.text(),
 				updated_at: model.updatedAt(),
+				total_likes: model.totalLikes(),
 			},
 		});
 	}

@@ -321,6 +321,7 @@ export class PostRepositoryImpl implements PostRepository {
 				thread_id: model.thread().id(),
 				depth_level: model.depthLevel(),
 				parent_id: model.parent() ? model.parent().id() : null,
+				total_likes: model.totalLikes(),
 			},
 			include: {
 				creator: {
@@ -364,12 +365,15 @@ export class PostRepositoryImpl implements PostRepository {
 				content: model.content(),
 				depth_level: model.depthLevel(),
 				updated_at: model.updatedAt(),
+				total_likes: model.totalLikes(),
 			},
 		});
 
-		await this.prismaService.$queryRawUnsafe(
-			`DELETE FROM post_attachments WHERE post_id = '${model.id()}'`,
-		);
+		await this.prismaService.postAttachment.deleteMany({
+			where: {
+				post_id: model.id(),
+			}
+		});
 
 		model.attachments().forEach(async (a) => {
 			await this.prismaService.postAttachment.create({

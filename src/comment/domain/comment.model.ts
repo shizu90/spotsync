@@ -1,14 +1,18 @@
+import { randomUUID } from 'crypto';
 import { Model } from 'src/common/core/common.model';
+import { Likable } from 'src/like/domain/likable.interface';
+import { Like } from 'src/like/domain/like.model';
 import { User } from 'src/user/domain/user.model';
 import { CommentableSubject } from './commentable-subject.enum';
 import { Commentable } from './commentable.interface';
 
-export class Comment extends Model {
+export class Comment extends Model implements Likable {
 	private _id: string;
 	private _text: string;
 	private _user: User;
 	private _subject: CommentableSubject;
 	private _commentable: Commentable;
+	private _totalLikes: number;
 	private _createdAt: Date;
 	private _updatedAt: Date;
 
@@ -18,6 +22,7 @@ export class Comment extends Model {
 		user: User,
 		subject: CommentableSubject,
 		commentable: Commentable,
+		totalLikes?: number,
 		createdAt?: Date,
 		updatedAt?: Date,
 	) {
@@ -28,6 +33,7 @@ export class Comment extends Model {
 		this._user = user;
 		this._subject = subject;
 		this._commentable = commentable;
+		this._totalLikes = totalLikes ?? 0;
 		this._createdAt = createdAt;
 		this._updatedAt = updatedAt;
 	}
@@ -38,6 +44,7 @@ export class Comment extends Model {
 		user: User,
 		subject: CommentableSubject,
 		commentable: Commentable,
+		totalLikes?: number,
 		createdAt?: Date,
 		updatedAt?: Date,
 	) {
@@ -47,6 +54,7 @@ export class Comment extends Model {
 			user,
 			subject,
 			commentable,
+			totalLikes,
 			createdAt,
 			updatedAt,
 		);
@@ -72,6 +80,10 @@ export class Comment extends Model {
 		return this._commentable;
 	}
 
+	public totalLikes(): number {
+		return this._totalLikes;
+	}
+
 	public createdAt(): Date {
 		return this._createdAt;
 	}
@@ -83,5 +95,19 @@ export class Comment extends Model {
 	public changeText(text: string) {
 		this._text = text;
 		this._updatedAt = new Date();
+	}
+
+	public like(user: User) {
+		this._totalLikes++;
+
+		return Like.createForComment(
+			randomUUID(),
+			this,
+			user,
+		);
+	}
+
+	public unlike() {
+		this._totalLikes--;
 	}
 }

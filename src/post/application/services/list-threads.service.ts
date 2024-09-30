@@ -3,7 +3,6 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
 import {
 	FollowRepository,
@@ -18,8 +17,7 @@ import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from 'src/group/application/ports/out/group.repository';
-import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
-import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
+import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import {
 	LikeRepository,
 	LikeRepositoryProvider,
@@ -30,8 +28,6 @@ import {
 	UserRepository,
 	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
-import { UserNotFoundError } from 'src/user/application/services/errors/user-not-found.error';
-import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { ListThreadsCommand } from '../ports/in/commands/list-threads.command';
 import { ListThreadsUseCase } from '../ports/in/use-cases/list-threads.use-case';
 import { PostDto } from '../ports/out/dto/post.dto';
@@ -64,83 +60,9 @@ export class ListThreadsService implements ListThreadsUseCase {
 	): Promise<Pagination<PostDto> | Array<PostDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
-		let visibilitiesToFilter = [PostVisibility.PUBLIC];
-
-		if (command.groupId !== null && command.groupId !== undefined) {
-			const group = await this.groupRepository.findById(command.groupId);
-
-			if (group === null || group === undefined || group.isDeleted()) {
-				throw new GroupNotFoundError();
-			}
-
-			switch (group.visibilitySettings().posts()) {
-				case GroupVisibility.PRIVATE:
-					const groupMember = await this.groupMemberRepository.findBy(
-						{
-							groupId: group.id(),
-							userId: authenticatedUser.id(),
-						},
-					);
-
-					if (groupMember === null || groupMember === undefined) {
-						throw new UnauthorizedAccessError();
-					}
-
-					visibilitiesToFilter.push(PostVisibility.PRIVATE);
-
-					break;
-				case GroupVisibility.PUBLIC:
-				default:
-					break;
-			}
-		}
-
-		if (
-			command.userId !== null &&
-			command.userId !== undefined &&
-			(command.groupId === null || command.groupId === undefined)
-		) {
-			const user = await this.userRepository.findById(command.userId);
-
-			if (user === null || user === undefined || user.isDeleted()) {
-				throw new UserNotFoundError();
-			}
-
-			if (user.id() !== authenticatedUser.id()) {
-				switch (user.visibilitySettings().posts()) {
-					case UserVisibility.FOLLOWERS:
-						const isFollowing = (
-							await this.followRepository.findBy({
-								fromUserId: authenticatedUser.id(),
-								toUserId: user.id(),
-								status: FollowStatus.ACTIVE,
-							})
-						).at(0);
-
-						if (!isFollowing) {
-							throw new UnauthorizedAccessError(
-								`Unauthorized access`,
-							);
-						}
-
-						visibilitiesToFilter.push(PostVisibility.FOLLOWERS);
-
-						break;
-					case UserVisibility.PRIVATE:
-					case UserVisibility.PUBLIC:
-						break;
-				}
-			} else {
-				visibilitiesToFilter.push(PostVisibility.PUBLIC);
-				visibilitiesToFilter.push(PostVisibility.PRIVATE);
-				visibilitiesToFilter.push(PostVisibility.FOLLOWERS);
-			}
-		}
-
 		const pagination = await this.postRepository.paginate({
 			filters: {
 				groupId: command.groupId,
-				visibility: visibilitiesToFilter,
 				userId: command.userId,
 				depthLevel: 0,
 			},
@@ -153,12 +75,31 @@ export class ListThreadsService implements ListThreadsUseCase {
 
 		const items = await Promise.all(
 			pagination.items.map(async (i) => {
-				const totalLikes = (
-					await this.likeRepository.findBy({
-						subject: LikableSubject.POST,
-						subjectId: i.id(),
-					})
-				).length;
+				switch(i.visibility()) {
+					case PostVisibility.PRIVATE:
+						if (i.group() !== null) {
+							const isMember = (await this.groupMemberRepository.findBy({
+								userId: authenticatedUser.id(),
+								groupId: i.group().id(),
+								status: GroupMemberStatus.ACTIVE,
+							})).length > 0;
+
+							if (!isMember) return undefined;
+						} else {
+							if (i.creator().id() !== authenticatedUser.id()) return undefined;
+						}
+						break;
+					case PostVisibility.FOLLOWERS:
+						const ifFollowing = (await this.followRepository.findBy({
+							fromUserId: authenticatedUser.id(),
+							toUserId: i.creator().id(),
+							status: FollowStatus.ACTIVE,
+						})).length > 0;
+
+						if (!ifFollowing) return undefined;
+						break;
+					default: break;
+				}
 
 				const liked =
 					(
@@ -167,14 +108,8 @@ export class ListThreadsService implements ListThreadsUseCase {
 							subjectId: i.id(),
 							userId: authenticatedUser.id(),
 						})
-					).at(0) !== undefined;
-
-				const totalChildrens = await this.postRepository.countBy({
-					parentId: i.id(),
-				});
-
+					).length > 0;
 				return PostDto.fromModel(i)
-					.setTotalLikes(totalLikes)
 					.setLiked(liked);
 			}),
 		);
