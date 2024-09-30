@@ -24,7 +24,7 @@ import {
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -38,7 +38,10 @@ import {
 	DeleteGroupUseCase,
 	DeleteGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/delete-group.use-case';
-import { GetGroupHistoryUseCase, GetGroupHistoryUseCaseProvider } from 'src/group/application/ports/in/use-cases/get-group-history.use-case';
+import {
+	GetGroupHistoryUseCase,
+	GetGroupHistoryUseCaseProvider,
+} from 'src/group/application/ports/in/use-cases/get-group-history.use-case';
 import {
 	GetGroupUseCase,
 	GetGroupUseCaseProvider,
@@ -66,7 +69,7 @@ import { UpdateGroupRequest } from './requests/update-group.request';
 @ApiUnauthorizedResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -74,7 +77,7 @@ import { UpdateGroupRequest } from './requests/update-group.request';
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -82,7 +85,7 @@ import { UpdateGroupRequest } from './requests/update-group.request';
 @ApiForbiddenResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -111,7 +114,13 @@ export class GroupController extends ApiController {
 
 	@ApiOperation({ summary: 'List groups' })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Get()
 	public async list(
 		@Query() query: ListGroupsQueryRequest,
@@ -131,7 +140,7 @@ export class GroupController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -156,13 +165,19 @@ export class GroupController extends ApiController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Post()
 	public async create(
 		@Body() request: CreateGroupRequest,
@@ -182,7 +197,7 @@ export class GroupController extends ApiController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -190,14 +205,20 @@ export class GroupController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Put(':id')
 	public async update(
 		@Param('id') id: string,
@@ -209,16 +230,14 @@ export class GroupController extends ApiController {
 
 		await this.updateGroupUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Update group visibility' })
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -226,14 +245,20 @@ export class GroupController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Put(':id/visibility')
 	public async updateVisibility(
 		@Param('id') id: string,
@@ -248,16 +273,14 @@ export class GroupController extends ApiController {
 
 		await this.updateGroupVisibilityUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Delete group' })
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -274,16 +297,14 @@ export class GroupController extends ApiController {
 
 		await this.deleteGroupUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Get group history' })
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),

@@ -8,9 +8,15 @@ import { SpotFolderController } from './infrastructure/adapters/in/web/spot-fold
 import { Providers } from './spot-folder.provider';
 
 @Module({
-    imports: [AuthModule, FollowerModule, SpotModule, PrismaModule, forwardRef(() => FavoriteModule)],
-    exports: [...Providers],
-    providers: [...Providers],
-    controllers: [SpotFolderController]
+	imports: [
+		AuthModule,
+		FollowerModule,
+		SpotModule,
+		PrismaModule,
+		forwardRef(() => FavoriteModule),
+	],
+	exports: [...Providers],
+	providers: [...Providers],
+	controllers: [SpotFolderController],
 })
 export class SpotFolderModule {}

@@ -18,10 +18,7 @@ import { UpdateUserProfileRequest } from '../requests/update-user-profile.reques
 import { UpdateUserVisibilitySettingsRequest } from '../requests/update-user-visibility-settings.request';
 
 export class UserRequestMapper {
-	public static getUserCommand(
-		id: string,
-		name: string,
-	): GetUserCommand {
+	public static getUserCommand(id: string, name: string): GetUserCommand {
 		return new GetUserCommand(id, name);
 	}
 
@@ -48,14 +45,16 @@ export class UserRequestMapper {
 			request.email,
 			request.password,
 			request.phone_number,
-			request.address ? {
-				area: request.address.area,
-				subArea: request.address.sub_area,
-				countryCode: request.address.country_code,
-				locality: request.address.locality,
-				latitude: request.address.latitude,
-				longitude: request.address.longitude,
-			} : null
+			request.address
+				? {
+						area: request.address.area,
+						subArea: request.address.sub_area,
+						countryCode: request.address.country_code,
+						locality: request.address.locality,
+						latitude: request.address.latitude,
+						longitude: request.address.longitude,
+					}
+				: null,
 		);
 	}
 
@@ -106,15 +105,22 @@ export class UserRequestMapper {
 		return new DeleteUserCommand(id);
 	}
 
-	public static forgotPasswordCommand(body: ForgotPasswordRequest): ForgotPasswordCommand {
+	public static forgotPasswordCommand(
+		body: ForgotPasswordRequest,
+	): ForgotPasswordCommand {
 		return new ForgotPasswordCommand(body.email);
 	}
 
-	public static changePasswordCommand(body: ChangePasswordRequest): ChangePasswordCommand {
+	public static changePasswordCommand(
+		body: ChangePasswordRequest,
+	): ChangePasswordCommand {
 		return new ChangePasswordCommand(body.password, body.token);
 	}
 
-	public static activateUserCommand(id: string, body: ActivateUserRequest): ActivateUserCommand {
-		return new ActivateUserCommand(id, body.code, body.auto_login ?? false)
+	public static activateUserCommand(
+		id: string,
+		body: ActivateUserRequest,
+	): ActivateUserCommand {
+		return new ActivateUserCommand(id, body.code, body.auto_login ?? false);
 	}
 }

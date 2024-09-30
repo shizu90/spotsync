@@ -42,9 +42,7 @@ describe('GetGroupService', () => {
 
 		getAuthenticatedUser.execute.mockResolvedValue(mockUser());
 		groupRepository.findById.mockResolvedValue(group);
-		groupMemberRepository.findBy.mockResolvedValue([
-			mockGroupMember()
-		]);
+		groupMemberRepository.findBy.mockResolvedValue([mockGroupMember()]);
 
 		const g = await service.execute(command);
 

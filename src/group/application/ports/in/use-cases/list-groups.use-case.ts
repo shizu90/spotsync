@@ -6,4 +6,7 @@ import { ListGroupsCommand } from '../commands/list-groups.command';
 export const ListGroupsUseCaseProvider = 'ListGroupsUseCase';
 
 export interface ListGroupsUseCase
-	extends UseCase<ListGroupsCommand, Promise<Pagination<GroupDto> | Array<GroupDto>>> {}
+	extends UseCase<
+		ListGroupsCommand,
+		Promise<Pagination<GroupDto> | Array<GroupDto>>
+	> {}

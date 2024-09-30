@@ -41,7 +41,7 @@ describe('ListUserAddressesService', () => {
 			null,
 			null,
 			null,
-			true
+			true,
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);

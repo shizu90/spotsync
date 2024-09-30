@@ -165,6 +165,8 @@ export class SpotFolder extends Model implements Favoritable {
 	}
 
 	public sortItems(): void {
-		this._items = this._items.sort((a, b) => a.orderNumber() - b.orderNumber());
+		this._items = this._items.sort(
+			(a, b) => a.orderNumber() - b.orderNumber(),
+		);
 	}
 }

@@ -11,7 +11,7 @@ import { PostEntityMapper } from './mappers/post-entity.mapper';
 
 export class PostRepositoryImpl implements PostRepository {
 	private _postEntityMapper: PostEntityMapper = new PostEntityMapper();
-	
+
 	public constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
@@ -110,7 +110,7 @@ export class PostRepositoryImpl implements PostRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countBy(params.filters);
 
@@ -198,7 +198,7 @@ export class PostRepositoryImpl implements PostRepository {
 
 		items = items.map((i) => this._postEntityMapper.toModel(i));
 
-		return new Pagination(items, total, page+1, limit);
+		return new Pagination(items, total, page + 1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<Post>> {

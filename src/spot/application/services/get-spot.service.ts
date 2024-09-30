@@ -3,7 +3,10 @@ import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
-import { FavoriteRepository, FavoriteRepositoryProvider } from 'src/favorite/application/ports/out/favorite.repository';
+import {
+	FavoriteRepository,
+	FavoriteRepositoryProvider,
+} from 'src/favorite/application/ports/out/favorite.repository';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import {

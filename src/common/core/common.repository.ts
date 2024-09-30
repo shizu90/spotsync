@@ -18,13 +18,18 @@ export class Pagination<T> {
 	public has_next_page: boolean;
 	public limit: number;
 
-	constructor(items: Array<T>, total: number, current_page: number, limit: number = 12) {
+	constructor(
+		items: Array<T>,
+		total: number,
+		current_page: number,
+		limit: number = 12,
+	) {
 		this.items = items;
 		this.total = total;
 		this.current_page = current_page;
-		this.last_page = (Math.ceil(total / limit)) || 1;
+		this.last_page = Math.ceil(total / limit) || 1;
 		this.limit = limit;
-		this.has_next_page = (this.current_page+1) < this.last_page;
+		this.has_next_page = this.current_page + 1 < this.last_page;
 	}
 }
 

@@ -5,7 +5,4 @@ import { AcceptGroupRequestCommand } from '../commands/accept-group-request.comm
 export const AcceptGroupRequestUseCaseProvider = 'AcceptGroupRequestUseCase';
 
 export interface AcceptGroupRequestUseCase
-	extends UseCase<
-		AcceptGroupRequestCommand,
-		Promise<GroupMemberDto>
-	> {}
+	extends UseCase<AcceptGroupRequestCommand, Promise<GroupMemberDto>> {}

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+	IsBoolean,
+	IsOptional,
+	IsString,
+	MaxLength,
+	MinLength,
+} from 'class-validator';
 import { ApiRequest } from 'src/common/web/common.request';
 
 export class CreateUserAddressRequest extends ApiRequest {

@@ -62,10 +62,12 @@ export class RefuseGroupRequestService implements RefuseGroupRequestUseCase {
 			throw new UnauthorizedAccessError();
 		}
 
-		const groupRequest = (await this.groupMemberRepository.findBy({
-			id: command.id,
-			status: GroupMemberStatus.REQUESTED,
-		})).at(0);
+		const groupRequest = (
+			await this.groupMemberRepository.findBy({
+				id: command.id,
+				status: GroupMemberStatus.REQUESTED,
+			})
+		).at(0);
 
 		if (groupRequest === null || groupRequest === undefined) {
 			throw new GroupRequestNotFoundError();

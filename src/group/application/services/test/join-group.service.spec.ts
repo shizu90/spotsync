@@ -72,9 +72,7 @@ describe('JoinGroupService', () => {
 		const user = mockUser();
 		const group = mockGroup();
 
-		group
-			.visibilitySettings()
-			.changeGroups(GroupVisibility.PRIVATE);
+		group.visibilitySettings().changeGroups(GroupVisibility.PRIVATE);
 
 		const groupRole = mockGroupRole();
 
@@ -112,9 +110,7 @@ describe('JoinGroupService', () => {
 		const group = mockGroup();
 		const groupRole = mockGroupRole();
 
-		group
-			.visibilitySettings()
-			.changeGroups(GroupVisibility.PRIVATE);
+		group.visibilitySettings().changeGroups(GroupVisibility.PRIVATE);
 
 		const command = new JoinGroupCommand(group.id());
 
@@ -122,7 +118,12 @@ describe('JoinGroupService', () => {
 		groupRepository.findById.mockResolvedValue(group);
 		groupRoleRepository.findByName.mockResolvedValue(groupRole);
 		groupMemberRepository.findBy.mockResolvedValue([
-			mockGroupMember(false, false, 'member', GroupMemberStatus.REQUESTED)
+			mockGroupMember(
+				false,
+				false,
+				'member',
+				GroupMemberStatus.REQUESTED,
+			),
 		]);
 
 		await expect(service.execute(command)).rejects.toThrow(
@@ -135,9 +136,7 @@ describe('JoinGroupService', () => {
 		const group = mockGroup();
 		const groupRole = mockGroupRole();
 
-		group
-			.visibilitySettings()
-			.changeGroups(GroupVisibility.PRIVATE);
+		group.visibilitySettings().changeGroups(GroupVisibility.PRIVATE);
 
 		const command = new JoinGroupCommand(group.id());
 
@@ -153,8 +152,7 @@ describe('JoinGroupService', () => {
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		groupRepository.findById.mockResolvedValue(group);
 		groupRoleRepository.findByName.mockResolvedValue(groupRole);
-		groupMemberRepository.findBy
-			.mockResolvedValue([groupMember]);
+		groupMemberRepository.findBy.mockResolvedValue([groupMember]);
 
 		await expect(service.execute(command)).rejects.toThrow(
 			AlreadyMemberOfGroupError,

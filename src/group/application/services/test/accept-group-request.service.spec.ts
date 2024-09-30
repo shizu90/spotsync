@@ -22,10 +22,7 @@ import {
 } from '../../ports/out/group.repository';
 import { AcceptGroupRequestService } from '../accept-group-request.service';
 import { GroupRequestNotFoundError } from '../errors/group-request-not-found.error';
-import {
-	mockGroupMember,
-	mockGroupRole,
-} from './group-mock.helper';
+import { mockGroupMember, mockGroupRole } from './group-mock.helper';
 
 describe('AcceptGroupRequestService', () => {
 	let service: AcceptGroupRequestService;

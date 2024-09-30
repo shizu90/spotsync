@@ -10,8 +10,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { PostThreadEntityMapper } from './mappers/post-thread-entity.mapper';
 
 export class PostThreadRepositoryImpl implements PostThreadRepository {
-	private _postThreadEntityMapper: PostThreadEntityMapper = new PostThreadEntityMapper();
-	
+	private _postThreadEntityMapper: PostThreadEntityMapper =
+		new PostThreadEntityMapper();
+
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
@@ -53,7 +54,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countBy(query);
 
@@ -71,9 +72,11 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 			});
 		}
 
-		items = items.map((thread) => this._postThreadEntityMapper.toModel(thread));
+		items = items.map((thread) =>
+			this._postThreadEntityMapper.toModel(thread),
+		);
 
-		return new Pagination<PostThread>(items, total, page+1, limit);
+		return new Pagination<PostThread>(items, total, page + 1, limit);
 	}
 
 	public async findBy(values: Object): Promise<PostThread[]> {
@@ -82,7 +85,9 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 			where: query,
 		});
 
-		return threads.map((thread) => this._postThreadEntityMapper.toModel(thread));
+		return threads.map((thread) =>
+			this._postThreadEntityMapper.toModel(thread),
+		);
 	}
 
 	public async countBy(values: Object): Promise<number> {
@@ -97,7 +102,9 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 	public async findAll(): Promise<PostThread[]> {
 		const threads = await this.prismaService.postThread.findMany();
 
-		return threads.map((thread) => this._postThreadEntityMapper.toModel(thread));
+		return threads.map((thread) =>
+			this._postThreadEntityMapper.toModel(thread),
+		);
 	}
 
 	public async findById(id: string): Promise<PostThread> {

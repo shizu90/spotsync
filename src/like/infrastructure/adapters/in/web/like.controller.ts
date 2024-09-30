@@ -49,7 +49,7 @@ import { ListLikesQueryRequest } from './requests/list-likes-query.request';
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -57,7 +57,7 @@ import { ListLikesQueryRequest } from './requests/list-likes-query.request';
 @ApiForbiddenResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -98,14 +98,20 @@ export class LikeController extends ApiController {
 	@ApiUnauthorizedResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@UseGuards(AuthGuard)
 	@Post()
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	public async like(
 		@Body() body: LikeRequest,
 		@Req() req: Request,
@@ -124,7 +130,7 @@ export class LikeController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -146,8 +152,6 @@ export class LikeController extends ApiController {
 
 		await this.unlikeUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 }

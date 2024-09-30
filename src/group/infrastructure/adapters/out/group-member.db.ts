@@ -11,8 +11,9 @@ import { GroupMemberEntityMapper } from './mappers/group-member.mapper';
 
 @Injectable()
 export class GroupMemberRepositoryImpl implements GroupMemberRepository {
-	private _groupMemberEntityMapper: GroupMemberEntityMapper = new GroupMemberEntityMapper();
-	
+	private _groupMemberEntityMapper: GroupMemberEntityMapper =
+		new GroupMemberEntityMapper();
+
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
@@ -73,7 +74,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countBy(params.filters);
 
@@ -141,7 +142,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			return this._groupMemberEntityMapper.toModel(i);
 		});
 
-		return new Pagination(items, total, page+1, limit);
+		return new Pagination(items, total, page + 1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<GroupMember>> {

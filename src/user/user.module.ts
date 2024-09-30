@@ -17,7 +17,11 @@ import { Providers } from './user.providers';
 		GeolocationModule,
 		MailModule,
 	],
-	controllers: [UserController, UserAddressController, PasswordRecoveryController],
+	controllers: [
+		UserController,
+		UserAddressController,
+		PasswordRecoveryController,
+	],
 	providers: [...Providers],
 	exports: [...Providers],
 })

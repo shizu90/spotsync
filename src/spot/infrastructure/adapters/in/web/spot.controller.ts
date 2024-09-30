@@ -66,7 +66,7 @@ import { UpdateSpotRequest } from './requests/update-spot.request';
 @ApiUnauthorizedResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -74,7 +74,7 @@ import { UpdateSpotRequest } from './requests/update-spot.request';
 @ApiForbiddenResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -103,7 +103,13 @@ export class SpotController extends ApiController {
 
 	@ApiOperation({ summary: 'List spots' })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Get()
 	public async list(
 		@Query() query: ListSpotsQueryRequest,
@@ -123,7 +129,7 @@ export class SpotController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -146,7 +152,13 @@ export class SpotController extends ApiController {
 
 	@ApiOperation({ summary: 'Create spot' })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Post()
 	public async create(
 		@Body() body: CreateSpotRequest,
@@ -166,7 +178,7 @@ export class SpotController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -177,7 +189,13 @@ export class SpotController extends ApiController {
 		},
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Put(':id')
 	public async update(
 		@Param('id') id: string,
@@ -189,16 +207,14 @@ export class SpotController extends ApiController {
 
 		const data = await this.updateSpotUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: data,
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Delete spot' })
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -219,16 +235,14 @@ export class SpotController extends ApiController {
 
 		const data = await this.deleteSpotUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: data,
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Visit spot' })
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -249,16 +263,14 @@ export class SpotController extends ApiController {
 
 		const data = await this.visitSpotUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: data,
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Unvisit spot' })
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -279,8 +291,6 @@ export class SpotController extends ApiController {
 
 		const data = await this.unvisitSpotUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: data,
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 }

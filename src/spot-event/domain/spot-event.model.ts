@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { CommentSubject } from 'src/comment/domain/comment-subject.model.';
+import { CommentableSubject } from 'src/comment/domain/comment-subject.model.';
 import { Comment } from 'src/comment/domain/comment.model';
 import { Commentable } from 'src/comment/domain/commentable.interface';
 import { Model } from 'src/common/core/common.model';
@@ -265,6 +265,12 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 	}
 
 	public comment(user: User, text: string): Comment {
-		return Comment.create(randomUUID(), text, user, CommentSubject.SPOT_EVENT, this);
+		return Comment.create(
+			randomUUID(),
+			text,
+			user,
+			CommentableSubject.SPOT_EVENT,
+			this,
+		);
 	}
 }

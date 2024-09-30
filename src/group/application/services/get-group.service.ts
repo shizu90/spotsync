@@ -45,7 +45,6 @@ export class GetGroupService implements GetGroupUseCase {
 			})
 		).at(0);
 
-		return GroupDto.fromModel(group)
-			.setGroupMember(groupMember);
+		return GroupDto.fromModel(group).setGroupMember(groupMember);
 	}
 }

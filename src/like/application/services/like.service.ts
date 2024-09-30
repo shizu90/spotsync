@@ -5,7 +5,10 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { Likable } from 'src/like/domain/likable.interface';
-import { PostRepository, PostRepositoryProvider } from 'src/post/application/ports/out/post.repository';
+import {
+	PostRepository,
+	PostRepositoryProvider,
+} from 'src/post/application/ports/out/post.repository';
 import { LikeCommand } from '../ports/in/commands/like.command';
 import { LikeUseCase } from '../ports/in/use-cases/like.use-case';
 import { LikeDto } from '../ports/out/dto/like.dto';
@@ -31,11 +34,12 @@ export class LikeService implements LikeUseCase {
 
 		let likable: Likable = null;
 
-		switch(command.subject) {
+		switch (command.subject) {
 			case LikableSubject.POST:
 				likable = await this.postRepository.findById(command.subjectId);
 				break;
-			default: break;
+			default:
+				break;
 		}
 
 		if (likable === null || likable === undefined) {

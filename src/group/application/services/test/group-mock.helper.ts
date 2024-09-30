@@ -121,7 +121,7 @@ export const mockGroupMember = (
 	isCreator = false,
 	isImmutable = false,
 	role = 'member',
-	status = GroupMemberStatus.REQUESTED
+	status = GroupMemberStatus.REQUESTED,
 ): GroupMember => {
 	return GroupMember.create(
 		randomUUID(),

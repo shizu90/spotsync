@@ -13,9 +13,11 @@ import { GroupRoleEntityMapper } from './mappers/group-role-entity.mapper';
 
 @Injectable()
 export class GroupRoleRepositoryImpl implements GroupRoleRepository {
-	private _groupRoleEntityMapper: GroupRoleEntityMapper = new GroupRoleEntityMapper();
-	private _groupPermissionEntityMapper: GroupPermissionEntityMapper = new GroupPermissionEntityMapper();
-	
+	private _groupRoleEntityMapper: GroupRoleEntityMapper =
+		new GroupRoleEntityMapper();
+	private _groupPermissionEntityMapper: GroupPermissionEntityMapper =
+		new GroupPermissionEntityMapper();
+
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
@@ -70,7 +72,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countBy(params.filters);
 
@@ -108,7 +110,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			return this._groupRoleEntityMapper.toModel(i);
 		});
 
-		return new Pagination(items, total, page+1, limit);
+		return new Pagination(items, total, page + 1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<GroupRole>> {

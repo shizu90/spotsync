@@ -46,7 +46,16 @@ export class GroupMember extends Model {
 		joinedAt?: Date,
 		requestedAt?: Date,
 	): GroupMember {
-		return new GroupMember(id, group, user, role, isCreator, status, joinedAt, requestedAt);
+		return new GroupMember(
+			id,
+			group,
+			user,
+			role,
+			isCreator,
+			status,
+			joinedAt,
+			requestedAt,
+		);
 	}
 
 	public id(): string {

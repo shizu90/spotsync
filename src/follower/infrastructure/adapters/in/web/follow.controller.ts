@@ -23,7 +23,7 @@ import {
 	ApiNotFoundResponse,
 	ApiOperation,
 	ApiTags,
-	ApiUnauthorizedResponse
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -57,7 +57,7 @@ import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
 @ApiUnauthorizedResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -65,7 +65,7 @@ import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -73,7 +73,7 @@ import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
 @ApiForbiddenResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -98,7 +98,13 @@ export class FollowController extends ApiController {
 
 	@ApiOperation({ summary: 'List follows' })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Get()
 	public async list(
 		@Query() query: ListFollowsQueryRequest,
@@ -118,7 +124,7 @@ export class FollowController extends ApiController {
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -126,7 +132,7 @@ export class FollowController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -152,7 +158,7 @@ export class FollowController extends ApiController {
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -160,7 +166,7 @@ export class FollowController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -181,16 +187,14 @@ export class FollowController extends ApiController {
 
 		await this.unfollowUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Accept follow request' })
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -198,7 +202,7 @@ export class FollowController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -216,16 +220,14 @@ export class FollowController extends ApiController {
 
 		await this.acceptFollowRequestUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Refuse follow request' })
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -233,7 +235,7 @@ export class FollowController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -251,8 +253,6 @@ export class FollowController extends ApiController {
 
 		await this.refuseFollowRequestUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 }

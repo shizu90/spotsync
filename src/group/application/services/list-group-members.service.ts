@@ -33,9 +33,7 @@ export class ListGroupMembersService implements ListGroupMembersUseCase {
 			throw new GroupNotFoundError();
 		}
 
-		if (
-			group.visibilitySettings().groups() === GroupVisibility.PRIVATE
-		) {
+		if (group.visibilitySettings().groups() === GroupVisibility.PRIVATE) {
 			throw new UnauthorizedAccessError();
 		} else {
 			const pagination = await this.groupMemberRepository.paginate({

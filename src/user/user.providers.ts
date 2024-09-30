@@ -132,5 +132,5 @@ export const Providers: Provider[] = [
 	{
 		provide: ActivationRequestRepositoryProvider,
 		useClass: ActivationRequestRepositoryImpl,
-	}
+	},
 ];

@@ -25,7 +25,7 @@ import {
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -61,7 +61,7 @@ import { UpdateGroupRoleRequest } from './requests/update-group-role.request';
 @ApiUnauthorizedResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -69,7 +69,7 @@ import { UpdateGroupRoleRequest } from './requests/update-group-role.request';
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -77,7 +77,7 @@ import { UpdateGroupRoleRequest } from './requests/update-group-role.request';
 @ApiForbiddenResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -102,7 +102,13 @@ export class GroupRoleController extends ApiController {
 
 	@ApiOperation({ summary: 'List group roles' })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Get(':id/roles')
 	public async list(
 		@Param('id') groupId: string,
@@ -126,7 +132,7 @@ export class GroupRoleController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -155,7 +161,7 @@ export class GroupRoleController extends ApiController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -163,7 +169,7 @@ export class GroupRoleController extends ApiController {
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -171,13 +177,19 @@ export class GroupRoleController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Post(':id/roles')
 	public async create(
 		@Param('id') groupId: string,
@@ -201,7 +213,7 @@ export class GroupRoleController extends ApiController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -209,7 +221,7 @@ export class GroupRoleController extends ApiController {
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -217,14 +229,20 @@ export class GroupRoleController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Put(':id/roles/:role_id')
 	public async update(
 		@Param('id') groupId: string,
@@ -241,16 +259,14 @@ export class GroupRoleController extends ApiController {
 
 		await this.updateGroupRoleUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Delete group role' })
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -271,8 +287,6 @@ export class GroupRoleController extends ApiController {
 
 		await this.removeGroupRoleUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 }

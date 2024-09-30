@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { VisitSpotCommand } from '../ports/in/commands/visit-spot.command';
 import { VisitSpotUseCase } from '../ports/in/use-cases/visit-spot.use.case';
 import {
-    SpotRepository,
-    SpotRepositoryProvider,
+	SpotRepository,
+	SpotRepositoryProvider,
 } from '../ports/out/spot.repository';
 import { SpotNotFoundError } from './errors/spot-not-found.error';
 

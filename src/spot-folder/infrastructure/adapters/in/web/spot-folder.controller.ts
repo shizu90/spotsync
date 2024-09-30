@@ -1,30 +1,79 @@
-import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Patch, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
-import { ApiForbiddenResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
-import { Request, Response } from "express";
-import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
-import { ApiController } from "src/common/web/common.controller";
-import { ErrorResponse } from "src/common/web/common.error";
-import { AddSpotUseCase, AddSpotUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/add-spot.use-case";
-import { CreateSpotFolderUseCase, CreateSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/create-spot-folder.use-case";
-import { DeleteSpotFolderUseCase, DeleteSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/delete-spot-folder.use-case";
-import { GetSpotFolderUseCase, GetSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/get-spot-folder.use-case";
-import { ListSpotFoldersUseCase, ListSpotFoldersUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/list-spot-folders.use-case";
-import { RemoveSpotUseCase, RemoveSpotUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/remove-spot.use-case";
-import { SortItemsUseCase, SortItemsUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/sort-items.use-case";
-import { UpdateSpotFolderUseCase, UpdateSpotFolderUseCaseProvider } from "src/spot-folder/application/ports/in/use-cases/update-spot-folder.use-case";
-import { SpotFolderErrorHandler } from "./handlers/spot-folder-error.handler";
-import { SpotFolderRequestMapper } from "./mappers/spot-folder-request.mapper";
-import { AddSpotRequest } from "./requests/add-spot.request";
-import { CreateSpotFolderRequest } from "./requests/create-spot-folder.request";
-import { ListSpotFoldersQueryRequest } from "./requests/list-spot-folders-query.request";
-import { SortItemsRequest } from "./requests/sort-items.request";
-import { UpdateSpotFolderRequest } from "./requests/update-spot-folder.request";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Inject,
+	Param,
+	Patch,
+	Post,
+	Put,
+	Query,
+	Req,
+	Res,
+	UseFilters,
+	UseGuards,
+	UsePipes,
+	ValidationPipe,
+} from '@nestjs/common';
+import {
+	ApiForbiddenResponse,
+	ApiNoContentResponse,
+	ApiNotFoundResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { Request, Response } from 'express';
+import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { ApiController } from 'src/common/web/common.controller';
+import { ErrorResponse } from 'src/common/web/common.error';
+import {
+	AddSpotUseCase,
+	AddSpotUseCaseProvider,
+} from 'src/spot-folder/application/ports/in/use-cases/add-spot.use-case';
+import {
+	CreateSpotFolderUseCase,
+	CreateSpotFolderUseCaseProvider,
+} from 'src/spot-folder/application/ports/in/use-cases/create-spot-folder.use-case';
+import {
+	DeleteSpotFolderUseCase,
+	DeleteSpotFolderUseCaseProvider,
+} from 'src/spot-folder/application/ports/in/use-cases/delete-spot-folder.use-case';
+import {
+	GetSpotFolderUseCase,
+	GetSpotFolderUseCaseProvider,
+} from 'src/spot-folder/application/ports/in/use-cases/get-spot-folder.use-case';
+import {
+	ListSpotFoldersUseCase,
+	ListSpotFoldersUseCaseProvider,
+} from 'src/spot-folder/application/ports/in/use-cases/list-spot-folders.use-case';
+import {
+	RemoveSpotUseCase,
+	RemoveSpotUseCaseProvider,
+} from 'src/spot-folder/application/ports/in/use-cases/remove-spot.use-case';
+import {
+	SortItemsUseCase,
+	SortItemsUseCaseProvider,
+} from 'src/spot-folder/application/ports/in/use-cases/sort-items.use-case';
+import {
+	UpdateSpotFolderUseCase,
+	UpdateSpotFolderUseCaseProvider,
+} from 'src/spot-folder/application/ports/in/use-cases/update-spot-folder.use-case';
+import { SpotFolderErrorHandler } from './handlers/spot-folder-error.handler';
+import { SpotFolderRequestMapper } from './mappers/spot-folder-request.mapper';
+import { AddSpotRequest } from './requests/add-spot.request';
+import { CreateSpotFolderRequest } from './requests/create-spot-folder.request';
+import { ListSpotFoldersQueryRequest } from './requests/list-spot-folders-query.request';
+import { SortItemsRequest } from './requests/sort-items.request';
+import { UpdateSpotFolderRequest } from './requests/update-spot-folder.request';
 
 @ApiTags('Spot folders')
 @ApiUnauthorizedResponse({
-    example: new ErrorResponse(
+	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -32,7 +81,7 @@ import { UpdateSpotFolderRequest } from "./requests/update-spot-folder.request";
 @ApiForbiddenResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -40,221 +89,260 @@ import { UpdateSpotFolderRequest } from "./requests/update-spot-folder.request";
 @Controller('spot-folders')
 @UseFilters(new SpotFolderErrorHandler())
 export class SpotFolderController extends ApiController {
-    constructor(
-        @Inject(GetSpotFolderUseCaseProvider)
-        protected getSpotFolderUseCase: GetSpotFolderUseCase,
-        @Inject(ListSpotFoldersUseCaseProvider)
-        protected listSpotFoldersUseCase: ListSpotFoldersUseCase,
-        @Inject(CreateSpotFolderUseCaseProvider)
-        protected createSpotFolderUseCase: CreateSpotFolderUseCase,
-        @Inject(UpdateSpotFolderUseCaseProvider)
-        protected updateSpotFolderUseCase: UpdateSpotFolderUseCase,
-        @Inject(SortItemsUseCaseProvider)
-        protected sortItemsUseCase: SortItemsUseCase,
-        @Inject(DeleteSpotFolderUseCaseProvider)
-        protected deleteSpotFolderUseCase: DeleteSpotFolderUseCase,
-        @Inject(AddSpotUseCaseProvider)
-        protected addSpotUseCase: AddSpotUseCase,
-        @Inject(RemoveSpotUseCaseProvider)
-        protected removeSpotUseCase: RemoveSpotUseCase,
-    ) {super();}
+	constructor(
+		@Inject(GetSpotFolderUseCaseProvider)
+		protected getSpotFolderUseCase: GetSpotFolderUseCase,
+		@Inject(ListSpotFoldersUseCaseProvider)
+		protected listSpotFoldersUseCase: ListSpotFoldersUseCase,
+		@Inject(CreateSpotFolderUseCaseProvider)
+		protected createSpotFolderUseCase: CreateSpotFolderUseCase,
+		@Inject(UpdateSpotFolderUseCaseProvider)
+		protected updateSpotFolderUseCase: UpdateSpotFolderUseCase,
+		@Inject(SortItemsUseCaseProvider)
+		protected sortItemsUseCase: SortItemsUseCase,
+		@Inject(DeleteSpotFolderUseCaseProvider)
+		protected deleteSpotFolderUseCase: DeleteSpotFolderUseCase,
+		@Inject(AddSpotUseCaseProvider)
+		protected addSpotUseCase: AddSpotUseCase,
+		@Inject(RemoveSpotUseCaseProvider)
+		protected removeSpotUseCase: RemoveSpotUseCase,
+	) {
+		super();
+	}
 
-    @ApiOperation({ summary: 'List spot folders' })
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
-    @Get()
-    public async list(
-        @Query() query: ListSpotFoldersQueryRequest,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.listSpotFoldersCommand(query);
-        
-        const data = await this.listSpotFoldersUseCase.execute(command);
+	@ApiOperation({ summary: 'List spot folders' })
+	@UseGuards(AuthGuard)
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
+	@Get()
+	public async list(
+		@Query() query: ListSpotFoldersQueryRequest,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = SpotFolderRequestMapper.listSpotFoldersCommand(query);
 
-        res.status(HttpStatus.OK).json({
-            data: data
-        });
-    }
+		const data = await this.listSpotFoldersUseCase.execute(command);
 
-    @ApiOperation({ summary: 'Get spot folder' })
-    @ApiNotFoundResponse({
-        example: new ErrorResponse(
-            'string',
-            '2024-07-24 12:00:00',
-            'string',
-            'string',
-        )
-    })
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
-    @Get(':id')
-    public async get(
-        @Param('id') id: string,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.getSpotFolderCommand(id);
+		res.status(HttpStatus.OK).json({
+			data: data,
+		});
+	}
 
-        const data = await this.getSpotFolderUseCase.execute(command);
+	@ApiOperation({ summary: 'Get spot folder' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse(
+			'string',
+			new Date().toISOString(),
+			'string',
+			'string',
+		),
+	})
+	@UseGuards(AuthGuard)
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
+	@Get(':id')
+	public async get(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = SpotFolderRequestMapper.getSpotFolderCommand(id);
 
-        res.status(HttpStatus.OK).json({
-            data: data
-        });
-    }
+		const data = await this.getSpotFolderUseCase.execute(command);
 
-    @ApiOperation({ summary: 'Create spot folder' })
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
-    @Post()
-    public async create(
-        @Body() body: CreateSpotFolderRequest,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.createSpotFolderCommand(body);
+		res.status(HttpStatus.OK).json({
+			data: data,
+		});
+	}
 
-        const data = await this.createSpotFolderUseCase.execute(command);
+	@ApiOperation({ summary: 'Create spot folder' })
+	@UseGuards(AuthGuard)
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
+	@Post()
+	public async create(
+		@Body() body: CreateSpotFolderRequest,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = SpotFolderRequestMapper.createSpotFolderCommand(body);
 
-        res.status(HttpStatus.OK).json({
-            data: data
-        });
-    }
+		const data = await this.createSpotFolderUseCase.execute(command);
 
-    @ApiOperation({ summary: 'Update spot folder' })
-    @ApiNoContentResponse()
-    @ApiNotFoundResponse({
-        example: new ErrorResponse(
-            'string',
-            '2024-07-24 12:00:00',
-            'string',
-            'string',
-        )
-    })
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
-    @Put(':id')
-    public async update(
-        @Param('id') id: string,
-        @Body() body: UpdateSpotFolderRequest,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.updateSpotFolderCommand(id, body);
+		res.status(HttpStatus.OK).json({
+			data: data,
+		});
+	}
 
-        const data = await this.updateSpotFolderUseCase.execute(command);
+	@ApiOperation({ summary: 'Update spot folder' })
+	@ApiNoContentResponse()
+	@ApiNotFoundResponse({
+		example: new ErrorResponse(
+			'string',
+			new Date().toISOString(),
+			'string',
+			'string',
+		),
+	})
+	@UseGuards(AuthGuard)
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
+	@Put(':id')
+	public async update(
+		@Param('id') id: string,
+		@Body() body: UpdateSpotFolderRequest,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = SpotFolderRequestMapper.updateSpotFolderCommand(
+			id,
+			body,
+		);
 
-        res.status(HttpStatus.NO_CONTENT).json({
-            data: data
-        });
-    }
+		await this.updateSpotFolderUseCase.execute(command);
 
-    @ApiOperation({ summary: 'Delete spot folder' })
-    @ApiNoContentResponse()
-    @ApiNotFoundResponse({
-        example: new ErrorResponse(
-            'string',
-            '2024-07-24 12:00:00',
-            'string',
-            'string',
-        )
-    })
-    @UseGuards(AuthGuard)
-    @Delete(':id')
-    public async delete(
-        @Param('id') id: string,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.deleteSpotFolderCommand(id);
+		res.status(HttpStatus.NO_CONTENT).json();
+	}
 
-        const data = await this.deleteSpotFolderUseCase.execute(command);
+	@ApiOperation({ summary: 'Delete spot folder' })
+	@ApiNoContentResponse()
+	@ApiNotFoundResponse({
+		example: new ErrorResponse(
+			'string',
+			new Date().toISOString(),
+			'string',
+			'string',
+		),
+	})
+	@UseGuards(AuthGuard)
+	@Delete(':id')
+	public async delete(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = SpotFolderRequestMapper.deleteSpotFolderCommand(id);
 
-        res.status(HttpStatus.NO_CONTENT).json({
-            data: data
-        });
-    }
+		await this.deleteSpotFolderUseCase.execute(command);
 
-    @ApiOperation({ summary: 'Sort items' })
-    @ApiNotFoundResponse({
-        example: new ErrorResponse(
-            'string',
-            '2024-07-24 12:00:00',
-            'string',
-            'string',
-        )
-    })
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
-    @Patch(':id/sort')
-    public async sort(
-        @Param('id') id: string,
-        @Body() body: SortItemsRequest,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.sortItemsCommand(id, body);
+		res.status(HttpStatus.NO_CONTENT).json();
+	}
 
-        const data = await this.sortItemsUseCase.execute(command);
+	@ApiOperation({ summary: 'Sort items' })
+	@ApiNotFoundResponse({
+		example: new ErrorResponse(
+			'string',
+			new Date().toISOString(),
+			'string',
+			'string',
+		),
+	})
+	@UseGuards(AuthGuard)
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
+	@Patch(':id/sort')
+	public async sort(
+		@Param('id') id: string,
+		@Body() body: SortItemsRequest,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = SpotFolderRequestMapper.sortItemsCommand(id, body);
 
-        res.status(HttpStatus.OK).json({
-            data: data
-        });
-    }
+		const data = await this.sortItemsUseCase.execute(command);
 
-    @ApiOperation({ summary: 'Add spots' })
-    @ApiNoContentResponse()
-    @ApiNotFoundResponse({
-        example: new ErrorResponse(
-            'string',
-            '2024-07-24 12:00:00',
-            'string',
-            'string',
-        )
-    })
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
-    @Post(':id/spots')
-    public async addSpots(
-        @Param('id') id: string,
-        @Body() body: AddSpotRequest,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.addSpotCommand(id, body);
+		res.status(HttpStatus.OK).json({
+			data: data,
+		});
+	}
 
-        const data = await this.addSpotUseCase.execute(command);
+	@ApiOperation({ summary: 'Add spots' })
+	@ApiNoContentResponse()
+	@ApiNotFoundResponse({
+		example: new ErrorResponse(
+			'string',
+			new Date().toISOString(),
+			'string',
+			'string',
+		),
+	})
+	@UseGuards(AuthGuard)
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
+	@Post(':id/spots')
+	public async addSpots(
+		@Param('id') id: string,
+		@Body() body: AddSpotRequest,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = SpotFolderRequestMapper.addSpotCommand(id, body);
 
-        res.status(HttpStatus.NO_CONTENT).json({
-            data: data
-        });
-    }
+		await this.addSpotUseCase.execute(command);
 
-    @ApiOperation({ summary: 'Remove spots' })
-    @ApiNoContentResponse()
-    @ApiNotFoundResponse({
-        example: new ErrorResponse(
-            'string',
-            '2024-07-24 12:00:00',
-            'string',
-            'string',
-        )
-    })
-    @UseGuards(AuthGuard)
-    @UsePipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true }, forbidNonWhitelisted: true }))
-    @Delete(':id/spots/:spot_id')
-    public async removeSpots(
-        @Param('id') id: string,
-        @Param('spot_id') spotId: string,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const command = SpotFolderRequestMapper.removeSpotCommand(id, spotId);
+		res.status(HttpStatus.NO_CONTENT).json();
+	}
 
-        const data = await this.removeSpotUseCase.execute(command);
+	@ApiOperation({ summary: 'Remove spots' })
+	@ApiNoContentResponse()
+	@ApiNotFoundResponse({
+		example: new ErrorResponse(
+			'string',
+			new Date().toISOString(),
+			'string',
+			'string',
+		),
+	})
+	@UseGuards(AuthGuard)
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
+	@Delete(':id/spots/:spot_id')
+	public async removeSpots(
+		@Param('id') id: string,
+		@Param('spot_id') spotId: string,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = SpotFolderRequestMapper.removeSpotCommand(id, spotId);
 
-        res.status(HttpStatus.NO_CONTENT).json({
-            data: data
-        });
-    }
+		await this.removeSpotUseCase.execute(command);
+
+		res.status(HttpStatus.NO_CONTENT).json();
+	}
 }

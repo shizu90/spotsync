@@ -48,10 +48,5 @@ export const mockUser = (): User => {
 };
 
 export const mockLike = (): Like => {
-	return Like.create(
-		randomUUID(),
-		LikableSubject.POST,
-		null,
-		mockUser(),
-	);
+	return Like.create(randomUUID(), LikableSubject.POST, null, mockUser());
 };

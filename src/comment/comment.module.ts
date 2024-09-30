@@ -5,9 +5,9 @@ import { Providers } from './comment.provider';
 import { CommentController } from './infrastructure/adapters/in/web/comment.controller';
 
 @Module({
-    imports: [SpotModule, SpotEventModule],
-    exports: [...Providers],
-    providers: [...Providers],
-    controllers: [CommentController]
+	imports: [SpotModule, SpotEventModule],
+	exports: [...Providers],
+	providers: [...Providers],
+	controllers: [CommentController],
 })
 export class CommentModule {}

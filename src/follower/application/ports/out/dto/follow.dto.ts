@@ -14,7 +14,7 @@ export class FollowDto extends Dto {
 		from_user: UserDto,
 		to_user: UserDto,
 		followed_at: string,
-		requested_at: string
+		requested_at: string,
 	) {
 		super();
 		this.id = id;
@@ -32,7 +32,7 @@ export class FollowDto extends Dto {
 			UserDto.fromModel(model.from()),
 			UserDto.fromModel(model.to()),
 			model.followedAt()?.toISOString(),
-			model.requestedAt()?.toISOString()
+			model.requestedAt()?.toISOString(),
 		);
 	}
 }

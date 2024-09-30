@@ -10,7 +10,8 @@ import { UserAddress } from 'src/user/domain/user-address.model';
 import { UserAddressEntityMapper } from './mappers/user-address-entity.mapper';
 
 export class UserAddressRepositoryImpl implements UserAddressRepository {
-	private _userAddressEntityMapper: UserAddressEntityMapper = new UserAddressEntityMapper();
+	private _userAddressEntityMapper: UserAddressEntityMapper =
+		new UserAddressEntityMapper();
 
 	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
@@ -73,7 +74,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countBy(params.filters);
 
@@ -113,7 +114,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			return this._userAddressEntityMapper.toModel(i);
 		});
 
-		return new Pagination(items, total, page+1, limit);
+		return new Pagination(items, total, page + 1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<UserAddress>> {

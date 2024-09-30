@@ -61,7 +61,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countBy(params.filters);
 
@@ -115,7 +115,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			return this._followEntityMapper.toModel(i);
 		});
 
-		return new Pagination(items, total, page+1, limit);
+		return new Pagination(items, total, page + 1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<Follow>> {

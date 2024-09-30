@@ -15,7 +15,8 @@ import { GroupLogEntityMapper } from './mappers/group-log-entity.mapper';
 @Injectable()
 export class GroupRepositoryImpl implements GroupRepository {
 	private _groupEntityMapper: GroupEntityMapper = new GroupEntityMapper();
-	private _groupLogEntityMapper: GroupLogEntityMapper = new GroupLogEntityMapper();
+	private _groupLogEntityMapper: GroupLogEntityMapper =
+		new GroupLogEntityMapper();
 
 	constructor(
 		@Inject(PrismaService)
@@ -80,7 +81,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countBy(params.filters);
 
@@ -104,7 +105,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			return this._groupEntityMapper.toModel(i);
 		});
 
-		return new Pagination(items, total, page+1, limit);
+		return new Pagination(items, total, page + 1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<Group>> {
@@ -164,7 +165,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countLogBy(params.filters);
 
@@ -200,7 +201,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			return this._groupLogEntityMapper.toModel(i);
 		});
 
-		return new Pagination(items, total, page+1, limit);
+		return new Pagination(items, total, page + 1, limit);
 	}
 
 	public async findAll(): Promise<Array<Group>> {
@@ -232,9 +233,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 				banner_picture: model.bannerPicture(),
 				visibility_settings: {
 					create: {
-						spot_events: model
-							.visibilitySettings()
-							.spotEvents(),
+						spot_events: model.visibilitySettings().spotEvents(),
 						posts: model.visibilitySettings().posts(),
 						groups: model.visibilitySettings().groups(),
 					},

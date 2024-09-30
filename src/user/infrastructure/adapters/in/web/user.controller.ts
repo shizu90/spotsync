@@ -25,13 +25,16 @@ import {
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
-import { ActivateUserUseCase, ActivateUserUseCaseProvider } from 'src/user/application/ports/in/use-cases/activate-user.use-case';
+import {
+	ActivateUserUseCase,
+	ActivateUserUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/activate-user.use-case';
 import {
 	CreateUserUseCase,
 	CreateUserUseCaseProvider,
@@ -56,7 +59,10 @@ import {
 	UpdateUserProfileUseCase,
 	UpdateUserProfileUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/update-user-profile.use-case';
-import { UpdateUserVisibilitySettingsUseCase, UpdateUserVisibilitySettingsUseCaseProvider } from 'src/user/application/ports/in/use-cases/update-user-visibility-settings.use-case';
+import {
+	UpdateUserVisibilitySettingsUseCase,
+	UpdateUserVisibilitySettingsUseCaseProvider,
+} from 'src/user/application/ports/in/use-cases/update-user-visibility-settings.use-case';
 import {
 	UploadBannerPictureUseCase,
 	UploadBannerPictureUseCaseProvider,
@@ -78,7 +84,7 @@ import { UpdateUserVisibilitySettingsRequest } from './requests/update-user-visi
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -115,7 +121,7 @@ export class UserController extends ApiController {
 	@ApiUnauthorizedResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -123,13 +129,19 @@ export class UserController extends ApiController {
 	@ApiForbiddenResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Get()
 	public async list(
 		@Query() query: ListUsersQueryRequest,
@@ -149,7 +161,7 @@ export class UserController extends ApiController {
 	@ApiUnauthorizedResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -157,7 +169,7 @@ export class UserController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -165,7 +177,7 @@ export class UserController extends ApiController {
 	@ApiForbiddenResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -190,7 +202,7 @@ export class UserController extends ApiController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -198,12 +210,18 @@ export class UserController extends ApiController {
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Post()
 	public async create(
 		@Body() body: CreateUserRequest,
@@ -223,7 +241,7 @@ export class UserController extends ApiController {
 	@ApiUnauthorizedResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -231,7 +249,7 @@ export class UserController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -239,7 +257,7 @@ export class UserController extends ApiController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -247,14 +265,20 @@ export class UserController extends ApiController {
 	@ApiForbiddenResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Put(':id/profile')
 	public async updateProfile(
 		@Param('id') id: string,
@@ -266,16 +290,14 @@ export class UserController extends ApiController {
 
 		await this.updateUserProfileUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Update user credentials' })
 	@ApiUnauthorizedResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -283,7 +305,7 @@ export class UserController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -291,7 +313,7 @@ export class UserController extends ApiController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -299,7 +321,7 @@ export class UserController extends ApiController {
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -307,14 +329,20 @@ export class UserController extends ApiController {
 	@ApiForbiddenResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Put(':id/credentials')
 	public async updateCredentials(
 		@Param('id') id: string,
@@ -327,18 +355,16 @@ export class UserController extends ApiController {
 			body,
 		);
 
-		this.updateUserCredentialsUseCase.execute(command);
+		await this.updateUserCredentialsUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Update user visibility settings' })
 	@ApiUnauthorizedResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -346,7 +372,7 @@ export class UserController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -354,7 +380,7 @@ export class UserController extends ApiController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -362,14 +388,20 @@ export class UserController extends ApiController {
 	@ApiForbiddenResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Put(':id/visibility-settings')
 	public async updateUserVisibilitySettings(
 		@Param('id') id: string,
@@ -382,18 +414,16 @@ export class UserController extends ApiController {
 			body,
 		);
 
-		this.updateUserVisibilitySettingsUseCase.execute(command);
+		await this.updateUserVisibilitySettingsUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Delete user by id' })
 	@ApiUnauthorizedResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -401,7 +431,7 @@ export class UserController extends ApiController {
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -409,7 +439,7 @@ export class UserController extends ApiController {
 	@ApiForbiddenResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -424,23 +454,27 @@ export class UserController extends ApiController {
 	) {
 		const command = UserRequestMapper.deleteUserCommand(id);
 
-		this.deleteUserUseCase.execute(command);
+		await this.deleteUserUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Activate user' })
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
 	})
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Post(':id/activate')
 	public async activate(
 		@Param('id') id: string,

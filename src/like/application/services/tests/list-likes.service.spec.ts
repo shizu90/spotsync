@@ -36,11 +36,12 @@ describe('ListLikesService', () => {
 		const user = mockUser();
 
 		const command = new ListLikesCommand(
-			LikableSubject.POST, randomUUID(),
+			LikableSubject.POST,
+			randomUUID(),
 			null,
 			null,
 			1,
-			true
+			true,
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);

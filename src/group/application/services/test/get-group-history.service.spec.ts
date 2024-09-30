@@ -45,7 +45,7 @@ describe('GetGroupHistoryService', () => {
 			groupMember.group().id(),
 			null,
 			null,
-			true
+			true,
 		);
 
 		getAuthenticatedUser.execute.mockResolvedValue(groupMember.user());

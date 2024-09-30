@@ -40,9 +40,7 @@ export class JoinGroupService implements JoinGroupUseCase {
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 	) {}
 
-	public async execute(
-		command: JoinGroupCommand,
-	): Promise<GroupMemberDto> {
+	public async execute(command: JoinGroupCommand): Promise<GroupMemberDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.id);
@@ -55,10 +53,12 @@ export class JoinGroupService implements JoinGroupUseCase {
 			throw new GroupRoleNotFoundError();
 		}
 
-		let groupMember = (await this.groupMemberRepository.findBy({
-			groupId: group.id(),
-			userId: authenticatedUser.id(),
-		})).at(0);
+		let groupMember = (
+			await this.groupMemberRepository.findBy({
+				groupId: group.id(),
+				userId: authenticatedUser.id(),
+			})
+		).at(0);
 
 		if (groupMember !== null && groupMember !== undefined) {
 			if (groupMember.isRequested()) {
@@ -79,7 +79,9 @@ export class JoinGroupService implements JoinGroupUseCase {
 				authenticatedUser,
 				memberRole,
 				false,
-				group.visibilitySettings().groups() === GroupVisibility.PRIVATE ? GroupMemberStatus.REQUESTED : GroupMemberStatus.ACTIVE
+				group.visibilitySettings().groups() === GroupVisibility.PRIVATE
+					? GroupMemberStatus.REQUESTED
+					: GroupMemberStatus.ACTIVE,
 			);
 
 			this.groupMemberRepository.store(groupMember);

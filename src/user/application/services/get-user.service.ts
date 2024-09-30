@@ -35,9 +35,7 @@ export class GetUserService implements GetUserUseCase {
 		protected followRepository: FollowRepository,
 	) {}
 
-	public async execute(
-		command: GetUserCommand,
-	): Promise<UserDto> {
+	public async execute(command: GetUserCommand): Promise<UserDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const user = await (command.id
@@ -48,13 +46,12 @@ export class GetUserService implements GetUserUseCase {
 			throw new UserNotFoundError();
 		}
 
-		const follow =
-			(
-				await this.followRepository.findBy({
-					fromUserId: authenticatedUser.id(),
-					toUserId: user.id(),
-				})
-			).at(0);
+		const follow = (
+			await this.followRepository.findBy({
+				fromUserId: authenticatedUser.id(),
+				toUserId: user.id(),
+			})
+		).at(0);
 
 		let userMainAddress = (
 			await this.userAddressRepository.findBy({
@@ -65,8 +62,7 @@ export class GetUserService implements GetUserUseCase {
 
 		if (authenticatedUser.id() !== user.id()) {
 			if (
-				user.visibilitySettings().addresses() ===
-				UserVisibility.PRIVATE
+				user.visibilitySettings().addresses() === UserVisibility.PRIVATE
 			) {
 				userMainAddress = undefined;
 			}

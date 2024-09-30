@@ -1,5 +1,5 @@
 export class UserInvalidCredentialsError extends Error {
-	constructor(message = "Invalid credentials.") {
+	constructor(message = 'Invalid credentials.') {
 		super(message);
 	}
 }

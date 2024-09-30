@@ -1,9 +1,9 @@
 import {
-    ArgumentsHost,
-    BadRequestException,
-    ExceptionFilter,
-    HttpException,
-    HttpStatus,
+	ArgumentsHost,
+	BadRequestException,
+	ExceptionFilter,
+	HttpException,
+	HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ErrorResponse } from 'src/common/web/common.error';
@@ -15,7 +15,7 @@ export class CommentErrorHandler implements ExceptionFilter {
 		const request = ctx.getRequest<Request>();
 
 		switch (error.constructor.name) {
-            case 'CommentableNotFoundError':
+			case 'CommentableNotFoundError':
 			case 'CommentNotFoundError':
 				response
 					.status(HttpStatus.NOT_FOUND)

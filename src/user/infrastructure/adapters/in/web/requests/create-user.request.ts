@@ -10,7 +10,7 @@ import {
 	IsString,
 	MaxLength,
 	MinLength,
-	ValidateNested
+	ValidateNested,
 } from 'class-validator';
 import { ApiRequest } from 'src/common/web/common.request';
 
@@ -46,14 +46,14 @@ class Address {
 	public locality?: string;
 
 	@ApiProperty({
-		required: false
+		required: false,
 	})
 	@IsOptional()
 	@IsNumber()
 	public latitude?: number;
-	
+
 	@ApiProperty({
-		required: false
+		required: false,
 	})
 	@IsOptional()
 	@IsNumber()
@@ -94,5 +94,4 @@ export class CreateUserRequest extends ApiRequest {
 	@ValidateNested()
 	@Type(() => Address)
 	public address?: Address;
-	
 }

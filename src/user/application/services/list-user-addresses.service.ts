@@ -55,6 +55,11 @@ export class ListUserAddressesService implements ListUserAddressesUseCase {
 			return items;
 		}
 
-		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
+		return new Pagination(
+			items,
+			pagination.total,
+			pagination.current_page,
+			pagination.limit,
+		);
 	}
 }

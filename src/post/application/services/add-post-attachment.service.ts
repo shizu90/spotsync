@@ -5,7 +5,10 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
-import { LikeRepository, LikeRepositoryProvider } from 'src/like/application/ports/out/like.repository';
+import {
+	LikeRepository,
+	LikeRepositoryProvider,
+} from 'src/like/application/ports/out/like.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { PostAttachment } from 'src/post/domain/post-attachment.model';
 import { AddPostAttachmentCommand } from '../ports/in/commands/add-post-attachment.command';
@@ -25,12 +28,10 @@ export class AddPostAttachmentService implements AddPostAttachmentUseCase {
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 		@Inject(LikeRepositoryProvider)
-		protected likeRepository: LikeRepository
+		protected likeRepository: LikeRepository,
 	) {}
 
-	public async execute(
-		command: AddPostAttachmentCommand,
-	): Promise<PostDto> {
+	public async execute(command: AddPostAttachmentCommand): Promise<PostDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const post = await this.postRepository.findById(command.postId);
@@ -49,11 +50,14 @@ export class AddPostAttachmentService implements AddPostAttachmentUseCase {
 
 		await this.postRepository.update(post);
 
-		const liked = (await this.likeRepository.findBy({
-			subjectId: post.id(),
-			subject: LikableSubject.POST,
-			userId: authenticatedUser.id(),
-		})).length > 0;
+		const liked =
+			(
+				await this.likeRepository.findBy({
+					subjectId: post.id(),
+					subject: LikableSubject.POST,
+					userId: authenticatedUser.id(),
+				})
+			).length > 0;
 
 		const totalLikes = await this.likeRepository.countBy({
 			subjectId: post.id(),

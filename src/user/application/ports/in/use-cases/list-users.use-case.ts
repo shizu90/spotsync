@@ -6,4 +6,7 @@ import { ListUsersCommand } from '../commands/list-users.command';
 export const ListUsersUseCaseProvider = 'ListUsersUseCase';
 
 export interface ListUsersUseCase
-	extends UseCase<ListUsersCommand, Promise<Pagination<UserDto> | Array<UserDto>>> {}
+	extends UseCase<
+		ListUsersCommand,
+		Promise<Pagination<UserDto> | Array<UserDto>>
+	> {}

@@ -65,7 +65,7 @@ describe('ListThreadsService', () => {
 		const user = mockUser();
 
 		const command = new ListThreadsCommand(
-			user.id(), 
+			user.id(),
 			null,
 			'created_at',
 			SortDirection.DESC,
@@ -85,7 +85,7 @@ describe('ListThreadsService', () => {
 
 		expect(threads).toBeInstanceOf(Pagination<GetPostDto>);
 
-		if (threads instanceof Pagination) {			
+		if (threads instanceof Pagination) {
 			expect(threads.items).toHaveLength(2);
 			expect(threads.current_page).toBe(0);
 			expect(threads.has_next_page).toBeFalsy();

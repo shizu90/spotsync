@@ -68,9 +68,7 @@ export class FollowService implements FollowUseCase {
 			}
 		}
 
-		if (
-			toUser.visibilitySettings().profile() !== UserVisibility.PUBLIC
-		) {
+		if (toUser.visibilitySettings().profile() !== UserVisibility.PUBLIC) {
 			follow = Follow.create(
 				randomUUID(),
 				authenticatedUser,
@@ -81,8 +79,8 @@ export class FollowService implements FollowUseCase {
 			);
 		} else {
 			follow = Follow.create(
-				randomUUID(), 
-				authenticatedUser, 
+				randomUUID(),
+				authenticatedUser,
 				toUser,
 				FollowStatus.ACTIVE,
 				new Date(),

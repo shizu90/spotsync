@@ -14,7 +14,7 @@ import { UserEntityMapper } from './mappers/user-entity.mapper';
 
 export class UserRepositoryImpl implements UserRepository {
 	private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
-	
+
 	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
 	) {}
@@ -31,11 +31,17 @@ export class UserRepositoryImpl implements UserRepository {
 		};
 
 		if (name) {
-			query['credentials']['name'] = { contains: name, mode: 'insensitive' };
+			query['credentials']['name'] = {
+				contains: name,
+				mode: 'insensitive',
+			};
 		}
 
 		if (displayName) {
-			query['profile']['display_name'] = { contains: displayName, mode: 'insensitive' };
+			query['profile']['display_name'] = {
+				contains: displayName,
+				mode: 'insensitive',
+			};
 		}
 
 		if (status) {
@@ -80,7 +86,7 @@ export class UserRepositoryImpl implements UserRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countBy(params.filters);
 
@@ -88,7 +94,11 @@ export class UserRepositoryImpl implements UserRepository {
 			items = await this.prismaService.user.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: { credentials: true, visibility_settings: true, profile: true },
+				include: {
+					credentials: true,
+					visibility_settings: true,
+					profile: true,
+				},
 				skip: limit * page,
 				take: limit,
 			});
@@ -96,7 +106,11 @@ export class UserRepositoryImpl implements UserRepository {
 			items = await this.prismaService.user.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: { credentials: true, visibility_settings: true, profile: true },
+				include: {
+					credentials: true,
+					visibility_settings: true,
+					profile: true,
+				},
 			});
 		}
 
@@ -104,7 +118,7 @@ export class UserRepositoryImpl implements UserRepository {
 			return this._userEntityMapper.toModel(i);
 		});
 
-		return new Pagination(items, total, page+1, limit);
+		return new Pagination(items, total, page + 1, limit);
 	}
 
 	public async findBy(values: Object): Promise<Array<User>> {
@@ -112,7 +126,11 @@ export class UserRepositoryImpl implements UserRepository {
 
 		const users = await this.prismaService.user.findMany({
 			where: query,
-			include: { credentials: true, visibility_settings: true, profile: true },
+			include: {
+				credentials: true,
+				visibility_settings: true,
+				profile: true,
+			},
 		});
 
 		return users.map((user) => {
@@ -223,9 +241,7 @@ export class UserRepositoryImpl implements UserRepository {
 					create: {
 						profile: model.visibilitySettings().profile(),
 						addresses: model.visibilitySettings().addresses(),
-						spot_folders: model
-							.visibilitySettings()
-							.spotFolders(),
+						spot_folders: model.visibilitySettings().spotFolders(),
 						visited_spots: model
 							.visibilitySettings()
 							.visitedSpots(),
@@ -293,9 +309,7 @@ export class UserRepositoryImpl implements UserRepository {
 		});
 	}
 
-	public async updateProfile(
-		model: UserProfile,
-	): Promise<void> {
+	public async updateProfile(model: UserProfile): Promise<void> {
 		const user = await this.prismaService.user.update({
 			where: { id: model.id() },
 			data: {
@@ -310,10 +324,10 @@ export class UserRepositoryImpl implements UserRepository {
 							biograph: model.biograph(),
 							visibility: model.visibility(),
 						},
-					},	
-				}
-			}
-		})
+					},
+				},
+			},
+		});
 	}
 
 	public async updateVisibilitySettings(

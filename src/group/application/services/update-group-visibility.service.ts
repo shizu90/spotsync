@@ -68,9 +68,7 @@ export class UpdateGroupVisibilityService
 			command.spotEvents !== null &&
 			command.spotEvents.length > 0
 		) {
-			group
-				.visibilitySettings()
-				.changeSpotEvents(command.spotEvents);
+			group.visibilitySettings().changeSpotEvents(command.spotEvents);
 		}
 
 		if (

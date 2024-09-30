@@ -16,7 +16,7 @@ export class LikeDto extends Dto {
 		id: string,
 		user: UserDto,
 		subject: LikableDto,
-		created_at: string
+		created_at: string,
 	) {
 		super();
 		this.id = id;
@@ -35,12 +35,12 @@ export class LikeDto extends Dto {
 		} else {
 			subject = undefined;
 		}
-		
+
 		return new LikeDto(
 			model.id(),
 			UserDto.fromModel(model.user()),
 			subject,
-			model.createdAt()?.toISOString()
+			model.createdAt()?.toISOString(),
 		);
 	}
 }

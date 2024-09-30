@@ -1,14 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-    GetAuthenticatedUserUseCase,
-    GetAuthenticatedUserUseCaseProvider,
+	GetAuthenticatedUserUseCase,
+	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { UpdateUserVisibilitySettingsCommand } from '../ports/in/commands/update-user-visibility-settings.command';
 import { UpdateUserVisibilitySettingsUseCase } from '../ports/in/use-cases/update-user-visibility-settings.use-case';
 import {
-    UserRepository,
-    UserRepositoryProvider,
+	UserRepository,
+	UserRepositoryProvider,
 } from '../ports/out/user.repository';
 
 @Injectable()

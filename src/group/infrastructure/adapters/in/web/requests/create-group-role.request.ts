@@ -5,7 +5,7 @@ import {
 	IsString,
 	IsUUID,
 	MaxLength,
-	MinLength
+	MinLength,
 } from 'class-validator';
 import { ApiRequest } from 'src/common/web/common.request';
 

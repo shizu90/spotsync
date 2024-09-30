@@ -53,7 +53,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 					await this.followRepository.findBy({
 						fromUserId: authenticatedUser.id(),
 						toUserId: user.id(),
-						status: FollowStatus.ACTIVE
+						status: FollowStatus.ACTIVE,
 					})
 				).length > 0;
 
@@ -76,9 +76,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 		}
 
 		if (command.to_user_id !== undefined && command.to_user_id !== null) {
-			const user = await this.userRepository.findById(
-				command.to_user_id,
-			);
+			const user = await this.userRepository.findById(command.to_user_id);
 
 			if (user === null || user === undefined || user.isDeleted()) {
 				throw new UserNotFoundError();
@@ -89,7 +87,7 @@ export class ListFollowsService implements ListFollowsUseCase {
 					await this.followRepository.findBy({
 						fromUserId: authenticatedUser.id(),
 						toUserId: user.id(),
-						status: FollowStatus.ACTIVE
+						status: FollowStatus.ACTIVE,
 					})
 				).length > 0;
 
@@ -132,6 +130,11 @@ export class ListFollowsService implements ListFollowsUseCase {
 			return items;
 		}
 
-		return new Pagination(items, pagination.total, pagination.current_page, pagination.limit);
+		return new Pagination(
+			items,
+			pagination.total,
+			pagination.current_page,
+			pagination.limit,
+		);
 	}
 }

@@ -37,7 +37,12 @@ export class SignInService implements SignInUseCase {
 			user = await this.userRepository.findByEmail(command.email);
 		}
 
-		if (user === null || user === undefined || user.isDeleted() || user.isInactive()) {
+		if (
+			user === null ||
+			user === undefined ||
+			user.isDeleted() ||
+			user.isInactive()
+		) {
 			throw new UserNotFoundError();
 		}
 

@@ -25,10 +25,12 @@ export class RefuseFollowRequestService implements RefuseFollowRequestUseCase {
 	public async execute(command: RefuseFollowRequestCommand): Promise<void> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
-		const followRequest = (await this.followRepository.findBy({
-			id: command.id,
-			status: FollowStatus.REQUESTED,
-		})).at(0);
+		const followRequest = (
+			await this.followRepository.findBy({
+				id: command.id,
+				status: FollowStatus.REQUESTED,
+			})
+		).at(0);
 
 		if (followRequest === null || followRequest === undefined) {
 			throw new FollowRequestNotFoundError();

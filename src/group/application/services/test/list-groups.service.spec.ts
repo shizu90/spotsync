@@ -39,14 +39,7 @@ describe('ListGroupsService', () => {
 	it('should list groups', async () => {
 		const user = mockUser();
 
-		const command = new ListGroupsCommand(
-			null,
-			null,
-			null,
-			null,
-			1,
-			true,
-		);
+		const command = new ListGroupsCommand(null, null, null, null, 1, true);
 
 		getAuthenticatedUser.execute.mockResolvedValue(user);
 		groupRepository.paginate.mockResolvedValue(

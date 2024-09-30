@@ -3,5 +3,4 @@ import { Post } from 'src/post/domain/post.model';
 
 export const PostRepositoryProvider = 'PostRepository';
 
-export interface PostRepository extends Repository<Post, string> {
-}
+export interface PostRepository extends Repository<Post, string> {}

@@ -10,7 +10,14 @@ export class Follow extends Model {
 	private _followedAt: Date;
 	private _requestedAt: Date;
 
-	private constructor(id: string, from: User, to: User, status?: FollowStatus, followedAt?: Date, requestedAt?: Date) {
+	private constructor(
+		id: string,
+		from: User,
+		to: User,
+		status?: FollowStatus,
+		followedAt?: Date,
+		requestedAt?: Date,
+	) {
 		super();
 		this._id = id;
 		this._from = from;

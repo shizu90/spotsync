@@ -14,7 +14,7 @@ import {
 	UseFilters,
 	UseGuards,
 	UsePipes,
-	ValidationPipe
+	ValidationPipe,
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
@@ -25,7 +25,7 @@ import {
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -68,7 +68,7 @@ import { ListGroupMembersQueryRequest } from './requests/list-group-members-quer
 @ApiUnauthorizedResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -76,7 +76,7 @@ import { ListGroupMembersQueryRequest } from './requests/list-group-members-quer
 @ApiNotFoundResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -84,7 +84,7 @@ import { ListGroupMembersQueryRequest } from './requests/list-group-members-quer
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -92,7 +92,7 @@ import { ListGroupMembersQueryRequest } from './requests/list-group-members-quer
 @ApiForbiddenResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -121,7 +121,13 @@ export class GroupMemberController extends ApiController {
 
 	@ApiOperation({ summary: 'List group members' })
 	@UseGuards(AuthGuard)
-	@UsePipes(new ValidationPipe({ transform: true, transformOptions: {enableImplicitConversion: true}, forbidNonWhitelisted: true }))
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Get(':id/members')
 	public async list(
 		@Param('id') groupId: string,
@@ -145,7 +151,7 @@ export class GroupMemberController extends ApiController {
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -170,7 +176,7 @@ export class GroupMemberController extends ApiController {
 	@ApiUnprocessableEntityResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -187,9 +193,7 @@ export class GroupMemberController extends ApiController {
 
 		await this.leaveGroupUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Change member role' })
@@ -211,16 +215,14 @@ export class GroupMemberController extends ApiController {
 
 		await this.changeMemberRoleUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Accept group request' })
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -249,7 +251,7 @@ export class GroupMemberController extends ApiController {
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -270,16 +272,14 @@ export class GroupMemberController extends ApiController {
 
 		await this.refuseGroupRequestUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Remove group member' })
 	@ApiConflictResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),
@@ -300,8 +300,6 @@ export class GroupMemberController extends ApiController {
 
 		await this.removeGroupMemberUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 }

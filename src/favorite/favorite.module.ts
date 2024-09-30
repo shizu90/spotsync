@@ -9,16 +9,16 @@ import { Providers } from './favorite.provider';
 import { FavoriteController } from './infrastructure/adapters/in/web/favorite.controller';
 
 @Module({
-    imports: [
-        forwardRef(() => SpotModule), 
-        forwardRef(() => SpotFolderModule),
-        AuthModule, 
-        FollowerModule,
-        UserModule,
-        PrismaModule,
-    ],
-    exports: [...Providers],
-    providers: [...Providers],
-    controllers: [FavoriteController],
+	imports: [
+		forwardRef(() => SpotModule),
+		forwardRef(() => SpotFolderModule),
+		AuthModule,
+		FollowerModule,
+		UserModule,
+		PrismaModule,
+	],
+	exports: [...Providers],
+	providers: [...Providers],
+	controllers: [FavoriteController],
 })
 export class FavoriteModule {}

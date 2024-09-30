@@ -14,7 +14,7 @@ export class SpotFolderErrorHandler implements ExceptionFilter {
 		const request = ctx.getRequest();
 
 		switch (error.constructor.name) {
-            case 'SpotFolderNotFoundError':
+			case 'SpotFolderNotFoundError':
 			case 'SpotNotFoundError':
 				response
 					.status(HttpStatus.NOT_FOUND)
@@ -28,7 +28,7 @@ export class SpotFolderErrorHandler implements ExceptionFilter {
 					);
 				break;
 			case 'SpotFolderAlreadyAddedError':
-            case 'SpotAlreadyAddedError':
+			case 'SpotAlreadyAddedError':
 				response
 					.status(HttpStatus.CONFLICT)
 					.json(
@@ -85,7 +85,7 @@ export class SpotFolderErrorHandler implements ExceptionFilter {
 								new Date().toISOString(),
 								error.message,
 								error.constructor.name,
-								error.stack
+								error.stack,
 							),
 						);
 				}

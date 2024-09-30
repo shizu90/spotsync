@@ -109,7 +109,9 @@ export class User extends Model {
 		this._updatedAt = new Date();
 	}
 
-	public changeVisibilitySettings(visibilitySettings: UserVisibilitySettings): void {
+	public changeVisibilitySettings(
+		visibilitySettings: UserVisibilitySettings,
+	): void {
 		this._visibilitySettings = visibilitySettings;
 		this._updatedAt = new Date();
 	}
@@ -127,4 +129,3 @@ export class User extends Model {
 		return this._status === UserStatus.INACTIVE;
 	}
 }
- 

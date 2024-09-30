@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { GeoLocatorInput, GeoLocatorProvider } from 'src/geolocation/geolocator';
+import {
+	GeoLocatorInput,
+	GeoLocatorProvider,
+} from 'src/geolocation/geolocator';
 import { GeoLocatorService } from 'src/geolocation/geolocator.service';
 import { Mail, MailProvider } from 'src/mail/mail';
 import { NewUserMailTemplate } from 'src/mail/templates/new-user-mail.template';
@@ -14,13 +17,19 @@ import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { User } from 'src/user/domain/user.model';
 import { CreateUserCommand } from '../ports/in/commands/create-user.command';
 import { CreateUserUseCase } from '../ports/in/use-cases/create-user.use-case';
-import { ActivationRequestRepository, ActivationRequestRepositoryProvider } from '../ports/out/activation-request.repository';
+import {
+	ActivationRequestRepository,
+	ActivationRequestRepositoryProvider,
+} from '../ports/out/activation-request.repository';
 import { UserDto } from '../ports/out/dto/user.dto';
 import {
 	EncryptPasswordService,
 	EncryptPasswordServiceProvider,
 } from '../ports/out/encrypt-password.service';
-import { UserAddressRepository, UserAddressRepositoryProvider } from '../ports/out/user-address.repository';
+import {
+	UserAddressRepository,
+	UserAddressRepositoryProvider,
+} from '../ports/out/user-address.repository';
 import {
 	UserRepository,
 	UserRepositoryProvider,
@@ -41,16 +50,16 @@ export class CreateUserService implements CreateUserUseCase {
 		@Inject(ActivationRequestRepositoryProvider)
 		protected activationRequestRepository: ActivationRequestRepository,
 		@Inject(MailProvider)
-		protected mail: Mail
+		protected mail: Mail,
 	) {}
 
 	public async execute(command: CreateUserCommand): Promise<UserDto> {
 		if ((await this.userRepository.findByEmail(command.email)) !== null) {
-			throw new UserAlreadyExistsError("E-mail already in use.");
+			throw new UserAlreadyExistsError('E-mail already in use.');
 		}
 
 		if ((await this.userRepository.findByName(command.name)) !== null) {
-			throw new UserAlreadyExistsError("User name already taken.");
+			throw new UserAlreadyExistsError('User name already taken.');
 		}
 
 		const userId = randomUUID();
@@ -58,7 +67,7 @@ export class CreateUserService implements CreateUserUseCase {
 		const profile = UserProfile.create(
 			userId,
 			command.birthDate,
-			command.name
+			command.name,
 		);
 
 		const credentials = UserCredentials.create(
@@ -88,25 +97,31 @@ export class CreateUserService implements CreateUserUseCase {
 			visibilitySettings,
 		);
 
-
 		await this.userRepository.store(user);
 
 		if (command.address !== null && command.address !== undefined) {
 			let latitude = command.address.latitude;
 			let longitude = command.address.longitude;
 
-			if ((latitude === null || latitude === undefined) || (longitude === null || longitude === undefined)) {
-				const coordinates = await this.geoLocatorService.coordinates(new GeoLocatorInput(
-					command.address.area,
-					command.address.subArea,
-					command.address.locality,
-					command.address.countryCode,
-				));
+			if (
+				latitude === null ||
+				latitude === undefined ||
+				longitude === null ||
+				longitude === undefined
+			) {
+				const coordinates = await this.geoLocatorService.coordinates(
+					new GeoLocatorInput(
+						command.address.area,
+						command.address.subArea,
+						command.address.locality,
+						command.address.countryCode,
+					),
+				);
 
 				latitude = coordinates.latitude;
 				longitude = coordinates.longitude;
-			} 
-			
+			}
+
 			const address = UserAddress.create(
 				randomUUID(),
 				'Main',
@@ -131,10 +146,15 @@ export class CreateUserService implements CreateUserUseCase {
 
 		await this.activationRequestRepository.store(activationRequest);
 
-		this.mail.setReceiver(user.credentials().email()).setTemplate(new NewUserMailTemplate({
-			userName: user.credentials().name(),
-			activationCode: activationRequest.code(),
-		})).send();
+		this.mail
+			.setReceiver(user.credentials().email())
+			.setTemplate(
+				new NewUserMailTemplate({
+					userName: user.credentials().name(),
+					activationCode: activationRequest.code(),
+				}),
+			)
+			.send();
 
 		return UserDto.fromModel(user).removeSensitiveData();
 	}

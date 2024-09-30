@@ -74,13 +74,14 @@ export class GetPostService implements GetPostUseCase {
 
 				break;
 			case PostVisibility.FOLLOWERS:
-				const isFollowing = (
-					await this.followRepository.findBy({
-						fromUserId: authenticatedUser.id(),
-						toUserId: post.creator().id(),
-						status: FollowStatus.ACTIVE
-					})
-				).length > 0;
+				const isFollowing =
+					(
+						await this.followRepository.findBy({
+							fromUserId: authenticatedUser.id(),
+							toUserId: post.creator().id(),
+							status: FollowStatus.ACTIVE,
+						})
+					).length > 0;
 
 				if (!isFollowing) {
 					throw new UnauthorizedAccessError();

@@ -20,7 +20,7 @@ export class FollowRequestMapper {
 			query.limit,
 		);
 	}
-	
+
 	public static followCommand(
 		fromUserId: string,
 		toUserId: string,

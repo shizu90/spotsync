@@ -90,8 +90,7 @@ export class UpdateGroupRoleService implements UpdateGroupRoleUseCase {
 				(await this.groupRoleRepository.findByName(command.name)) !==
 				null;
 
-			if (roleExists)
-				throw new GroupRoleAlreadyExistsError();
+			if (roleExists) throw new GroupRoleAlreadyExistsError();
 
 			groupRole.changeName(command.name);
 		}

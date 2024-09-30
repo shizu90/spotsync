@@ -25,7 +25,12 @@ export class GetAuthenticatedUserService
 			this.request['authenticated_user'],
 		);
 
-		if (user === null || user === undefined || user.isDeleted() || user.isInactive()) {
+		if (
+			user === null ||
+			user === undefined ||
+			user.isDeleted() ||
+			user.isInactive()
+		) {
 			throw new UnauthenticatedError();
 		}
 

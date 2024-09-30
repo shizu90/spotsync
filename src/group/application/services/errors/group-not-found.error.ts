@@ -1,5 +1,5 @@
 export class GroupNotFoundError extends Error {
-	constructor(message = "Group not found.") {
+	constructor(message = 'Group not found.') {
 		super(message);
 	}
 }

@@ -14,7 +14,8 @@ import { VisitedSpotEntityMapper } from './mappers/visited-spot-entity.mapper';
 @Injectable()
 export class SpotRepositoryImpl implements SpotRepository {
 	private _spotEntityMapper: SpotEntityMapper = new SpotEntityMapper();
-	private _visitedSpotEntityMapper: VisitedSpotEntityMapper = new VisitedSpotEntityMapper();
+	private _visitedSpotEntityMapper: VisitedSpotEntityMapper =
+		new VisitedSpotEntityMapper();
 
 	constructor(
 		@Inject(PrismaService)
@@ -29,7 +30,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 		const favoritedById = values['favoritedById'] ?? null;
 		const visitedById = values['visitedById'] ?? null;
 		const spotId = values['spotId'] ?? null;
-		
+
 		let query = {};
 
 		if (favoritedById) {
@@ -71,7 +72,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Spot>> {
-		const query = this._mountQuery(params.filters); 
+		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
 
@@ -98,7 +99,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 		let items = [];
 
 		const paginate = params.paginate ?? false;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const limit = params.limit ?? 12;
 		const total = await this.countBy(params.filters);
 
@@ -141,7 +142,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 		return new Pagination(
 			items.map((s) => this._spotEntityMapper.toModel(s)),
 			total,
-			page+1,
+			page + 1,
 			limit,
 		);
 	}
@@ -220,7 +221,9 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		return visitedSpots.map((vs) => this._visitedSpotEntityMapper.toModel(vs));
+		return visitedSpots.map((vs) =>
+			this._visitedSpotEntityMapper.toModel(vs),
+		);
 	}
 
 	public async countBy(values: Object): Promise<number> {

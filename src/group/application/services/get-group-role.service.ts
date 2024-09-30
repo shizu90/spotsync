@@ -36,9 +36,7 @@ export class GetGroupRoleService implements GetGroupRoleUseCase {
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 	) {}
 
-	public async execute(
-		command: GetGroupRoleCommand,
-	): Promise<GroupRoleDto> {
+	public async execute(command: GetGroupRoleCommand): Promise<GroupRoleDto> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
 		const group = await this.groupRepository.findById(command.groupId);

@@ -8,13 +8,13 @@ export class CreateUserCommand extends Command {
 		readonly password: string,
 		readonly phoneNumber?: string,
 		readonly address?: {
-			area: string,
-			subArea: string,
-			countryCode: string,
-			locality?: string,
-			latitude?: number,
-			longitude?: number
-		}
+			area: string;
+			subArea: string;
+			countryCode: string;
+			locality?: string;
+			latitude?: number;
+			longitude?: number;
+		},
 	) {
 		super();
 	}

@@ -5,7 +5,10 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { Pagination } from 'src/common/core/common.repository';
-import { FavoriteRepository, FavoriteRepositoryProvider } from 'src/favorite/application/ports/out/favorite.repository';
+import {
+	FavoriteRepository,
+	FavoriteRepositoryProvider,
+} from 'src/favorite/application/ports/out/favorite.repository';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import {
 	FollowRepository,
@@ -66,16 +69,21 @@ export class ListSpotsService implements ListSpotsUseCase {
 				command.favoritedById,
 			);
 
-			if ((favoritedBy !== null && favoritedBy !== undefined) && (favoritedBy.id() !== authenticatedUser.id())) {
+			if (
+				favoritedBy !== null &&
+				favoritedBy !== undefined &&
+				favoritedBy.id() !== authenticatedUser.id()
+			) {
 				switch (favoritedBy.visibilitySettings().favoriteSpots()) {
 					case UserVisibility.FOLLOWERS:
-						const isFollowing = (
-							await this.followRepository.findBy({
-								fromUserId: authenticatedUser.id(),
-								toUserId: favoritedBy.id(),
-								status: FollowStatus.ACTIVE,
-							})
-						).length > 0;
+						const isFollowing =
+							(
+								await this.followRepository.findBy({
+									fromUserId: authenticatedUser.id(),
+									toUserId: favoritedBy.id(),
+									status: FollowStatus.ACTIVE,
+								})
+							).length > 0;
 
 						if (!isFollowing) {
 							throw new UnauthorizedAccessError();
@@ -91,7 +99,11 @@ export class ListSpotsService implements ListSpotsUseCase {
 			}
 		}
 
-		if ((command.visitedById !== null && command.visitedById !== undefined) && (command.visitedById !== authenticatedUser.id())) {
+		if (
+			command.visitedById !== null &&
+			command.visitedById !== undefined &&
+			command.visitedById !== authenticatedUser.id()
+		) {
 			const visitedBy = await this.userRepository.findById(
 				command.visitedById,
 			);
@@ -99,13 +111,14 @@ export class ListSpotsService implements ListSpotsUseCase {
 			if (visitedBy !== null && visitedBy !== undefined) {
 				switch (visitedBy.visibilitySettings().visitedSpots()) {
 					case UserVisibility.FOLLOWERS:
-						const isFollowing = (
-							await this.followRepository.findBy({
-								fromUserId: authenticatedUser.id(),
-								toUserId: visitedBy.id(),
-								status: FollowStatus.ACTIVE,
-							})
-						).length > 0;
+						const isFollowing =
+							(
+								await this.followRepository.findBy({
+									fromUserId: authenticatedUser.id(),
+									toUserId: visitedBy.id(),
+									status: FollowStatus.ACTIVE,
+								})
+							).length > 0;
 
 						if (!isFollowing) {
 							throw new UnauthorizedAccessError();
@@ -144,11 +157,10 @@ export class ListSpotsService implements ListSpotsUseCase {
 						spotId: s.id(),
 					});
 
-				const totalFavorites =
-					await this.favoriteRepository.countBy({
-						subjectId: s.id(),
-						subject: FavoritableSubject.SPOT,
-					});
+				const totalFavorites = await this.favoriteRepository.countBy({
+					subjectId: s.id(),
+					subject: FavoritableSubject.SPOT,
+				});
 
 				const visited = (
 					await this.spotRepository.findVisitedSpotBy({
@@ -190,9 +202,14 @@ export class ListSpotsService implements ListSpotsUseCase {
 		);
 
 		if (!command.paginate) {
-			return items
+			return items;
 		}
 
-		return new Pagination(items, spots.total, spots.current_page, spots.limit);
+		return new Pagination(
+			items,
+			spots.total,
+			spots.current_page,
+			spots.limit,
+		);
 	}
 }

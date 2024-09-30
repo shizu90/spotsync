@@ -12,19 +12,19 @@ import { LikeEntityMapper } from './mappers/like-entity.mapper';
 
 export class LikeRepositoryImpl implements LikeRepository {
 	private _likeEntityMapper: LikeEntityMapper = new LikeEntityMapper();
-	
+
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 	) {}
 
 	private _mapSubjectId(subject: LikableSubject): string {
-		switch(subject) {
+		switch (subject) {
 			case LikableSubject.POST:
 				return 'post_id';
 			case LikableSubject.COMMENT:
 				return 'comment_id';
-			default: 
+			default:
 				return 'post_id';
 		}
 	}
@@ -70,7 +70,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 
 		const paginate = params.paginate ?? false;
 		const limit = params.limit ?? 12;
-		const page = (params.page ?? 1)-1;
+		const page = (params.page ?? 1) - 1;
 		const total = await this.countBy(params.filters);
 
 		let items = [];
@@ -93,12 +93,12 @@ export class LikeRepositoryImpl implements LikeRepository {
 							creator: true,
 							thread: true,
 							group: true,
-						}
+						},
 					},
 					comment: {
 						include: {
 							user: true,
-						}
+						},
 					},
 				},
 				skip: limit * page,
@@ -122,12 +122,12 @@ export class LikeRepositoryImpl implements LikeRepository {
 							creator: true,
 							thread: true,
 							group: true,
-						}
+						},
 					},
 					comment: {
 						include: {
 							user: true,
-						}
+						},
 					},
 				},
 			});
@@ -136,7 +136,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 		return new Pagination(
 			items.map((i) => this._likeEntityMapper.toModel(i)),
 			total,
-			page+1,
+			page + 1,
 			limit,
 		);
 	}
@@ -159,12 +159,12 @@ export class LikeRepositoryImpl implements LikeRepository {
 						creator: true,
 						thread: true,
 						group: true,
-					}
+					},
 				},
 				comment: {
 					include: {
 						user: true,
-					}
+					},
 				},
 			},
 		});
@@ -197,14 +197,14 @@ export class LikeRepositoryImpl implements LikeRepository {
 						creator: true,
 						thread: true,
 						group: true,
-					}
+					},
 				},
 				comment: {
 					include: {
 						user: true,
-					}
+					},
 				},
-			}
+			},
 		});
 
 		return likes.map((like) => this._likeEntityMapper.toModel(like));
@@ -227,12 +227,12 @@ export class LikeRepositoryImpl implements LikeRepository {
 						creator: true,
 						thread: true,
 						group: true,
-					}
+					},
 				},
 				comment: {
 					include: {
 						user: true,
-					}
+					},
 				},
 			},
 		});
@@ -244,8 +244,14 @@ export class LikeRepositoryImpl implements LikeRepository {
 		const like = await this.prismaService.like.create({
 			data: {
 				id: model.id(),
-				post_id: model.likableSubject() === LikableSubject.POST ? model.likable().id() : null,
-				comment_id: model.likableSubject() === LikableSubject.COMMENT ? model.likable().id() : null,
+				post_id:
+					model.likableSubject() === LikableSubject.POST
+						? model.likable().id()
+						: null,
+				comment_id:
+					model.likableSubject() === LikableSubject.COMMENT
+						? model.likable().id()
+						: null,
 				likable_subject: model.likableSubject(),
 				created_at: model.createdAt(),
 				user_id: model.user().id(),
@@ -264,12 +270,12 @@ export class LikeRepositoryImpl implements LikeRepository {
 						creator: true,
 						thread: true,
 						group: true,
-					}
+					},
 				},
 				comment: {
 					include: {
 						user: true,
-					}
+					},
 				},
 			},
 		});
@@ -282,8 +288,14 @@ export class LikeRepositoryImpl implements LikeRepository {
 			where: { id: model.id() },
 			data: {
 				likable_subject: model.likableSubject(),
-				post_id: model.likableSubject() === LikableSubject.POST ? model.likable().id() : null,
-				comment_id: model.likableSubject() === LikableSubject.COMMENT ? model.likable().id() : null,
+				post_id:
+					model.likableSubject() === LikableSubject.POST
+						? model.likable().id()
+						: null,
+				comment_id:
+					model.likableSubject() === LikableSubject.COMMENT
+						? model.likable().id()
+						: null,
 			},
 		});
 	}

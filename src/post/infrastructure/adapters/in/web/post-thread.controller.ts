@@ -14,7 +14,7 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiOperation,
 	ApiTags,
-	ApiUnauthorizedResponse
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
@@ -31,7 +31,7 @@ import { ListThreadsQueryRequest } from './requests/list-threads-query.request';
 @ApiInternalServerErrorResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -39,7 +39,7 @@ import { ListThreadsQueryRequest } from './requests/list-threads-query.request';
 @ApiForbiddenResponse({
 	example: new ErrorResponse(
 		'string',
-		'2024-07-24 12:00:00',
+		new Date().toISOString(),
 		'string',
 		'string',
 	),
@@ -56,7 +56,7 @@ export class PostThreadController {
 	@ApiUnauthorizedResponse({
 		example: new ErrorResponse(
 			'string',
-			'2024-07-24 12:00:00',
+			new Date().toISOString(),
 			'string',
 			'string',
 		),

@@ -59,7 +59,10 @@ export class GroupRequestMapper {
 		return new DeleteGroupCommand(id);
 	}
 
-	public static getGroupHistoryCommand(id: string, query: GetGroupHistoryQueryRequest): GetGroupHistoryCommand {
+	public static getGroupHistoryCommand(
+		id: string,
+		query: GetGroupHistoryQueryRequest,
+	): GetGroupHistoryCommand {
 		return new GetGroupHistoryCommand(
 			id,
 			query.sort,

@@ -43,7 +43,7 @@ export class UpdateUserCredentialsService
 			user.credentials().email() !== command.email &&
 			(await this.userRepository.findByEmail(command.email)) !== null
 		) {
-			throw new UserAlreadyExistsError("E-mail already in use.");
+			throw new UserAlreadyExistsError('E-mail already in use.');
 		}
 
 		if (
@@ -52,7 +52,7 @@ export class UpdateUserCredentialsService
 			user.credentials().name() !== command.name &&
 			(await this.userRepository.findByName(command.name)) !== null
 		) {
-			throw new UserAlreadyExistsError("User name already taken.");
+			throw new UserAlreadyExistsError('User name already taken.');
 		}
 
 		if (

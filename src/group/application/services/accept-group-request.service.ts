@@ -71,11 +71,12 @@ export class AcceptGroupRequestService implements AcceptGroupRequestUseCase {
 			throw new UnauthorizedAccessError();
 		}
 
-		const groupMemberRequest =
-			(await this.groupMemberRepository.findBy({
+		const groupMemberRequest = (
+			await this.groupMemberRepository.findBy({
 				id: command.id,
 				status: GroupMemberStatus.REQUESTED,
-			})).at(0);
+			})
+		).at(0);
 
 		if (groupMemberRequest === null || groupMemberRequest === undefined) {
 			throw new GroupRequestNotFoundError();
