@@ -118,5 +118,13 @@ export class User extends Model {
 		this._credentials = credentials;
 		this._updatedAt = new Date();
 	}
+
+	public isActive(): boolean {
+		return this._status === UserStatus.ACTIVE;
+	}
+
+	public isInactive(): boolean {
+		return this._status === UserStatus.INACTIVE;
+	}
 }
  

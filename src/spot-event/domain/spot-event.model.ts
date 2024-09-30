@@ -1,4 +1,7 @@
 import { randomUUID } from 'crypto';
+import { CommentSubject } from 'src/comment/domain/comment-subject.model.';
+import { Comment } from 'src/comment/domain/comment.model';
+import { Commentable } from 'src/comment/domain/commentable.interface';
 import { Model } from 'src/common/core/common.model';
 import { Favoritable } from 'src/favorite/domain/favoritable.interface';
 import { Favorite } from 'src/favorite/domain/favorite.model';
@@ -9,7 +12,7 @@ import { SpotEventParticipant } from './spot-event-participant.model';
 import { SpotEventStatus } from './spot-event-status.enum';
 import { SpotEventVisibility } from './spot-event-visibility.enum';
 
-export class SpotEvent extends Model implements Favoritable {
+export class SpotEvent extends Model implements Favoritable, Commentable {
 	private _id: string;
 	private _name: string;
 	private _description: string;
@@ -172,6 +175,26 @@ export class SpotEvent extends Model implements Favoritable {
 		this._updatedAt = new Date();
 	}
 
+	public isStarted(): boolean {
+		return this._status === SpotEventStatus.STARTED;
+	}
+
+	public isScheduled(): boolean {
+		return this._status === SpotEventStatus.SCHEDULED;
+	}
+
+	public isOngoing(): boolean {
+		return this._status === SpotEventStatus.ONGOING;
+	}
+
+	public isEnded(): boolean {
+		return this._status === SpotEventStatus.ENDED;
+	}
+
+	public isCanceled(): boolean {
+		return this._status === SpotEventStatus.CANCELED;
+	}
+
 	public end(): void {
 		if (
 			this._status !== SpotEventStatus.STARTED &&
@@ -239,5 +262,9 @@ export class SpotEvent extends Model implements Favoritable {
 
 	public favorite(user: User): Favorite {
 		return Favorite.createForSpotEvent(randomUUID(), user, this);
+	}
+
+	public comment(user: User, text: string): Comment {
+		return Comment.create(randomUUID(), text, user, CommentSubject.SPOT_EVENT, this);
 	}
 }

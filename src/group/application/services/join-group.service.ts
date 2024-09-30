@@ -61,11 +61,11 @@ export class JoinGroupService implements JoinGroupUseCase {
 		})).at(0);
 
 		if (groupMember !== null && groupMember !== undefined) {
-			if (groupMember.status() == GroupMemberStatus.REQUESTED) {
+			if (groupMember.isRequested()) {
 				throw new AlreadyRequestedToJoinError();
 			}
 
-			if (groupMember.status() == GroupMemberStatus.ACTIVE) {
+			if (groupMember.isActive()) {
 				throw new AlreadyMemberOfGroupError();
 			}
 

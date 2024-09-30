@@ -10,7 +10,6 @@ export class Favorite extends Model {
     private _id: string;
     private _user: User;
     private _favoritableSubject: FavoritableSubject;
-    private _favoritableId: string;
     private _favoritable: Favoritable;
     private _createdAt: Date;
 

@@ -99,4 +99,16 @@ export class GroupMember extends Model {
 		this._requestedAt = new Date();
 		this._joinedAt = null;
 	}
+
+	public isRequested(): boolean {
+		return this._status === GroupMemberStatus.REQUESTED;
+	}
+
+	public isActive(): boolean {
+		return this._status === GroupMemberStatus.ACTIVE;
+	}
+
+	public isInactive(): boolean {
+		return this._status === GroupMemberStatus.INACTIVE;
+	}
 }

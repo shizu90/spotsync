@@ -5,7 +5,6 @@ import {
 	UserRepository,
 	UserRepositoryProvider,
 } from 'src/user/application/ports/out/user.repository';
-import { UserStatus } from 'src/user/domain/user-status.enum';
 import { User } from 'src/user/domain/user.model';
 import { GetAuthenticatedUserUseCase } from '../ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthenticatedError } from './errors/unauthenticated.error';
@@ -26,7 +25,7 @@ export class GetAuthenticatedUserService
 			this.request['authenticated_user'],
 		);
 
-		if (user === null || user === undefined || user.isDeleted() || user.status() === UserStatus.INACTIVE) {
+		if (user === null || user === undefined || user.isDeleted() || user.isInactive()) {
 			throw new UnauthenticatedError();
 		}
 

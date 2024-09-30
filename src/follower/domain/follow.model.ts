@@ -66,4 +66,8 @@ export class Follow extends Model {
 	public isActive(): boolean {
 		return this._status === FollowStatus.ACTIVE;
 	}
+
+	public isBlocked(): boolean {
+		return this._status === FollowStatus.BLOCKED;
+	}
 }
