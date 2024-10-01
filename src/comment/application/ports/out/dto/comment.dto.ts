@@ -17,13 +17,13 @@ export class CommentDto extends Dto {
 	public created_at: string = undefined;
 
 	private constructor(
-		id: string,
-		text: string,
-		user: UserDto,
-		commentable: CommentableDto,
-		total_likes: number,
-		created_at: string,
-		liked: boolean,
+		id?: string,
+		text?: string,
+		user?: UserDto,
+		commentable?: CommentableDto,
+		total_likes?: number,
+		created_at?: string,
+		liked?: boolean,
 	) {
 		super();
 		this.id = id;

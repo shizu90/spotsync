@@ -28,8 +28,10 @@ model User {
   password_recoveries      PasswordRecovery[]
   activation_requests      ActivationRequest[]
   comments                 Comment[]
-  spotFolders              SpotFolder[]
+  spot_folders             SpotFolder[]
   favorites                Favorite[]
+  spot_events              SpotEvent[]
+  spot_event_participation SpotEventParticipant[]
 
   @@map("users")
 }
@@ -122,6 +124,7 @@ model Group {
   roles                    GroupRole[]
   visibility_settings      GroupVisibilitySettings?
   posts                    Post[]
+  events                   SpotEvent[]
 
   @@map("groups")
 }
@@ -267,6 +270,7 @@ model Spot {
   spot_folders SpotFolderItem[]
   favorites    Favorite[]
   comments     Comment[]
+  events       SpotEvent[]
 
   @@map("spots")
 }
@@ -386,4 +390,35 @@ model Favorite {
   spot_folder     SpotFolder? @relation(fields: [spot_folder_id], references: [id], onDelete: Cascade)
 
   @@map("favorites")
+}
+
+model SpotEvent {
+  id           String   @id @default(uuid())
+  name         String   @db.VarChar(255)
+  description  String?  @db.VarChar(400)
+  start_date   DateTime
+  end_date     DateTime
+  status       String   @db.VarChar(12)
+  visibility   String   @db.VarChar(12)
+  spot_id      String
+  group_id     String?
+  user_id      String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  spot         Spot     @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+  group        Group?   @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  creator      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  participants SpotEventParticipant[]
+
+  @@map("spot_events")
+}
+
+model SpotEventParticipant {
+  spot_event_id String
+  user_id       String
+  user          User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  spot_event    SpotEvent  @relation(fields: [spot_event_id], references: [id], onDelete: Cascade)
+
+  @@id([spot_event_id, user_id])
+  @@map("spot_event_participants")
 }

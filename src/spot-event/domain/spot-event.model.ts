@@ -166,19 +166,6 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 		this._updatedAt = new Date();
 	}
 
-	public start(): void {
-		if (this._status !== SpotEventStatus.SCHEDULED) {
-			return;
-		}
-
-		this._status = SpotEventStatus.STARTED;
-		this._updatedAt = new Date();
-	}
-
-	public isStarted(): boolean {
-		return this._status === SpotEventStatus.STARTED;
-	}
-
 	public isScheduled(): boolean {
 		return this._status === SpotEventStatus.SCHEDULED;
 	}
@@ -197,8 +184,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 
 	public end(): void {
 		if (
-			this._status !== SpotEventStatus.STARTED &&
-			this._status !== SpotEventStatus.ONGOING
+			!this.isOngoing()
 		) {
 			return;
 		}
@@ -208,7 +194,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 	}
 
 	public cancel(): void {
-		if (this._status !== SpotEventStatus.SCHEDULED) {
+		if (!this.isScheduled()) {
 			return;
 		}
 
