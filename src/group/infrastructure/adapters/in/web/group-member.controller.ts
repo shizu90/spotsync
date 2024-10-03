@@ -18,10 +18,12 @@ import {
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
@@ -29,6 +31,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -59,44 +62,17 @@ import {
 	RemoveGroupMemberUseCase,
 	RemoveGroupMemberUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/remove-group-member.use-case';
+import { GroupMemberDto } from 'src/group/application/ports/out/dto/group-member.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
 import { GroupMemberRequestMapper } from './mappers/group-member-request.mapper';
 import { ChangeMemberRoleRequest } from './requests/change-member-role.request';
 import { ListGroupMembersQueryRequest } from './requests/list-group-members-query.request';
 
 @ApiTags('Group members')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiNotFoundResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiUnauthorizedResponse({ type: ErrorResponse })
+@ApiNotFoundResponse({ type: ErrorResponse })
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
 export class GroupMemberController extends ApiController {
@@ -120,6 +96,7 @@ export class GroupMemberController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List group members' })
+	@ApiOkResponse({ type: Pagination<GroupMemberDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -148,14 +125,8 @@ export class GroupMemberController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Join group' })
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiConflictResponse({ type: ErrorResponse })
+	@ApiCreatedResponse({ type: GroupMemberDto })
 	@UseGuards(AuthGuard)
 	@Post(':id/join')
 	public async joinGroup(
@@ -173,14 +144,7 @@ export class GroupMemberController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Leave group' })
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id/leave')
@@ -219,14 +183,8 @@ export class GroupMemberController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Accept group request' })
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiConflictResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: GroupMemberDto })
 	@UseGuards(AuthGuard)
 	@Patch(':id/join-requests/:request_id/accept')
 	public async acceptGroupRequest(
@@ -242,20 +200,13 @@ export class GroupMemberController extends ApiController {
 
 		const data = await this.acceptGroupRequestUseCase.execute(command);
 
-		res.status(HttpStatus.CREATED).json({
+		res.status(HttpStatus.OK).json({
 			data: data,
 		});
 	}
 
 	@ApiOperation({ summary: 'Refuse group request' })
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiConflictResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id/join-requests/:request_id/refuse')
@@ -276,14 +227,7 @@ export class GroupMemberController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Remove group member' })
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiConflictResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id/members/:member_id')

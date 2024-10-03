@@ -18,17 +18,21 @@ import {
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { SignInDto } from 'src/auth/application/ports/out/dto/sign-in.dto';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -71,6 +75,7 @@ import {
 	UploadProfilePictureUseCase,
 	UploadProfilePictureUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/upload-profile-picture.use-case';
+import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
 import { UserRequestMapper } from './mappers/user-request.mapper';
 import { ActivateUserRequest } from './requests/activate-user.request';
@@ -81,14 +86,7 @@ import { UpdateUserProfileRequest } from './requests/update-user-profile.request
 import { UpdateUserVisibilitySettingsRequest } from './requests/update-user-visibility-settings.request';
 
 @ApiTags('Users')
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
 @Controller('users')
 @UseFilters(new UserErrorHandler())
 export class UserController extends ApiController {
@@ -118,22 +116,9 @@ export class UserController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List users' })
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiForbiddenResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiForbiddenResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: Pagination<UserDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -158,30 +143,9 @@ export class UserController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Get user by id' })
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiForbiddenResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiForbiddenResponse({ type: ErrorResponse })
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async get(
@@ -199,22 +163,9 @@ export class UserController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Create user' })
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiConflictResponse({ type: ErrorResponse})
+	@ApiCreatedResponse({ type: UserDto })
 	@UsePipes(
 		new ValidationPipe({
 			transform: true,
@@ -238,38 +189,10 @@ export class UserController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Update user profile' })
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiForbiddenResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiForbiddenResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(
@@ -294,46 +217,11 @@ export class UserController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Update user credentials' })
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiForbiddenResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiConflictResponse({ type: ErrorResponse })
+	@ApiForbiddenResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(
@@ -361,38 +249,10 @@ export class UserController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Update user visibility settings' })
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiForbiddenResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiForbiddenResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(
@@ -420,14 +280,7 @@ export class UserController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Delete user by id' })
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
 	@ApiNotFoundResponse({
 		example: new ErrorResponse(
 			'string',
@@ -436,14 +289,7 @@ export class UserController extends ApiController {
 			'string',
 		),
 	})
-	@ApiForbiddenResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiForbiddenResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id')
@@ -460,14 +306,9 @@ export class UserController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Activate user' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: SignInDto })
+	@ApiNoContentResponse()
 	@UsePipes(
 		new ValidationPipe({
 			transform: true,
@@ -486,7 +327,7 @@ export class UserController extends ApiController {
 
 		const data = await this.activateUserUseCase.execute(command);
 
-		res.status(HttpStatus.OK).json({
+		res.status(data != null && data != undefined ? HttpStatus.OK : HttpStatus.NO_CONTENT).json({
 			data: data,
 		});
 	}

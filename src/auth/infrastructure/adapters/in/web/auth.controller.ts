@@ -14,6 +14,8 @@ import {
 } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
+	ApiNoContentResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
@@ -31,6 +33,7 @@ import {
 	SignOutUseCase,
 	SignOutUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/sign-out.use-case';
+import { SignInDto } from 'src/auth/application/ports/out/dto/sign-in.dto';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import { AuthRequestMapper } from './auth-request.mapper';
@@ -54,6 +57,7 @@ export class AuthController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Login' })
+	@ApiOkResponse({ type: SignInDto })
 	@UsePipes(
 		new ValidationPipe({
 			transform: true,
@@ -73,22 +77,9 @@ export class AuthController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Logout' })
-	@ApiForbiddenResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiForbiddenResponse({ type: ErrorResponse })
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Put('logout')
 	public async logout(@Req() req: Request, @Res() res: Response) {
@@ -98,8 +89,6 @@ export class AuthController extends ApiController {
 
 		await this.signOutUseCase.execute(command);
 
-		res.status(HttpStatus.NO_CONTENT).json({
-			data: {},
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 }

@@ -17,10 +17,12 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
@@ -28,6 +30,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -50,6 +53,7 @@ import {
 	UpdateUserAddressUseCase,
 	UpdateUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/update-user-address.use-case';
+import { UserAddressDto } from 'src/user/application/ports/out/dto/user-address.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
 import { UserAddressRequestMapper } from './mappers/user-address-request.mapper';
 import { CreateUserAddressRequest } from './requests/create-user-address.request';
@@ -57,30 +61,9 @@ import { ListUserAddressesQueryRequest } from './requests/list-user-addresses-qu
 import { UpdateUserAddressRequest } from './requests/update-user-address.request';
 
 @ApiTags('User addresses')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiUnauthorizedResponse({ type: ErrorResponse })
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @Controller('users')
 @UseFilters(new UserErrorHandler())
 export class UserAddressController extends ApiController {
@@ -100,6 +83,7 @@ export class UserAddressController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List user addresses' })
+	@ApiOkResponse({ type: Pagination<UserAddressDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -128,14 +112,8 @@ export class UserAddressController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Get user address' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: UserAddressDto })
 	@UseGuards(AuthGuard)
 	@Get(':id/addresses/:address_id')
 	public async getAddress(
@@ -157,22 +135,9 @@ export class UserAddressController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Create user address' })
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiCreatedResponse({ type: UserAddressDto })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -201,22 +166,8 @@ export class UserAddressController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Update user address' })
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(
@@ -246,14 +197,7 @@ export class UserAddressController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Delete user address' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id/addresses/:address_id')

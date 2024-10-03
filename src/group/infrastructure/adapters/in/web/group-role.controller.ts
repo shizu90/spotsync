@@ -18,10 +18,12 @@ import {
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
@@ -29,6 +31,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -51,6 +54,7 @@ import {
 	UpdateGroupRoleUseCase,
 	UpdateGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group-role.use-case';
+import { GroupRoleDto } from 'src/group/application/ports/out/dto/group-role.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
 import { GroupRoleRequestMapper } from './mappers/group-role-request.mapper';
 import { CreateGroupRoleRequest } from './requests/create-group-role.request';
@@ -58,30 +62,9 @@ import { ListGroupRolesQueryRequest } from './requests/list-group-roles-query.re
 import { UpdateGroupRoleRequest } from './requests/update-group-role.request';
 
 @ApiTags('Group roles')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiUnauthorizedResponse({ type: ErrorResponse })
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
 export class GroupRoleController extends ApiController {
@@ -101,6 +84,7 @@ export class GroupRoleController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List group roles' })
+	@ApiOkResponse({ type: Pagination<GroupRoleDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -129,14 +113,8 @@ export class GroupRoleController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Get group role by id' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: GroupRoleDto })
 	@UseGuards(AuthGuard)
 	@Get(':id/roles/:role_id')
 	public async getById(
@@ -158,30 +136,10 @@ export class GroupRoleController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Create group role' })
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiConflictResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiCreatedResponse({ type: GroupRoleDto })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -210,30 +168,9 @@ export class GroupRoleController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Update group role' })
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiConflictResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(
@@ -263,14 +200,7 @@ export class GroupRoleController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Delete group role' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id/roles/:role_id')

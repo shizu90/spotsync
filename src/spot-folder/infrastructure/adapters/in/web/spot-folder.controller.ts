@@ -18,15 +18,18 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -61,6 +64,7 @@ import {
 	UpdateSpotFolderUseCase,
 	UpdateSpotFolderUseCaseProvider,
 } from 'src/spot-folder/application/ports/in/use-cases/update-spot-folder.use-case';
+import { SpotFolderDto } from 'src/spot-folder/application/ports/out/dto/spot-folder.dto';
 import { SpotFolderErrorHandler } from './handlers/spot-folder-error.handler';
 import { SpotFolderRequestMapper } from './mappers/spot-folder-request.mapper';
 import { AddSpotRequest } from './requests/add-spot.request';
@@ -70,22 +74,8 @@ import { SortItemsRequest } from './requests/sort-items.request';
 import { UpdateSpotFolderRequest } from './requests/update-spot-folder.request';
 
 @ApiTags('Spot folders')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiUnauthorizedResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @Controller('spot-folders')
 @UseFilters(new SpotFolderErrorHandler())
 export class SpotFolderController extends ApiController {
@@ -111,6 +101,7 @@ export class SpotFolderController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List spot folders' })
+	@ApiOkResponse({ type: Pagination<SpotFolderDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -135,14 +126,8 @@ export class SpotFolderController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Get spot folder' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: SpotFolderDto })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -167,6 +152,7 @@ export class SpotFolderController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Create spot folder' })
+	@ApiCreatedResponse({ type: SpotFolderDto })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -185,21 +171,14 @@ export class SpotFolderController extends ApiController {
 
 		const data = await this.createSpotFolderUseCase.execute(command);
 
-		res.status(HttpStatus.OK).json({
+		res.status(HttpStatus.CREATED).json({
 			data: data,
 		});
 	}
 
 	@ApiOperation({ summary: 'Update spot folder' })
 	@ApiNoContentResponse()
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -227,14 +206,7 @@ export class SpotFolderController extends ApiController {
 
 	@ApiOperation({ summary: 'Delete spot folder' })
 	@ApiNoContentResponse()
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@UseGuards(AuthGuard)
 	@Delete(':id')
 	public async delete(
@@ -250,14 +222,8 @@ export class SpotFolderController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Sort items' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: SpotFolderDto })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -284,14 +250,7 @@ export class SpotFolderController extends ApiController {
 
 	@ApiOperation({ summary: 'Add spots' })
 	@ApiNoContentResponse()
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -316,14 +275,7 @@ export class SpotFolderController extends ApiController {
 
 	@ApiOperation({ summary: 'Remove spots' })
 	@ApiNoContentResponse()
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({

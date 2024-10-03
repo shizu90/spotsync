@@ -17,16 +17,19 @@ import {
 } from '@nestjs/common';
 import {
 	ApiConflictResponse,
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -49,35 +52,15 @@ import {
 	UnfollowUseCase,
 	UnfollowUseCaseProvider,
 } from 'src/follower/application/ports/in/use-cases/unfollow.use-case';
+import { FollowDto } from 'src/follower/application/ports/out/dto/follow.dto';
 import { FollowErrorHandler } from './handlers/follow-error.handler';
 import { FollowRequestMapper } from './mappers/follow-request.mapper';
 import { ListFollowsQueryRequest } from './requests/list-follows-query.request';
 
 @ApiTags('Followers')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiUnauthorizedResponse({ type: ErrorResponse })
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @Controller('followers')
 @UseFilters(new FollowErrorHandler())
 export class FollowController extends ApiController {
@@ -97,6 +80,7 @@ export class FollowController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List follows' })
+	@ApiOkResponse({ type: Pagination<FollowDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -121,22 +105,9 @@ export class FollowController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Follow user' })
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiConflictResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiCreatedResponse({ type: FollowDto })
 	@UseGuards(AuthGuard)
 	@Post(':from_id/follow/:to_id')
 	public async follow(
@@ -155,22 +126,8 @@ export class FollowController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Unfollow user' })
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiConflictResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':from_id/unfollow/:to_id')
@@ -191,22 +148,8 @@ export class FollowController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Accept follow request' })
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiConflictResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Put('requests/:follow_request_id/accept')
@@ -224,22 +167,8 @@ export class FollowController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Refuse follow request' })
-	@ApiConflictResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiConflictResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Put('requests/:follow_request_id/refuse')

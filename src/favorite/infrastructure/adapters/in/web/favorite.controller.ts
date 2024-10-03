@@ -14,15 +14,18 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -37,6 +40,7 @@ import {
 	UnfavoriteUseCase,
 	UnfavoriteUseCaseProvider,
 } from 'src/favorite/application/ports/in/use-cases/unfavorite.use-case';
+import { FavoriteDto } from 'src/favorite/application/ports/out/dto/favorite.dto';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import { FavoriteErrorHandler } from './handlers/favorite-error.handler';
 import { FavoriteRequestMapper } from './mappers/favorite-request.mapper';
@@ -44,30 +48,9 @@ import { FavoriteRequest } from './requests/favorite.request';
 import { ListFavoritesQueryRequest } from './requests/list-favorites-query.request';
 
 @ApiTags('Favorites')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiUnauthorizedResponse({ type: ErrorResponse })
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @Controller('favorites')
 @UseFilters(new FavoriteErrorHandler())
 export class FavoriteController extends ApiController {
@@ -83,6 +66,7 @@ export class FavoriteController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List favorites of a subject' })
+	@ApiOkResponse({ type: Pagination<FavoriteDto> })
 	@UseGuards(AuthGuard)
 	@Get()
 	public async list(
@@ -100,6 +84,7 @@ export class FavoriteController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Favorite a subject' })
+	@ApiCreatedResponse({ type: FavoriteDto })
 	@UseGuards(AuthGuard)
 	@Post()
 	public async favorite(
@@ -111,7 +96,7 @@ export class FavoriteController extends ApiController {
 
 		const data = await this.favoriteUseCase.execute(command);
 
-		res.status(HttpStatus.OK).json({
+		res.status(HttpStatus.CREATED).json({
 			data: data,
 		});
 	}

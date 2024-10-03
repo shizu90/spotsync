@@ -17,10 +17,12 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
@@ -28,6 +30,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -58,6 +61,8 @@ import {
 	UpdateGroupUseCase,
 	UpdateGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group.use-case';
+import { GroupLogDto } from 'src/group/application/ports/out/dto/group-log.dto';
+import { GroupDto } from 'src/group/application/ports/out/dto/group.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
 import { GroupRequestMapper } from './mappers/group-request.mapper';
 import { CreateGroupRequest } from './requests/create-group.request';
@@ -66,30 +71,9 @@ import { UpdateGroupVisibilityRequest } from './requests/update-group-visibility
 import { UpdateGroupRequest } from './requests/update-group.request';
 
 @ApiTags('Groups')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiUnauthorizedResponse({ type: ErrorResponse })
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @UseFilters(new GroupErrorHandler())
 @Controller('groups')
 export class GroupController extends ApiController {
@@ -113,6 +97,7 @@ export class GroupController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List groups' })
+	@ApiOkResponse({ type: Pagination<GroupDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -137,14 +122,8 @@ export class GroupController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Find group by id' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: GroupDto })
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async getById(
@@ -162,14 +141,8 @@ export class GroupController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Create group' })
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiCreatedResponse({ type: GroupDto })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -194,22 +167,8 @@ export class GroupController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Update group' })
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(
@@ -234,22 +193,8 @@ export class GroupController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Update group visibility' })
-	@ApiUnprocessableEntityResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnprocessableEntityResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(
@@ -277,14 +222,7 @@ export class GroupController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Delete group' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id')
@@ -301,14 +239,8 @@ export class GroupController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Get group history' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: Pagination<GroupLogDto> })
 	@UseGuards(AuthGuard)
 	@Get(':id/history')
 	public async getHistory(

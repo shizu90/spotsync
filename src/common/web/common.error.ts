@@ -1,3 +1,4 @@
+
 export class ErrorResponse {
 	constructor(
 		readonly path: string,

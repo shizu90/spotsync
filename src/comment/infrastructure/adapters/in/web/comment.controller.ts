@@ -17,10 +17,12 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
@@ -43,6 +45,8 @@ import {
 	UpdateCommentUseCase,
 	UpdateCommentUseCaseProvider,
 } from 'src/comment/application/ports/in/use-cases/update-comment.use-case';
+import { CommentDto } from 'src/comment/application/ports/out/dto/comment.dto';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import { CommentErrorHandler } from './handlers/comment-error.handler';
@@ -52,30 +56,9 @@ import { ListCommentsQueryRequest } from './requests/list-comments-query.request
 import { UpdateCommentRequest } from './requests/update-comment.request';
 
 @ApiTags('Comments')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiUnauthorizedResponse({ type: ErrorResponse })
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @Controller('comments')
 @UseGuards(AuthGuard)
 @UseFilters(new CommentErrorHandler())
@@ -94,6 +77,7 @@ export class CommentController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List comments' })
+	@ApiOkResponse({ type: Pagination<CommentDto> })
 	@Get()
 	@UsePipes(
 		new ValidationPipe({
@@ -117,14 +101,8 @@ export class CommentController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Create comment' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiCreatedResponse({ type: CommentDto })
 	@Post()
 	@UsePipes(
 		new ValidationPipe({
@@ -148,14 +126,7 @@ export class CommentController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Update comment' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@Put(':id')
 	@UsePipes(
@@ -173,22 +144,13 @@ export class CommentController extends ApiController {
 	) {
 		const command = CommentRequestMapper.updateCommentCommand(id, body);
 
-		const data = await this.updateCommentUseCase.execute(command);
+		await this.updateCommentUseCase.execute(command);
 
-		res.status(HttpStatus.OK).json({
-			data: data,
-		});
+		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Delete comment' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
 	@Delete(':id')
 	public async delete(

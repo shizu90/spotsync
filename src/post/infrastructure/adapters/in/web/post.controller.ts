@@ -16,10 +16,12 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
@@ -51,27 +53,14 @@ import {
 	UpdatePostUseCase,
 	UpdatePostUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/update-post.use-case';
+import { PostDto } from 'src/post/application/ports/out/dto/post.dto';
 import { PostErrorHandler } from './handlers/post-error.handler';
 import { PostRequestMapper } from './mappers/post-request.mapper';
 import { CreatePostRequest } from './requests/create-post.request';
 
 @ApiTags('Posts')
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @Controller('posts')
 @UseFilters(new PostErrorHandler())
 export class PostController {
@@ -91,22 +80,9 @@ export class PostController {
 	) {}
 
 	@ApiOperation({ summary: 'Get post by id' })
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: PostDto })
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async get(
@@ -124,14 +100,8 @@ export class PostController {
 	}
 
 	@ApiOperation({ summary: 'Create post' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiCreatedResponse({ type: PostDto })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -150,33 +120,15 @@ export class PostController {
 
 		const post = await this.createPostUseCase.execute(command);
 
-		res.status(HttpStatus.OK).json({
+		res.status(HttpStatus.CREATED).json({
 			data: post,
 		});
 	}
 
 	@ApiOperation({ summary: 'Update post' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNoContentResponse({
-		example: {
-			data: {},
-		},
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -200,27 +152,9 @@ export class PostController {
 	}
 
 	@ApiOperation({ summary: 'Delete post' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiNoContentResponse({
-		example: {
-			data: {},
-		},
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id')
 	public async delete(

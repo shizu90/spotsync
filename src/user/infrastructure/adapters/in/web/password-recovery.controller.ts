@@ -12,10 +12,11 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiInternalServerErrorResponse,
-	ApiOkResponse,
+	ApiNoContentResponse,
 	ApiOperation,
-	ApiTags,
+	ApiTags
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ApiController } from 'src/common/web/common.controller';
@@ -28,20 +29,14 @@ import {
 	ForgotPasswordUseCase,
 	ForgotPasswordUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/forgot-password.use-case';
+import { PasswordRecoveryDto } from 'src/user/application/ports/out/dto/password-recovery.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
 import { UserRequestMapper } from './mappers/user-request.mapper';
 import { ChangePasswordRequest } from './requests/change-password.request';
 import { ForgotPasswordRequest } from './requests/forgot-password.request';
 
 @ApiTags('Password recovery')
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
 @Controller('password-recovery')
 @UseFilters(new UserErrorHandler())
 export class PasswordRecoveryController extends ApiController {
@@ -55,6 +50,7 @@ export class PasswordRecoveryController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Forgot password' })
+	@ApiCreatedResponse({ type: PasswordRecoveryDto })
 	@UsePipes(
 		new ValidationPipe({
 			transform: true,
@@ -72,17 +68,13 @@ export class PasswordRecoveryController extends ApiController {
 
 		const data = await this.forgotPasswordUseCase.execute(command);
 
-		res.status(HttpStatus.OK).json({
+		res.status(HttpStatus.CREATED).json({
 			data: data,
 		});
 	}
 
 	@ApiOperation({ summary: 'Change password' })
-	@ApiOkResponse({
-		example: {
-			data: {},
-		},
-	})
+	@ApiNoContentResponse({ type: ErrorResponse })
 	@UsePipes(
 		new ValidationPipe({
 			transform: true,

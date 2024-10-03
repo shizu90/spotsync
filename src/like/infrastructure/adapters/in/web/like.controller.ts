@@ -16,8 +16,10 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -26,6 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -40,28 +43,15 @@ import {
 	UnlikeUseCase,
 	UnlikeUseCaseProvider,
 } from 'src/like/application/ports/in/use-cases/unlike.use-case';
+import { LikeDto } from 'src/like/application/ports/out/dto/like.dto';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { LikeErrorHandler } from './handlers/like-error.handler';
 import { LikeRequestMapper } from './mappers/like-request.mapper';
 import { LikeRequest } from './requests/like.request';
 import { ListLikesQueryRequest } from './requests/list-likes-query.request';
 
-@ApiInternalServerErrorResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiInternalServerErrorResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @ApiTags('Likes')
 @Controller('likes')
 @UseFilters(new LikeErrorHandler())
@@ -78,6 +68,7 @@ export class LikeController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List likes of a subject' })
+	@ApiOkResponse({ type: Pagination<LikeDto> })
 	@UseGuards(AuthGuard)
 	@Get()
 	public async list(
@@ -95,14 +86,8 @@ export class LikeController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Like a subject' })
-	@ApiUnauthorizedResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiCreatedResponse({ type: LikeDto })
 	@UseGuards(AuthGuard)
 	@Post()
 	@UsePipes(
@@ -121,25 +106,14 @@ export class LikeController extends ApiController {
 
 		const data = await this.likeUseCase.execute(command);
 
-		res.status(HttpStatus.OK).json({
+		res.status(HttpStatus.CREATED).json({
 			data: data,
 		});
 	}
 
 	@ApiOperation({ summary: 'Unlike a subject' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: {},
-		},
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':subject/:subjectId')
 	public async unlike(

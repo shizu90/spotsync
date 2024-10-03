@@ -17,7 +17,9 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -26,6 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
+import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -56,6 +59,7 @@ import {
 	VisitSpotUseCase,
 	VisitSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/visit-spot.use.case';
+import { SpotDto } from 'src/spot/application/ports/out/dto/spot.dto';
 import { SpotErrorHandler } from './handlers/spot-error.handler';
 import { SpotRequestMapper } from './mappers/spot-request.mapper';
 import { CreateSpotRequest } from './requests/create-spot.request';
@@ -63,22 +67,8 @@ import { ListSpotsQueryRequest } from './requests/list-spot-query.request';
 import { UpdateSpotRequest } from './requests/update-spot.request';
 
 @ApiTags('Spots')
-@ApiUnauthorizedResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
-@ApiForbiddenResponse({
-	example: new ErrorResponse(
-		'string',
-		new Date().toISOString(),
-		'string',
-		'string',
-	),
-})
+@ApiUnauthorizedResponse({ type: ErrorResponse })
+@ApiForbiddenResponse({ type: ErrorResponse })
 @Controller('spots')
 @UseFilters(new SpotErrorHandler())
 export class SpotController extends ApiController {
@@ -102,6 +92,7 @@ export class SpotController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List spots' })
+	@ApiOkResponse({ type: Pagination<SpotDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -126,14 +117,8 @@ export class SpotController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Get spot' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
+	@ApiOkResponse({ type: SpotDto })
+	@ApiNotFoundResponse({ type: ErrorResponse })
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async get(
@@ -151,6 +136,7 @@ export class SpotController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Create spot' })
+	@ApiCreatedResponse({ type: SpotDto })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -175,19 +161,8 @@ export class SpotController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Update spot' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: {},
-		},
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -205,25 +180,14 @@ export class SpotController extends ApiController {
 	) {
 		const command = SpotRequestMapper.updateSpotCommand(id, body);
 
-		const data = await this.updateSpotUseCase.execute(command);
+		await this.updateSpotUseCase.execute(command);
 
 		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Delete spot' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: {},
-		},
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id')
 	public async delete(
@@ -233,25 +197,14 @@ export class SpotController extends ApiController {
 	) {
 		const command = SpotRequestMapper.deleteSpotCommand(id);
 
-		const data = await this.deleteSpotUseCase.execute(command);
+		await this.deleteSpotUseCase.execute(command);
 
 		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Visit spot' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: {},
-		},
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Post(':id/visit')
 	public async visit(
@@ -261,25 +214,14 @@ export class SpotController extends ApiController {
 	) {
 		const command = SpotRequestMapper.visitSpotCommand(id);
 
-		const data = await this.visitSpotUseCase.execute(command);
+		await this.visitSpotUseCase.execute(command);
 
 		res.status(HttpStatus.NO_CONTENT).json();
 	}
 
 	@ApiOperation({ summary: 'Unvisit spot' })
-	@ApiNotFoundResponse({
-		example: new ErrorResponse(
-			'string',
-			new Date().toISOString(),
-			'string',
-			'string',
-		),
-	})
-	@ApiOkResponse({
-		example: {
-			data: {},
-		},
-	})
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
 	@UseGuards(AuthGuard)
 	@Delete(':id/unvisit')
 	public async unvisit(
@@ -289,7 +231,7 @@ export class SpotController extends ApiController {
 	) {
 		const command = SpotRequestMapper.unvisitSpotCommand(id);
 
-		const data = await this.unvisitSpotUseCase.execute(command);
+		await this.unvisitSpotUseCase.execute(command);
 
 		res.status(HttpStatus.NO_CONTENT).json();
 	}
