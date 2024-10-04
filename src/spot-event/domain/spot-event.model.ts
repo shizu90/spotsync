@@ -21,6 +21,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 	private _status: SpotEventStatus;
 	private _visibility: SpotEventVisibility;
 	private _spot: Spot;
+	private _creator: User;
 	private _group: Group;
 	private _participants: SpotEventParticipant[];
 	private _createdAt: Date;
@@ -33,6 +34,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 		startDate: Date,
 		endDate: Date,
 		spot: Spot,
+		creator: User,
 		participants?: SpotEventParticipant[],
 		visibility?: SpotEventVisibility,
 		status?: SpotEventStatus,
@@ -50,6 +52,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 		this._participants = participants ?? [];
 		this._visibility = visibility ?? SpotEventVisibility.PUBLIC;
 		this._spot = spot;
+		this._creator = creator;
 		this._group = group ?? null;
 		this._createdAt = createdAt ?? new Date();
 		this._updatedAt = updatedAt ?? new Date();
@@ -62,6 +65,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 		startDate: Date,
 		endDate: Date,
 		spot: Spot,
+		creator: User,
 		participants?: SpotEventParticipant[],
 		visibility?: SpotEventVisibility,
 		status?: SpotEventStatus,
@@ -76,6 +80,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 			startDate,
 			endDate,
 			spot,
+			creator,
 			participants,
 			visibility,
 			status,
@@ -119,6 +124,10 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 
 	public spot(): Spot {
 		return this._spot;
+	}
+
+	public creator(): User {
+		return this._creator;
 	}
 
 	public group(): Group {
@@ -180,6 +189,15 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 
 	public isCanceled(): boolean {
 		return this._status === SpotEventStatus.CANCELED;
+	}
+
+	public start(): void {
+		if (!this.isScheduled()) {
+			return;
+		}
+
+		this._status = SpotEventStatus.ONGOING;
+		this._updatedAt = new Date();
 	}
 
 	public end(): void {

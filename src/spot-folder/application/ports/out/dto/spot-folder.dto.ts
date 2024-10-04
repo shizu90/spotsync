@@ -68,6 +68,9 @@ export class SpotFolderDto extends Dto {
 		visibility?: string,
 		items?: SpotFolderItemDto[],
 		creator?: UserDto,
+		favorited?: boolean,
+		favorited_at?: string,
+		total_favorites?: number,
 	) {
 		super();
 		this.id = id;
@@ -78,6 +81,9 @@ export class SpotFolderDto extends Dto {
 		this.items = items;
 		this.total_spots = items.length;
 		this.creator = creator;
+		this.favorited = favorited;
+		this.favorited_at = favorited_at;
+		this.total_favorites = total_favorites;
 	}
 
 	public static fromModel(model: SpotFolder): SpotFolderDto {
@@ -90,7 +96,10 @@ export class SpotFolderDto extends Dto {
 			model.hexColor(),
 			model.visibility(),
 			model.items().map((item) => SpotFolderItemDto.fromModel(item)),
-			model.creator() ? UserDto.fromModel(model.creator()).removeSensitiveData() : undefined
+			model.creator() ? UserDto.fromModel(model.creator()).removeSensitiveData() : undefined,
+			false,
+			null,
+			0,
 		);
 	}
 

@@ -15,6 +15,9 @@ export class SpotEventDto extends Dto {
     public spot: SpotDto = undefined;
     public participants: SpotEventParticipantDto[] = undefined;
     public group: GroupDto = undefined;
+    public favorited?: boolean = undefined;
+    public favorited_at?: string = undefined;
+    public total_favorites: number = undefined;
     public created_at: string = undefined;
     public updated_at: string = undefined;
 
@@ -30,7 +33,10 @@ export class SpotEventDto extends Dto {
         participants?: SpotEventParticipantDto[],
         group?: GroupDto,
         created_at?: string,
-        updated_at?: string
+        updated_at?: string,
+        favorited?: boolean,
+        favorited_at?: string,
+        total_favorites?: number,
     ) {
         super();
         this.id = id;
@@ -45,9 +51,14 @@ export class SpotEventDto extends Dto {
         this.group = group;
         this.created_at = created_at;
         this.updated_at = updated_at;
+        this.favorited = favorited;
+        this.favorited_at = favorited_at;
+        this.total_favorites = total_favorites;
     }
 
     public static fromModel(model: SpotEvent): SpotEventDto {
+        if (!model) return null;
+        
         return new SpotEventDto(
             model.id(),
             model.name(),
@@ -61,6 +72,22 @@ export class SpotEventDto extends Dto {
             model.group() ? GroupDto.fromModel(model.group()) : null,
             model.createdAt()?.toISOString(),
             model.updatedAt()?.toISOString(),
+            false,
+            null,
+            0,
         );
+    }
+
+    public setFavoritedAt(favorited_at: Date): SpotEventDto {
+        this.favorited_at = favorited_at?.toISOString();
+        this.favorited = favorited_at ? true : false;
+
+        return this;
+    }
+
+    public setTotalFavorites(total_favorites: number): SpotEventDto {
+        this.total_favorites = total_favorites;
+
+        return this;
     }
 }
