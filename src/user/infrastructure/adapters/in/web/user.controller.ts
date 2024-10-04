@@ -146,6 +146,7 @@ export class UserController extends ApiController {
 	@ApiUnauthorizedResponse({ type: ErrorResponse })
 	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiForbiddenResponse({ type: ErrorResponse })
+	@ApiOkResponse({ type: UserDto })
 	@UseGuards(AuthGuard)
 	@Get(':id')
 	public async get(
