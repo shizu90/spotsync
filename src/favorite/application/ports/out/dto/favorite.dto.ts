@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import { Favorite } from 'src/favorite/domain/favorite.model';
@@ -10,9 +11,13 @@ import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 type FavoritableDto = SpotDto | SpotFolderDto;
 
 export class FavoriteDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public user: UserDto = undefined;
+	@ApiProperty()
 	public subject: FavoritableDto = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public created_at: string = undefined;
 
 	private constructor(

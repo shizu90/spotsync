@@ -1,68 +1,67 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Patch,
-	Post,
-	Put,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Patch,
+    Post,
+    Put,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiCreatedResponse,
-	ApiForbiddenResponse,
-	ApiNoContentResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	AddSpotUseCase,
-	AddSpotUseCaseProvider,
+    AddSpotUseCase,
+    AddSpotUseCaseProvider,
 } from 'src/spot-folder/application/ports/in/use-cases/add-spot.use-case';
 import {
-	CreateSpotFolderUseCase,
-	CreateSpotFolderUseCaseProvider,
+    CreateSpotFolderUseCase,
+    CreateSpotFolderUseCaseProvider,
 } from 'src/spot-folder/application/ports/in/use-cases/create-spot-folder.use-case';
 import {
-	DeleteSpotFolderUseCase,
-	DeleteSpotFolderUseCaseProvider,
+    DeleteSpotFolderUseCase,
+    DeleteSpotFolderUseCaseProvider,
 } from 'src/spot-folder/application/ports/in/use-cases/delete-spot-folder.use-case';
 import {
-	GetSpotFolderUseCase,
-	GetSpotFolderUseCaseProvider,
+    GetSpotFolderUseCase,
+    GetSpotFolderUseCaseProvider,
 } from 'src/spot-folder/application/ports/in/use-cases/get-spot-folder.use-case';
 import {
-	ListSpotFoldersUseCase,
-	ListSpotFoldersUseCaseProvider,
+    ListSpotFoldersUseCase,
+    ListSpotFoldersUseCaseProvider,
 } from 'src/spot-folder/application/ports/in/use-cases/list-spot-folders.use-case';
 import {
-	RemoveSpotUseCase,
-	RemoveSpotUseCaseProvider,
+    RemoveSpotUseCase,
+    RemoveSpotUseCaseProvider,
 } from 'src/spot-folder/application/ports/in/use-cases/remove-spot.use-case';
 import {
-	SortItemsUseCase,
-	SortItemsUseCaseProvider,
+    SortItemsUseCase,
+    SortItemsUseCaseProvider,
 } from 'src/spot-folder/application/ports/in/use-cases/sort-items.use-case';
 import {
-	UpdateSpotFolderUseCase,
-	UpdateSpotFolderUseCaseProvider,
+    UpdateSpotFolderUseCase,
+    UpdateSpotFolderUseCaseProvider,
 } from 'src/spot-folder/application/ports/in/use-cases/update-spot-folder.use-case';
 import { SpotFolderDto } from 'src/spot-folder/application/ports/out/dto/spot-folder.dto';
 import { SpotFolderErrorHandler } from './handlers/spot-folder-error.handler';
@@ -101,7 +100,7 @@ export class SpotFolderController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List spot folders' })
-	@ApiOkResponse({ type: Pagination<SpotFolderDto> })
+	@ApiOkResponse({ type: Array<SpotFolderDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({

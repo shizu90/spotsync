@@ -1,9 +1,12 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
 import { GroupRole } from 'src/group/domain/group-role.model';
 
 class GroupPermissionDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public name: string = undefined;
 
 	private constructor(id?: string, name?: string) {
@@ -20,12 +23,19 @@ class GroupPermissionDto extends Dto {
 }
 
 export class GroupRoleDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public name: string = undefined;
+	@ApiProperty()
 	public is_immutable: boolean = undefined;
+	@ApiProperty()
 	public hex_color: string = undefined;
+	@ApiProperty({ type: [GroupPermissionDto], isArray: true })
 	public permissions: GroupPermissionDto[] = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public created_at: string = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public updated_at: string = undefined;
 
 	constructor(

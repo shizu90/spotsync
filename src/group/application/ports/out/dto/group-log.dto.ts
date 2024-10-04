@@ -1,9 +1,13 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { GroupLog } from 'src/group/domain/group-log.model';
 
 export class GroupLogDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public text: string = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public occurred_at: string = undefined;
 
 	private constructor(id: string, text: string, occurred_at: string) {

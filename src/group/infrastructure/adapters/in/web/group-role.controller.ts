@@ -1,58 +1,57 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Put,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiConflictResponse,
-	ApiCreatedResponse,
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNoContentResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+    ApiConflictResponse,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
+    ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	CreateGroupRoleUseCase,
-	CreateGroupRoleUseCaseProvider,
+    CreateGroupRoleUseCase,
+    CreateGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/create-group-role.use-case';
 import {
-	GetGroupRoleUseCase,
-	GetGroupRoleUseCaseProvider,
+    GetGroupRoleUseCase,
+    GetGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/get-group-role.use-case';
 import {
-	ListGroupRolesUseCase,
-	ListGroupRolesUseCaseProvider,
+    ListGroupRolesUseCase,
+    ListGroupRolesUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/list-group-roles.use-case';
 import {
-	RemoveGroupRoleUseCase,
-	RemoveGroupRoleUseCaseProvider,
+    RemoveGroupRoleUseCase,
+    RemoveGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/remove-group-role.use-case';
 import {
-	UpdateGroupRoleUseCase,
-	UpdateGroupRoleUseCaseProvider,
+    UpdateGroupRoleUseCase,
+    UpdateGroupRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group-role.use-case';
 import { GroupRoleDto } from 'src/group/application/ports/out/dto/group-role.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
@@ -84,7 +83,7 @@ export class GroupRoleController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List group roles' })
-	@ApiOkResponse({ type: Pagination<GroupRoleDto> })
+	@ApiOkResponse({ type: Array<GroupRoleDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({

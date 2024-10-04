@@ -1,57 +1,56 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Put,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiCreatedResponse,
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNoContentResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
+    ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	CreateUserAddressUseCase,
-	CreateUserAddressUseCaseProvider,
+    CreateUserAddressUseCase,
+    CreateUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/create-user-address.use-case';
 import {
-	DeleteUserAddressUseCase,
-	DeleteUserAddressUseCaseProvider,
+    DeleteUserAddressUseCase,
+    DeleteUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/delete-user-address.use-case';
 import {
-	GetUserAddressUseCase,
-	GetUserAddressUseCaseProvider,
+    GetUserAddressUseCase,
+    GetUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/get-user-address.use-case';
 import {
-	ListUserAddressesUseCase,
-	ListUserAddressesUseCaseProvider,
+    ListUserAddressesUseCase,
+    ListUserAddressesUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/list-user-addresses.use-case';
 import {
-	UpdateUserAddressUseCase,
-	UpdateUserAddressUseCaseProvider,
+    UpdateUserAddressUseCase,
+    UpdateUserAddressUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/update-user-address.use-case';
 import { UserAddressDto } from 'src/user/application/ports/out/dto/user-address.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
@@ -83,7 +82,7 @@ export class UserAddressController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List user addresses' })
-	@ApiOkResponse({ type: Pagination<UserAddressDto> })
+	@ApiOkResponse({ type: Array<UserAddressDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({

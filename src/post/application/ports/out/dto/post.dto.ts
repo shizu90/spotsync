@@ -1,11 +1,16 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { PostAttachment } from 'src/post/domain/post-attachment.model';
+import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import { Post } from 'src/post/domain/post.model';
 import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 
 class PostAttachmentDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public file_path: string = undefined;
+	@ApiProperty()
 	public file_type: string = undefined;
 
 	private constructor(id?: string, file_path?: string, file_type?: string) {
@@ -27,21 +32,37 @@ class PostAttachmentDto extends Dto {
 }
 
 export class PostDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public title: string = undefined;
+	@ApiProperty()
 	public content: string = undefined;
+	@ApiProperty({ type: [PostAttachmentDto], isArray: true })
 	public attachments: PostAttachmentDto[] = undefined;
+	@ApiProperty()
 	public creator: UserDto = undefined;
+	@ApiProperty({ enum: PostVisibility })
 	public visibility: string = undefined;
+	@ApiProperty()
 	public depth_level: number = undefined;
+	@ApiProperty({ example: 'uuid' })
 	public thread_id: string = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public created_at: string = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public updated_at: string = undefined;
+	@ApiProperty({ example: 'uuid' })
 	public parent_id: string = undefined;
+	@ApiProperty({ example: 'uuid' })
 	public group_id: string = undefined;
+	@ApiProperty({ type: [PostDto], isArray: true })
 	public children_posts: PostDto[] = undefined;
+	@ApiProperty()
 	public total_childrens: number = undefined;
+	@ApiProperty()
 	public total_likes: number = undefined;
+	@ApiProperty()
 	public liked: boolean = undefined;
 
 	private constructor(

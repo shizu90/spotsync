@@ -1,29 +1,28 @@
 import {
-	Controller,
-	Get,
-	HttpStatus,
-	Inject,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
+    Controller,
+    Get,
+    HttpStatus,
+    Inject,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
 } from '@nestjs/common';
 import {
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	ListThreadsUseCase,
-	ListThreadsUseCaseProvider,
+    ListThreadsUseCase,
+    ListThreadsUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/list-threads.use-case';
 import { PostDto } from 'src/post/application/ports/out/dto/post.dto';
 import { PostErrorHandler } from './handlers/post-error.handler';
@@ -43,7 +42,7 @@ export class PostThreadController {
 
 	@ApiOperation({ summary: 'List threads' })
 	@ApiUnauthorizedResponse({ type: ErrorResponse })
-	@ApiOkResponse({ type: Pagination<PostDto> })
+	@ApiOkResponse({ type: Array<PostDto> })
 	@UseGuards(AuthGuard)
 	@Get()
 	public async list(

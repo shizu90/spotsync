@@ -1,66 +1,65 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Patch,
-	Post,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiConflictResponse,
-	ApiCreatedResponse,
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNoContentResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+    ApiConflictResponse,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
+    ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	AcceptGroupRequestUseCase,
-	AcceptGroupRequestUseCaseProvider,
+    AcceptGroupRequestUseCase,
+    AcceptGroupRequestUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/accept-group-request.use-case';
 import {
-	ChangeMemberRoleUseCase,
-	ChangeMemberRoleUseCaseProvider,
+    ChangeMemberRoleUseCase,
+    ChangeMemberRoleUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/change-member-role.use-case';
 import {
-	JoinGroupUseCase,
-	JoinGroupUseCaseProvider,
+    JoinGroupUseCase,
+    JoinGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/join-group.use-case';
 import {
-	LeaveGroupUseCase,
-	LeaveGroupUseCaseProvider,
+    LeaveGroupUseCase,
+    LeaveGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/leave-group.use-case';
 import {
-	ListGroupMembersUseCase,
-	ListGroupMembersUseCaseProvider,
+    ListGroupMembersUseCase,
+    ListGroupMembersUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/list-group-members.use-case';
 import {
-	RefuseGroupRequestUseCase,
-	RefuseGroupRequestUseCaseProvider,
+    RefuseGroupRequestUseCase,
+    RefuseGroupRequestUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/refuse-group-request.use-case';
 import {
-	RemoveGroupMemberUseCase,
-	RemoveGroupMemberUseCaseProvider,
+    RemoveGroupMemberUseCase,
+    RemoveGroupMemberUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/remove-group-member.use-case';
 import { GroupMemberDto } from 'src/group/application/ports/out/dto/group-member.dto';
 import { GroupErrorHandler } from './handlers/group-error.handler';
@@ -96,7 +95,7 @@ export class GroupMemberController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List group members' })
-	@ApiOkResponse({ type: Pagination<GroupMemberDto> })
+	@ApiOkResponse({ type: Array<GroupMemberDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({

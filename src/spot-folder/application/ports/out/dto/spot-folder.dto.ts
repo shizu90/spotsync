@@ -1,12 +1,17 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { SpotFolderItem } from 'src/spot-folder/domain/spot-folder-item.model';
+import { SpotFolderVisibility } from 'src/spot-folder/domain/spot-folder-visibility.enum';
 import { SpotFolder } from 'src/spot-folder/domain/spot-folder.model';
 import { SpotDto } from 'src/spot/application/ports/out/dto/spot.dto';
 import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 
 class SpotFolderItemDto extends Dto {
+	@ApiProperty()
 	public spot: SpotDto = undefined;
+	@ApiProperty()
 	public order_number: number = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public added_at: string = undefined;
 
 	private constructor(
@@ -32,16 +37,27 @@ class SpotFolderItemDto extends Dto {
 }
 
 export class SpotFolderDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public name: string = undefined;
+	@ApiProperty()
 	public description: string = undefined;
+	@ApiProperty()
 	public hex_color: string = undefined;
+	@ApiProperty({ enum: SpotFolderVisibility })
 	public visibility: string = undefined;
+	@ApiProperty({ type: [SpotFolderItemDto], isArray: true })
 	public items: SpotFolderItemDto[] = undefined;
+	@ApiProperty()
 	public favorited: boolean = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public favorited_at: string = undefined;
+	@ApiProperty()
 	public total_favorites: number = undefined;
+	@ApiProperty()
 	public total_spots: number = undefined;
+	@ApiProperty()
 	public creator: UserDto = undefined;
 
 	private constructor(

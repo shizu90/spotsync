@@ -1,52 +1,51 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Put,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiCreatedResponse,
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNoContentResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import {
-	CreateCommentUseCase,
-	CreateCommentUseCaseProvider,
+    CreateCommentUseCase,
+    CreateCommentUseCaseProvider,
 } from 'src/comment/application/ports/in/use-cases/create-comment.use-case';
 import {
-	DeleteCommentUseCase,
-	DeleteCommentUseCaseProvider,
+    DeleteCommentUseCase,
+    DeleteCommentUseCaseProvider,
 } from 'src/comment/application/ports/in/use-cases/delete-comment.use-case';
 import {
-	ListCommentsUseCase,
-	ListCommentsUseCaseProvider,
+    ListCommentsUseCase,
+    ListCommentsUseCaseProvider,
 } from 'src/comment/application/ports/in/use-cases/list-comments.use-case';
 import {
-	UpdateCommentUseCase,
-	UpdateCommentUseCaseProvider,
+    UpdateCommentUseCase,
+    UpdateCommentUseCaseProvider,
 } from 'src/comment/application/ports/in/use-cases/update-comment.use-case';
 import { CommentDto } from 'src/comment/application/ports/out/dto/comment.dto';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import { CommentErrorHandler } from './handlers/comment-error.handler';
@@ -77,7 +76,7 @@ export class CommentController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List comments' })
-	@ApiOkResponse({ type: Pagination<CommentDto> })
+	@ApiOkResponse({ type: Array<CommentDto> })
 	@Get()
 	@UsePipes(
 		new ValidationPipe({

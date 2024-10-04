@@ -1,12 +1,18 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { Follow } from 'src/follower/domain/follow.model';
 import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 
 export class FollowDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string;
+	@ApiProperty()
 	public from_user: UserDto = undefined;
+	@ApiProperty()
 	public to_user: UserDto = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public followed_at: string = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public requested_at: string = undefined;
 
 	private constructor(

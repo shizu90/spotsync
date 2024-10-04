@@ -27,12 +27,11 @@ import {
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { SignInDto } from 'src/auth/application/ports/out/dto/sign-in.dto';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
@@ -118,7 +117,7 @@ export class UserController extends ApiController {
 	@ApiOperation({ summary: 'List users' })
 	@ApiUnauthorizedResponse({ type: ErrorResponse })
 	@ApiForbiddenResponse({ type: ErrorResponse })
-	@ApiOkResponse({ type: Pagination<UserDto> })
+	@ApiOkResponse({ type: Array<UserDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({

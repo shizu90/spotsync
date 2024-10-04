@@ -1,47 +1,46 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiCreatedResponse,
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNoContentResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	LikeUseCase,
-	LikeUseCaseProvider,
+    LikeUseCase,
+    LikeUseCaseProvider,
 } from 'src/like/application/ports/in/use-cases/like.use-case';
 import {
-	ListLikesUseCase,
-	ListLikesUseCaseProvider,
+    ListLikesUseCase,
+    ListLikesUseCaseProvider,
 } from 'src/like/application/ports/in/use-cases/list-likes.use-case';
 import {
-	UnlikeUseCase,
-	UnlikeUseCaseProvider,
+    UnlikeUseCase,
+    UnlikeUseCaseProvider,
 } from 'src/like/application/ports/in/use-cases/unlike.use-case';
 import { LikeDto } from 'src/like/application/ports/out/dto/like.dto';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
@@ -68,7 +67,7 @@ export class LikeController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List likes of a subject' })
-	@ApiOkResponse({ type: Pagination<LikeDto> })
+	@ApiOkResponse({ type: Array<LikeDto> })
 	@UseGuards(AuthGuard)
 	@Get()
 	public async list(

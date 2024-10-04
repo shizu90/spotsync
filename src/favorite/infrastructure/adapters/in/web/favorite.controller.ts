@@ -1,44 +1,43 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
 } from '@nestjs/common';
 import {
-	ApiCreatedResponse,
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNoContentResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNoContentResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	FavoriteUseCase,
-	FavoriteUseCaseProvider,
+    FavoriteUseCase,
+    FavoriteUseCaseProvider,
 } from 'src/favorite/application/ports/in/use-cases/favorite.use-case';
 import {
-	ListFavoritesUseCase,
-	ListFavoritesUseCaseProvider,
+    ListFavoritesUseCase,
+    ListFavoritesUseCaseProvider,
 } from 'src/favorite/application/ports/in/use-cases/list-favorites.use-case';
 import {
-	UnfavoriteUseCase,
-	UnfavoriteUseCaseProvider,
+    UnfavoriteUseCase,
+    UnfavoriteUseCaseProvider,
 } from 'src/favorite/application/ports/in/use-cases/unfavorite.use-case';
 import { FavoriteDto } from 'src/favorite/application/ports/out/dto/favorite.dto';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
@@ -66,7 +65,7 @@ export class FavoriteController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List favorites of a subject' })
-	@ApiOkResponse({ type: Pagination<FavoriteDto> })
+	@ApiOkResponse({ type: Array<FavoriteDto> })
 	@UseGuards(AuthGuard)
 	@Get()
 	public async list(

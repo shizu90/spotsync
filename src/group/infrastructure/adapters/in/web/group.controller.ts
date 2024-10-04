@@ -1,65 +1,64 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpStatus,
-	Inject,
-	Param,
-	Post,
-	Put,
-	Query,
-	Req,
-	Res,
-	UseFilters,
-	UseGuards,
-	UsePipes,
-	ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    Res,
+    UseFilters,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
-	ApiCreatedResponse,
-	ApiForbiddenResponse,
-	ApiInternalServerErrorResponse,
-	ApiNoContentResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
-	ApiUnprocessableEntityResponse,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
+    ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
-import { Pagination } from 'src/common/core/common.repository';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	CreateGroupUseCase,
-	CreateGroupUseCaseProvider,
+    CreateGroupUseCase,
+    CreateGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/create-group.use-case';
 import {
-	DeleteGroupUseCase,
-	DeleteGroupUseCaseProvider,
+    DeleteGroupUseCase,
+    DeleteGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/delete-group.use-case';
 import {
-	GetGroupHistoryUseCase,
-	GetGroupHistoryUseCaseProvider,
+    GetGroupHistoryUseCase,
+    GetGroupHistoryUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/get-group-history.use-case';
 import {
-	GetGroupUseCase,
-	GetGroupUseCaseProvider,
+    GetGroupUseCase,
+    GetGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/get-group.use-case';
 import {
-	ListGroupsUseCase,
-	ListGroupsUseCaseProvider,
+    ListGroupsUseCase,
+    ListGroupsUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/list-groups.use-case';
 import {
-	UpdateGroupVisibilityUseCase,
-	UpdateGroupVisibilityUseCaseProvider,
+    UpdateGroupVisibilityUseCase,
+    UpdateGroupVisibilityUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group-visibility.use-case';
 import {
-	UpdateGroupUseCase,
-	UpdateGroupUseCaseProvider,
+    UpdateGroupUseCase,
+    UpdateGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group.use-case';
 import { GroupLogDto } from 'src/group/application/ports/out/dto/group-log.dto';
 import { GroupDto } from 'src/group/application/ports/out/dto/group.dto';
@@ -97,7 +96,7 @@ export class GroupController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'List groups' })
-	@ApiOkResponse({ type: Pagination<GroupDto> })
+	@ApiOkResponse({ type: Array<GroupDto> })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
@@ -240,7 +239,7 @@ export class GroupController extends ApiController {
 
 	@ApiOperation({ summary: 'Get group history' })
 	@ApiNotFoundResponse({ type: ErrorResponse })
-	@ApiOkResponse({ type: Pagination<GroupLogDto> })
+	@ApiOkResponse({ type: Array<GroupLogDto> })
 	@UseGuards(AuthGuard)
 	@Get(':id/history')
 	public async getHistory(

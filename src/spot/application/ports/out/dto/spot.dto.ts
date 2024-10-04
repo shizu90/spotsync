@@ -1,15 +1,23 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { SpotAddress } from 'src/spot/domain/spot-address.model';
 import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
+import { SpotType } from 'src/spot/domain/spot-type.enum';
 import { Spot } from 'src/spot/domain/spot.model';
 import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 
 class SpotAddressDto extends Dto {
+	@ApiProperty()
 	public area: string = undefined;
+	@ApiProperty()
 	public sub_area: string = undefined;
+	@ApiProperty()
 	public locality: string = undefined;
+	@ApiProperty()
 	public latitude: number = undefined;
+	@ApiProperty()
 	public longitude: number = undefined;
+	@ApiProperty()
 	public country_code: string = undefined;
 
 	private constructor(
@@ -44,7 +52,9 @@ class SpotAddressDto extends Dto {
 }
 
 class SpotPhotoDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public file_path: string = undefined;
 
 	private constructor(id?: string, file_path?: string) {
@@ -61,24 +71,43 @@ class SpotPhotoDto extends Dto {
 }
 
 export class SpotDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public name: string = undefined;
+	@ApiProperty()
 	public description: string = undefined;
+	@ApiProperty({ enum: SpotType })
 	public type: string = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public created_at: string = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public updated_at: string = undefined;
+	@ApiProperty()
 	public address: SpotAddressDto = undefined;
+	@ApiProperty({ type: [SpotPhotoDto], isArray: true })
 	public photos: SpotPhotoDto[] = undefined;
+	@ApiProperty()
 	public creator: UserDto = undefined;
+	@ApiProperty()
 	public distance: number = undefined;
+	@ApiProperty()
 	public visited: boolean = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public visited_at: string = undefined;
+	@ApiProperty()
 	public favorited: boolean = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public favorited_at: string = undefined;
+	@ApiProperty()
 	public average_rating: number = undefined;
+	@ApiProperty()
 	public total_ratings: number = undefined;
+	@ApiProperty()
 	public total_spot_visits: number = undefined;
+	@ApiProperty()
 	public total_favorites: number = undefined;
+	@ApiProperty()
 	public total_events: number = undefined;
 
 	private constructor(

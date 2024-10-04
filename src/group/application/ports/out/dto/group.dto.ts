@@ -1,12 +1,17 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { GroupMember } from 'src/group/domain/group-member.model';
 import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
+import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
 import { GroupMemberDto } from './group-member.dto';
 
 class GroupVisibilitySettingsDto extends Dto {
+	@ApiProperty({ enum: GroupVisibility })
 	public group: string = undefined;
+	@ApiProperty({ enum: GroupVisibility })
 	public posts: string = undefined;
+	@ApiProperty({ enum: GroupVisibility })
 	public spot_events: string = undefined;
 
 	private constructor(group?: string, posts?: string, spot_events?: string) {
@@ -28,15 +33,25 @@ class GroupVisibilitySettingsDto extends Dto {
 }
 
 export class GroupDto extends Dto {
+	@ApiProperty({ example: 'uuid' })
 	public id: string = undefined;
+	@ApiProperty()
 	public name: string = undefined;
+	@ApiProperty()
 	public about: string = undefined;
+	@ApiProperty()
 	public group_picture: string = undefined;
+	@ApiProperty()
 	public banner_picture: string = undefined;
+	@ApiProperty()
 	public visibility_settings: GroupVisibilitySettingsDto = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public created_at: string = undefined;
+	@ApiProperty({ example: new Date().toISOString() })
 	public updated_at: string = undefined;
+	@ApiProperty()
 	public is_member: boolean = undefined;
+	@ApiProperty()
 	public group_member: GroupMemberDto = undefined;
 
 	private constructor(
