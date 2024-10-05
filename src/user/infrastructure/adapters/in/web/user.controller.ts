@@ -117,7 +117,7 @@ export class UserController extends ApiController {
 	@ApiOperation({ summary: 'List users' })
 	@ApiUnauthorizedResponse({ type: ErrorResponse })
 	@ApiForbiddenResponse({ type: ErrorResponse })
-	@ApiOkResponse({ type: Array<UserDto> })
+	@ApiOkResponse({ isArray: true, type: UserDto })
 	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({

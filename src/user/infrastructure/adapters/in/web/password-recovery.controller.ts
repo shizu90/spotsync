@@ -74,7 +74,7 @@ export class PasswordRecoveryController extends ApiController {
 	}
 
 	@ApiOperation({ summary: 'Change password' })
-	@ApiNoContentResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
 	@UsePipes(
 		new ValidationPipe({
 			transform: true,

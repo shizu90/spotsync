@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { SpotAddress } from 'src/spot/domain/spot-address.model';
 import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
@@ -7,17 +7,17 @@ import { Spot } from 'src/spot/domain/spot.model';
 import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 
 class SpotAddressDto extends Dto {
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public area: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public sub_area: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public locality: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public latitude: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public longitude: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public country_code: string = undefined;
 
 	private constructor(
@@ -52,9 +52,9 @@ class SpotAddressDto extends Dto {
 }
 
 class SpotPhotoDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public file_path: string = undefined;
 
 	private constructor(id?: string, file_path?: string) {
@@ -71,43 +71,43 @@ class SpotPhotoDto extends Dto {
 }
 
 export class SpotDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public name: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public description: string = undefined;
-	@ApiProperty({ enum: SpotType })
+	@ApiPropertyOptional({ enum: SpotType })
 	public type: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public created_at: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public updated_at: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public address: SpotAddressDto = undefined;
-	@ApiProperty({ type: [SpotPhotoDto], isArray: true })
+	@ApiPropertyOptional({ type: SpotPhotoDto, isArray: true })
 	public photos: SpotPhotoDto[] = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public creator: UserDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public distance: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public visited: boolean = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public visited_at: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public favorited: boolean = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public favorited_at: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public average_rating: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public total_ratings: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public total_spot_visits: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public total_favorites: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public total_events: number = undefined;
 
 	private constructor(

@@ -1,18 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { PasswordRecoveryStatus } from 'src/user/domain/password-recovery-status.enum';
 import { PasswordRecovery } from 'src/user/domain/password-recovery.model';
 
 export class PasswordRecoveryDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public token: string = undefined;
-	@ApiProperty({ enum: PasswordRecoveryStatus })
+	@ApiPropertyOptional({ enum: PasswordRecoveryStatus })
 	public status: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public created_at: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public expires_at: string = undefined;
 
 	constructor(

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { UserAddress } from 'src/user/domain/user-address.model';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
@@ -10,19 +10,19 @@ import { User } from 'src/user/domain/user.model';
 import { UserAddressDto } from './user-address.dto';
 
 class UserProfileDto extends Dto {
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public display_name: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public biograph: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public profile_picture: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public banner_picture: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public birth_date: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public theme_color: string = undefined;
-	@ApiProperty({ example: UserVisibility })
+	@ApiPropertyOptional({ example: UserVisibility })
 	public visibility: string = undefined;
 
 	constructor(
@@ -58,17 +58,17 @@ class UserProfileDto extends Dto {
 }
 
 class UserCredentialsDto extends Dto {
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public name: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public email: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public password: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public phone_number: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public last_login: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public last_logout: string = undefined;
 
 	constructor(
@@ -109,21 +109,21 @@ class UserCredentialsDto extends Dto {
 }
 
 class UserVisibilitySettingsDto extends Dto {
-	@ApiProperty({ example: UserVisibility })
+	@ApiPropertyOptional({ enum: UserVisibility })
 	public profile: string = undefined;
-	@ApiProperty({ example: UserVisibility })
+	@ApiPropertyOptional({ enum: UserVisibility })
 	public addresses: string = undefined;
-	@ApiProperty({ example: UserVisibility })
+	@ApiPropertyOptional({ enum: UserVisibility })
 	public visited_spots: string = undefined;
-	@ApiProperty({ example: UserVisibility })
+	@ApiPropertyOptional({ enum: UserVisibility })
 	public posts: string = undefined;
-	@ApiProperty({ example: UserVisibility })
+	@ApiPropertyOptional({ enum: UserVisibility })
 	public favorite_spots: string = undefined;
-	@ApiProperty({ example: UserVisibility })
+	@ApiPropertyOptional({ enum: UserVisibility })
 	public favorite_spot_events: string = undefined;
-	@ApiProperty({ example: UserVisibility })
+	@ApiPropertyOptional({ enum: UserVisibility })
 	public favorite_spot_folders: string = undefined;
-	@ApiProperty({ example: UserVisibility })
+	@ApiPropertyOptional({ enum: UserVisibility })
 	public spot_folders: string = undefined;
 
 	constructor(
@@ -164,33 +164,33 @@ class UserVisibilitySettingsDto extends Dto {
 }
 
 export class UserDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty({ enum: UserStatus })
+	@ApiPropertyOptional({ enum: UserStatus })
 	public status: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public created_at: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public updated_at: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public credentials: UserCredentialsDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public profile: UserProfileDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public visibility_settings: UserVisibilitySettingsDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public main_address: UserAddressDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public total_followers: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public total_following: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public following: boolean = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public followed_at: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public requested_to_follow: boolean = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public requested_to_follow_at: string = undefined;
 
 	constructor(

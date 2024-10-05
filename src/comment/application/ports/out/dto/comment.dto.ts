@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Comment } from 'src/comment/domain/comment.model';
 import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import { Dto } from 'src/common/core/common.dto';
@@ -9,19 +9,19 @@ import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 type CommentableDto = SpotDto;
 
 export class CommentDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public text: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public user: UserDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public commentable: CommentableDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public total_likes: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public liked: boolean = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public created_at: string = undefined;
 
 	private constructor(

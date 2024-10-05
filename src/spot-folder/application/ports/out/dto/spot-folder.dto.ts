@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { SpotFolderItem } from 'src/spot-folder/domain/spot-folder-item.model';
 import { SpotFolderVisibility } from 'src/spot-folder/domain/spot-folder-visibility.enum';
@@ -7,11 +7,11 @@ import { SpotDto } from 'src/spot/application/ports/out/dto/spot.dto';
 import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 
 class SpotFolderItemDto extends Dto {
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public spot: SpotDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public order_number: number = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public added_at: string = undefined;
 
 	private constructor(
@@ -37,27 +37,27 @@ class SpotFolderItemDto extends Dto {
 }
 
 export class SpotFolderDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public name: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public description: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public hex_color: string = undefined;
-	@ApiProperty({ enum: SpotFolderVisibility })
+	@ApiPropertyOptional({ enum: SpotFolderVisibility })
 	public visibility: string = undefined;
-	@ApiProperty({ type: [SpotFolderItemDto], isArray: true })
+	@ApiPropertyOptional({ type: SpotFolderItemDto, isArray: true })
 	public items: SpotFolderItemDto[] = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public favorited: boolean = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public favorited_at: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public total_favorites: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public total_spots: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public creator: UserDto = undefined;
 
 	private constructor(

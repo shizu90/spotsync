@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { Like } from 'src/like/domain/like.model';
 import { PostDto } from 'src/post/application/ports/out/dto/post.dto';
@@ -8,13 +8,13 @@ import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 type LikableDto = PostDto;
 
 export class LikeDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public user: UserDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public subject: LikableDto = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public created_at: string = undefined;
 
 	private constructor(

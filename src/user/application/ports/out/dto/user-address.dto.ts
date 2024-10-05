@@ -1,25 +1,25 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { UserAddress } from 'src/user/domain/user-address.model';
 
 export class UserAddressDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public name: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public area: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public sub_area: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public locality: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public country_code: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public latitude: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public longitude: number = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public main: boolean = undefined;
 
 	constructor(

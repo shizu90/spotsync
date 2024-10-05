@@ -1,12 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { GroupPermission } from 'src/group/domain/group-permission.model';
 import { GroupRole } from 'src/group/domain/group-role.model';
 
 class GroupPermissionDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public name: string = undefined;
 
 	private constructor(id?: string, name?: string) {
@@ -23,19 +23,19 @@ class GroupPermissionDto extends Dto {
 }
 
 export class GroupRoleDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public name: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public is_immutable: boolean = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public hex_color: string = undefined;
-	@ApiProperty({ type: [GroupPermissionDto], isArray: true })
+	@ApiPropertyOptional({ type: GroupPermissionDto, isArray: true })
 	public permissions: GroupPermissionDto[] = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public created_at: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public updated_at: string = undefined;
 
 	constructor(

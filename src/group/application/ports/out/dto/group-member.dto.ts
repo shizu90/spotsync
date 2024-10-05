@@ -1,21 +1,21 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { GroupMember } from 'src/group/domain/group-member.model';
 import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 import { GroupRoleDto } from './group-role.dto';
 
 export class GroupMemberDto extends Dto {
-	@ApiProperty({ example: 'uuid' })
+	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public user: UserDto = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public role: GroupRoleDto = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public joined_at: string = undefined;
-	@ApiProperty({ example: new Date().toISOString() })
+	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public requested_at: string = undefined;
-	@ApiProperty()
+	@ApiPropertyOptional()
 	public is_creator: boolean = undefined;
 
 	private constructor(
