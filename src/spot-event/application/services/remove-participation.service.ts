@@ -5,6 +5,7 @@ import { RemoveParticipationCommand } from "../ports/in/commands/remove-particip
 import { RemoveParticipationUseCase } from "../ports/in/use-cases/remove-participation.use-case";
 import { SpotEventRepository, SpotEventRepositoryProvider } from "../ports/out/spot-event.repository";
 import { ParticipantNotFoundError } from "./errors/participant-not-found.error";
+import { SpotEventNotFoundError } from "./errors/spot-event-not-found.error";
 
 @Injectable()
 export class RemoveParticipationService implements RemoveParticipationUseCase {
@@ -19,6 +20,10 @@ export class RemoveParticipationService implements RemoveParticipationUseCase {
         const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
         const spotEvent = await this.spotEventRepository.findById(command.spotEventId);
+
+        if (!spotEvent) {
+            throw new SpotEventNotFoundError();
+        }
 
         const participant = spotEvent.findParticipantByUserId(authenticatedUser.id());
 

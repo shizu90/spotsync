@@ -34,7 +34,7 @@ export class CreateSpotEventService implements CreateSpotEventUseCase {
     public async execute(command: CreateSpotEventCommand): Promise<SpotEventDto> {
         const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
-        let spotEventVisibility = command.visibility;
+        let spotEventVisibility = SpotEventVisibility.PUBLIC;
         let group = null;
 
         if (command.groupId) {

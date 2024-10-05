@@ -415,10 +415,11 @@ model SpotEvent {
 }
 
 model SpotEventParticipant {
-  spot_event_id String
-  user_id       String
-  user          User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  spot_event    SpotEvent  @relation(fields: [spot_event_id], references: [id], onDelete: Cascade)
+  spot_event_id   String
+  user_id         String
+  participated_at DateTime @default(now())
+  user            User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  spot_event      SpotEvent  @relation(fields: [spot_event_id], references: [id], onDelete: Cascade)
 
   @@id([spot_event_id, user_id])
   @@map("spot_event_participants")

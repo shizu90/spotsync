@@ -5,6 +5,7 @@ import {
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import { Favoritable } from 'src/favorite/domain/favoritable.interface';
+import { SpotEventRepository, SpotEventRepositoryProvider } from 'src/spot-event/application/ports/out/spot-event.repository';
 import {
 	SpotFolderRepository,
 	SpotFolderRepositoryProvider,
@@ -32,6 +33,8 @@ export class FavoriteService implements FavoriteUseCase {
 		protected spotRepository: SpotRepository,
 		@Inject(SpotFolderRepositoryProvider)
 		protected spotFolderRepository: SpotFolderRepository,
+		@Inject(SpotEventRepositoryProvider)
+		protected spotEventRepository: SpotEventRepository,
 	) {}
 
 	public async execute(command: FavoriteCommand): Promise<FavoriteDto> {
@@ -51,7 +54,9 @@ export class FavoriteService implements FavoriteUseCase {
 				);
 				break;
 			case FavoritableSubject.SPOT_EVENT:
-				// favoritable = await this.spotEventRepository.findById(command.subjectId);
+				favoritable = await this.spotEventRepository.findById(
+					command.subjectId,
+				);
 				break;
 			default:
 				break;

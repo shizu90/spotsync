@@ -4,6 +4,7 @@ import { UnauthorizedAccessError } from "src/auth/application/services/errors/un
 import { CancelSpotEventCommand } from "../ports/in/commands/cancel-spot-event.command";
 import { CancelSpotEventUseCase } from "../ports/in/use-cases/cancel-spot-event.use-case";
 import { SpotEventRepository, SpotEventRepositoryProvider } from "../ports/out/spot-event.repository";
+import { SpotEventNotFoundError } from "./errors/spot-event-not-found.error";
 import { SpotEventHasStartedError } from "./errors/spot-event-started.error";
 
 @Injectable()
@@ -19,6 +20,10 @@ export class CancelSpotEventService implements CancelSpotEventUseCase {
         const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
         const spotEvent = await this.spotEventRepository.findById(command.id);
+
+        if (!spotEvent) {
+            throw new SpotEventNotFoundError();
+        }
 
         if (spotEvent.creator().id() != authenticatedUser.id()) {
             throw new UnauthorizedAccessError();

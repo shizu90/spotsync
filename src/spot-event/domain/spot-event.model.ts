@@ -238,7 +238,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 		);
 
 		if (!exists) {
-			const participant = SpotEventParticipant.create(randomUUID(), user);
+			const participant = SpotEventParticipant.create(user);
 			this._participants.push(participant);
 			this._updatedAt = new Date();
 

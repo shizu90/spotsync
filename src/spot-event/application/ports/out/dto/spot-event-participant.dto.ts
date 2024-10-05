@@ -8,21 +8,18 @@ export class SpotEventParticipantDto extends Dto {
     public participation_date: string = undefined;
 
     private constructor(
-        id?: string,
         user?: UserDto,
         participation_date?: string
     ) {
         super();
-        this.id = id;
         this.user = user;
         this.participation_date = participation_date;
     }
 
     public static fromModel(model: SpotEventParticipant): SpotEventParticipantDto {
         return new SpotEventParticipantDto(
-            model.id(),
             model.user() ? UserDto.fromModel(model.user()) : null,
-            model.participationDate()?.toISOString(),
+            model.participatedAt()?.toISOString(),
         );
     }
 }

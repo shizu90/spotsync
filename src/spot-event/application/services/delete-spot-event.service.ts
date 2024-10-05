@@ -6,6 +6,7 @@ import { GroupPermissionName } from "src/group/domain/group-permission-name.enum
 import { DeleteSpotEventCommand } from "../ports/in/commands/delete-spot-event.command";
 import { DeleteSpotEventUseCase } from "../ports/in/use-cases/delete-spot-event.use-case";
 import { SpotEventRepository, SpotEventRepositoryProvider } from "../ports/out/spot-event.repository";
+import { SpotEventNotFoundError } from "./errors/spot-event-not-found.error";
 
 @Injectable()
 export class DeleteSpotEventService implements DeleteSpotEventUseCase {
@@ -22,6 +23,10 @@ export class DeleteSpotEventService implements DeleteSpotEventUseCase {
         const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
         const spotEvent = await this.spotEventRepository.findById(command.id);
+
+        if (!spotEvent) {
+            throw new SpotEventNotFoundError();
+        }
 
         if (authenticatedUser.id() != spotEvent.creator().id()) {
             if (spotEvent.group()) {

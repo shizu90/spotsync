@@ -3,6 +3,8 @@ import { EntityMapper } from 'src/common/core/entity.mapper';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
 import { Favoritable } from 'src/favorite/domain/favoritable.interface';
 import { Favorite } from 'src/favorite/domain/favorite.model';
+import { SpotEvent } from 'src/spot-event/domain/spot-event.model';
+import { SpotEventEntity, SpotEventEntityMapper } from 'src/spot-event/infrastructure/adapters/out/mappers/spot-event-entity.mapper';
 import { SpotFolder } from 'src/spot-folder/domain/spot-folder.model';
 import {
 	SpotFolderEntity,
@@ -22,6 +24,7 @@ export type FavoriteEntity = FavoritePrisma & {
 	user?: UserEntity;
 	spot?: SpotEntity;
 	spot_folder?: SpotFolderEntity;
+	spot_event?: SpotEventEntity;
 };
 
 export class FavoriteEntityMapper
@@ -31,6 +34,7 @@ export class FavoriteEntityMapper
 	private _spotEntityMapper: SpotEntityMapper = new SpotEntityMapper();
 	private _spotFolderEntityMapper: SpotFolderEntityMapper =
 		new SpotFolderEntityMapper();
+	private _spotEventEntityMapper: SpotEventEntityMapper = new SpotEventEntityMapper();
 
 	public toEntity(model: Favorite): FavoriteEntity {
 		if (model === null || model === undefined) return null;
@@ -69,6 +73,13 @@ export class FavoriteEntityMapper
 							model.favoritable() as SpotFolder,
 						)
 					: null,
+			spot_event:
+				model.subject() === FavoritableSubject.SPOT_EVENT &&
+				model.favoritable()
+					? this._spotEventEntityMapper.toEntity(
+							model.favoritable() as SpotEvent,
+						)
+					: null,
 			user: model.user()
 				? this._userEntityMapper.toEntity(model.user())
 				: null,
@@ -91,6 +102,10 @@ export class FavoriteEntityMapper
 					? this._spotFolderEntityMapper.toModel(entity.spot_folder)
 					: null;
 				break;
+			case FavoritableSubject.SPOT_EVENT.toString():
+				favoritable = entity.spot_event
+					? this._spotEventEntityMapper.toModel(entity.spot_event)
+					: null;
 			default:
 				break;
 		}

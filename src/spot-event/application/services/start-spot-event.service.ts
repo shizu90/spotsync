@@ -4,6 +4,7 @@ import { UnauthorizedAccessError } from "src/auth/application/services/errors/un
 import { StartSpotEventCommand } from "../ports/in/commands/start-spot-event.command";
 import { StartSpotEventUseCase } from "../ports/in/use-cases/start-spot-event.use-case";
 import { SpotEventRepository, SpotEventRepositoryProvider } from "../ports/out/spot-event.repository";
+import { SpotEventNotFoundError } from "./errors/spot-event-not-found.error";
 import { SpotEventHasStartedError } from "./errors/spot-event-started.error";
 
 @Injectable()
@@ -19,6 +20,10 @@ export class StartSpotEventService implements StartSpotEventUseCase {
         const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
         const spotEvent = await this.spotEventRepository.findById(command.id);
+
+        if (!spotEvent) {
+            throw new SpotEventNotFoundError();
+        }
 
         if (spotEvent.creator().id() != authenticatedUser.id()) {
             throw new UnauthorizedAccessError();

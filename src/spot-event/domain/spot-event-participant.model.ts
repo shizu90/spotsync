@@ -2,34 +2,27 @@ import { Model } from 'src/common/core/common.model';
 import { User } from 'src/user/domain/user.model';
 
 export class SpotEventParticipant extends Model {
-	private _id: string;
 	private _user: User;
-	private _participationDate: Date;
+	private _participatedAt: Date;
 
-	private constructor(id: string, user: User, participationDate?: Date) {
+	private constructor(user: User, participatedAt?: Date) {
 		super();
-		this._id = id;
 		this._user = user;
-		this._participationDate = participationDate ?? new Date();
+		this._participatedAt = participatedAt ?? new Date();
 	}
 
 	public static create(
-		id: string,
 		user: User,
-		participationDate?: Date,
+		participatedAt?: Date,
 	): SpotEventParticipant {
-		return new SpotEventParticipant(id, user, participationDate);
-	}
-
-	public id(): string {
-		return this._id;
+		return new SpotEventParticipant(user, participatedAt);
 	}
 
 	public user(): User {
 		return this._user;
 	}
 
-	public participationDate(): Date {
-		return this._participationDate;
+	public participatedAt(): Date {
+		return this._participatedAt;
 	}
 }
