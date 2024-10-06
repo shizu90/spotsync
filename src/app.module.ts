@@ -12,6 +12,8 @@ import { SpotEventModule } from './spot-event/spot-event.module';
 import { SpotFolderModule } from './spot-folder/spot-folder.module';
 import { SpotModule } from './spot/spot.module';
 import { UserModule } from './user/user.module';
+import { NotificationModule } from './notification/notification.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
 	imports: [
@@ -28,6 +30,8 @@ import { UserModule } from './user/user.module';
 		MailModule,
 		CommentModule,
 		FavoriteModule,
+		NotificationModule,
+		RedisModule,
 	],
 })
 export class AppModule {}
