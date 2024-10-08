@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -17,7 +18,26 @@ export class UserRepositoryImpl implements UserRepository {
 
 	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
+		@Inject(RedisService) protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const dates = ['created_at', 'updated_at'];
+
+			if (dates.includes(key)) {
+				return new Date(value);
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(params: Object): Object {
 		const name = params['name'];
@@ -58,6 +78,18 @@ export class UserRepositoryImpl implements UserRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<User>> {
+		const key = `users:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._userEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
@@ -114,6 +146,11 @@ export class UserRepositoryImpl implements UserRepository {
 			});
 		}
 
+		await this._setCachedData(key,
+			new Pagination(items, total, page + 1, limit),
+			60,
+		);
+
 		items = items.map((i) => {
 			return this._userEntityMapper.toModel(i);
 		});
@@ -122,6 +159,11 @@ export class UserRepositoryImpl implements UserRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<User>> {
+		const key = `users:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) return cachedData.map((i) => this._userEntityMapper.toModel(i));
+
 		const query = this._mountQuery(values);
 
 		const users = await this.prismaService.user.findMany({
@@ -133,22 +175,34 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 		});
 
-		return users.map((user) => {
-			return this._userEntityMapper.toModel(user);
-		});
+		await this._setCachedData(key, users, 60);
+
+		return users.map((user) => this._userEntityMapper.toModel(user));
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `users:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) return cachedData;
+
 		const query = this._mountQuery(values);
 
 		const count = await this.prismaService.user.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<Array<User>> {
+		const key = 'users:findAll';
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) return cachedData.map((i) => this._userEntityMapper.toModel(i));
+
 		const users = await this.prismaService.user.findMany({
 			include: {
 				credentials: true,
@@ -157,12 +211,17 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 		});
 
-		return users.map((user): User => {
-			return this._userEntityMapper.toModel(user);
-		});
+		await this._setCachedData(key, users, 60);
+
+		return users.map((user) => this._userEntityMapper.toModel(user));
 	}
 
 	public async findById(id: string): Promise<User> {
+		const key = `users:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) return this._userEntityMapper.toModel(cachedData);
+
 		const user = await this.prismaService.user.findFirst({
 			where: {
 				id: id,
@@ -174,10 +233,17 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 		});
 
+		await this._setCachedData(key, user, 60);
+
 		return this._userEntityMapper.toModel(user);
 	}
 
 	public async findByName(name: string): Promise<User> {
+		const key = `users:findByName:${name}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) return this._userEntityMapper.toModel(cachedData);
+
 		const user = await this.prismaService.user.findFirst({
 			where: {
 				credentials: {
@@ -191,10 +257,17 @@ export class UserRepositoryImpl implements UserRepository {
 			},
 		});
 
+		await this._setCachedData(key, user, 60);
+
 		return this._userEntityMapper.toModel(user);
 	}
 
 	public async findByEmail(email: string): Promise<User> {
+		const key = `users:findByEmail:${email}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) return this._userEntityMapper.toModel(cachedData);
+
 		const user = await this.prismaService.user.findFirst({
 			where: {
 				credentials: {
@@ -207,6 +280,8 @@ export class UserRepositoryImpl implements UserRepository {
 				profile: true,
 			},
 		});
+
+		await this._setCachedData(key, user, 60);
 
 		return this._userEntityMapper.toModel(user);
 	}
