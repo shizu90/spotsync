@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -17,7 +18,26 @@ export class PasswordRecoveryRepositoryImpl
 
 	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
+		@Inject(RedisService) protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const dates = ['created_at', 'updated_at'];
+
+			if (dates.includes(key)) {
+				return new Date(value);
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(params: Object): Object {
 		const token = params['token'];
@@ -44,6 +64,18 @@ export class PasswordRecoveryRepositoryImpl
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<PasswordRecovery>> {
+		const key = `password-recoveries:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._passwordRecoveryEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			)
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
@@ -101,6 +133,8 @@ export class PasswordRecoveryRepositoryImpl
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		items = items.map((i) => {
 			return this._passwordRecoveryEntityMapper.toModel(i);
 		});
@@ -109,6 +143,13 @@ export class PasswordRecoveryRepositoryImpl
 	}
 
 	public async findBy(values: Object): Promise<PasswordRecovery[]> {
+		const key = `password-recoveries:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._passwordRecoveryEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 		const items = await this.prismaService.passwordRecovery.findMany({
 			where: query,
@@ -123,11 +164,20 @@ export class PasswordRecoveryRepositoryImpl
 			},
 		});
 
+		await this._setCachedData(key, items, 60);
+
 		return items.map((i) => {
 			return this._passwordRecoveryEntityMapper.toModel(i);
 		});
 	}
 	public async countBy(values: Object): Promise<number> {
+		const key = `password-recoveries:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const token = values['token'];
 		const userId = values['userId'];
 		const status = values['status'];
@@ -165,10 +215,19 @@ export class PasswordRecoveryRepositoryImpl
 			where: { id: { in: ids.map((row) => row.id) } },
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findById(id: string): Promise<PasswordRecovery> {
+		const key = `password-recoveries:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._passwordRecoveryEntityMapper.toModel(cachedData);
+		}
+
 		const passwordRecovery =
 			await this.prismaService.passwordRecovery.findUnique({
 				where: { id: id },
@@ -182,10 +241,19 @@ export class PasswordRecoveryRepositoryImpl
 					},
 				},
 			});
+		
+		await this._setCachedData(key, passwordRecovery, 60);
 
 		return this._passwordRecoveryEntityMapper.toModel(passwordRecovery);
 	}
 	public async findAll(): Promise<PasswordRecovery[]> {
+		const key = 'password-recoveries:findAll';
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._passwordRecoveryEntityMapper.toModel(i));
+		}
+
 		const passwordRecoveries =
 			await this.prismaService.passwordRecovery.findMany({
 				include: {
@@ -198,6 +266,8 @@ export class PasswordRecoveryRepositoryImpl
 					},
 				},
 			});
+
+		await this._setCachedData(key, passwordRecoveries, 60);
 
 		return passwordRecoveries.map((i) => {
 			return this._passwordRecoveryEntityMapper.toModel(i);

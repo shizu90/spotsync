@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -19,7 +20,27 @@ export class ActivationRequestRepositoryImpl
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const dates = ['created_at', 'updated_at'];
+
+			if (dates.includes(key)) {
+				return new Date(value);
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(params: Object): Object {
 		const status = params['status'];
@@ -51,6 +72,18 @@ export class ActivationRequestRepositoryImpl
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<ActivationRequest>> {
+		const key = `activation-requests:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._activationRequestEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'requested_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
@@ -99,6 +132,8 @@ export class ActivationRequestRepositoryImpl
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		items = items.map((i) => {
 			return this._activationRequestEntityMapper.toModel(i);
 		});
@@ -107,6 +142,13 @@ export class ActivationRequestRepositoryImpl
 	}
 
 	public async findBy(values: Object): Promise<any[]> {
+		const key = `activation-requests:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._activationRequestEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 		const items = await this.prismaService.activationRequest.findMany({
 			where: query,
@@ -121,58 +163,38 @@ export class ActivationRequestRepositoryImpl
 			},
 		});
 
+		await this._setCachedData(key, items, 60);
+
 		return items.map((i) => {
 			return this._activationRequestEntityMapper.toModel(i);
 		});
 	}
 	public async countBy(values: Object): Promise<number> {
-		const status = values['status'];
-		const subject = values['subject'];
-		const code = values['code'];
-		const userId = values['userId'];
+		const key = `activation-requests:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
 
-		let query = `SELECT COUNT(activation_requests.id) FROM activation_requests`;
-
-		if (status) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND status = '${status}'`;
-			} else {
-				query = `${query} WHERE status = '${status}'`;
-			}
+		if (cachedData) {
+			return cachedData;
 		}
 
-		if (subject) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND subject = '${subject}'`;
-			} else {
-				query = `${query} WHERE subject = '${subject}'`;
-			}
-		}
+		const query = this._mountQuery(values);
+		const count = await this.prismaService.activationRequest.count({
+			where: query
+		});
 
-		if (code) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND code = '${code}'`;
-			} else {
-				query = `${query} WHERE code = '${code}'`;
-			}
-		}
+		await this._setCachedData(key, count, 60);
 
-		if (userId) {
-			if (query.includes('WHERE')) {
-				query = `${query} AND user_id = '${userId}'`;
-			} else {
-				query = `${query} WHERE user_id = '${userId}'`;
-			}
-		}
-
-		const count = await this.prismaService.$queryRawUnsafe<{
-			count: number;
-		}>(query);
-
-		return count.count;
+		return count;
 	}
 
 	public async findById(id: string): Promise<ActivationRequest> {
+		const key = `activation-requests:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._activationRequestEntityMapper.toModel(cachedData);
+		}
+
 		const item = await this.prismaService.activationRequest.findFirst({
 			where: { id: id },
 			include: {
@@ -186,10 +208,19 @@ export class ActivationRequestRepositoryImpl
 			},
 		});
 
+		await this._setCachedData(key, item, 60);
+
 		return this._activationRequestEntityMapper.toModel(item);
 	}
 
 	public async findAll(): Promise<ActivationRequest[]> {
+		const key = 'activation-requests:findAll';
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._activationRequestEntityMapper.toModel(i));
+		}
+
 		const items = await this.prismaService.activationRequest.findMany({
 			include: {
 				user: {
@@ -201,6 +232,8 @@ export class ActivationRequestRepositoryImpl
 				},
 			},
 		});
+
+		await this._setCachedData(key, items, 60);
 
 		return items.map((i) => {
 			return this._activationRequestEntityMapper.toModel(i);

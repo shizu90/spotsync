@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -15,7 +16,26 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 
 	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
+		@Inject(RedisService) protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const dates = ['created_at', 'updated_at'];
+
+			if (dates.includes(key)) {
+				return new Date(value);
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(params: Object): Object {
 		const userId = params['userId'];
@@ -50,6 +70,18 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<UserAddress>> {
+		const key = `user-addresses:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._userAddressEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
@@ -110,6 +142,8 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		items = items.map((i) => {
 			return this._userAddressEntityMapper.toModel(i);
 		});
@@ -118,6 +152,13 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<UserAddress>> {
+		const key = `user-addresses:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._userAddressEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 		const userAddresses = await this.prismaService.userAddress.findMany({
 			where: query,
@@ -131,6 +172,8 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 				},
 			},
 		});
+
+		await this._setCachedData(key, userAddresses, 60);
 
 		return userAddresses.map((userAddress) => {
 			return this._userAddressEntityMapper.toModel(userAddress);
@@ -138,15 +181,31 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `user-addresses:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.userAddress.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<Array<UserAddress>> {
+		const key = 'user-addresses:findAll';
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._userAddressEntityMapper.toModel(i));
+		}
+
 		const userAddresses = await this.prismaService.userAddress.findMany({
 			include: {
 				user: {
@@ -159,12 +218,21 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			},
 		});
 
+		await this._setCachedData(key, userAddresses, 60);
+
 		return userAddresses.map((userAddress) => {
 			return this._userAddressEntityMapper.toModel(userAddress);
 		});
 	}
 
 	public async findById(id: string): Promise<UserAddress> {
+		const key = `user-addresses:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._userAddressEntityMapper.toModel(cachedData);
+		}
+
 		const userAddress = await this.prismaService.userAddress.findFirst({
 			where: {
 				id: id,
@@ -179,6 +247,8 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 				},
 			},
 		});
+
+		await this._setCachedData(key, userAddress, 60);
 
 		return this._userAddressEntityMapper.toModel(userAddress);
 	}
