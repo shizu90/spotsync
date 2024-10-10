@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -18,7 +19,27 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mapSubjectId(subject: FavoritableSubject): string {
 		switch (subject) {
@@ -110,6 +131,18 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Favorite>> {
+		const key = `favorite:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._favoriteEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.limit,
+				cachedData.page,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
@@ -147,6 +180,8 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		return new Pagination<Favorite>(
 			items.map((i) => this._favoriteEntityMapper.toModel(i)),
 			total,
@@ -156,23 +191,50 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 	}
 
 	public async findBy(values: Object): Promise<Favorite[]> {
+		const key = `favorite:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._favoriteEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 		const items = await this.prismaService.favorite.findMany({
 			where: query,
 			include: this._mountInclude(),
 		});
 
+		await this._setCachedData(key, items, 60);
+
 		return items.map((i) => this._favoriteEntityMapper.toModel(i));
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `favorite:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
-		return this.prismaService.favorite.count({
+		const count = await this.prismaService.favorite.count({
 			where: query,
 		});
+
+		await this._setCachedData(key, count, 60);
+		
+		return count;
 	}
 
 	public async findById(id: string): Promise<Favorite> {
+		const key = `favorite:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._favoriteEntityMapper.toModel(cachedData);
+		}
+
 		const item = await this.prismaService.favorite.findUnique({
 			where: {
 				id: id,
@@ -180,13 +242,24 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 			include: this._mountInclude(),
 		});
 
+		await this._setCachedData(key, item, 60);
+
 		return this._favoriteEntityMapper.toModel(item);
 	}
 
 	public async findAll(): Promise<Favorite[]> {
+		const key = 'favorite:findAll';
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._favoriteEntityMapper.toModel(i));
+		}
+
 		const items = await this.prismaService.favorite.findMany({
 			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, items, 60);
 
 		return items.map((i) => this._favoriteEntityMapper.toModel(i));
 	}
@@ -238,8 +311,7 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 						? model.favoritable().id()
 						: null,
 				user_id: model.user().id(),
-			},
-			include: this._mountInclude(),
+			}
 		});
 	}
 

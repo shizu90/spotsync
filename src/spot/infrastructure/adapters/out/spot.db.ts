@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -20,7 +21,27 @@ export class SpotRepositoryImpl implements SpotRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(values: Object): Object {
 		const name = values['name'] ?? null;
@@ -69,9 +90,35 @@ export class SpotRepositoryImpl implements SpotRepository {
 		return query;
 	}
 
+	private _mountInclude(): Object {
+		return {
+			address: true,
+			photos: true,
+			creator: {
+				include: {
+					credentials: true,
+					visibility_settings: true,
+					profile: true,
+				},
+			},
+		};
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Spot>> {
+		const key = `spot:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((s) => this._spotEntityMapper.toModel(s)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
@@ -107,17 +154,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			items = await this.prismaService.spot.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					address: true,
-					photos: true,
-					creator: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 				skip: limit * page,
 				take: limit,
 			});
@@ -125,19 +162,11 @@ export class SpotRepositoryImpl implements SpotRepository {
 			items = await this.prismaService.spot.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					address: true,
-					photos: true,
-					creator: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 			});
 		}
+
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
 
 		return new Pagination(
 			items.map((s) => this._spotEntityMapper.toModel(s)),
@@ -148,46 +177,38 @@ export class SpotRepositoryImpl implements SpotRepository {
 	}
 
 	public async findByName(name: string): Promise<Spot> {
-		let query = `SELECT spots.id FROM spots WHERE lower(name) = lower('${name}');`;
+		const key = `spot:findByName:${name}`;
+		const cachedData = await this._getCachedData(key);
 
-		const id = await this.prismaService.$queryRawUnsafe<{ id: string }>(
-			query,
-		);
+		if (cachedData) {
+			return this._spotEntityMapper.toModel(cachedData);
+		}
 
 		const spot = await this.prismaService.spot.findFirst({
-			where: { id: id.id },
-			include: {
-				address: true,
-				photos: true,
-				creator: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-			},
+			where: { name: name },
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, spot, 60);
 
 		return this._spotEntityMapper.toModel(spot);
 	}
 
 	public async findBy(values: Object): Promise<Spot[]> {
+		const key = `spot:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((s) => this._spotEntityMapper.toModel(s));
+		}
+
 		const query = this._mountQuery(values);
 		const spots = await this.prismaService.spot.findMany({
 			where: query,
-			include: {
-				address: true,
-				photos: true,
-				creator: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, spots, 60);
 
 		return spots.map((s) => this._spotEntityMapper.toModel(s));
 	}
@@ -195,31 +216,33 @@ export class SpotRepositoryImpl implements SpotRepository {
 	public async findVisitedSpotBy(
 		values: Object,
 	): Promise<Array<VisitedSpot>> {
+		const key = `visited-spot:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((vs) =>
+				this._visitedSpotEntityMapper.toModel(vs),
+			);
+		}
+
 		const query = this._mountQuery(values);
 		const visitedSpots = await this.prismaService.visitedSpot.findMany({
 			where: query,
 			include: {
 				spot: {
-					include: {
-						address: true,
-						photos: true,
-						creator: {
-							include: {
-								credentials: true,
-								visibility_settings: true,
-								profile: true,
-							},
-						},
-					},
+					include: this._mountInclude(),
 				},
 				user: {
 					include: {
 						credentials: true,
 						visibility_settings: true,
+						profile: true,
 					},
 				},
 			},
 		});
+
+		await this._setCachedData(key, visitedSpots, 60);
 
 		return visitedSpots.map((vs) =>
 			this._visitedSpotEntityMapper.toModel(vs),
@@ -227,56 +250,72 @@ export class SpotRepositoryImpl implements SpotRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `spot:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.spot.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async countVisitedSpotBy(values: Object): Promise<number> {
+		const key = `visited-spot:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.visitedSpot.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<Spot[]> {
+		const key = 'spot:findAll';
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((s) => this._spotEntityMapper.toModel(s));
+		}
+
 		const spots = await this.prismaService.spot.findMany({
-			include: {
-				address: true,
-				photos: true,
-				creator: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, spots, 60);
 
 		return spots.map((s) => this._spotEntityMapper.toModel(s));
 	}
 
 	public async findById(id: string): Promise<Spot> {
+		const key = `spot:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._spotEntityMapper.toModel(cachedData);
+		}
+
 		const spot = await this.prismaService.spot.findFirst({
 			where: { id: id },
-			include: {
-				address: true,
-				photos: true,
-				creator: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, spot, 60);
 
 		return this._spotEntityMapper.toModel(spot);
 	}

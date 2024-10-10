@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { RedisService } from "src/cache/redis.service";
 import { PaginateParameters, Pagination } from "src/common/core/common.repository";
 import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -13,7 +14,27 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
     constructor(
         @Inject(PrismaService)
         protected prismaService: PrismaService,
+        @Inject(RedisService)
+        protected redisService: RedisService,
     ) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
     private _mountQuery(values: Object): Object {
         const spotId = values['spotId'];
@@ -81,6 +102,20 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
     }
 
     public async paginate(params: PaginateParameters): Promise<Pagination<SpotEvent>> {
+        const key = `spot-event:paginate:${JSON.stringify(params)}`;
+        const cachedKey = await this._getCachedData(key);
+
+        if (cachedKey) {
+            return new Pagination(
+                cachedKey.items.map((i) => {
+                    return this._spotEventEntityMapper.toModel(i);
+                }),
+                cachedKey.total,
+                cachedKey.curent_page,
+                cachedKey.limit
+            );
+        }
+
         const query = this._mountQuery(params.filters);
         const sort = params.sort ?? 'created_at';
         const sortDirection = params.sortDirection ?? SortDirection.DESC;
@@ -133,6 +168,8 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
             });
         }
 
+        await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
         items = items.map((i) => {
             return this._spotEventEntityMapper.toModel(i);
         });
@@ -141,12 +178,23 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
     }
 
     public async findBy(values: Object): Promise<Array<SpotEvent>> {
+        const key = `spot-event:findBy:${JSON.stringify(values)}`;
+        const cachedData = await this._getCachedData(key);
+
+        if (cachedData) {
+            return cachedData.map((i) => {
+                return this._spotEventEntityMapper.toModel(i);
+            });
+        }
+
         const query = this._mountQuery(values);
 
         const items = await this.prismaService.spotEvent.findMany({
             where: query,
             include: this._mountInclude(),
         });
+
+        await this._setCachedData(key, items, 60);
 
         return items.map((i) => {
             return this._spotEventEntityMapper.toModel(i);
@@ -154,17 +202,39 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
     }
 
     public async countBy(values: Object): Promise<number> {
+        const key = `spot-event:countBy:${JSON.stringify(values)}`;
+        const cachedData = await this._getCachedData(key);
+
+        if (cachedData) {
+            return cachedData;
+        }
+
         const query = this._mountQuery(values);
 
-        return await this.prismaService.spotEvent.count({
+        const count = await this.prismaService.spotEvent.count({
             where: query,
         });
+
+        await this._setCachedData(key, count, 60);
+        
+        return count;
     }
 
     public async findAll(): Promise<SpotEvent[]> {
+        const key = 'spot-event:findAll';
+        const cachedData = await this._getCachedData(key);
+
+        if (cachedData) {
+            return cachedData.map((i) => {
+                return this._spotEventEntityMapper.toModel(i);
+            });
+        }
+
         const items = await this.prismaService.spotEvent.findMany({
             include: this._mountInclude(),
         });
+
+        await this._setCachedData(key, items, 60);
 
         return items.map((i) => {
             return this._spotEventEntityMapper.toModel(i);
@@ -172,12 +242,21 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
     }
 
     public async findById(id: string): Promise<SpotEvent> {
+        const key = `spot-event:findById:${id}`;
+        const cachedData = await this._getCachedData(key);
+
+        if (cachedData) {
+            return this._spotEventEntityMapper.toModel(cachedData);
+        }
+
         const item = await this.prismaService.spotEvent.findUnique({
             where: {
                 id: id,
             },
             include: this._mountInclude(),
         });
+
+        await this._setCachedData(key, item, 60);
 
         return this._spotEventEntityMapper.toModel(item);
     }

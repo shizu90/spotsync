@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import { CommentRepository } from 'src/comment/application/ports/out/comment.repository';
 import { Comment } from 'src/comment/domain/comment.model';
 import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
@@ -18,7 +19,27 @@ export class CommentRepositoryImpl implements CommentRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mapCommentableId(subject: CommentableSubject): string {
 		switch (subject) {
@@ -81,6 +102,18 @@ export class CommentRepositoryImpl implements CommentRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Comment>> {
+		const key = `comment:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._commentEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
@@ -117,6 +150,8 @@ export class CommentRepositoryImpl implements CommentRepository {
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		return new Pagination(
 			items.map((i) => this._commentEntityMapper.toModel(i)),
 			total,
@@ -126,6 +161,13 @@ export class CommentRepositoryImpl implements CommentRepository {
 	}
 
 	public async findBy(values: Object): Promise<Comment[]> {
+		const key = `comment:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._commentEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 
 		const items = await this.prismaService.comment.findMany({
@@ -133,18 +175,37 @@ export class CommentRepositoryImpl implements CommentRepository {
 			include: this._mountInclude(),
 		});
 
+		await this._setCachedData(key, items, 60);
+
 		return items.map((i) => this._commentEntityMapper.toModel(i));
 	}
 
 	public async countBy(values: Object): Promise<number> {
-		const query = this._mountQuery(values);
+		const key = `comment:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
 
-		return this.prismaService.comment.count({
+		if (cachedData) {
+			return cachedData;
+		}
+
+		const query = this._mountQuery(values);
+		const count = await this.prismaService.comment.count({
 			where: query,
 		});
+
+		await this._setCachedData(key, count, 60);
+
+		return count;
 	}
 
 	public async findById(id: string): Promise<Comment> {
+		const key = `comment:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._commentEntityMapper.toModel(cachedData);
+		}
+
 		const item = await this.prismaService.comment.findFirst({
 			where: {
 				id: id,
@@ -152,13 +213,24 @@ export class CommentRepositoryImpl implements CommentRepository {
 			include: this._mountInclude(),
 		});
 
+		await this._setCachedData(key, item, 60);
+
 		return this._commentEntityMapper.toModel(item);
 	}
 
 	public async findAll(): Promise<Comment[]> {
+		const key = `comment:findAll`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._commentEntityMapper.toModel(i));
+		}
+
 		const items = await this.prismaService.comment.findMany({
 			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, items, 60);
 
 		return items.map((i) => this._commentEntityMapper.toModel(i));
 	}
@@ -178,6 +250,7 @@ export class CommentRepositoryImpl implements CommentRepository {
 				updated_at: model.updatedAt(),
 				total_likes: model.totalLikes(),
 			},
+			include: this._mountInclude(),
 		});
 
 		return this._commentEntityMapper.toModel(item);

@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -17,7 +18,27 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountInclude(): Object {
 		return {
@@ -76,6 +97,20 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<SpotFolder>> {
+		const key = `spot-folder:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((item) =>
+					this._spotFolderEntityMapper.toModel(item),
+				),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort || 'created_at';
 		const sortDirection = params.sortDirection || SortDirection.DESC;
@@ -120,6 +155,8 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		return new Pagination(
 			items.map((item) => this._spotFolderEntityMapper.toModel(item)),
 			total,
@@ -129,39 +166,79 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 	}
 
 	public async findBy(values: Object): Promise<SpotFolder[]> {
+		const key = `spot-folder:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((item) =>
+				this._spotFolderEntityMapper.toModel(item),
+			);
+		}
+
 		const query = this._mountQuery(values);
 		const items = await this.prismaService.spotFolder.findMany({
 			where: query,
 			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, items, 60);
 
 		return items.map((item) => this._spotFolderEntityMapper.toModel(item));
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `spot-folder:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.spotFolder.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<SpotFolder[]> {
+		const key = 'spot-folder:findAll';
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((item) =>
+				this._spotFolderEntityMapper.toModel(item),
+			);
+		}
+
 		const items = await this.prismaService.spotFolder.findMany({
 			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, items, 60);
 
 		return items.map((item) => this._spotFolderEntityMapper.toModel(item));
 	}
 
 	public async findById(id: string): Promise<SpotFolder> {
+		const key = `spot-folder:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._spotFolderEntityMapper.toModel(cachedData);
+		}
+
 		const item = await this.prismaService.spotFolder.findUnique({
 			where: {
 				id: id,
 			},
 			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, item, 60);
 
 		return this._spotFolderEntityMapper.toModel(item);
 	}

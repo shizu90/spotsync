@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -17,7 +18,27 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(values: Object): Object {
 		const name = values['name'] ?? null;
@@ -51,9 +72,47 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		return query;
 	}
 
+	private _mountInclude(): Object {
+		return {
+			user: {
+				include: {
+					credentials: true,
+					visibility_settings: true,
+					profile: true,
+				},
+			},
+			group_role: {
+				include: {
+					permissions: {
+						include: {
+							group_permission: true,
+						},
+					},
+				},
+			},
+			group: {
+				include: {
+					visibility_settings: true,
+				},
+			},
+		};
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<GroupMember>> {
+		const key = `group-member:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._groupMemberEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
@@ -82,29 +141,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			items = await this.prismaService.groupMember.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					user: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-					group_role: {
-						include: {
-							permissions: {
-								include: {
-									group_permission: true,
-								},
-							},
-						},
-					},
-					group: {
-						include: {
-							visibility_settings: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 				skip: page * limit,
 				take: limit,
 			});
@@ -112,31 +149,11 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			items = await this.prismaService.groupMember.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					user: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-					group_role: {
-						include: {
-							permissions: {
-								include: {
-									group_permission: true,
-								},
-							},
-						},
-					},
-					group: {
-						include: {
-							visibility_settings: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 			});
 		}
+
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
 
 		items = items.map((i) => {
 			return this._groupMemberEntityMapper.toModel(i);
@@ -146,33 +163,20 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<GroupMember>> {
+		const key = `group-member:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._groupMemberEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 		const groupMembers = await this.prismaService.groupMember.findMany({
 			where: query,
-			include: {
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				group_role: {
-					include: {
-						permissions: {
-							include: {
-								group_permission: true,
-							},
-						},
-					},
-				},
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, groupMembers, 60);
 
 		return groupMembers.map((gm) => {
 			return this._groupMemberEntityMapper.toModel(gm);
@@ -180,40 +184,36 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `group-member:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.groupMember.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<Array<GroupMember>> {
+		const key = `group-member:findAll`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._groupMemberEntityMapper.toModel(i));
+		}
+
 		const groupMembers = await this.prismaService.groupMember.findMany({
-			include: {
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				group_role: {
-					include: {
-						permissions: {
-							include: {
-								group_permission: true,
-							},
-						},
-					},
-				},
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, groupMembers, 60);
 
 		return groupMembers.map((gm) => {
 			return this._groupMemberEntityMapper.toModel(gm);
@@ -221,32 +221,19 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 	}
 
 	public async findById(id: string): Promise<GroupMember> {
+		const key = `group-member:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._groupMemberEntityMapper.toModel(cachedData);
+		}
+
 		const groupMember = await this.prismaService.groupMember.findFirst({
 			where: { id: id },
-			include: {
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				group_role: {
-					include: {
-						permissions: {
-							include: {
-								group_permission: true,
-							},
-						},
-					},
-				},
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, groupMember, 60);
 
 		return this._groupMemberEntityMapper.toModel(groupMember);
 	}
@@ -263,29 +250,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				requested_at: model.requestedAt(),
 				status: model.status(),
 			},
-			include: {
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				group_role: {
-					include: {
-						permissions: {
-							include: {
-								group_permission: true,
-							},
-						},
-					},
-				},
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
 
 		return this._groupMemberEntityMapper.toModel(groupMember);
@@ -300,29 +265,6 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 				joined_at: model.joinedAt(),
 			},
 			where: { id: model.id() },
-			include: {
-				user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				group_role: {
-					include: {
-						permissions: {
-							include: {
-								group_permission: true,
-							},
-						},
-					},
-				},
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
 		});
 	}
 

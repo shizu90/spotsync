@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -15,7 +16,27 @@ export class FollowRepositoryImpl implements FollowRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(values: Object): Object {
 		const status = values['status'] ?? null;
@@ -39,9 +60,40 @@ export class FollowRepositoryImpl implements FollowRepository {
 		return query;
 	}
 
+	private _mountInclude(): Object {
+		return {
+			from_user: {
+				include: {
+					credentials: true,
+					visibility_settings: true,
+					profile: true,
+				},
+			},
+			to_user: {
+				include: {
+					credentials: true,
+					visibility_settings: true,
+					profile: true,
+				},
+			},
+		};
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Follow>> {
+		const key = `follow:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._followEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+		
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'followedAt';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
@@ -69,22 +121,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			items = await this.prismaService.follow.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					from_user: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-					to_user: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 				skip: limit * page,
 				take: limit,
 			});
@@ -92,24 +129,11 @@ export class FollowRepositoryImpl implements FollowRepository {
 			items = await this.prismaService.follow.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					from_user: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-					to_user: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 			});
 		}
+
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
 
 		items = items.map((i) => {
 			return this._followEntityMapper.toModel(i);
@@ -119,26 +143,20 @@ export class FollowRepositoryImpl implements FollowRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<Follow>> {
+		const key = `follow:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._followEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 		const follows = await this.prismaService.follow.findMany({
 			where: query,
-			include: {
-				from_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				to_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, follows, 60);
 
 		return follows.map((follow) => {
 			return this._followEntityMapper.toModel(follow);
@@ -146,33 +164,36 @@ export class FollowRepositoryImpl implements FollowRepository {
 	}
 
 	public async countBy(values: Object) {
+		const key = `follow:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.follow.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<Array<Follow>> {
+		const key = `follow:findAll`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._followEntityMapper.toModel(i));
+		}
+
 		const follows = await this.prismaService.follow.findMany({
-			include: {
-				from_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				to_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, follows, 60);
 
 		return follows.map((follow) => {
 			return this._followEntityMapper.toModel(follow);
@@ -180,27 +201,21 @@ export class FollowRepositoryImpl implements FollowRepository {
 	}
 
 	public async findById(id: string): Promise<Follow> {
+		const key = `follow:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._followEntityMapper.toModel(cachedData);
+		}
+
 		const follow = await this.prismaService.follow.findFirst({
 			where: {
 				id: id,
 			},
-			include: {
-				from_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				to_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, follow, 60);
 
 		return this._followEntityMapper.toModel(follow);
 	}
@@ -215,22 +230,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 				status: model.status(),
 				requested_at: model.requestedAt(),
 			},
-			include: {
-				from_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				to_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
 
 		return this._followEntityMapper.toModel(follow);
@@ -245,23 +245,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 				followed_at: model.followedAt(),
 				status: model.status(),
 				requested_at: model.requestedAt(),
-			},
-			include: {
-				from_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				to_user: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-			},
+			}
 		});
 	}
 

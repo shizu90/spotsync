@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -16,7 +17,27 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(values: Object): Object {
 		const maxDepthLevel = values['maxDepthLevel'] ?? null;
@@ -33,6 +54,18 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<PostThread>> {
+		const key = `post-thread:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._postThreadEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
@@ -72,6 +105,8 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		items = items.map((thread) =>
 			this._postThreadEntityMapper.toModel(thread),
 		);
@@ -80,10 +115,19 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 	}
 
 	public async findBy(values: Object): Promise<PostThread[]> {
+		const key = `post-thread:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._postThreadEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 		const threads = await this.prismaService.postThread.findMany({
 			where: query,
 		});
+
+		await this._setCachedData(key, threads, 60);
 
 		return threads.map((thread) =>
 			this._postThreadEntityMapper.toModel(thread),
@@ -91,16 +135,30 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `post-thread:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.postThread.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<PostThread[]> {
+		const key = `post-thread:findAll`;
+		const cachedData = await this._getCachedData(key);
+
 		const threads = await this.prismaService.postThread.findMany();
+
+		await this._setCachedData(key, threads, 60);
 
 		return threads.map((thread) =>
 			this._postThreadEntityMapper.toModel(thread),
@@ -108,9 +166,18 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 	}
 
 	public async findById(id: string): Promise<PostThread> {
+		const key = `post-thread:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._postThreadEntityMapper.toModel(cachedData);
+		}
+
 		const thread = await this.prismaService.postThread.findFirst({
 			where: { id: id },
 		});
+
+		await this._setCachedData(key, thread, 60);
 
 		return this._postThreadEntityMapper.toModel(thread);
 	}

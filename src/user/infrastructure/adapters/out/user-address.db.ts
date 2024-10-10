@@ -23,10 +23,10 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		const data = await this.redisService.get(key);
 		
 		if (data) return JSON.parse(data, (key, value) => {
-			const dates = ['created_at', 'updated_at'];
+			const date = new Date(value);
 
-			if (dates.includes(key)) {
-				return new Date(value);
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
 			}
 		});
 

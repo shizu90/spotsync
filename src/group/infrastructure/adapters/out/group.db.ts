@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -21,7 +22,27 @@ export class GroupRepositoryImpl implements GroupRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(values: Object): Object {
 		const name = values['name'] ?? null;
@@ -57,6 +78,18 @@ export class GroupRepositoryImpl implements GroupRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Group>> {
+		const key = `group:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._groupEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
@@ -101,6 +134,8 @@ export class GroupRepositoryImpl implements GroupRepository {
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		items = items.map((i) => {
 			return this._groupEntityMapper.toModel(i);
 		});
@@ -109,11 +144,20 @@ export class GroupRepositoryImpl implements GroupRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<Group>> {
+		const key = `group:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._groupEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 		const groups = await this.prismaService.group.findMany({
 			where: query,
 			include: { visibility_settings: true },
 		});
+
+		await this._setCachedData(key, groups, 60);
 
 		return groups.map((group) => {
 			return this._groupEntityMapper.toModel(group);
@@ -121,16 +165,32 @@ export class GroupRepositoryImpl implements GroupRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `group:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 
 		const count = await this.prismaService.group.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async countLogBy(values: Object): Promise<number> {
+		const key = `group-log:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		query['group_id'] = values['groupId'] ?? null;
 
@@ -138,12 +198,28 @@ export class GroupRepositoryImpl implements GroupRepository {
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async paginateLog(
 		params: PaginateParameters,
 	): Promise<Pagination<GroupLog>> {
+		const key = `group-log:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) =>
+					this._groupLogEntityMapper.toModel(i),
+				),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		query['group_id'] = params.filters['groupId'] ?? null;
 		const sort = params.sort ?? 'occurredAt';
@@ -197,6 +273,8 @@ export class GroupRepositoryImpl implements GroupRepository {
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		items = items.map((i) => {
 			return this._groupLogEntityMapper.toModel(i);
 		});
@@ -205,9 +283,18 @@ export class GroupRepositoryImpl implements GroupRepository {
 	}
 
 	public async findAll(): Promise<Array<Group>> {
+		const key = 'group:findAll';
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._groupEntityMapper.toModel(i));
+		}
+
 		const groups = await this.prismaService.group.findMany({
 			include: { visibility_settings: true },
 		});
+
+		await this._setCachedData(key, groups, 60);
 
 		return groups.map((group) => {
 			return this._groupEntityMapper.toModel(group);
@@ -215,10 +302,19 @@ export class GroupRepositoryImpl implements GroupRepository {
 	}
 
 	public async findById(id: string): Promise<Group> {
+		const key = `group:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const group = await this.prismaService.group.findFirst({
 			where: { id: id },
 			include: { visibility_settings: true },
 		});
+
+		await this._setCachedData(key, group, 60);
 
 		return this._groupEntityMapper.toModel(group);
 	}
@@ -283,9 +379,6 @@ export class GroupRepositoryImpl implements GroupRepository {
 			where: {
 				id: model.id(),
 			},
-			include: {
-				visibility_settings: true,
-			},
 		});
 	}
 
@@ -303,9 +396,6 @@ export class GroupRepositoryImpl implements GroupRepository {
 				},
 			},
 			where: { id: model.id() },
-			include: {
-				visibility_settings: true,
-			},
 		});
 	}
 

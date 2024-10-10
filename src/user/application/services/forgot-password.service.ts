@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Mail, MailProvider } from 'src/mail/mail';
 import { ForgotPasswordMailTemplate } from 'src/mail/templates/forgot-password-mail.template';
+import { PasswordRecoveryStatus } from 'src/user/domain/password-recovery-status.enum';
 import { PasswordRecovery } from 'src/user/domain/password-recovery.model';
 import { ForgotPasswordCommand } from '../ports/in/commands/forgot-password.command';
 import { ForgotPasswordUseCase } from '../ports/in/use-cases/forgot-password.use-case';
@@ -14,6 +15,7 @@ import {
 	UserRepository,
 	UserRepositoryProvider,
 } from '../ports/out/user.repository';
+import { AlreadyRequestedPasswordRecoveryError } from './errors/already-requested-password-recovery.error';
 import { UserNotFoundError } from './errors/user-not-found.error';
 
 @Injectable()
@@ -34,6 +36,15 @@ export class ForgotPasswordService implements ForgotPasswordUseCase {
 
 		if (user === null || user === undefined) {
 			throw new UserNotFoundError();
+		}
+
+		const alreadyRequested = (await this.passwordRecoveryRepository.findBy({
+			userId: user.id(),
+			status: PasswordRecoveryStatus.NEW,
+		})).length > 0;
+
+		if (alreadyRequested) {
+			throw new AlreadyRequestedPasswordRecoveryError();
 		}
 
 		const passwordRecovery = PasswordRecovery.create(randomUUID(), user);

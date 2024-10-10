@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
+import { CacheModule } from 'src/cache/cache.module';
 import { FavoriteModule } from 'src/favorite/favorite.module';
 import { GroupModule } from 'src/group/group.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
@@ -10,7 +11,7 @@ import { Providers } from './spot-event.provider';
 @Module({
     providers: [...Providers],
     exports: [...Providers],
-    imports: [PrismaModule, AuthModule, SpotModule, GroupModule, FavoriteModule],
+    imports: [PrismaModule, CacheModule, AuthModule, SpotModule, GroupModule, FavoriteModule],
     controllers: [SpotEventController],
 })
 export class SpotEventModule {}

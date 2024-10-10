@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
+import { CacheModule } from 'src/cache/cache.module';
 import { FollowerModule } from 'src/follower/follower.module';
 import { GroupModule } from 'src/group/group.module';
 import { LikeModule } from 'src/like/like.module';
@@ -12,6 +13,7 @@ import { Providers } from './post.provider';
 @Module({
 	imports: [
 		PrismaModule,
+		CacheModule,
 		UserModule,
 		GroupModule,
 		FollowerModule,

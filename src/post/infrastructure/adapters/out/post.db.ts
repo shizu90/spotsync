@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -15,7 +16,27 @@ export class PostRepositoryImpl implements PostRepository {
 	public constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(values: Object): Object {
 		const groupId = values['groupId'] ?? null;
@@ -59,7 +80,7 @@ export class PostRepositoryImpl implements PostRepository {
 		return threadMaxDepthLevel[0]?.max_depth_level;
 	}
 
-	private _mountIncludeTree(maxDepthLevel: number): any {
+	private _mountIncludeTree(maxDepthLevel: number): Object {
 		return {
 			creator: {
 				include: {
@@ -83,9 +104,58 @@ export class PostRepositoryImpl implements PostRepository {
 		};
 	}
 
+	private _mountInclude(): Object {
+		return {
+			creator: {
+				include: {
+					credentials: true,
+					visibility_settings: true,
+					profile: true,
+				},
+			},
+			group: {
+				include: {
+					visibility_settings: true,
+				},
+			},
+			parent_post: {
+				include: {
+					creator: {
+						include: {
+							credentials: true,
+							visibility_settings: true,
+							profile: true,
+						},
+					},
+					group: {
+						include: {
+							visibility_settings: true,
+						},
+					},
+					attachments: true,
+				},
+			},
+			children_posts: false,
+			attachments: true,
+			thread: true,
+		};
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Post>> {
+		const key = `post:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._postEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
@@ -118,40 +188,7 @@ export class PostRepositoryImpl implements PostRepository {
 			items = await this.prismaService.post.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					creator: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-					group: {
-						include: {
-							visibility_settings: true,
-						},
-					},
-					parent_post: {
-						include: {
-							creator: {
-								include: {
-									credentials: true,
-									visibility_settings: true,
-									profile: true,
-								},
-							},
-							group: {
-								include: {
-									visibility_settings: true,
-								},
-							},
-							attachments: true,
-						},
-					},
-					children_posts: false,
-					attachments: true,
-					thread: true,
-				},
+				include: this._mountInclude(),
 				skip: limit * page,
 				take: limit,
 			});
@@ -159,42 +196,11 @@ export class PostRepositoryImpl implements PostRepository {
 			items = await this.prismaService.post.findMany({
 				where: query,
 				orderBy: orderBy,
-				include: {
-					creator: {
-						include: {
-							credentials: true,
-							visibility_settings: true,
-							profile: true,
-						},
-					},
-					group: {
-						include: {
-							visibility_settings: true,
-						},
-					},
-					parent_post: {
-						include: {
-							creator: {
-								include: {
-									credentials: true,
-									visibility_settings: true,
-									profile: true,
-								},
-							},
-							group: {
-								include: {
-									visibility_settings: true,
-								},
-							},
-							attachments: true,
-						},
-					},
-					children_posts: false,
-					attachments: true,
-					thread: true,
-				},
+				include: this._mountInclude(),
 			});
 		}
+
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
 
 		items = items.map((i) => this._postEntityMapper.toModel(i));
 
@@ -202,97 +208,67 @@ export class PostRepositoryImpl implements PostRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<Post>> {
+		const key = `post:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((p) => this._postEntityMapper.toModel(p));
+		}
+
 		const query = this._mountQuery(values);
 		const posts = await this.prismaService.post.findMany({
 			where: query,
-			include: {
-				creator: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-				parent_post: {
-					include: {
-						creator: {
-							include: {
-								credentials: true,
-								visibility_settings: true,
-							},
-						},
-						group: {
-							include: {
-								visibility_settings: true,
-							},
-						},
-						attachments: true,
-					},
-				},
-				children_posts: false,
-				attachments: true,
-				thread: true,
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, posts, 60);
 
 		return posts.map((p) => this._postEntityMapper.toModel(p));
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `post:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.post.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<Array<Post>> {
+		const key = 'post:findAll';
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((p) => this._postEntityMapper.toModel(p));
+		}
+
 		const posts = await this.prismaService.post.findMany({
-			include: {
-				creator: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-				parent_post: {
-					include: {
-						creator: {
-							include: {
-								credentials: true,
-								visibility_settings: true,
-							},
-						},
-						group: {
-							include: {
-								visibility_settings: true,
-							},
-						},
-						attachments: true,
-					},
-				},
-				children_posts: false,
-				attachments: true,
-				thread: true,
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, posts, 60);
 
 		return posts.map((p) => this._postEntityMapper.toModel(p));
 	}
 
 	public async findById(id: string): Promise<Post> {
+		const key = `post:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._postEntityMapper.toModel(cachedData);
+		}
+
 		const maxDepthLevel = await this._getThreadMaxDepthLevel(id);
 
 		const include = this._mountIncludeTree(maxDepthLevel);
@@ -303,6 +279,8 @@ export class PostRepositoryImpl implements PostRepository {
 			},
 			include: include,
 		});
+
+		await this._setCachedData(key, post, 60);
 
 		return this._postEntityMapper.toModel(post);
 	}
@@ -323,24 +301,7 @@ export class PostRepositoryImpl implements PostRepository {
 				parent_id: model.parent() ? model.parent().id() : null,
 				total_likes: model.totalLikes(),
 			},
-			include: {
-				creator: {
-					include: {
-						credentials: true,
-						visibility_settings: true,
-						profile: true,
-					},
-				},
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-				parent_post: true,
-				children_posts: true,
-				attachments: true,
-				thread: true,
-			},
+			include: this._mountInclude(),
 		});
 
 		model.attachments().forEach(async (a) => {

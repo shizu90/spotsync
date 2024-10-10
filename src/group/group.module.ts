@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
+import { CacheModule } from 'src/cache/cache.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { UserModule } from 'src/user/user.module';
 import { Providers } from './group.provider';
-import { GroupController } from './infrastructure/adapters/in/web/group.controller';
-import { GroupRoleController } from './infrastructure/adapters/in/web/group-role.controller';
 import { GroupMemberController } from './infrastructure/adapters/in/web/group-member.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { GroupRoleController } from './infrastructure/adapters/in/web/group-role.controller';
+import { GroupController } from './infrastructure/adapters/in/web/group.controller';
 
 @Module({
-	imports: [UserModule, AuthModule, PrismaModule],
+	imports: [UserModule, AuthModule, PrismaModule, CacheModule],
 	providers: [...Providers],
 	exports: [...Providers],
 	controllers: [GroupController, GroupRoleController, GroupMemberController],

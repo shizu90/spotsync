@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -21,7 +22,27 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mountQuery(values: Object): Object {
 		const name = values['name'] ?? null;
@@ -45,9 +66,32 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		return query;
 	}
 
+	private _mountInclude(): Object {
+		return {
+			permissions: { include: { group_permission: true } },
+			group: {
+				include: {
+					visibility_settings: true,
+				},
+			},
+		};
+	}
+
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<GroupRole>> {
+		const key = `group-role:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._groupRoleEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params.filters);
 		const sort = params.sort ?? 'name';
 		const sortDirection = params.sortDirection ?? SortDirection.ASC;
@@ -79,14 +123,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		if (paginate) {
 			items = await this.prismaService.groupRole.findMany({
 				where: query,
-				include: {
-					permissions: { include: { group_permission: true } },
-					group: {
-						include: {
-							visibility_settings: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 				orderBy: orderBy,
 				skip: limit * page,
 				take: limit,
@@ -94,17 +131,12 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		} else {
 			items = await this.prismaService.groupRole.findMany({
 				where: query,
-				include: {
-					permissions: { include: { group_permission: true } },
-					group: {
-						include: {
-							visibility_settings: true,
-						},
-					},
-				},
+				include: this._mountInclude(),
 				orderBy: orderBy,
 			});
 		}
+
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
 
 		items = items.map((i) => {
 			return this._groupRoleEntityMapper.toModel(i);
@@ -114,18 +146,20 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 	}
 
 	public async findBy(values: Object): Promise<Array<GroupRole>> {
+		const key = `group-role:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._groupRoleEntityMapper.toModel(i));
+		}
+
 		const query = this._mountQuery(values);
 		const groupRoles = await this.prismaService.groupRole.findMany({
 			where: query,
-			include: {
-				permissions: { include: { group_permission: true } },
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, groupRoles, 60);
 
 		return groupRoles.map((groupRole) => {
 			return this._groupRoleEntityMapper.toModel(groupRole);
@@ -133,25 +167,36 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `group-role:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.groupRole.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<Array<GroupRole>> {
+		const key = `group-role:findAll`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((i) => this._groupRoleEntityMapper.toModel(i));
+		}
+
 		const groupRoles = await this.prismaService.groupRole.findMany({
-			include: {
-				permissions: { include: { group_permission: true } },
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, groupRoles, 60);
 
 		return groupRoles.map((groupRole) => {
 			return this._groupRoleEntityMapper.toModel(groupRole);
@@ -159,42 +204,55 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 	}
 
 	public async findById(id: string): Promise<GroupRole> {
+		const key = `group-role:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._groupRoleEntityMapper.toModel(cachedData);
+		}
+
 		const groupRole = await this.prismaService.groupRole.findFirst({
 			where: { id: id },
-			include: {
-				permissions: { include: { group_permission: true } },
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, groupRole, 60);
 
 		return this._groupRoleEntityMapper.toModel(groupRole);
 	}
 
 	public async findByName(name: string): Promise<GroupRole> {
+		const key = `group-role:findByName:${name}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._groupRoleEntityMapper.toModel(cachedData);
+		}
+
 		const groupRole = await this.prismaService.groupRole.findFirst({
 			where: { name: name },
-			include: {
-				permissions: { include: { group_permission: true } },
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, groupRole, 60);
 
 		return this._groupRoleEntityMapper.toModel(groupRole);
 	}
 
 	public async findPermissionById(id: string): Promise<GroupPermission> {
+		const key = `group-permission:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._groupPermissionEntityMapper.toModel(cachedData);
+		}
+
 		const groupPermission =
 			await this.prismaService.groupPermission.findFirst({
 				where: { id: id },
 			});
+
+		await this._setCachedData(key, groupPermission, 60);
 
 		return this._groupPermissionEntityMapper.toModel(groupPermission);
 	}
@@ -217,14 +275,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				},
 				group_id: model.group().id(),
 			},
-			include: {
-				permissions: { include: { group_permission: true } },
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			include: this._mountInclude(),
 		});
 
 		return this._groupRoleEntityMapper.toModel(groupRole);
@@ -237,15 +288,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				name: model.name(),
 				hex_color: model.hexColor(),
 				updated_at: model.updatedAt(),
-			},
-			include: {
-				permissions: { include: { group_permission: true } },
-				group: {
-					include: {
-						visibility_settings: true,
-					},
-				},
-			},
+			}
 		});
 	}
 

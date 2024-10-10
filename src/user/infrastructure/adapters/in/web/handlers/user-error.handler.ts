@@ -40,6 +40,7 @@ export class UserErrorHandler implements ExceptionFilter {
 						),
 					);
 				break;
+			case 'AlreadyRequestedPasswordRecoveryError':
 			case 'UserAlreadyExistsError':
 				response
 					.status(HttpStatus.CONFLICT)

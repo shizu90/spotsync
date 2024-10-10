@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
+import { CacheModule } from 'src/cache/cache.module';
 import { FavoriteModule } from 'src/favorite/favorite.module';
 import { FollowerModule } from 'src/follower/follower.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
@@ -13,6 +14,7 @@ import { Providers } from './spot-folder.provider';
 		FollowerModule,
 		forwardRef(() => SpotModule),
 		PrismaModule,
+		CacheModule,
 		forwardRef(() => FavoriteModule),
 	],
 	exports: [...Providers],

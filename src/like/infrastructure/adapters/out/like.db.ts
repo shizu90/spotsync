@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
 	Pagination,
@@ -16,7 +17,27 @@ export class LikeRepositoryImpl implements LikeRepository {
 	constructor(
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 	) {}
+
+	private async _getCachedData(key: string): Promise<any> {
+		const data = await this.redisService.get(key);
+		
+		if (data) return JSON.parse(data, (key, value) => {
+			const date = new Date(value);
+
+			if (date instanceof Date && !isNaN(date.getTime())) {
+				return date;
+			}
+		});
+
+		return null;
+	}
+
+	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	}
 
 	private _mapSubjectId(subject: LikableSubject): string {
 		switch (subject) {
@@ -79,6 +100,18 @@ export class LikeRepositoryImpl implements LikeRepository {
 	public async paginate(
 		params: PaginateParameters,
 	): Promise<Pagination<Like>> {
+		const key = `like:paginate:${JSON.stringify(params)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._likeEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
 		const query = this._mountQuery(params);
 		const sort = params.sort ?? 'created_at';
 		const sortDirection = params.sortDirection ?? SortDirection.DESC;
@@ -116,6 +149,8 @@ export class LikeRepositoryImpl implements LikeRepository {
 			});
 		}
 
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+
 		return new Pagination(
 			items.map((i) => this._likeEntityMapper.toModel(i)),
 			total,
@@ -125,37 +160,73 @@ export class LikeRepositoryImpl implements LikeRepository {
 	}
 
 	public async findBy(values: Object): Promise<Like[]> {
+		const key = `like:findBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((like) => this._likeEntityMapper.toModel(like));
+		}
+
 		const query = this._mountQuery(values);
 		const likes = await this.prismaService.like.findMany({
 			where: query,
 			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, likes, 60);
 
 		return likes.map((like) => this._likeEntityMapper.toModel(like));
 	}
 
 	public async countBy(values: Object): Promise<number> {
+		const key = `like:countBy:${JSON.stringify(values)}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData;
+		}
+
 		const query = this._mountQuery(values);
 		const count = await this.prismaService.like.count({
 			where: query,
 		});
 
+		await this._setCachedData(key, count, 60);
+
 		return count;
 	}
 
 	public async findAll(): Promise<Like[]> {
+		const key = `like:findAll`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return cachedData.map((like) => this._likeEntityMapper.toModel(like));
+		}
+
 		const likes = await this.prismaService.like.findMany({
 			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, likes, 60);
 
 		return likes.map((like) => this._likeEntityMapper.toModel(like));
 	}
 
 	public async findById(id: string): Promise<Like> {
+		const key = `like:findById:${id}`;
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._likeEntityMapper.toModel(cachedData);
+		}
+
 		const like = await this.prismaService.like.findFirst({
 			where: { id: id },
 			include: this._mountInclude(),
 		});
+
+		await this._setCachedData(key, like, 60);
 
 		return this._likeEntityMapper.toModel(like);
 	}
