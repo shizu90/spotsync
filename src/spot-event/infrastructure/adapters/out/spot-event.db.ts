@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import * as moment from "moment";
 import { RedisService } from "src/cache/redis.service";
 import { PaginateParameters, Pagination } from "src/common/core/common.repository";
 import { SortDirection } from "src/common/enums/sort-direction.enum";
@@ -22,11 +23,9 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
 		const data = await this.redisService.get(key);
 		
 		if (data) return JSON.parse(data, (key, value) => {
-			const date = new Date(value);
+			const valid = moment(value, moment.ISO_8601, true).isValid();
 
-			if (date instanceof Date && !isNaN(date.getTime())) {
-				return date;
-			}
+			if (valid) return moment(value);
 		});
 
 		return null;

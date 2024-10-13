@@ -53,8 +53,6 @@ export class ListUsersService implements ListUsersUseCase {
 			limit: command.limit,
 		});
 
-		console.log(pagination)
-
 		const items = await Promise.all(
 			pagination.items.map(async (u) => {
 				const follow = (
