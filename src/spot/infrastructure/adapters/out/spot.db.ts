@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -12,6 +13,8 @@ import { Spot } from 'src/spot/domain/spot.model';
 import { VisitedSpot } from 'src/spot/domain/visited-spot.model';
 import { SpotEntityMapper } from './mappers/spot-entity.mapper';
 import { VisitedSpotEntityMapper } from './mappers/visited-spot-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 @Injectable()
 export class SpotRepositoryImpl implements SpotRepository {
@@ -38,8 +41,8 @@ export class SpotRepositoryImpl implements SpotRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mountQuery(values: Object): Object {
@@ -165,7 +168,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		return new Pagination(
 			items.map((s) => this._spotEntityMapper.toModel(s)),
@@ -188,7 +191,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, spot, 60);
+		await this._setCachedData(key, spot);
 
 		return this._spotEntityMapper.toModel(spot);
 	}
@@ -207,7 +210,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, spots, 60);
+		await this._setCachedData(key, spots);
 
 		return spots.map((s) => this._spotEntityMapper.toModel(s));
 	}
@@ -241,7 +244,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		await this._setCachedData(key, visitedSpots, 60);
+		await this._setCachedData(key, visitedSpots);
 
 		return visitedSpots.map((vs) =>
 			this._visitedSpotEntityMapper.toModel(vs),
@@ -261,7 +264,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -279,7 +282,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -296,7 +299,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, spots, 60);
+		await this._setCachedData(key, spots);
 
 		return spots.map((s) => this._spotEntityMapper.toModel(s));
 	}
@@ -314,7 +317,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, spot, 60);
+		await this._setCachedData(key, spot);
 
 		return this._spotEntityMapper.toModel(spot);
 	}

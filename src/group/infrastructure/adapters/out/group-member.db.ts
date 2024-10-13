@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -10,6 +11,8 @@ import { GroupMemberRepository } from 'src/group/application/ports/out/group-mem
 import { GroupMember } from 'src/group/domain/group-member.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GroupMemberEntityMapper } from './mappers/group-member.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 @Injectable()
 export class GroupMemberRepositoryImpl implements GroupMemberRepository {
@@ -35,8 +38,8 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mountQuery(values: Object): Object {
@@ -152,7 +155,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		items = items.map((i) => {
 			return this._groupMemberEntityMapper.toModel(i);
@@ -175,7 +178,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, groupMembers, 60);
+		await this._setCachedData(key, groupMembers);
 
 		return groupMembers.map((gm) => {
 			return this._groupMemberEntityMapper.toModel(gm);
@@ -195,7 +198,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -212,7 +215,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, groupMembers, 60);
+		await this._setCachedData(key, groupMembers);
 
 		return groupMembers.map((gm) => {
 			return this._groupMemberEntityMapper.toModel(gm);
@@ -232,7 +235,7 @@ export class GroupMemberRepositoryImpl implements GroupMemberRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, groupMember, 60);
+		await this._setCachedData(key, groupMember);
 
 		return this._groupMemberEntityMapper.toModel(groupMember);
 	}

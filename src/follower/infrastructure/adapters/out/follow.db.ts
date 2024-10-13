@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -10,6 +11,8 @@ import { FollowRepository } from 'src/follower/application/ports/out/follow.repo
 import { Follow } from 'src/follower/domain/follow.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FollowEntityMapper } from './mappers/follow-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 export class FollowRepositoryImpl implements FollowRepository {
 	private _followEntityMapper: FollowEntityMapper = new FollowEntityMapper();
@@ -33,8 +36,8 @@ export class FollowRepositoryImpl implements FollowRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mountQuery(values: Object): Object {
@@ -132,7 +135,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		items = items.map((i) => {
 			return this._followEntityMapper.toModel(i);
@@ -155,7 +158,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, follows, 60);
+		await this._setCachedData(key, follows);
 
 		return follows.map((follow) => {
 			return this._followEntityMapper.toModel(follow);
@@ -175,7 +178,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -192,7 +195,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, follows, 60);
+		await this._setCachedData(key, follows);
 
 		return follows.map((follow) => {
 			return this._followEntityMapper.toModel(follow);
@@ -214,7 +217,7 @@ export class FollowRepositoryImpl implements FollowRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, follow, 60);
+		await this._setCachedData(key, follow);
 
 		return this._followEntityMapper.toModel(follow);
 	}

@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import * as moment from "moment";
+import { env } from "process";
 import { RedisService } from "src/cache/redis.service";
 import { PaginateParameters, Pagination } from "src/common/core/common.repository";
 import { SortDirection } from "src/common/enums/sort-direction.enum";
@@ -7,6 +8,8 @@ import { NotificationRepository } from "src/notification/application/ports/out/n
 import { Notification } from "src/notification/domain/notification.model";
 import { PrismaService } from "src/prisma/prisma.service";
 import { NotificationEntityMapper } from "./mappers/notification-entity.mapper";
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 @Injectable()
 export class NotificationRepositoryImpl implements NotificationRepository {
@@ -59,8 +62,8 @@ export class NotificationRepositoryImpl implements NotificationRepository {
         };
     }
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
     
     public async paginate(params: PaginateParameters): Promise<Pagination<Notification>> {
@@ -115,7 +118,7 @@ export class NotificationRepositoryImpl implements NotificationRepository {
             });
         }
 
-        await this._setCachedData(key, new Pagination(items, total,page + 1, limit), 60);
+        await this._setCachedData(key, new Pagination(items, total,page + 1, limit));
 
         return new Pagination(items.map(i => this._notificationEntityMapper.toModel(i)), total, page + 1, limit);
     }
@@ -134,7 +137,7 @@ export class NotificationRepositoryImpl implements NotificationRepository {
             include: this._mountInclude(),
         });
 
-        await this._setCachedData(key, items, 60);
+        await this._setCachedData(key, items);
 
         return items.map(i => this._notificationEntityMapper.toModel(i));
     }
@@ -170,7 +173,7 @@ export class NotificationRepositoryImpl implements NotificationRepository {
             include: this._mountInclude(),
         });
 
-        await this._setCachedData(key, item, 60);
+        await this._setCachedData(key, item);
 
         return this._notificationEntityMapper.toModel(item);
     }
@@ -187,7 +190,7 @@ export class NotificationRepositoryImpl implements NotificationRepository {
             include: this._mountInclude(),
         });
 
-        await this._setCachedData(key, items, 60);
+        await this._setCachedData(key, items);
 
         return items.map(i => this._notificationEntityMapper.toModel(i));
     }

@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -10,6 +11,8 @@ import { PostRepository } from 'src/post/application/ports/out/post.repository';
 import { Post } from 'src/post/domain/post.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PostEntityMapper } from './mappers/post-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 export class PostRepositoryImpl implements PostRepository {
 	private _postEntityMapper: PostEntityMapper = new PostEntityMapper();
@@ -33,8 +36,8 @@ export class PostRepositoryImpl implements PostRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mountQuery(values: Object): Object {
@@ -199,7 +202,7 @@ export class PostRepositoryImpl implements PostRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		items = items.map((i) => this._postEntityMapper.toModel(i));
 
@@ -220,7 +223,7 @@ export class PostRepositoryImpl implements PostRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, posts, 60);
+		await this._setCachedData(key, posts);
 
 		return posts.map((p) => this._postEntityMapper.toModel(p));
 	}
@@ -238,7 +241,7 @@ export class PostRepositoryImpl implements PostRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -255,7 +258,7 @@ export class PostRepositoryImpl implements PostRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, posts, 60);
+		await this._setCachedData(key, posts);
 
 		return posts.map((p) => this._postEntityMapper.toModel(p));
 	}
@@ -279,7 +282,7 @@ export class PostRepositoryImpl implements PostRepository {
 			include: include,
 		});
 
-		await this._setCachedData(key, post, 60);
+		await this._setCachedData(key, post);
 
 		return this._postEntityMapper.toModel(post);
 	}

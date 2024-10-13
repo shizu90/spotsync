@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import * as moment from "moment";
+import { env } from "process";
 import { RedisService } from "src/cache/redis.service";
 import { PaginateParameters, Pagination } from "src/common/core/common.repository";
 import { SortDirection } from "src/common/enums/sort-direction.enum";
@@ -7,6 +8,8 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { SpotEventRepository } from "src/spot-event/application/ports/out/spot-event.repository";
 import { SpotEvent } from "src/spot-event/domain/spot-event.model";
 import { SpotEventEntityMapper } from "./mappers/spot-event-entity.mapper";
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 @Injectable()
 export class SpotEventRepositoryImpl implements SpotEventRepository {
@@ -31,8 +34,8 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
     private _mountQuery(values: Object): Object {
@@ -167,7 +170,7 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
             });
         }
 
-        await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+        await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
         items = items.map((i) => {
             return this._spotEventEntityMapper.toModel(i);
@@ -193,7 +196,7 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
             include: this._mountInclude(),
         });
 
-        await this._setCachedData(key, items, 60);
+        await this._setCachedData(key, items);
 
         return items.map((i) => {
             return this._spotEventEntityMapper.toModel(i);
@@ -214,7 +217,7 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
             where: query,
         });
 
-        await this._setCachedData(key, count, 60);
+        await this._setCachedData(key, count);
         
         return count;
     }
@@ -233,7 +236,7 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
             include: this._mountInclude(),
         });
 
-        await this._setCachedData(key, items, 60);
+        await this._setCachedData(key, items);
 
         return items.map((i) => {
             return this._spotEventEntityMapper.toModel(i);
@@ -255,7 +258,7 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
             include: this._mountInclude(),
         });
 
-        await this._setCachedData(key, item, 60);
+        await this._setCachedData(key, item);
 
         return this._spotEventEntityMapper.toModel(item);
     }

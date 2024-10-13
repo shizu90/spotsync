@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -13,6 +14,8 @@ import { Group } from 'src/group/domain/group.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GroupEntityMapper } from './mappers/group-entity.mapper';
 import { GroupLogEntityMapper } from './mappers/group-log-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 @Injectable()
 export class GroupRepositoryImpl implements GroupRepository {
@@ -39,8 +42,8 @@ export class GroupRepositoryImpl implements GroupRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mountQuery(values: Object): Object {
@@ -133,7 +136,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		items = items.map((i) => {
 			return this._groupEntityMapper.toModel(i);
@@ -156,7 +159,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			include: { visibility_settings: true },
 		});
 
-		await this._setCachedData(key, groups, 60);
+		await this._setCachedData(key, groups);
 
 		return groups.map((group) => {
 			return this._groupEntityMapper.toModel(group);
@@ -177,7 +180,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -197,7 +200,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -272,7 +275,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		items = items.map((i) => {
 			return this._groupLogEntityMapper.toModel(i);
@@ -293,7 +296,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			include: { visibility_settings: true },
 		});
 
-		await this._setCachedData(key, groups, 60);
+		await this._setCachedData(key, groups);
 
 		return groups.map((group) => {
 			return this._groupEntityMapper.toModel(group);
@@ -313,7 +316,7 @@ export class GroupRepositoryImpl implements GroupRepository {
 			include: { visibility_settings: true },
 		});
 
-		await this._setCachedData(key, group, 60);
+		await this._setCachedData(key, group);
 
 		return this._groupEntityMapper.toModel(group);
 	}

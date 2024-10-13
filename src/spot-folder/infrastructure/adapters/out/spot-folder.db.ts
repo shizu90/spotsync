@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -10,6 +11,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { SpotFolderRepository } from 'src/spot-folder/application/ports/out/spot-folder.repository';
 import { SpotFolder } from 'src/spot-folder/domain/spot-folder.model';
 import { SpotFolderEntityMapper } from './mappers/spot-folder-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 @Injectable()
 export class SpotFolderRepositoryImpl implements SpotFolderRepository {
@@ -35,8 +38,8 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mountInclude(): Object {
@@ -154,7 +157,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		return new Pagination(
 			items.map((item) => this._spotFolderEntityMapper.toModel(item)),
@@ -180,7 +183,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, items, 60);
+		await this._setCachedData(key, items);
 
 		return items.map((item) => this._spotFolderEntityMapper.toModel(item));
 	}
@@ -198,7 +201,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -217,7 +220,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, items, 60);
+		await this._setCachedData(key, items);
 
 		return items.map((item) => this._spotFolderEntityMapper.toModel(item));
 	}
@@ -237,7 +240,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, item, 60);
+		await this._setCachedData(key, item);
 
 		return this._spotFolderEntityMapper.toModel(item);
 	}

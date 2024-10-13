@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -10,6 +11,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserAddressRepository } from 'src/user/application/ports/out/user-address.repository';
 import { UserAddress } from 'src/user/domain/user-address.model';
 import { UserAddressEntityMapper } from './mappers/user-address-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 export class UserAddressRepositoryImpl implements UserAddressRepository {
 	private _userAddressEntityMapper: UserAddressEntityMapper =
@@ -32,8 +35,8 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mountQuery(params: Object): Object {
@@ -141,7 +144,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		items = items.map((i) => {
 			return this._userAddressEntityMapper.toModel(i);
@@ -172,7 +175,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			},
 		});
 
-		await this._setCachedData(key, userAddresses, 60);
+		await this._setCachedData(key, userAddresses);
 
 		return userAddresses.map((userAddress) => {
 			return this._userAddressEntityMapper.toModel(userAddress);
@@ -192,7 +195,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -217,7 +220,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			},
 		});
 
-		await this._setCachedData(key, userAddresses, 60);
+		await this._setCachedData(key, userAddresses);
 
 		return userAddresses.map((userAddress) => {
 			return this._userAddressEntityMapper.toModel(userAddress);
@@ -247,7 +250,7 @@ export class UserAddressRepositoryImpl implements UserAddressRepository {
 			},
 		});
 
-		await this._setCachedData(key, userAddress, 60);
+		await this._setCachedData(key, userAddress);
 
 		return this._userAddressEntityMapper.toModel(userAddress);
 	}

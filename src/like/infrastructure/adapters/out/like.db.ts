@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -11,6 +12,8 @@ import { LikableSubject } from 'src/like/domain/likable-subject.enum';
 import { Like } from 'src/like/domain/like.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LikeEntityMapper } from './mappers/like-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 export class LikeRepositoryImpl implements LikeRepository {
 	private _likeEntityMapper: LikeEntityMapper = new LikeEntityMapper();
@@ -34,8 +37,8 @@ export class LikeRepositoryImpl implements LikeRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mapSubjectId(subject: LikableSubject): string {
@@ -148,7 +151,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		return new Pagination(
 			items.map((i) => this._likeEntityMapper.toModel(i)),
@@ -172,7 +175,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, likes, 60);
+		await this._setCachedData(key, likes);
 
 		return likes.map((like) => this._likeEntityMapper.toModel(like));
 	}
@@ -190,7 +193,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -207,7 +210,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, likes, 60);
+		await this._setCachedData(key, likes);
 
 		return likes.map((like) => this._likeEntityMapper.toModel(like));
 	}
@@ -225,7 +228,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, like, 60);
+		await this._setCachedData(key, like);
 
 		return this._likeEntityMapper.toModel(like);
 	}

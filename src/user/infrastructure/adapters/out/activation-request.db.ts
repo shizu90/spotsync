@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -10,6 +11,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ActivationRequestRepository } from 'src/user/application/ports/out/activation-request.repository';
 import { ActivationRequest } from 'src/user/domain/activation-request.model';
 import { ActivationRequestEntityMapper } from './mappers/activation-request-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 @Injectable()
 export class ActivationRequestRepositoryImpl
@@ -37,8 +40,8 @@ export class ActivationRequestRepositoryImpl
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mountQuery(params: Object): Object {
@@ -131,7 +134,7 @@ export class ActivationRequestRepositoryImpl
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		items = items.map((i) => {
 			return this._activationRequestEntityMapper.toModel(i);
@@ -162,7 +165,7 @@ export class ActivationRequestRepositoryImpl
 			},
 		});
 
-		await this._setCachedData(key, items, 60);
+		await this._setCachedData(key, items);
 
 		return items.map((i) => {
 			return this._activationRequestEntityMapper.toModel(i);
@@ -181,7 +184,7 @@ export class ActivationRequestRepositoryImpl
 			where: query
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -207,7 +210,7 @@ export class ActivationRequestRepositoryImpl
 			},
 		});
 
-		await this._setCachedData(key, item, 60);
+		await this._setCachedData(key, item);
 
 		return this._activationRequestEntityMapper.toModel(item);
 	}
@@ -232,7 +235,7 @@ export class ActivationRequestRepositoryImpl
 			},
 		});
 
-		await this._setCachedData(key, items, 60);
+		await this._setCachedData(key, items);
 
 		return items.map((i) => {
 			return this._activationRequestEntityMapper.toModel(i);

@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import { CommentRepository } from 'src/comment/application/ports/out/comment.repository';
 import { Comment } from 'src/comment/domain/comment.model';
@@ -11,6 +12,8 @@ import {
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CommentEntityMapper } from './mappers/comment-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 @Injectable()
 export class CommentRepositoryImpl implements CommentRepository {
@@ -36,8 +39,8 @@ export class CommentRepositoryImpl implements CommentRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mapCommentableId(subject: CommentableSubject): string {
@@ -149,7 +152,7 @@ export class CommentRepositoryImpl implements CommentRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		return new Pagination(
 			items.map((i) => this._commentEntityMapper.toModel(i)),
@@ -174,7 +177,7 @@ export class CommentRepositoryImpl implements CommentRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, items, 60);
+		await this._setCachedData(key, items);
 
 		return items.map((i) => this._commentEntityMapper.toModel(i));
 	}
@@ -192,7 +195,7 @@ export class CommentRepositoryImpl implements CommentRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -212,7 +215,7 @@ export class CommentRepositoryImpl implements CommentRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, item, 60);
+		await this._setCachedData(key, item);
 
 		return this._commentEntityMapper.toModel(item);
 	}
@@ -229,7 +232,7 @@ export class CommentRepositoryImpl implements CommentRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, items, 60);
+		await this._setCachedData(key, items);
 
 		return items.map((i) => this._commentEntityMapper.toModel(i));
 	}

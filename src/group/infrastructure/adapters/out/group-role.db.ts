@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -12,6 +13,8 @@ import { GroupRole } from 'src/group/domain/group-role.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GroupPermissionEntityMapper } from './mappers/group-permission-entity.mapper';
 import { GroupRoleEntityMapper } from './mappers/group-role-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 @Injectable()
 export class GroupRoleRepositoryImpl implements GroupRoleRepository {
@@ -39,8 +42,8 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 		return null;
 	}
 
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
 	private _mountQuery(values: Object): Object {
@@ -135,7 +138,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		items = items.map((i) => {
 			return this._groupRoleEntityMapper.toModel(i);
@@ -158,7 +161,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, groupRoles, 60);
+		await this._setCachedData(key, groupRoles);
 
 		return groupRoles.map((groupRole) => {
 			return this._groupRoleEntityMapper.toModel(groupRole);
@@ -178,7 +181,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			where: query,
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -195,7 +198,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, groupRoles, 60);
+		await this._setCachedData(key, groupRoles);
 
 		return groupRoles.map((groupRole) => {
 			return this._groupRoleEntityMapper.toModel(groupRole);
@@ -215,7 +218,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, groupRole, 60);
+		await this._setCachedData(key, groupRole);
 
 		return this._groupRoleEntityMapper.toModel(groupRole);
 	}
@@ -233,7 +236,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 			include: this._mountInclude(),
 		});
 
-		await this._setCachedData(key, groupRole, 60);
+		await this._setCachedData(key, groupRole);
 
 		return this._groupRoleEntityMapper.toModel(groupRole);
 	}
@@ -251,7 +254,7 @@ export class GroupRoleRepositoryImpl implements GroupRoleRepository {
 				where: { id: id },
 			});
 
-		await this._setCachedData(key, groupPermission, 60);
+		await this._setCachedData(key, groupPermission);
 
 		return this._groupPermissionEntityMapper.toModel(groupPermission);
 	}

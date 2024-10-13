@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import * as moment from 'moment';
+import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -10,6 +11,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { PasswordRecoveryRepository } from 'src/user/application/ports/out/password-recovery.repository';
 import { PasswordRecovery } from 'src/user/domain/password-recovery.model';
 import { PasswordRecoveryEntityMapper } from './mappers/password-recovery-entity.mapper';
+
+const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
 export class PasswordRecoveryRepositoryImpl
 	implements PasswordRecoveryRepository
