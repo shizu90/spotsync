@@ -33,6 +33,7 @@ model User {
   favorites                Favorite[]
   spot_events              SpotEvent[]
   spot_event_participation SpotEventParticipant[]
+  notifications            Notification[]
 
   @@map("users")
 }
@@ -423,4 +424,18 @@ model SpotEventParticipant {
 
   @@id([spot_event_id, user_id])
   @@map("spot_event_participants")
+}
+
+model Notification {
+  id           String   @id @default(uuid())
+  user_id      String
+  title        String   @db.VarChar(255)
+  content      String   @db.VarChar(400)
+  status       String   @db.VarChar(12)
+  type         String   @db.VarChar(12)
+  read_at      DateTime?
+  created_at   DateTime @default(now())
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
 }
