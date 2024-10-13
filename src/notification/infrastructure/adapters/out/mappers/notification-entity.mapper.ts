@@ -5,7 +5,7 @@ import { NotificationType } from "src/notification/domain/notification-type.enum
 import { Notification } from "src/notification/domain/notification.model";
 import { UserEntity, UserEntityMapper } from "src/user/infrastructure/adapters/out/mappers/user-entity.mapper";
 
-export type NotificationEntity = NotificationPrisma & {user: UserEntity}; 
+export type NotificationEntity = NotificationPrisma & {user?: UserEntity}; 
 
 export class NotificationEntityMapper implements EntityMapper<Notification, NotificationEntity> {
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();

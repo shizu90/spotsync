@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
+import { RedisService } from "src/cache/redis.service";
 import { Notification } from "src/notification/domain/notification.model";
 import { UserRepository, UserRepositoryProvider } from "src/user/application/ports/out/user.repository";
 import { UserNotFoundError } from "src/user/application/services/errors/user-not-found.error";
@@ -15,6 +16,8 @@ export class CreateNotificationService implements CreateNotificationUseCase {
         protected notificationRepository: NotificationRepository,
         @Inject(UserRepositoryProvider)
         protected userRepository: UserRepository,
+        @Inject(RedisService)
+        protected redis: RedisService,
     ) {}
 
     public async execute(command: CreateNotificationCommand): Promise<NotificationDto> {
@@ -31,6 +34,8 @@ export class CreateNotificationService implements CreateNotificationUseCase {
             user,
             command.type,
         );
+
+        await this.redis.publish('notifications', notification.id());
 
         await this.notificationRepository.store(notification);
 

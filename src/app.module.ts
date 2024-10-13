@@ -31,7 +31,7 @@ import { UserModule } from './user/user.module';
 		CommentModule,
 		FavoriteModule,
 		NotificationModule,
-		CacheModule,
+		CacheModule
 	],
 })
 export class AppModule {}

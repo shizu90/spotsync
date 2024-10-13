@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import * as moment from "moment";
 import { RedisService } from "src/cache/redis.service";
 import { PaginateParameters, Pagination } from "src/common/core/common.repository";
+import { SortDirection } from "src/common/enums/sort-direction.enum";
 import { NotificationRepository } from "src/notification/application/ports/out/notification.repository";
 import { Notification } from "src/notification/domain/notification.model";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -30,40 +31,202 @@ export class NotificationRepositoryImpl implements NotificationRepository {
 		return null;
 	}
 
+    private _mountQuery(values: Object): Object {
+        const status = values['status'];
+        const type = values['type'];
+        const userId = values['userId'];
+
+        const query = {};
+
+        if (status) query['status'] = status;
+
+        if (type) query['type'] = type;
+
+        if (userId) query['userId'] = userId;
+
+        return query;
+    }
+
+    private _mountInclude(): Object {
+        return {
+            user: {
+                include: {
+                    profile: true,
+                    credentials: true,
+                    visibilitySettings: true,
+                }
+            }
+        };
+    }
+
 	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
 		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
 	}
     
     public async paginate(params: PaginateParameters): Promise<Pagination<Notification>> {
-        throw new Error("Method not implemented.");
+        const key = `notification:paginate:${JSON.stringify(params)}`;
+        const cachedData = await this._getCachedData(key);
+
+        if (cachedData) {
+            return new Pagination(
+                cachedData.items.map(i => this._notificationEntityMapper.toModel(i)),
+                cachedData.total,
+                cachedData.current_page,
+                cachedData.limit
+            );
+        }
+
+        const query = this._mountQuery(params.filters);
+        const sort = params.sort ?? 'created_at';
+        const sortDirection = params.sortDirection ?? SortDirection.DESC;
+
+        let orderBy = {};
+
+        switch(sort) {
+            case 'created_at':
+            case 'createdAt':
+            default:
+                orderBy = {
+                    created_at: sortDirection,
+                };
+                break;
+        }
+
+        const paginate = params.paginate ?? false;
+		const page = (params.page ?? 1) - 1;
+		const limit = params.limit ?? 12;
+		const total = await this.countBy(params.filters);
+
+        let items = [];
+
+        if (paginate) {
+            items = await this.prismaService.notification.findMany({
+                where: query,
+                include: this._mountInclude(),
+                orderBy: orderBy,
+                skip: page * limit,
+                take: limit,
+            });
+        } else {
+            items = await this.prismaService.notification.findMany({
+                where: query,
+                include: this._mountInclude(),
+                orderBy: orderBy,
+            });
+        }
+
+        await this._setCachedData(key, new Pagination(items, total,page + 1, limit), 60);
+
+        return new Pagination(items.map(i => this._notificationEntityMapper.toModel(i)), total, page + 1, limit);
     }
     
     public async findBy(values: Object): Promise<Notification[]> {
-        throw new Error("Method not implemented.");
+        const key = `notification:findBy:${JSON.stringify(values)}`;
+        const cachedData = await this._getCachedData(key);
+
+        if (cachedData) {
+            return cachedData.map(i => this._notificationEntityMapper.toModel(i));
+        }
+
+        const query = this._mountQuery(values);
+        const items = await this.prismaService.notification.findMany({
+            where: query,
+            include: this._mountInclude(),
+        });
+
+        await this._setCachedData(key, items, 60);
+
+        return items.map(i => this._notificationEntityMapper.toModel(i));
     }
     
     public async countBy(values: Object): Promise<number> {
-        throw new Error("Method not implemented.");
+        const key = `notification:countBy:${JSON.stringify(values)}`;
+        const cachedData = await this._getCachedData(key);
+
+        if (cachedData) {
+            return cachedData;
+        }
+
+        const query = this._mountQuery(values);
+        const count = await this.prismaService.notification.count({
+            where: query,
+        });
+        
+        return count;
     }
     
     public async findById(id: string): Promise<Notification> {
-        throw new Error("Method not implemented.");
+        const key = `notification:findById:${id}`;
+        const cachedData = await this._getCachedData(key);
+
+        if (cachedData) {
+            return this._notificationEntityMapper.toModel(cachedData);
+        }
+
+        const item = await this.prismaService.notification.findUnique({
+            where: {
+                id: id,
+            },
+            include: this._mountInclude(),
+        });
+
+        await this._setCachedData(key, item, 60);
+
+        return this._notificationEntityMapper.toModel(item);
     }
     
     public async findAll(): Promise<Notification[]> {
-        throw new Error("Method not implemented.");
+        const key = `notification:findAll`;
+        const cachedData = await this._getCachedData(key);
+
+        if (cachedData) {
+            return cachedData.map(i => this._notificationEntityMapper.toModel(i));
+        }
+
+        const items = await this.prismaService.notification.findMany({
+            include: this._mountInclude(),
+        });
+
+        await this._setCachedData(key, items, 60);
+
+        return items.map(i => this._notificationEntityMapper.toModel(i));
     }
     
     public async store(model: Notification): Promise<Notification> {
-        throw new Error("Method not implemented.");
+        const notification = await this.prismaService.notification.create({
+            data: {
+                id: model.id(),
+                title: model.title(),
+                content: model.content(),
+                status: model.status(),
+                type: model.type(),
+                created_at: model.createdAt(),
+                read_at: model.readAt(),
+                user_id: model.user().id(),
+            }
+        });
+
+        return this._notificationEntityMapper.toModel(notification);
     }
     
     public async update(model: Notification): Promise<void> {
-        throw new Error("Method not implemented.");
+        await this.prismaService.notification.update({
+            where: {
+                id: model.id(),
+            },
+            data: {
+                status: model.status(),
+                read_at: model.readAt(),
+            }
+        });
     }
     
     public async delete(id: string): Promise<void> {
-        throw new Error("Method not implemented.");
+        await this.prismaService.notification.delete({
+            where: {
+                id: id,
+            }
+        });
     }
 
 
