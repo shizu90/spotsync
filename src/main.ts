@@ -1,12 +1,13 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { env } from 'process';
+import { AppModule } from './app.module';
 import { setupRedoc } from './redoc.middleware';
 
 declare const module: any;
 
-const current_version = '1.0';
-const path_current_version = 'v1';
+const current_version = env.APP_VERSION || '1.0.0';
+const path_current_version = env.APP_PATH_VERSION || 'v1';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -24,7 +25,7 @@ async function bootstrap() {
 
 	setupRedoc(app);
 
-	await app.listen(3000);
+	await app.listen(env.APP_PORT || 3000);
 
 	if (module.hot) {
 		module.hot.accept();

@@ -4,6 +4,7 @@ import { ListNotificationsUseCaseProvider } from "./application/ports/in/use-cas
 import { NotificationRepositoryProvider } from "./application/ports/out/notification.repository";
 import { CreateNotificationService } from "./application/services/create-notification.service";
 import { ListNotificationsService } from "./application/services/list-notifications.service";
+import { NotificationGateway } from "./infrastructure/adapters/in/web/handlers/notification.gateway";
 import { NotificationRepositoryImpl } from "./infrastructure/adapters/out/notification.db";
 
 export const Providers: Provider[] = [
@@ -18,5 +19,9 @@ export const Providers: Provider[] = [
     {
         provide: NotificationRepositoryProvider,
         useClass: NotificationRepositoryImpl,
+    },
+    {
+        useClass: NotificationGateway,
+        provide: NotificationGateway,
     }
 ];
