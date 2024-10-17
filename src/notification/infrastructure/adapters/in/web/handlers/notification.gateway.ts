@@ -1,46 +1,35 @@
-import { Inject, Injectable, UseGuards } from "@nestjs/common";
-import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { Inject, Logger } from "@nestjs/common";
+import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { GetAuthenticatedUserUseCase, GetAuthenticatedUserUseCaseProvider } from "src/auth/application/ports/in/use-cases/get-authenticated-user.use-case";
-import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
 import { RedisService } from "src/cache/redis.service";
 
-@Injectable()
-@UseGuards(AuthGuard)
-@WebSocketGateway({ path: '/api/v1/notifications' })
-export class NotificationGateway implements OnGatewayConnection, OnGatewayDisconnect {
-    @WebSocketServer()
-    private server: Server;
+@WebSocketGateway({
+    namespace: 'notifications',
+})
+export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
+    @WebSocketServer() server: Server;
+
+    private logger: Logger;
 
     constructor(
-        @Inject(GetAuthenticatedUserUseCaseProvider)
-        protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
         @Inject(RedisService)
         protected redisService: RedisService,
-    ) {}
-    
-    public async handleConnection(client: Socket, ...args: any[]): Promise<void> {
-        const user = await this.getAuthenticatedUser.execute(null);
-        
-        if (!user) {
-            client.disconnect();
-            return;
-        }
-
-        this.redisService.subscribe('notifications:' + user.id());
-        this.redisService.on('message', (channel, message) => {
-            client.emit('notification', message); 
-        });
+        @Inject(GetAuthenticatedUserUseCaseProvider)
+        protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+    ) {
+        this.logger = new Logger(NotificationGateway.name);
     }
 
-    public async handleDisconnect(client: any): Promise<void> {
-        const user = await this.getAuthenticatedUser.execute(null);
+    afterInit(): void {
+        this.logger.log(`Gateway initialized`);
+    }
 
-        if (!user) {
-            return;
-        }
+    async handleConnection(client: Socket) {
+        this.logger.log(`Client connected: ${client.id}`);
+    }
 
-        this.redisService.unsubscribe('notifications:' + user.id());
-        this.redisService.quit();
+    async handleDisconnect(client: Socket) {
+        this.logger.log(`Client disconnected: ${client.id}`);
     }
 }

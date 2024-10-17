@@ -21,7 +21,7 @@ export const Providers: Provider[] = [
         useClass: NotificationRepositoryImpl,
     },
     {
-        useClass: NotificationGateway,
         provide: NotificationGateway,
+        useClass: NotificationGateway,
     }
 ];

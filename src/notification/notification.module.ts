@@ -10,6 +10,6 @@ import { Providers } from './notification.provider';
     imports: [PrismaModule, CacheModule, UserModule, AuthModule],
     providers: [...Providers],
     exports: [...Providers],
-    controllers: [NotificationController]
+    controllers: [NotificationController],
 })
 export class NotificationModule {}
