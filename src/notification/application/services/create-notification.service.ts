@@ -35,7 +35,7 @@ export class CreateNotificationService implements CreateNotificationUseCase {
             command.type,
         );
 
-        await this.redis.publish('notifications', notification.id());
+        await this.redis.publish(`notifications:${user.id()}`, notification.id());
 
         await this.notificationRepository.store(notification);
 

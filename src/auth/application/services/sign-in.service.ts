@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { RedisService } from 'src/cache/redis.service';
 import {
 	EncryptPasswordService,
 	EncryptPasswordServiceProvider,
@@ -22,6 +23,8 @@ export class SignInService implements SignInUseCase {
 		protected userRepository: UserRepository,
 		@Inject(JwtService)
 		protected jwtService: JwtService,
+		@Inject(RedisService)
+		protected redisService: RedisService,
 		@Inject(EncryptPasswordServiceProvider)
 		protected encryptPasswordService: EncryptPasswordService,
 	) {}
@@ -62,6 +65,8 @@ export class SignInService implements SignInUseCase {
 		const payload = { sub: user.id(), name: user.credentials().name() };
 
 		const bearerToken = await this.jwtService.signAsync(payload);
+
+		await this.redisService.set(bearerToken, user.id());
 
 		return new SignInDto(
 			user.id(),
