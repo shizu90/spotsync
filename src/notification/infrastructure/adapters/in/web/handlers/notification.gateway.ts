@@ -9,7 +9,7 @@ import { UserRepository, UserRepositoryProvider } from "src/user/application/por
 import { User } from "src/user/domain/user.model";
 
 @WebSocketGateway({
-    namespace: 'notifications',
+    namespace: 'ws/notifications',
 })
 export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
     @WebSocketServer() server: Server;

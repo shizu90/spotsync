@@ -7,12 +7,12 @@ import { setupRedoc } from './redoc.middleware';
 declare const module: any;
 
 const current_version = env.APP_VERSION || '1.0.0';
-const path_current_version = env.APP_PATH_VERSION || 'v1';
+const prefix = env.APP_PREFIX || 'api/v1';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 
-	app.setGlobalPrefix(`api/${path_current_version}`);
+	app.setGlobalPrefix(prefix);
 
 	const options = new DocumentBuilder()
 		.setTitle('SpotSync API')
