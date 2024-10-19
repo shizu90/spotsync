@@ -14,6 +14,7 @@ import { SpotEventModule } from './spot-event/spot-event.module';
 import { SpotFolderModule } from './spot-folder/spot-folder.module';
 import { SpotModule } from './spot/spot.module';
 import { UserModule } from './user/user.module';
+import { RatingModule } from './rating/rating.module';
 
 @Module({
 	imports: [
@@ -31,7 +32,8 @@ import { UserModule } from './user/user.module';
 		CommentModule,
 		FavoriteModule,
 		NotificationModule,
-		CacheModule
+		CacheModule,
+		RatingModule
 	],
 })
 export class AppModule {}

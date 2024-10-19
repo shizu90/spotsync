@@ -34,6 +34,7 @@ model User {
   spot_events              SpotEvent[]
   spot_event_participation SpotEventParticipant[]
   notifications            Notification[]
+  ratings                  Rating[]
 
   @@map("users")
 }
@@ -272,6 +273,7 @@ model Spot {
   favorites    Favorite[]
   comments     Comment[]
   events       SpotEvent[]
+  ratings      Rating[]
 
   @@map("spots")
 }
@@ -362,6 +364,7 @@ model SpotFolder {
   creator      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   spots        SpotFolderItem[]
   favorites    Favorite[]
+  ratings      Rating[]
 
   @@map("spot_folders")
 }
@@ -410,6 +413,7 @@ model SpotEvent {
   group        Group?   @relation(fields: [group_id], references: [id], onDelete: Cascade)
   creator      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   participants SpotEventParticipant[]
+  ratings      Rating[]
 
   @@map("spot_events")
 }
@@ -437,4 +441,22 @@ model Notification {
   user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+model Rating {
+  id              String   @id @default(uuid())
+  user_id         String
+  spot_id         String?
+  spot_event_id   String?
+  spot_folder_id  String?
+  value           Int
+  comment         String?  @db.VarChar(400)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+  user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  spot            Spot?    @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+  spot_event      SpotEvent? @relation(fields: [spot_event_id], references: [id], onDelete: Cascade)
+  spot_folder     SpotFolder? @relation(fields: [spot_folder_id], references: [id], onDelete: Cascade)
+
+  @@map("ratings")
 }
