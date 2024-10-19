@@ -4,6 +4,9 @@ import { UnauthorizedAccessError } from "src/auth/application/services/errors/un
 import { FavoriteRepository, FavoriteRepositoryProvider } from "src/favorite/application/ports/out/favorite.repository";
 import { FavoritableSubject } from "src/favorite/domain/favoritable-subject.enum";
 import { GroupMemberRepository, GroupMemberRepositoryProvider } from "src/group/application/ports/out/group-member.repository";
+import { CalculateAverageRatingCommand } from "src/rating/application/ports/in/commands/calculate-average-rating.command";
+import { CalculateAverageRatingUseCase, CalculateAverageRatingUseCaseProvider } from "src/rating/application/ports/in/use-cases/calculate-average-rating.use-case";
+import { RatableSubject } from "src/rating/domain/ratable-subject.enum";
 import { GetSpotEventCommand } from "../ports/in/commands/get-spot-event.command";
 import { GetSpotEventUseCase } from "../ports/in/use-cases/get-spot-event.use-case";
 import { SpotEventDto } from "../ports/out/dto/spot-event.dto";
@@ -21,6 +24,8 @@ export class GetSpotEventService implements GetSpotEventUseCase {
         protected favoriteRepository: FavoriteRepository,
         @Inject(GetAuthenticatedUserUseCaseProvider)
         protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+        @Inject(CalculateAverageRatingUseCaseProvider)
+        protected calculateAverageRatingUseCase: CalculateAverageRatingUseCase,
     ) {}
 
     public async execute(command: GetSpotEventCommand): Promise<SpotEventDto> {
@@ -55,8 +60,14 @@ export class GetSpotEventService implements GetSpotEventUseCase {
             subject: FavoritableSubject.SPOT_EVENT,
         });
 
+        const avgRating = await this.calculateAverageRatingUseCase.execute(new CalculateAverageRatingCommand(
+            RatableSubject.SPOT_EVENT,
+            spotEvent.id(),
+        ));
+
         return SpotEventDto.fromModel(spotEvent)
             .setFavoritedAt(favorite?.createdAt())
-            .setTotalFavorites(totalFavorites);
+            .setTotalFavorites(totalFavorites)
+            .setAverageRating(avgRating);
     }
 }

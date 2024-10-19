@@ -86,6 +86,9 @@ export class CreateSpotEventService implements CreateSpotEventUseCase {
 
         await this.spotEventRepository.store(spotEvent);
 
-        return SpotEventDto.fromModel(spotEvent);
+        return SpotEventDto.fromModel(spotEvent)
+            .setFavoritedAt(null)
+            .setTotalFavorites(0)
+            .setAverageRating(0);
     }
 }

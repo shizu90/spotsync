@@ -9,8 +9,10 @@ import {
 	GeoLocatorProvider,
 } from 'src/geolocation/geolocator';
 import { GeoLocatorService } from 'src/geolocation/geolocator.service';
+import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import { SpotAddress } from 'src/spot/domain/spot-address.model';
 import { Spot } from 'src/spot/domain/spot.model';
+import { UserAddressRepository, UserAddressRepositoryProvider } from 'src/user/application/ports/out/user-address.repository';
 import { CreateSpotCommand } from '../ports/in/commands/create-spot.command';
 import { CreateSpotUseCase } from '../ports/in/use-cases/create-spot.use-case';
 import { SpotDto } from '../ports/out/dto/spot.dto';
@@ -29,6 +31,8 @@ export class CreateSpotService implements CreateSpotUseCase {
 		protected geoLocatorService: GeoLocatorService,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+		@Inject(UserAddressRepositoryProvider)
+		protected userAddressRepository: UserAddressRepository,
 	) {}
 
 	public async execute(command: CreateSpotCommand): Promise<SpotDto> {
@@ -80,8 +84,31 @@ export class CreateSpotService implements CreateSpotUseCase {
 			authenticatedUser,
 		);
 
+		const mainAddress = (await this.userAddressRepository.findBy({
+			userId: authenticatedUser.id(),
+			main: true,
+		})).at(0);
+
+		let distance = 0;
+
+		if (mainAddress !== null && mainAddress !== undefined) {
+			distance = calculateDistance(
+				{ lat: mainAddress.latitude(), long: mainAddress.longitude() },
+				{
+					lat: spot.address().latitude(),
+					long: spot.address().longitude(),
+				},
+			);
+		}
+
 		await this.spotRepository.store(spot);
 
-		return SpotDto.fromModel(spot);
+		return SpotDto.fromModel(spot)
+			.setTotalFavorites(0)
+			.setTotalSpotVisits(0)
+			.setVisitedAt(null)
+			.setFavoritedAt(null)
+			.setDistance(distance)
+			.setAverageRating(0);
 	}
 }

@@ -9,6 +9,9 @@ import {
 	FavoriteRepositoryProvider,
 } from 'src/favorite/application/ports/out/favorite.repository';
 import { FavoritableSubject } from 'src/favorite/domain/favoritable-subject.enum';
+import { CalculateAverageRatingCommand } from 'src/rating/application/ports/in/commands/calculate-average-rating.command';
+import { CalculateAverageRatingUseCase, CalculateAverageRatingUseCaseProvider } from 'src/rating/application/ports/in/use-cases/calculate-average-rating.use-case';
+import { RatableSubject } from 'src/rating/domain/ratable-subject.enum';
 import { SortItemsCommand } from '../ports/in/commands/sort-items.command';
 import { SortItemsUseCase } from '../ports/in/use-cases/sort-items.use-case';
 import { SpotFolderDto } from '../ports/out/dto/spot-folder.dto';
@@ -27,6 +30,8 @@ export class SortItemsService implements SortItemsUseCase {
 		protected getAuthentiatedUser: GetAuthenticatedUserUseCase,
 		@Inject(FavoriteRepositoryProvider)
 		protected favoriteRepository: FavoriteRepository,
+		@Inject(CalculateAverageRatingUseCaseProvider)
+		protected calculateAverageRatingUseCase: CalculateAverageRatingUseCase,
 	) {}
 
 	public async execute(command: SortItemsCommand): Promise<SpotFolderDto> {
@@ -61,8 +66,14 @@ export class SortItemsService implements SortItemsUseCase {
 			})
 		).at(0);
 
+		const avgRating = await this.calculateAverageRatingUseCase.execute(new CalculateAverageRatingCommand(
+			RatableSubject.SPOT_FOLDER,
+			spotFolder.id(),
+		));
+
 		return SpotFolderDto.fromModel(spotFolder)
 			.setTotalFavorites(totalFavorites)
-			.setFavoritedAt(favorited?.createdAt());
+			.setFavoritedAt(favorited?.createdAt())
+			.setAverageRating(avgRating);
 	}
 }

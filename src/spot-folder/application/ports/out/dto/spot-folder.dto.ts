@@ -58,6 +58,8 @@ export class SpotFolderDto extends Dto {
 	@ApiPropertyOptional()
 	public total_spots: number = undefined;
 	@ApiPropertyOptional()
+	public average_rating: number = undefined;
+	@ApiPropertyOptional()
 	public creator: UserDto = undefined;
 
 	private constructor(
@@ -112,6 +114,12 @@ export class SpotFolderDto extends Dto {
 
 	public setTotalFavorites(totalFavorites: number): SpotFolderDto {
 		this.total_favorites = totalFavorites;
+
+		return this;
+	}
+
+	public setAverageRating(averageRating: number): SpotFolderDto {
+		this.average_rating = averageRating;
 
 		return this;
 	}

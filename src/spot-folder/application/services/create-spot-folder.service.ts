@@ -58,6 +58,9 @@ export class CreateSpotFolderService implements CreateSpotFolderUseCase {
 
 		await this.spotFolderRepository.store(spotFolder);
 
-		return SpotFolderDto.fromModel(spotFolder);
+		return SpotFolderDto.fromModel(spotFolder)
+			.setFavoritedAt(null)
+			.setTotalFavorites(0)
+			.setAverageRating(0);
 	}
 }

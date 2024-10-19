@@ -5,6 +5,9 @@ import { FavoriteRepository, FavoriteRepositoryProvider } from "src/favorite/app
 import { FavoritableSubject } from "src/favorite/domain/favoritable-subject.enum";
 import { GroupMemberRepository, GroupMemberRepositoryProvider } from "src/group/application/ports/out/group-member.repository";
 import { GroupRepository, GroupRepositoryProvider } from "src/group/application/ports/out/group.repository";
+import { CalculateAverageRatingCommand } from "src/rating/application/ports/in/commands/calculate-average-rating.command";
+import { CalculateAverageRatingUseCase, CalculateAverageRatingUseCaseProvider } from "src/rating/application/ports/in/use-cases/calculate-average-rating.use-case";
+import { RatableSubject } from "src/rating/domain/ratable-subject.enum";
 import { SpotEventVisibility } from "src/spot-event/domain/spot-event-visibility.enum";
 import { ListSpotEventsCommand } from "../ports/in/commands/list-spot-events.command";
 import { ListSpotEventsUseCase } from "../ports/in/use-cases/list-spot-events.use-case";
@@ -24,6 +27,8 @@ export class ListSpotEventsService implements ListSpotEventsUseCase {
         protected favoriteRepository: FavoriteRepository,
         @Inject(GetAuthenticatedUserUseCaseProvider)
         protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+        @Inject(CalculateAverageRatingUseCaseProvider)
+        protected calculateAverageRatingUseCase: CalculateAverageRatingUseCase,
     ) {}
 
     public async execute(command: ListSpotEventsCommand): Promise<Pagination<SpotEventDto> | Array<SpotEventDto>> {
@@ -76,9 +81,15 @@ export class ListSpotEventsService implements ListSpotEventsUseCase {
                 subject: FavoritableSubject.SPOT_EVENT,
             }));
 
+            const avgRating = await this.calculateAverageRatingUseCase.execute(new CalculateAverageRatingCommand(
+                RatableSubject.SPOT_EVENT,
+                spotEvent.id(),
+            ));
+
             return SpotEventDto.fromModel(spotEvent)
                 .setFavoritedAt(favorite?.createdAt())
-                .setTotalFavorites(totalFavorites);
+                .setTotalFavorites(totalFavorites)
+                .setAverageRating(avgRating);
         }));
 
         if (command.paginate) {

@@ -15,6 +15,9 @@ import {
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
 import { FollowStatus } from 'src/follower/domain/follow-status.enum';
+import { CalculateAverageRatingCommand } from 'src/rating/application/ports/in/commands/calculate-average-rating.command';
+import { CalculateAverageRatingUseCase, CalculateAverageRatingUseCaseProvider } from 'src/rating/application/ports/in/use-cases/calculate-average-rating.use-case';
+import { RatableSubject } from 'src/rating/domain/ratable-subject.enum';
 import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import {
 	UserAddressRepository,
@@ -48,6 +51,8 @@ export class ListSpotsService implements ListSpotsUseCase {
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 		@Inject(FavoriteRepositoryProvider)
 		protected favoriteRepository: FavoriteRepository,
+		@Inject(CalculateAverageRatingUseCaseProvider)
+		protected calculateAverageRatingUseCase: CalculateAverageRatingUseCase,
 	) {}
 
 	public async execute(
@@ -192,12 +197,18 @@ export class ListSpotsService implements ListSpotsUseCase {
 					);
 				}
 
+				const avgRating = await this.calculateAverageRatingUseCase.execute(new CalculateAverageRatingCommand(
+					RatableSubject.SPOT,
+					s.id(),
+				));
+
 				return SpotDto.fromModel(s)
 					.setVisitedAt(visited?.visitedAt())
 					.setFavoritedAt(favorited?.createdAt())
 					.setTotalFavorites(totalFavorites)
 					.setTotalSpotVisits(totalSpotVisits)
-					.setDistance(distance);
+					.setDistance(distance)
+					.setAverageRating(avgRating);
 			}),
 		);
 

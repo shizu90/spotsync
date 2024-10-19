@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Dto } from "src/common/core/common.dto";
 import { GroupDto } from "src/group/application/ports/out/dto/group.dto";
 import { SpotEventStatus } from "src/spot-event/domain/spot-event-status.enum";
@@ -8,35 +8,37 @@ import { SpotDto } from "src/spot/application/ports/out/dto/spot.dto";
 import { SpotEventParticipantDto } from "./spot-event-participant.dto";
 
 export class SpotEventDto extends Dto {
-    @ApiProperty({ example: 'uuid' })
+    @ApiPropertyOptional({ example: 'uuid' })
     public id: string = undefined;
-    @ApiProperty()
+    @ApiPropertyOptional()
     public name: string = undefined;
-    @ApiProperty()
+    @ApiPropertyOptional()
     public description: string = undefined;
-    @ApiProperty({ example: new Date().toISOString() })
+    @ApiPropertyOptional({ example: new Date().toISOString() })
     public start_date: string = undefined;
-    @ApiProperty({ example: new Date().toISOString() })
+    @ApiPropertyOptional({ example: new Date().toISOString() })
     public end_date: string = undefined;
-    @ApiProperty({ enum: SpotEventStatus })
+    @ApiPropertyOptional({ enum: SpotEventStatus })
     public status: string = undefined;
-    @ApiProperty({ enum: SpotEventVisibility })
+    @ApiPropertyOptional({ enum: SpotEventVisibility })
     public visibility: string = undefined;
-    @ApiProperty()
+    @ApiPropertyOptional()
     public spot: SpotDto = undefined;
-    @ApiProperty({ isArray: true, type: SpotEventParticipantDto })
+    @ApiPropertyOptional({ isArray: true, type: SpotEventParticipantDto })
     public participants: SpotEventParticipantDto[] = undefined;
-    @ApiProperty()
+    @ApiPropertyOptional()
     public group: GroupDto = undefined;
-    @ApiProperty()
+    @ApiPropertyOptional()
     public favorited?: boolean = undefined;
-    @ApiProperty({ example: new Date().toISOString() })
+    @ApiPropertyOptional({ example: new Date().toISOString() })
     public favorited_at?: string = undefined;
-    @ApiProperty()
+    @ApiPropertyOptional()
     public total_favorites: number = undefined;
-    @ApiProperty({ example: new Date().toISOString() })
+    @ApiPropertyOptional()
+    public average_rating: number = undefined;
+    @ApiPropertyOptional({ example: new Date().toISOString() })
     public created_at: string = undefined;
-    @ApiProperty({ example: new Date().toISOString() })
+    @ApiPropertyOptional({ example: new Date().toISOString() })
     public updated_at: string = undefined;
 
     private constructor(
@@ -105,6 +107,12 @@ export class SpotEventDto extends Dto {
 
     public setTotalFavorites(total_favorites: number): SpotEventDto {
         this.total_favorites = total_favorites;
+
+        return this;
+    }
+
+    public setAverageRating(average_rating: number): SpotEventDto {
+        this.average_rating = average_rating;
 
         return this;
     }
