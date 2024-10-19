@@ -6,13 +6,16 @@ import { Model } from 'src/common/core/common.model';
 import { Favoritable } from 'src/favorite/domain/favoritable.interface';
 import { Favorite } from 'src/favorite/domain/favorite.model';
 import { Group } from 'src/group/domain/group.model';
+import { RatableSubject } from 'src/rating/domain/ratable-subject.enum';
+import { Ratable } from 'src/rating/domain/ratable.interface';
+import { Rating } from 'src/rating/domain/rating.model';
 import { Spot } from 'src/spot/domain/spot.model';
 import { User } from 'src/user/domain/user.model';
 import { SpotEventParticipant } from './spot-event-participant.model';
 import { SpotEventStatus } from './spot-event-status.enum';
 import { SpotEventVisibility } from './spot-event-visibility.enum';
 
-export class SpotEvent extends Model implements Favoritable, Commentable {
+export class SpotEvent extends Model implements Favoritable, Commentable, Ratable {
 	private _id: string;
 	private _name: string;
 	private _description: string;
@@ -275,6 +278,17 @@ export class SpotEvent extends Model implements Favoritable, Commentable {
 			user,
 			CommentableSubject.SPOT_EVENT,
 			this,
+		);
+	}
+
+	public rate(value: number, user: User, comment?: string): Rating {
+		return Rating.create(
+			randomUUID(),
+			value,
+			RatableSubject.SPOT_EVENT,
+			this._id,
+			user,
+			comment,
 		);
 	}
 }

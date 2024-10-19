@@ -2,12 +2,15 @@ import { randomUUID } from 'crypto';
 import { Model } from 'src/common/core/common.model';
 import { Favoritable } from 'src/favorite/domain/favoritable.interface';
 import { Favorite } from 'src/favorite/domain/favorite.model';
+import { RatableSubject } from 'src/rating/domain/ratable-subject.enum';
+import { Ratable } from 'src/rating/domain/ratable.interface';
+import { Rating } from 'src/rating/domain/rating.model';
 import { Spot } from 'src/spot/domain/spot.model';
 import { User } from 'src/user/domain/user.model';
 import { SpotFolderItem } from './spot-folder-item.model';
 import { SpotFolderVisibility } from './spot-folder-visibility.enum';
 
-export class SpotFolder extends Model implements Favoritable {
+export class SpotFolder extends Model implements Favoritable, Ratable {
 	private _id: string;
 	private _name: string;
 	private _description: string;
@@ -167,6 +170,17 @@ export class SpotFolder extends Model implements Favoritable {
 	public sortItems(): void {
 		this._items = this._items.sort(
 			(a, b) => a.orderNumber() - b.orderNumber(),
+		);
+	}
+
+	public rate(value: number, user: User, comment?: string): Rating {
+		return Rating.create(
+			randomUUID(),
+			value,
+			RatableSubject.SPOT_FOLDER,
+			this._id,
+			user,
+			comment,
 		);
 	}
 }

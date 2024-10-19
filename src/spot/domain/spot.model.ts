@@ -5,13 +5,16 @@ import { Commentable } from 'src/comment/domain/commentable.interface';
 import { Model } from 'src/common/core/common.model';
 import { Favoritable } from 'src/favorite/domain/favoritable.interface';
 import { Favorite } from 'src/favorite/domain/favorite.model';
+import { RatableSubject } from 'src/rating/domain/ratable-subject.enum';
+import { Ratable } from 'src/rating/domain/ratable.interface';
+import { Rating } from 'src/rating/domain/rating.model';
 import { User } from 'src/user/domain/user.model';
 import { SpotAddress } from './spot-address.model';
 import { SpotPhoto } from './spot-photo.model';
 import { SpotType } from './spot-type.enum';
 import { VisitedSpot } from './visited-spot.model';
 
-export class Spot extends Model implements Favoritable, Commentable {
+export class Spot extends Model implements Favoritable, Commentable, Ratable {
 	private _id: string;
 	private _name: string;
 	private _description: string;
@@ -163,6 +166,17 @@ export class Spot extends Model implements Favoritable, Commentable {
 			user,
 			CommentableSubject.SPOT,
 			this,
+		);
+	}
+
+	public rate(value: number, user: User, comment?: string): Rating {
+		return Rating.create(
+			randomUUID(),
+			value,
+			RatableSubject.SPOT,
+			this._id,
+			user,
+			comment,
 		);
 	}
 
