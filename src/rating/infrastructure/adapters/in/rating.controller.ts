@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Inject, Param, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiConflictResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
@@ -14,6 +14,7 @@ import { RatingErrorHandler } from "./handlers/rating-error.handler";
 import { RatingRequestMapper } from "./mappers/rating-request.mapper";
 import { CreateRatingRequest } from "./requests/create-rating.request";
 import { ListRatingsQueryRequest } from "./requests/list-ratings-query.request";
+import { UpdateRatingRequest } from "./requests/update-rating.request";
 
 @ApiTags('Ratings')
 @ApiUnauthorizedResponse({ type: ErrorResponse })
@@ -119,7 +120,7 @@ export class RatingController extends ApiController {
     @Put(':id')
     public async update(
         @Param('id') id: string,
-        @Body() body: CreateRatingRequest,
+        @Body() body: UpdateRatingRequest,
         @Req() req: Request,
         @Res() res: Response,
     ) {
@@ -134,7 +135,7 @@ export class RatingController extends ApiController {
     @ApiNoContentResponse()
     @ApiNotFoundResponse({ type: ErrorResponse })
     @UseGuards(AuthGuard)
-    @Put(':id')
+    @Delete(':id')
     public async delete(
         @Param('id') id: string,
         @Req() req: Request,

@@ -31,7 +31,7 @@ export class UpdateRatingService implements UpdateRatingUseCase {
             rating.changeValue(command.value);
         }
 
-        if (command.comment) {
+        if (command.comment !== null && command.comment !== undefined) {
             rating.changeComment(command.comment);
         }
 

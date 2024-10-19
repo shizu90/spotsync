@@ -39,6 +39,19 @@ export class RatingRepositoryImpl implements RatingRepository {
 		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
 	}
 
+    private _mapSubjectId(subject: RatableSubject): string {
+		switch (subject) {
+			case RatableSubject.SPOT:
+				return 'spot_id';
+			case RatableSubject.SPOT_EVENT:
+				return 'spot_event_id';
+			case RatableSubject.SPOT_FOLDER:
+                return 'spot_folder_id';
+            default:
+                return 'spot_id';
+		}
+	} 
+
     private _mountQuery(values: Object): Object {
         const subject = values["subject"];
         const userId = values["userId"];
@@ -52,11 +65,11 @@ export class RatingRepositoryImpl implements RatingRepository {
         }
 
         if (userId) {
-            query["userId"] = userId;
+            query["user_id"] = userId;
         }
 
-        if (subjectId) {
-            query["subjectId"] = subjectId;
+        if (subjectId && subject) {
+            query[this._mapSubjectId(subject)] = subjectId;
         }
 
         if (value) {
@@ -220,6 +233,7 @@ export class RatingRepositoryImpl implements RatingRepository {
         const rating = await this.prismaService.rating.create({
             data: {
                 id: model.id(),
+                subject: model.subject(),
                 value: model.value(),
                 comment: model.comment(),
                 created_at: model.createdAt(),

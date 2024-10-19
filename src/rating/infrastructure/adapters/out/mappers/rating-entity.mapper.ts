@@ -16,6 +16,7 @@ export class RatingEntityMapper implements EntityMapper<Rating, RatingEntity> {
 
         return {
             id: model.id(),
+            subject: model.subject(),
             value: model.value(),
             comment: model.comment(),
             spot_id: model.subject() === RatableSubject.SPOT ? model.subjectId() : null,
@@ -34,8 +35,8 @@ export class RatingEntityMapper implements EntityMapper<Rating, RatingEntity> {
         return Rating.create(
             entity.id,
             entity.value,
-            entity.spot_id ? RatableSubject.SPOT : entity.spot_event_id ? RatableSubject.SPOT_EVENT : RatableSubject.SPOT_FOLDER,
-            entity.spot_id || entity.spot_event_id || entity.spot_folder_id,
+            entity.subject as RatableSubject,
+            entity.subject === RatableSubject.SPOT ? entity.spot_id : entity.subject === RatableSubject.SPOT_EVENT ? entity.spot_event_id : entity.spot_folder_id,
             this._userEntityMapper.toModel(entity.user),
             entity.comment,
             entity.created_at,

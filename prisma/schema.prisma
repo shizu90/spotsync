@@ -446,6 +446,7 @@ model Notification {
 model Rating {
   id              String   @id @default(uuid())
   user_id         String
+  subject         String   @db.VarChar(120)
   spot_id         String?
   spot_event_id   String?
   spot_folder_id  String?

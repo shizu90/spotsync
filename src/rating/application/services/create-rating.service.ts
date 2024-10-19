@@ -33,11 +33,11 @@ export class CreateRatingService implements CreateRatingUseCase {
     public async execute(command: CreateRatingCommand): Promise<RatingDto> {
         const authenticatedUser = await this.getAuthenticatedUserUseCase.execute(null);
 
-        const alreadyRated = await this.ratingRepository.findBy({
+        const alreadyRated = (await this.ratingRepository.findBy({
             subject: command.subject,
             subjectId: command.subjectId,
             userId: authenticatedUser.id(),
-        });
+        })).length > 0;
 
         if (alreadyRated) {
             throw new AlreadyRatedError();

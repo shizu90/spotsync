@@ -51,8 +51,8 @@ export class RatingDto extends Dto {
             UserDto.fromModel(model.user()),
             model.subject(),
             model.subjectId(),
-            model.createdAt().toISOString(),
-            model.updatedAt().toISOString(),
+            model.createdAt()?.toISOString(),
+            model.updatedAt()?.toISOString(),
         );
     }
 }
