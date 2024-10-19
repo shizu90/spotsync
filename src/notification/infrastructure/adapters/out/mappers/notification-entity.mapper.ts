@@ -11,6 +11,10 @@ export class NotificationEntityMapper implements EntityMapper<Notification, Noti
     private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 
     public toEntity(model: Notification): NotificationEntity {
+        if (!model) {
+            return null;
+        }
+
         return {
             id: model.id(),
             content: model.content(),
@@ -25,6 +29,10 @@ export class NotificationEntityMapper implements EntityMapper<Notification, Noti
     }
 
     public toModel(entity: NotificationEntity): Notification {
+        if (!entity) {
+            return null;
+        }
+
         return Notification.create(
             entity.id,
             entity.title,

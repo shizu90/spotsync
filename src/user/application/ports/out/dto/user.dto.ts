@@ -95,7 +95,6 @@ class UserCredentialsDto extends Dto {
 			model.password(),
 			model.phoneNumber(),
 			model.lastLogin()?.toISOString(),
-			model.lastLogout()?.toISOString(),
 		);
 	}
 

@@ -34,6 +34,10 @@ export class NotificationRepositoryImpl implements NotificationRepository {
 		return null;
 	}
 
+	private async _setCachedData(key: string, data: any): Promise<void> {
+		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
+	}
+
     private _mountQuery(values: Object): Object {
         const status = values['status'];
         const type = values['type'];
@@ -56,15 +60,11 @@ export class NotificationRepositoryImpl implements NotificationRepository {
                 include: {
                     profile: true,
                     credentials: true,
-                    visibilitySettings: true,
+                    visibility_settings: true,
                 }
             }
         };
     }
-
-	private async _setCachedData(key: string, data: any): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
-	}
     
     public async paginate(params: PaginateParameters): Promise<Pagination<Notification>> {
         const key = `notification:paginate:${JSON.stringify(params)}`;
@@ -166,7 +166,7 @@ export class NotificationRepositoryImpl implements NotificationRepository {
             return this._notificationEntityMapper.toModel(cachedData);
         }
 
-        const item = await this.prismaService.notification.findUnique({
+        const item = await this.prismaService.notification.findFirst({
             where: {
                 id: id,
             },

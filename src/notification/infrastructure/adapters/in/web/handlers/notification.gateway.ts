@@ -1,7 +1,9 @@
 import { Inject, Logger } from "@nestjs/common";
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { TokenService } from "src/auth/infrastructure/adapters/in/web/handlers/token.service";
 import { RedisService } from "src/cache/redis.service";
+import { NotificationDto } from "src/notification/application/ports/out/dto/notification.dto";
 import { NotificationRepository, NotificationRepositoryProvider } from "src/notification/application/ports/out/notification.repository";
 import { UserRepository, UserRepositoryProvider } from "src/user/application/ports/out/user.repository";
 import { User } from "src/user/domain/user.model";
@@ -17,6 +19,8 @@ export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, 
     constructor(
         @Inject(RedisService)
         protected redisService: RedisService,
+        @Inject(TokenService)
+        protected tokenService: TokenService,
         @Inject(UserRepositoryProvider)
         protected userRepository: UserRepository,
         @Inject(NotificationRepositoryProvider)
@@ -34,9 +38,11 @@ export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, 
 
         token = token.split(' ')[1];
 
-        const user_id = await this.redisService.get(token);
+        const payload = await this.tokenService.verifyToken<{sub: string, name: string}>(token);
+
+        if (!payload) return null;
     
-        const user = await this.userRepository.findById(user_id);
+        const user = await this.userRepository.findById(payload.sub);
 
         return user;
     }
@@ -54,13 +60,17 @@ export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, 
             return;
         }
 
-        this.redisService.subscribe(`notifications:${user.id()}`);
+        const subscriberClient = new RedisService();
 
-        this.redisService.on('message', async (channel, message) => {
-            if (channel === `notifications:${user.id()}`) {
-                const notification = await this.notificationRepository.findById(message);
-            
-                client.emit('notification', notification);
+        const channel = `notifications:${user.id()}`;
+
+        await subscriberClient.subscribe(channel);
+
+        subscriberClient.on('message', async (ch, m) => {
+            if (ch == channel) {
+                const notification = await this.notificationRepository.findById(m);
+
+                client.emit('notification', NotificationDto.fromModel(notification));
             }
         });
 

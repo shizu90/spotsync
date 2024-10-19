@@ -373,7 +373,6 @@ export class UserRepositoryImpl implements UserRepository {
 							password: model.password(),
 							phone_number: model.phoneNumber(),
 							last_login: model.lastLogin(),
-							last_logout: model.lastLogout(),
 						},
 					},
 				},

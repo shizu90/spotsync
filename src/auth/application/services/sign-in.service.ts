@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { RedisService } from 'src/cache/redis.service';
+import { env } from 'process';
+import { TokenService } from 'src/auth/infrastructure/adapters/in/web/handlers/token.service';
 import {
 	EncryptPasswordService,
 	EncryptPasswordServiceProvider,
@@ -16,15 +16,15 @@ import { SignInCommand } from '../ports/in/commands/sign-in.command';
 import { SignInUseCase } from '../ports/in/use-cases/sign-in.use-case';
 import { SignInDto } from '../ports/out/dto/sign-in.dto';
 
+const REDIS_AUTH_TTL = env.REDIS_AUTH_TTL ?? 800;
+
 @Injectable()
 export class SignInService implements SignInUseCase {
 	public constructor(
 		@Inject(UserRepositoryProvider)
 		protected userRepository: UserRepository,
-		@Inject(JwtService)
-		protected jwtService: JwtService,
-		@Inject(RedisService)
-		protected redisService: RedisService,
+		@Inject(TokenService)
+		protected tokenService: TokenService,
 		@Inject(EncryptPasswordServiceProvider)
 		protected encryptPasswordService: EncryptPasswordService,
 	) {}
@@ -64,9 +64,7 @@ export class SignInService implements SignInUseCase {
 
 		const payload = { sub: user.id(), name: user.credentials().name() };
 
-		const bearerToken = await this.jwtService.signAsync(payload);
-
-		await this.redisService.set(bearerToken, user.id());
+		const bearerToken = await this.tokenService.generateToken<{sub: string, name: string}>(payload);
 
 		return new SignInDto(
 			user.id(),

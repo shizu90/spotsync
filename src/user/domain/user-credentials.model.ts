@@ -7,7 +7,6 @@ export class UserCredentials extends Model {
 	private _password: string;
 	private _phoneNumber: string;
 	private _lastLogin: Date;
-	private _lastLogout: Date;
 
 	private constructor(
 		id: string,
@@ -16,7 +15,6 @@ export class UserCredentials extends Model {
 		password: string,
 		phoneNumber?: string,
 		lastLogin?: Date,
-		lastLogout?: Date,
 	) {
 		super();
 		this._id = id;
@@ -25,7 +23,6 @@ export class UserCredentials extends Model {
 		this._password = password;
 		this._phoneNumber = phoneNumber ?? null;
 		this._lastLogin = lastLogin ?? null;
-		this._lastLogout = lastLogout ?? null;
 	}
 
 	public static create(
@@ -35,7 +32,6 @@ export class UserCredentials extends Model {
 		password: string,
 		phoneNumber?: string,
 		lastLogin?: Date,
-		lastLogout?: Date,
 	): UserCredentials {
 		return new UserCredentials(
 			id,
@@ -44,7 +40,6 @@ export class UserCredentials extends Model {
 			password,
 			phoneNumber,
 			lastLogin,
-			lastLogout,
 		);
 	}
 
@@ -72,10 +67,6 @@ export class UserCredentials extends Model {
 		return this._lastLogin;
 	}
 
-	public lastLogout() {
-		return this._lastLogout;
-	}
-
 	public changeName(name: string) {
 		this._name = name;
 	}
@@ -94,9 +85,5 @@ export class UserCredentials extends Model {
 
 	public login() {
 		this._lastLogin = new Date();
-	}
-
-	public logout() {
-		this._lastLogout = new Date();
 	}
 }

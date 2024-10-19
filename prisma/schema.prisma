@@ -44,7 +44,6 @@ model UserCredentials {
   email        String    @unique
   password     String    @db.VarChar(400)
   last_login   DateTime?
-  last_logout  DateTime?
   phone_number String?   @db.VarChar(20)
   user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 

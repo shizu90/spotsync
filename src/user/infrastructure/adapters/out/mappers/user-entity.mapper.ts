@@ -47,7 +47,6 @@ export class UserEntityMapper implements EntityMapper<User, UserEntity> {
 						password: model.credentials().password(),
 						name: model.credentials().name(),
 						last_login: model.credentials().lastLogin(),
-						last_logout: model.credentials().lastLogout(),
 						phone_number: model.credentials().phoneNumber(),
 					}
 				: null,
@@ -100,7 +99,6 @@ export class UserEntityMapper implements EntityMapper<User, UserEntity> {
 						entity.credentials.password,
 						entity.credentials.phone_number,
 						entity.credentials.last_login,
-						entity.credentials.last_logout,
 					)
 				: null,
 			entity.visibility_settings

@@ -1,10 +1,9 @@
 import { Provider } from '@nestjs/common';
-import { SignInUseCaseProvider } from './application/ports/in/use-cases/sign-in.use-case';
-import { SignInService } from './application/services/sign-in.service';
-import { SignOutUseCaseProvider } from './application/ports/in/use-cases/sign-out.use-case';
-import { SignOutService } from './application/services/sign-out.service';
 import { GetAuthenticatedUserUseCaseProvider } from './application/ports/in/use-cases/get-authenticated-user.use-case';
+import { SignInUseCaseProvider } from './application/ports/in/use-cases/sign-in.use-case';
 import { GetAuthenticatedUserService } from './application/services/get-authenticated-user.service';
+import { SignInService } from './application/services/sign-in.service';
+import { TokenService } from './infrastructure/adapters/in/web/handlers/token.service';
 
 export const Providers: Provider[] = [
 	{
@@ -12,11 +11,11 @@ export const Providers: Provider[] = [
 		useClass: SignInService,
 	},
 	{
-		provide: SignOutUseCaseProvider,
-		useClass: SignOutService,
-	},
-	{
 		provide: GetAuthenticatedUserUseCaseProvider,
 		useClass: GetAuthenticatedUserService,
 	},
+	{
+		provide: TokenService,
+		useClass: TokenService,
+	}
 ];
