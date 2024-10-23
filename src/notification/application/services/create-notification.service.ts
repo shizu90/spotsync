@@ -33,6 +33,7 @@ export class CreateNotificationService implements CreateNotificationUseCase {
             command.content,
             user,
             command.type,
+            command.payload,
         );
 
         await this.notificationRepository.store(notification);

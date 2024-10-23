@@ -7,6 +7,10 @@ import {
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import { Follow } from 'src/follower/domain/follow.model';
+import { CreateNotificationCommand } from 'src/notification/application/ports/in/commands/create-notification.command';
+import { CreateNotificationUseCase, CreateNotificationUseCaseProvider } from 'src/notification/application/ports/in/use-cases/create-notification.use-case';
+import { NotificationType } from 'src/notification/domain/notification-type.enum';
+import { NotificationPayload, NotificationPayloadSubject } from 'src/notification/domain/notification.model';
 import {
 	UserRepository,
 	UserRepositoryProvider,
@@ -32,6 +36,8 @@ export class FollowService implements FollowUseCase {
 		protected followRepository: FollowRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+		@Inject(CreateNotificationUseCaseProvider)
+		protected createNotificationUseCase: CreateNotificationUseCase,
 	) {}
 
 	public async execute(command: FollowCommand): Promise<FollowDto> {
@@ -89,6 +95,40 @@ export class FollowService implements FollowUseCase {
 		}
 
 		await this.followRepository.store(follow);
+
+		if (toUser.visibilitySettings().profile() !== UserVisibility.PUBLIC) {
+			await this.createNotificationUseCase.execute(new CreateNotificationCommand(
+				`New follow request`,
+				`${authenticatedUser.profile().displayName()} requested to follow you.`,
+				NotificationType.NEW_FOLLOW,
+				toUser.id(),
+				new NotificationPayload(
+					NotificationPayloadSubject.FOLLOW,
+					null,
+					{
+						follower_id: authenticatedUser.id(),
+						follower_display_name: authenticatedUser.profile().displayName(),
+						follower_profile_picture: authenticatedUser.profile().profilePicture(),
+					}
+				)
+			));
+		} else {
+			await this.createNotificationUseCase.execute(new CreateNotificationCommand(
+				`New follow`,
+				`${authenticatedUser.profile().displayName()} followed you.`,
+				NotificationType.NEW_FOLLOW,
+				toUser.id(),
+				new NotificationPayload(
+					NotificationPayloadSubject.FOLLOW,
+					null,
+					{
+						follower_id: authenticatedUser.id(),
+						follower_display_name: authenticatedUser.profile().displayName(),
+						follower_profile_picture: authenticatedUser.profile().profilePicture(),
+					}
+				)
+			));
+		}
 
 		return FollowDto.fromModel(follow);
 	}

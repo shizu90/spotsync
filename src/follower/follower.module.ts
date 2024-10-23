@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
 import { CacheModule } from 'src/cache/cache.module';
+import { NotificationModule } from 'src/notification/notification.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UserModule } from 'src/user/user.module';
 import { Providers } from './follower.provider';
@@ -12,6 +13,7 @@ import { FollowController } from './infrastructure/adapters/in/web/follow.contro
 		PrismaModule,
 		CacheModule,
 		forwardRef(() => AuthModule),
+		NotificationModule,
 	],
 	providers: [...Providers],
 	exports: [...Providers],

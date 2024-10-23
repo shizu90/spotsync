@@ -4,6 +4,7 @@ import { CacheModule } from 'src/cache/cache.module';
 import { FollowerModule } from 'src/follower/follower.module';
 import { GroupModule } from 'src/group/group.module';
 import { LikeModule } from 'src/like/like.module';
+import { NotificationModule } from 'src/notification/notification.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UserModule } from 'src/user/user.module';
 import { PostThreadController } from './infrastructure/adapters/in/web/post-thread.controller';
@@ -19,6 +20,7 @@ import { Providers } from './post.provider';
 		FollowerModule,
 		forwardRef(() => LikeModule),
 		AuthModule,
+		NotificationModule,
 	],
 	providers: [...Providers],
 	exports: [...Providers],

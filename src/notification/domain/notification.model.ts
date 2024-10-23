@@ -3,6 +3,32 @@ import { User } from "src/user/domain/user.model";
 import { NotificationStatus } from "./notification-status.enum";
 import { NotificationType } from "./notification-type.enum";
 
+export enum NotificationPayloadSubject {
+    SPOT = 'spot',
+    SPOT_EVENT = 'spot-event',
+    SPOT_FOLDER = 'spot-folder',
+    POST = 'post',
+    RATING = 'rating',
+    COMMENT = 'comment',
+    FOLLOW = 'follow',
+}
+
+export class NotificationPayload {
+    public subject?: NotificationPayloadSubject = undefined;
+    public subject_id?: string = undefined;
+    public extra_data?: any = undefined;
+
+    public constructor(
+        subject?: NotificationPayloadSubject,
+        subject_id?: string,
+        extra_data?: any
+    ) {
+        this.subject = subject;
+        this.subject_id = subject_id;
+        this.extra_data = extra_data;
+    }
+}
+
 export class Notification extends Model {
     private _id: string;
     private _title: string;
@@ -10,6 +36,7 @@ export class Notification extends Model {
     private _status: NotificationStatus;
     private _type: NotificationType;
     private _user: User;
+    private _payload: NotificationPayload;
     private _readAt: Date;
     private _createdAt: Date;
 
@@ -19,6 +46,7 @@ export class Notification extends Model {
         content: string,
         user: User,
         type: NotificationType,
+        payload?: NotificationPayload,
         status?: NotificationStatus,
         readAt?: Date,
         createdAt?: Date
@@ -31,6 +59,7 @@ export class Notification extends Model {
         this._status = status ?? NotificationStatus.UNREAD;
         this._type = type;
         this._user = user;
+        this._payload = {};
         this._readAt = readAt;
         this._createdAt = createdAt;
     }
@@ -41,11 +70,12 @@ export class Notification extends Model {
         content: string,
         user: User,
         type: NotificationType,
+        payload?: NotificationPayload,
         status?: NotificationStatus,
         readAt?: Date,
         createdAt?: Date
     ): Notification {
-        return new Notification(id, title, content, user, type, status, readAt, createdAt);
+        return new Notification(id, title, content, user, type, payload, status, readAt, createdAt);
     }
 
     public id(): string {
@@ -70,6 +100,10 @@ export class Notification extends Model {
 
     public user(): User {
         return this._user;
+    }
+    
+    public payload(): NotificationPayload {
+        return this._payload;
     }
 
     public readAt(): Date {

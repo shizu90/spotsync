@@ -15,6 +15,8 @@ export class NotificationDto extends Dto {
     public type: string = undefined;
     @ApiPropertyOptional({ enum: NotificationStatus })
     public status: string = undefined;
+    @ApiPropertyOptional()
+    public payload: Object = undefined;
     @ApiPropertyOptional({ example: new Date().toISOString() })
     public read_at: string = undefined;
     @ApiPropertyOptional({ example: new Date().toISOString() })
@@ -25,6 +27,7 @@ export class NotificationDto extends Dto {
         title?: string,
         content?: string,
         type?: string,
+        payload?: Object,
         status?: string,
         readAt?: string,
         createdAt?: string
@@ -36,6 +39,7 @@ export class NotificationDto extends Dto {
         this.content = content;
         this.type = type;
         this.status = status;
+        this.payload = payload;
         this.read_at = readAt;
         this.created_at = createdAt;
     }
@@ -48,9 +52,10 @@ export class NotificationDto extends Dto {
             model.title(),
             model.content(),
             model.type(),
+            model.payload(),
             model.status(),
             model.readAt()?.toISOString(),
-            model.createdAt()?.toISOString()
+            model.createdAt()?.toISOString(),
         );
     }
 }

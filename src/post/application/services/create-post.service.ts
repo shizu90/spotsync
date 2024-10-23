@@ -11,6 +11,10 @@ import {
 import { GroupNotFoundError } from 'src/group/application/services/errors/group-not-found.error';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
+import { CreateNotificationCommand } from 'src/notification/application/ports/in/commands/create-notification.command';
+import { CreateNotificationUseCase, CreateNotificationUseCaseProvider } from 'src/notification/application/ports/in/use-cases/create-notification.use-case';
+import { NotificationType } from 'src/notification/domain/notification-type.enum';
+import { NotificationPayload, NotificationPayloadSubject } from 'src/notification/domain/notification.model';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import { Post } from 'src/post/domain/post.model';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
@@ -38,6 +42,8 @@ export class CreatePostService implements CreatePostUseCase {
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 		@Inject(GroupRepositoryProvider)
 		protected groupRepository: GroupRepository,
+		@Inject(CreateNotificationUseCaseProvider)
+		protected createNotificationUseCase: CreateNotificationUseCase,
 	) {}
 
 	public async execute(command: CreatePostCommand): Promise<PostDto> {
@@ -116,6 +122,25 @@ export class CreatePostService implements CreatePostUseCase {
 
 		this.postRepository.store(newPost);
 		this.postThreadRepository.update(newPost.thread());
+
+		if (parent.creator().id() !== authenticatedUser.id() && parent !== null) {
+			await this.createNotificationUseCase.execute(new CreateNotificationCommand(
+				`New post`,
+				`${authenticatedUser.profile().displayName()} answered to your post.`,
+				NotificationType.NEW_POST,
+				parent.creator().id(),
+				new NotificationPayload(
+					NotificationPayloadSubject.POST,
+					parent.id(),
+					{
+						post_id: newPost.id(),
+						user_id: authenticatedUser.id(),
+						user_display_name: authenticatedUser.profile().displayName(),
+						user_profile_picture: authenticatedUser.profile().profilePicture(),
+					}
+				)
+			));
+		}
 
 		return PostDto.fromModel(newPost);
 	}

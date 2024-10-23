@@ -206,6 +206,11 @@ export class NotificationRepositoryImpl implements NotificationRepository {
                 created_at: model.createdAt(),
                 read_at: model.readAt(),
                 user_id: model.user().id(),
+                payload: {
+                    subject: model.payload().subject,
+                    subject_id: model.payload().subject_id,
+                    extra_data: model.payload().extra_data,
+                },
             }
         });
 

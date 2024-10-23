@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
 import { CacheModule } from 'src/cache/cache.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
@@ -7,7 +7,7 @@ import { NotificationController } from './infrastructure/adapters/in/web/notific
 import { Providers } from './notification.provider';
 
 @Module({
-    imports: [PrismaModule, CacheModule, UserModule, AuthModule],
+    imports: [PrismaModule, CacheModule, forwardRef(() => UserModule), forwardRef(() => AuthModule)],
     providers: [...Providers],
     exports: [...Providers],
     controllers: [NotificationController],

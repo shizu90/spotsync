@@ -437,6 +437,7 @@ model Notification {
   status       String   @db.VarChar(12)
   type         String   @db.VarChar(12)
   read_at      DateTime?
+  payload      Json     @default("{}")
   created_at   DateTime @default(now())
   user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
