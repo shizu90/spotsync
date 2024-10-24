@@ -40,6 +40,8 @@ export class SpotEventDto extends Dto {
     public created_at: string = undefined;
     @ApiPropertyOptional({ example: new Date().toISOString() })
     public updated_at: string = undefined;
+    @ApiPropertyOptional()
+    public notify_minutes: number = undefined;
 
     private constructor(
         id?: string,
@@ -57,6 +59,7 @@ export class SpotEventDto extends Dto {
         favorited?: boolean,
         favorited_at?: string,
         total_favorites?: number,
+        notify_minutes?: number,
     ) {
         super();
         this.id = id;
@@ -74,6 +77,7 @@ export class SpotEventDto extends Dto {
         this.favorited = favorited;
         this.favorited_at = favorited_at;
         this.total_favorites = total_favorites;
+        this.notify_minutes = notify_minutes;
     }
 
     public static fromModel(model: SpotEvent): SpotEventDto {
@@ -95,6 +99,7 @@ export class SpotEventDto extends Dto {
             false,
             null,
             0,
+            model.notifyMinutes(),
         );
     }
 

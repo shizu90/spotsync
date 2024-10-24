@@ -43,6 +43,7 @@ export class SpotEventEntityMapper implements EntityMapper<SpotEvent, SpotEventE
                 }
             }),
             spot: this._spotEntityMapper.toEntity(model.spot()),
+            notify_minutes: model.notifyMinutes(),
         };
     }
 
@@ -57,6 +58,7 @@ export class SpotEventEntityMapper implements EntityMapper<SpotEvent, SpotEventE
             entity.end_date,
             this._spotEntityMapper.toModel(entity.spot),
             this._userEntityMapper.toModel(entity.creator),
+            entity.notify_minutes,
             entity.participants.map(participant => SpotEventParticipant.create(
                 this._userEntityMapper.toModel(participant.user),
                 participant.participated_at,

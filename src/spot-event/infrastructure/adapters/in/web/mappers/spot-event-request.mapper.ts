@@ -46,6 +46,7 @@ export class SpotEventRequestMapper {
             body.description,
             body.start_date,
             body.end_date,
+            body.notify_minutes,
         );
     }
 

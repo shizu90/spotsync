@@ -15,6 +15,7 @@ import { CreateSpotEventService } from "./application/services/create-spot-event
 import { DeleteSpotEventService } from "./application/services/delete-spot-event.service";
 import { EndSpotEventService } from "./application/services/end-spot-event.service";
 import { GetSpotEventService } from "./application/services/get-spot-event.service";
+import { NotifyUpcomingSpotEventsJob } from "./application/services/jobs/notify-upcoming-spot-events.job";
 import { ListSpotEventsService } from "./application/services/list-spot-events.service";
 import { ParticipateService } from "./application/services/participate.service";
 import { RemoveParticipationService } from "./application/services/remove-participation.service";
@@ -66,5 +67,9 @@ export const Providers: Provider[] = [
     {
         provide: SpotEventRepositoryProvider,
         useClass: SpotEventRepositoryImpl
+    },
+    {
+        provide: NotifyUpcomingSpotEventsJob,
+        useClass: NotifyUpcomingSpotEventsJob,
     }
 ];

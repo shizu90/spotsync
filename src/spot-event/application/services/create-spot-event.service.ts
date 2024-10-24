@@ -78,6 +78,7 @@ export class CreateSpotEventService implements CreateSpotEventUseCase {
             command.endDate,
             spot,
             authenticatedUser,
+            60,
             [],
             spotEventVisibility,
             SpotEventStatus.SCHEDULED,

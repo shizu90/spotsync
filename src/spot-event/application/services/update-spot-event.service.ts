@@ -49,6 +49,10 @@ export class UpdateSpotEventService implements UpdateSpotEventUseCase {
             spotEvent.changeEndDate(command.endDate);
         }
 
+        if (command.notifyMinutes) {
+            spotEvent.changeNotifyMinutes(command.notifyMinutes);
+        }
+
         await this.spotEventRepository.update(spotEvent);
     }
 }

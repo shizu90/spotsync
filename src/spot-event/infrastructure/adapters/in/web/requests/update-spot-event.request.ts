@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDateString, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import { IsDateString, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 import { ApiRequest } from "src/common/web/common.request";
 
 export class UpdateSpotEventRequest extends ApiRequest {
@@ -25,4 +25,9 @@ export class UpdateSpotEventRequest extends ApiRequest {
     @IsOptional()
     @IsDateString()
     public end_date?: Date;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    public notify_minutes?: number;
 }

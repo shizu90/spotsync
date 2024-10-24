@@ -278,6 +278,7 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
                 spot_id: spotEvent.spot().id(),
                 updated_at: spotEvent.updatedAt(),
                 user_id: spotEvent.creator().id(),
+                notify_minutes: spotEvent.notifyMinutes(),
             }
         });
 
@@ -297,6 +298,7 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
                 status: spotEvent.status(),
                 visibility: spotEvent.visibility(),
                 updated_at: spotEvent.updatedAt(),
+                notify_minutes: spotEvent.notifyMinutes(),
             }
         });
 

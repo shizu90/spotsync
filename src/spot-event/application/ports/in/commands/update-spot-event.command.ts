@@ -7,6 +7,7 @@ export class UpdateSpotEventCommand extends Command {
 		readonly description?: string,
 		readonly startDate?: Date,
 		readonly endDate?: Date,
+		readonly notifyMinutes?: number,
 	) {
 		super();
 	}

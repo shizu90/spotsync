@@ -23,6 +23,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable, Ratabl
 	private _endDate: Date;
 	private _status: SpotEventStatus;
 	private _visibility: SpotEventVisibility;
+	private _notifyMinutes: number;
 	private _spot: Spot;
 	private _creator: User;
 	private _group: Group;
@@ -38,6 +39,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable, Ratabl
 		endDate: Date,
 		spot: Spot,
 		creator: User,
+		notifyMinutes?: number,
 		participants?: SpotEventParticipant[],
 		visibility?: SpotEventVisibility,
 		status?: SpotEventStatus,
@@ -54,6 +56,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable, Ratabl
 		this._status = status ?? SpotEventStatus.SCHEDULED;
 		this._participants = participants ?? [];
 		this._visibility = visibility ?? SpotEventVisibility.PUBLIC;
+		this._notifyMinutes = notifyMinutes ?? 60;
 		this._spot = spot;
 		this._creator = creator;
 		this._group = group ?? null;
@@ -69,6 +72,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable, Ratabl
 		endDate: Date,
 		spot: Spot,
 		creator: User,
+		notifyMinutes?: number,
 		participants?: SpotEventParticipant[],
 		visibility?: SpotEventVisibility,
 		status?: SpotEventStatus,
@@ -84,6 +88,7 @@ export class SpotEvent extends Model implements Favoritable, Commentable, Ratabl
 			endDate,
 			spot,
 			creator,
+			notifyMinutes,
 			participants,
 			visibility,
 			status,
@@ -115,6 +120,10 @@ export class SpotEvent extends Model implements Favoritable, Commentable, Ratabl
 
 	public status(): SpotEventStatus {
 		return this._status;
+	}
+
+	public notifyMinutes(): number {
+		return this._notifyMinutes;
 	}
 
 	public participants(): SpotEventParticipant[] {
@@ -290,5 +299,10 @@ export class SpotEvent extends Model implements Favoritable, Commentable, Ratabl
 			user,
 			comment,
 		);
+	}
+
+	public changeNotifyMinutes(minutes: number): void {
+		this._notifyMinutes = minutes;
+		this._updatedAt = new Date();
 	}
 }

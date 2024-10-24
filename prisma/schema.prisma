@@ -397,23 +397,24 @@ model Favorite {
 }
 
 model SpotEvent {
-  id           String   @id @default(uuid())
-  name         String   @db.VarChar(255)
-  description  String?  @db.VarChar(400)
-  start_date   DateTime
-  end_date     DateTime
-  status       String   @db.VarChar(12)
-  visibility   String   @db.VarChar(12)
-  spot_id      String
-  group_id     String?
-  user_id      String
-  created_at   DateTime @default(now())
-  updated_at   DateTime @default(now())
-  spot         Spot     @relation(fields: [spot_id], references: [id], onDelete: Cascade)
-  group        Group?   @relation(fields: [group_id], references: [id], onDelete: Cascade)
-  creator      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  participants SpotEventParticipant[]
-  ratings      Rating[]
+  id              String   @id @default(uuid())
+  name            String   @db.VarChar(255)
+  description     String?  @db.VarChar(400)
+  start_date      DateTime
+  end_date        DateTime
+  status          String   @db.VarChar(12)
+  visibility      String   @db.VarChar(12)
+  notify_minutes  Int      @default(60)
+  spot_id         String
+  group_id        String?
+  user_id         String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+  spot            Spot     @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+  group           Group?   @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  creator         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  participants    SpotEventParticipant[]
+  ratings         Rating[]
 
   @@map("spot_events")
 }
