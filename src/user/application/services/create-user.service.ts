@@ -152,6 +152,7 @@ export class CreateUserService implements CreateUserUseCase {
 				new NewUserMailTemplate({
 					userName: user.credentials().name(),
 					activationCode: activationRequest.code(),
+					userId: user.id(),
 				}),
 			)
 			.send();

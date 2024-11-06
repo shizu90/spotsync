@@ -29,8 +29,6 @@ export class ActivateUserService implements ActivateUserUseCase {
 	public async execute(
 		command: ActivateUserCommand,
 	): Promise<void | SignInDto> {
-		console.log(command);
-
 		const activationRequest = (
 			await this.activationRequestRepository.findBy({
 				userId: command.userId,
