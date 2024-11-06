@@ -10,6 +10,8 @@ services:
       - 3001:3000
     depends_on:
       - db
+      - redis
+      - mailhog
     env_file: ".env"
     volumes:
       - '.:/app'
@@ -31,6 +33,15 @@ services:
     container_name: 'spotsync_redis'
     ports:
       - 6379:6379
+    networks:
+      - net
+    env_file: ".env"
+  mailhog:
+    image: mailhog/mailhog
+    container_name: 'spotsync_mailhog'
+    ports:
+      - 1025:1025
+      - 8025:8025
     networks:
       - net
     env_file: ".env"

@@ -3,9 +3,9 @@ import { MailTemplate } from './mail-template';
 export const MailProvider = 'Mail';
 
 export abstract class Mail {
-	private _sender: string;
-	private _template: MailTemplate;
-	private _receiver: string;
+	protected _sender: string;
+	protected _template: MailTemplate;
+	protected _receiver: string;
 
 	public constructor(
 		sender?: string,

@@ -10,7 +10,11 @@ const current_version = env.APP_VERSION || '1.0.0';
 const prefix = env.APP_PREFIX || 'api/v1';
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create(AppModule, {
+		cors: {
+			origin: env.FRONTEND_URL
+		}
+	});
 
 	app.setGlobalPrefix(prefix);
 
