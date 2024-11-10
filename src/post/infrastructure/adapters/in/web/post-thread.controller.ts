@@ -1,28 +1,30 @@
 import {
-    Controller,
-    Get,
-    HttpStatus,
-    Inject,
-    Query,
-    Req,
-    Res,
-    UseFilters,
-    UseGuards,
+	Controller,
+	Get,
+	HttpStatus,
+	Inject,
+	Query,
+	Req,
+	Res,
+	UseFilters,
+	UseGuards,
+	UsePipes,
+	ValidationPipe,
 } from '@nestjs/common';
 import {
-    ApiForbiddenResponse,
-    ApiInternalServerErrorResponse,
-    ApiOkResponse,
-    ApiOperation,
-    ApiTags,
-    ApiUnauthorizedResponse,
+	ApiForbiddenResponse,
+	ApiInternalServerErrorResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-    ListThreadsUseCase,
-    ListThreadsUseCaseProvider,
+	ListThreadsUseCase,
+	ListThreadsUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/list-threads.use-case';
 import { PostDto } from 'src/post/application/ports/out/dto/post.dto';
 import { PostErrorHandler } from './handlers/post-error.handler';
@@ -44,6 +46,13 @@ export class PostThreadController {
 	@ApiUnauthorizedResponse({ type: ErrorResponse })
 	@ApiOkResponse({ type: Array<PostDto> })
 	@UseGuards(AuthGuard)
+	@UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
 	@Get()
 	public async list(
 		@Query() query: ListThreadsQueryRequest,

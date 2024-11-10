@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
+import { GroupDto } from 'src/group/application/ports/out/dto/group.dto';
 import { PostAttachment } from 'src/post/domain/post-attachment.model';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import { Post } from 'src/post/domain/post.model';
@@ -54,8 +55,8 @@ export class PostDto extends Dto {
 	public updated_at: string = undefined;
 	@ApiPropertyOptional({ example: 'uuid' })
 	public parent_id: string = undefined;
-	@ApiPropertyOptional({ example: 'uuid' })
-	public group_id: string = undefined;
+	@ApiPropertyOptional()
+	public group: GroupDto = undefined;
 	@ApiPropertyOptional({ type: PostDto, isArray: true })
 	public children_posts: PostDto[] = undefined;
 	@ApiPropertyOptional()
@@ -77,7 +78,7 @@ export class PostDto extends Dto {
 		created_at?: string,
 		updated_at?: string,
 		parent_id?: string,
-		group_id?: string,
+		group?: GroupDto,
 		children_posts?: PostDto[],
 		total_childrens?: number,
 		total_likes?: number,
@@ -95,7 +96,7 @@ export class PostDto extends Dto {
 		this.created_at = created_at;
 		this.updated_at = updated_at;
 		this.parent_id = parent_id;
-		this.group_id = group_id;
+		this.group = group;
 		this.children_posts = children_posts;
 		this.total_childrens = total_childrens;
 		this.total_likes = total_likes;
@@ -117,7 +118,7 @@ export class PostDto extends Dto {
 			model.createdAt()?.toISOString(),
 			model.updatedAt()?.toISOString(),
 			model.parent() ? model.parent().id() : null,
-			model.group() ? model.group().id() : null,
+			model.group() ? GroupDto.fromModel(model.group()) : null,
 			model.childrens().map((p) => PostDto.fromModel(p)),
 			model.childrens().length,
 			model.totalLikes(),

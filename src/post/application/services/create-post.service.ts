@@ -123,7 +123,7 @@ export class CreatePostService implements CreatePostUseCase {
 		this.postRepository.store(newPost);
 		this.postThreadRepository.update(newPost.thread());
 
-		if (parent.creator().id() !== authenticatedUser.id() && parent !== null) {
+		if (parent && parent.creator().id() !== authenticatedUser.id() && parent !== null) {
 			await this.createNotificationUseCase.execute(new CreateNotificationCommand(
 				`New post`,
 				`${authenticatedUser.profile().displayName()} answered to your post.`,
