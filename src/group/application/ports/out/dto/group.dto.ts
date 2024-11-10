@@ -52,6 +52,8 @@ export class GroupDto extends Dto {
 	@ApiPropertyOptional()
 	public is_member: boolean = undefined;
 	@ApiPropertyOptional()
+	public total_members: number = undefined;
+	@ApiPropertyOptional()
 	public group_member: GroupMemberDto = undefined;
 
 	private constructor(
@@ -64,6 +66,7 @@ export class GroupDto extends Dto {
 		created_at?: string,
 		updated_at?: string,
 		is_member?: boolean,
+		total_members?: number,
 		group_member?: GroupMemberDto,
 	) {
 		super();
@@ -76,6 +79,7 @@ export class GroupDto extends Dto {
 		this.created_at = created_at;
 		this.updated_at = updated_at;
 		this.is_member = is_member;
+		this.total_members = total_members;
 		this.group_member = group_member;
 	}
 
@@ -97,6 +101,12 @@ export class GroupDto extends Dto {
 	public setGroupMember(groupMember: GroupMember): GroupDto {
 		this.is_member = true;
 		this.group_member = GroupMemberDto.fromModel(groupMember);
+
+		return this;
+	}
+
+	public setTotalMembers(totalMembers: number): GroupDto {
+		this.total_members = totalMembers;
 
 		return this;
 	}

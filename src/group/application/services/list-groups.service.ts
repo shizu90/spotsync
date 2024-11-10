@@ -58,7 +58,12 @@ export class ListGroupsService implements ListGroupsUseCase {
 					})
 				).at(0);
 
-				return GroupDto.fromModel(g).setGroupMember(groupMember);
+				const totalMembers = await this.groupMemberRepository.countBy({
+					groupId: g.id(),
+					status: GroupMemberStatus.ACTIVE,
+				});
+
+				return GroupDto.fromModel(g).setGroupMember(groupMember).setTotalMembers(totalMembers);
 			}),
 		);
 

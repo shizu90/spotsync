@@ -45,6 +45,11 @@ export class GetGroupService implements GetGroupUseCase {
 			})
 		).at(0);
 
-		return GroupDto.fromModel(group).setGroupMember(groupMember);
+		const totalMembers = await this.groupMemberRepository.countBy({
+			groupId: group.id(),
+			status: GroupMemberStatus.ACTIVE,
+		});
+
+		return GroupDto.fromModel(group).setGroupMember(groupMember).setTotalMembers(totalMembers);
 	}
 }
