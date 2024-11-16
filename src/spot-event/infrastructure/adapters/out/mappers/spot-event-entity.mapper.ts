@@ -59,10 +59,10 @@ export class SpotEventEntityMapper implements EntityMapper<SpotEvent, SpotEventE
             this._spotEntityMapper.toModel(entity.spot),
             this._userEntityMapper.toModel(entity.creator),
             entity.notify_minutes,
-            entity.participants.map(participant => SpotEventParticipant.create(
+            entity.participants ? entity.participants.map(participant => SpotEventParticipant.create(
                 this._userEntityMapper.toModel(participant.user),
                 participant.participated_at,
-            )),
+            )) : [],
             entity.visibility as SpotEventVisibility,
             entity.status as SpotEventStatus,
             this._groupEntityMapper.toModel(entity.group),

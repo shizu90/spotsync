@@ -113,8 +113,8 @@ export class CreateUserService implements CreateUserUseCase {
 					new GeoLocatorInput(
 						command.address.area,
 						command.address.subArea,
-						command.address.locality,
 						command.address.countryCode,
+						command.address.locality,
 					),
 				);
 

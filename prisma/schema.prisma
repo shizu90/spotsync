@@ -288,14 +288,16 @@ model SpotPhoto {
 }
 
 model SpotAddress {
-  spot_id      String  @id
-  area         String  @db.VarChar(255)
-  sub_area     String  @db.VarChar(255)
-  locality     String? @db.VarChar(255)
-  latitude     Decimal @db.Decimal(9, 6)
-  longitude    Decimal @db.Decimal(9, 6)
-  country_code String  @db.Char(2)
-  spot         Spot    @relation(fields: [spot_id], references: [id])
+  spot_id         String  @id
+  area            String  @db.VarChar(255)
+  sub_area        String  @db.VarChar(255)
+  locality        String? @db.VarChar(255)
+  latitude        Decimal @db.Decimal(9, 6)
+  longitude       Decimal @db.Decimal(9, 6)
+  country_code    String  @db.Char(2)
+  street_number   String? @db.VarChar(10)
+  postal_code     String? @db.VarChar(12)
+  spot            Spot    @relation(fields: [spot_id], references: [id])
 
   @@map("spot_addresses")
 }

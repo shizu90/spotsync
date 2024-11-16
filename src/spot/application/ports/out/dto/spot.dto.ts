@@ -19,6 +19,10 @@ class SpotAddressDto extends Dto {
 	public longitude: number = undefined;
 	@ApiPropertyOptional()
 	public country_code: string = undefined;
+	@ApiPropertyOptional()
+	public street_number: string = undefined;
+	@ApiPropertyOptional()
+	public postal_code: string = undefined;
 
 	private constructor(
 		area?: string,
@@ -27,6 +31,8 @@ class SpotAddressDto extends Dto {
 		latitude?: number,
 		longitude?: number,
 		country_code?: string,
+		street_number?: string,
+		postal_code?: string,
 	) {
 		super();
 		this.area = area;
@@ -35,6 +41,8 @@ class SpotAddressDto extends Dto {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.country_code = country_code;
+		this.street_number = street_number;
+		this.postal_code = postal_code;
 	}
 
 	public static fromModel(model: SpotAddress): SpotAddressDto {
@@ -47,6 +55,8 @@ class SpotAddressDto extends Dto {
 			model.latitude(),
 			model.longitude(),
 			model.countryCode(),
+			model.streetNumber(),
+			model.postalCode(),
 		);
 	}
 }
@@ -109,6 +119,8 @@ export class SpotDto extends Dto {
 	public total_favorites: number = undefined;
 	@ApiPropertyOptional()
 	public total_events: number = undefined;
+	@ApiPropertyOptional()
+	public total_visits: number = undefined;
 
 	private constructor(
 		id?: string,
@@ -130,6 +142,7 @@ export class SpotDto extends Dto {
 		total_spot_visits?: number,
 		total_favorites?: number,
 		total_events?: number,
+		total_visits?: number,
 	) {
 		super();
 		this.id = id;
@@ -151,6 +164,7 @@ export class SpotDto extends Dto {
 		this.total_spot_visits = total_spot_visits;
 		this.total_favorites = total_favorites;
 		this.total_events = total_events;
+		this.total_visits = total_visits;
 	}
 
 	public static fromModel(model: Spot): SpotDto {
@@ -171,6 +185,7 @@ export class SpotDto extends Dto {
 			null,
 			false,
 			null,
+			0,
 			0,
 			0,
 			0,
@@ -225,6 +240,12 @@ export class SpotDto extends Dto {
 
 	public setTotalEvents(total_events: number): SpotDto {
 		this.total_events = total_events;
+
+		return this;
+	}
+
+	public setTotalVisits(total_visits: number): SpotDto {
+		this.total_visits = total_visits;
 
 		return this;
 	}

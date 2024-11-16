@@ -76,7 +76,19 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
 
     private _mountInclude(): Object {
         return {
-            spot: true,
+            spot: {
+                include: {
+                    address: true,
+                    photos: true,
+                    creator: {
+                        include: {
+                            profile: true,
+                            visibility_settings: true,
+                            credentials: true,
+                        }
+                    }
+                }
+            },
             participants: {
                 include: {
                     user: {
@@ -274,7 +286,7 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
                 status: spotEvent.status(),
                 visibility: spotEvent.visibility(),
                 created_at: spotEvent.createdAt(),
-                group_id: spotEvent.group().id(),
+                group_id: spotEvent.group() ? spotEvent.group().id() : null,
                 spot_id: spotEvent.spot().id(),
                 updated_at: spotEvent.updatedAt(),
                 user_id: spotEvent.creator().id(),

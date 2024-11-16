@@ -44,6 +44,8 @@ export class SpotEntityMapper implements EntityMapper<Spot, SpotEntity> {
 						sub_area: model.address().subArea(),
 						latitude: new Decimal(model.address().latitude()),
 						longitude: new Decimal(model.address().longitude()),
+						postal_code: model.address().postalCode(),
+						street_number: model.address().streetNumber(),
 					}
 				: null,
 			creator: model.creator()
@@ -69,11 +71,13 @@ export class SpotEntityMapper implements EntityMapper<Spot, SpotEntity> {
 						entity.address.longitude.toNumber(),
 						entity.address.country_code,
 						entity.address.locality,
+						entity.address.street_number,
+						entity.address.postal_code,
 					)
 				: null,
-			entity.photos.map((photo) =>
+			entity.photos ? entity.photos.map((photo) =>
 				SpotPhoto.create(photo.id, photo.file_path),
-			),
+			) : [],
 			entity.creator
 				? this._userEntityMapper.toModel(entity.creator)
 				: null,

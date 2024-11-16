@@ -12,6 +12,8 @@ export class CreateSpotCommand extends Command {
 			locality?: string;
 			latitude?: number;
 			longitude?: number;
+			streetNumber?: string;
+			postalCode?: string;
 		},
 		readonly description?: string,
 	) {

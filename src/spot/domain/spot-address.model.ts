@@ -5,6 +5,8 @@ export class SpotAddress extends Model {
 	private _area: string;
 	private _subArea: string;
 	private _locality?: string;
+	private _streetNumber?: string;
+	private _postalCode?: string;
 	private _latitude: number;
 	private _longitude: number;
 	private _countryCode: string;
@@ -17,6 +19,8 @@ export class SpotAddress extends Model {
 		longitude: number,
 		countryCode: string,
 		locality?: string,
+		streetNumber?: string,
+		postalCode?: string,
 	) {
 		super();
 		this._id = id;
@@ -26,6 +30,8 @@ export class SpotAddress extends Model {
 		this._latitude = latitude;
 		this._longitude = longitude;
 		this._countryCode = countryCode;
+		this._streetNumber = streetNumber;
+		this._postalCode = postalCode;
 	}
 
 	public static create(
@@ -36,6 +42,8 @@ export class SpotAddress extends Model {
 		longitude: number,
 		countryCode: string,
 		locality?: string,
+		streetNumber?: string,
+		postalCode?: string,
 	) {
 		return new SpotAddress(
 			id,
@@ -45,6 +53,8 @@ export class SpotAddress extends Model {
 			longitude,
 			countryCode,
 			locality,
+			streetNumber,
+			postalCode,
 		);
 	}
 
@@ -76,6 +86,14 @@ export class SpotAddress extends Model {
 		return this._countryCode;
 	}
 
+	public streetNumber(): string {
+		return this._streetNumber;
+	}
+
+	public postalCode(): string {
+		return this._postalCode;
+	}
+
 	public changeArea(area: string): void {
 		this._area = area;
 	}
@@ -98,5 +116,13 @@ export class SpotAddress extends Model {
 
 	public changeCountryCode(countryCode: string): void {
 		this._countryCode = countryCode;
+	}
+
+	public changeStreetNumber(streetNumber: string): void {
+		this._streetNumber = streetNumber;
+	}
+
+	public changePostalCode(postalCode: string): void {
+		this._postalCode = postalCode;
 	}
 }

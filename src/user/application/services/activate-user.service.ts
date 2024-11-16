@@ -62,9 +62,8 @@ export class ActivateUserService implements ActivateUserUseCase {
 
 			return new SignInDto(
 				user.id(),
-				user.credentials().name(),
-				user.credentials().email(),
 				bearerToken,
+				user,
 			);
 		}
 	}

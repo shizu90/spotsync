@@ -96,12 +96,17 @@ export class GetSpotService implements GetSpotUseCase {
 			spot.id(),
 		));
 
+		const totalVisits = await this.spotRepository.countVisitedSpotBy({
+			spotId: spot.id(),
+		});
+
 		return SpotDto.fromModel(spot)
 			.setTotalFavorites(totalFavorites)
 			.setTotalSpotVisits(totalSpotVisits)
 			.setVisitedAt(visited?.visitedAt())
 			.setFavoritedAt(favorited?.createdAt())
 			.setDistance(distance)
-			.setAverageRating(avgRating);
+			.setAverageRating(avgRating)
+			.setTotalVisits(totalVisits);
 	}
 }

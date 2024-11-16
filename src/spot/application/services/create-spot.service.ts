@@ -53,8 +53,10 @@ export class CreateSpotService implements CreateSpotUseCase {
 				new GeoLocatorInput(
 					command.address.area,
 					command.address.subArea,
-					command.address.locality,
 					command.address.countryCode,
+					command.address.locality,
+					command.address.streetNumber,
+					command.address.postalCode,
 				),
 			);
 
@@ -72,6 +74,8 @@ export class CreateSpotService implements CreateSpotUseCase {
 			longitude,
 			command.address.countryCode,
 			command.address.locality,
+			command.address.streetNumber,
+			command.address.postalCode,
 		);
 
 		const spot = Spot.create(

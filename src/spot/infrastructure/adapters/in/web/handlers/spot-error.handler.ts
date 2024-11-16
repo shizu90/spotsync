@@ -41,7 +41,7 @@ export class SpotErrorHandler implements ExceptionFilter {
 				break;
 			case 'UnauthenticatedError':
 				response
-					.status(HttpStatus.UNAUTHORIZED)
+					.status(HttpStatus.FORBIDDEN)
 					.json(
 						new ErrorResponse(
 							request.url,
@@ -53,7 +53,7 @@ export class SpotErrorHandler implements ExceptionFilter {
 				break;
 			case 'UnauthorizedAccessError':
 				response
-					.status(HttpStatus.FORBIDDEN)
+					.status(HttpStatus.UNAUTHORIZED)
 					.json(
 						new ErrorResponse(
 							request.url,

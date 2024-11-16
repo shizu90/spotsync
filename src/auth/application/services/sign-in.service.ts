@@ -68,9 +68,8 @@ export class SignInService implements SignInUseCase {
 
 		return new SignInDto(
 			user.id(),
-			user.credentials().name(),
-			user.credentials().email(),
 			bearerToken,
+			user,
 		);
 	}
 }

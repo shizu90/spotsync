@@ -51,8 +51,8 @@ export class SpotEvent extends Model implements Favoritable, Commentable, Ratabl
 		this._id = id;
 		this._name = name;
 		this._description = description;
-		this._startDate = startDate;
-		this._endDate = endDate;
+		this._startDate = new Date(startDate);
+		this._endDate = new Date(endDate);
 		this._status = status ?? SpotEventStatus.SCHEDULED;
 		this._participants = participants ?? [];
 		this._visibility = visibility ?? SpotEventVisibility.PUBLIC;

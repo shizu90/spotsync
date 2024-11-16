@@ -202,13 +202,18 @@ export class ListSpotsService implements ListSpotsUseCase {
 					s.id(),
 				));
 
+				const totalVisits = await this.spotRepository.countVisitedSpotBy({
+					spotId: s.id(),
+				});
+
 				return SpotDto.fromModel(s)
 					.setVisitedAt(visited?.visitedAt())
 					.setFavoritedAt(favorited?.createdAt())
 					.setTotalFavorites(totalFavorites)
 					.setTotalSpotVisits(totalSpotVisits)
 					.setDistance(distance)
-					.setAverageRating(avgRating);
+					.setAverageRating(avgRating)
+					.setTotalVisits(totalVisits);
 			}),
 		);
 

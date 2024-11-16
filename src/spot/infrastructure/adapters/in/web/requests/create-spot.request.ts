@@ -58,6 +58,18 @@ class Address {
 	@IsNumber()
 	@IsOptional()
 	public longitude?: number;
+
+	@ApiProperty()
+	@IsOptional()
+	@IsString()
+	@MaxLength(10)
+	public street_number?: string;
+
+	@ApiProperty()
+	@IsOptional()
+	@IsString()
+	@MaxLength(14)
+	public postal_code?: string;
 }
 
 export class CreateSpotRequest extends ApiRequest {

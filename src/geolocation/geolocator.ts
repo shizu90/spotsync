@@ -2,8 +2,10 @@ export class GeoLocatorInput {
 	constructor(
 		readonly area: string,
 		readonly subArea: string,
-		readonly locality: string,
 		readonly countryCode: string,
+		readonly locality?: string,
+		readonly streetNumber?: string,
+		readonly postalCode?: string,
 	) {}
 }
 

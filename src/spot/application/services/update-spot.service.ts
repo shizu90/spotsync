@@ -105,6 +105,22 @@ export class UpdateSpotService implements UpdateSpotUseCase {
 			}
 
 			if (
+				command.address.streetNumber !== null &&
+				command.address.streetNumber !== undefined &&
+				command.address.streetNumber.length > 0
+			) {
+				address.changeStreetNumber(command.address.streetNumber);
+			}
+
+			if (
+				command.address.postalCode !== null &&
+				command.address.postalCode !== undefined &&
+				command.address.postalCode.length > 0
+			) {
+				address.changePostalCode(command.address.postalCode);
+			}
+
+			if (
 				command.address.latitude !== null &&
 				command.address.latitude !== undefined &&
 				command.address.longitude !== null &&
@@ -117,8 +133,10 @@ export class UpdateSpotService implements UpdateSpotUseCase {
 					new GeoLocatorInput(
 						address.area(),
 						address.subArea(),
-						address.locality(),
 						address.countryCode(),
+						address.locality(),
+						address.streetNumber(),
+						address.postalCode(),
 					),
 				);
 

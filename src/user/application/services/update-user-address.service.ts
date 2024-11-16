@@ -86,8 +86,8 @@ export class UpdateUserAddressService implements UpdateUserAddressUseCase {
 				new GeoLocatorInput(
 					userAddress.area(),
 					userAddress.subArea(),
-					userAddress.locality(),
 					userAddress.countryCode(),
+					userAddress.locality(),
 				),
 			);
 
