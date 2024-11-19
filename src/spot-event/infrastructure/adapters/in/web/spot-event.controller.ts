@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Patch, Post, Put, Query, Req, Res, UseFilters, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Patch, Post, Put, Query, Req, Res, UseFilters, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiConflictResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth.guard";
@@ -55,6 +55,13 @@ export class SpotEventController extends ApiController {
     @ApiOperation({ summary: 'List spot events'})
     @ApiOkResponse({ isArray: true, type: SpotEventDto })
     @UseGuards(AuthGuard)
+    @UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
     @Get()
     public async list(
         @Query() query: ListSpotEventsQueryRequest,
@@ -72,6 +79,13 @@ export class SpotEventController extends ApiController {
     @ApiOkResponse({ type: SpotEventDto })
     @ApiNotFoundResponse({ type: ErrorResponse })
     @UseGuards(AuthGuard)
+    @UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
     @Get(':id')
     public async get(
         @Param('id') id: string,
@@ -88,6 +102,13 @@ export class SpotEventController extends ApiController {
     @ApiOperation({ summary: 'Create spot event'})
     @ApiCreatedResponse({ type: SpotEventDto})
     @UseGuards(AuthGuard)
+    @UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
     @Post()
     public async create(
         @Body() body: CreateSpotEventRequest,
@@ -106,6 +127,13 @@ export class SpotEventController extends ApiController {
     @ApiNotFoundResponse({ type: ErrorResponse })
     @ApiConflictResponse({ type: ErrorResponse })
     @UseGuards(AuthGuard)
+    @UsePipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+			forbidNonWhitelisted: true,
+		}),
+	)
     @Put(':id')
     public async update(
         @Param('id') id: string,
