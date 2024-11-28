@@ -10,14 +10,16 @@ export class LocalFileStorage extends FileStorage {
     public async save(file_path: string, file: Express.Multer.File): Promise<Path> {
         try {
             const dir = path.dirname(
-                path.join(this.basePath, file_path)
+                path.join(this.basePath, file_path, file.originalname)
             );
             
             await fs.promises.mkdir(dir, { recursive: true });
 
-            await fs.promises.writeFile(file_path, file.buffer);
+            const fileToStore = path.join(this.basePath, file_path, file.originalname);
 
-            return file_path;
+            await fs.promises.writeFile(fileToStore, file.buffer);
+
+            return fileToStore;
         } catch (error) {
             console.error("Error saving file", error);
             throw new Error("Error saving file");

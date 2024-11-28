@@ -120,7 +120,7 @@ export class CreatePostService implements CreatePostUseCase {
 			group,
 		);
 
-		command.attachments.forEach(async (attachment) => {
+		for (const attachment of command.attachments) {
 			const filePath = await this.fileStorage.save(
 				`posts/${newPost.id()}`,
 				attachment
@@ -131,7 +131,7 @@ export class CreatePostService implements CreatePostUseCase {
 				filePath,
 				attachment.mimetype,
 			));
-		});
+		}
 
 		if (newPost.thread().maxDepthLevel() === 0) {
 			await this.postThreadRepository.store(newPost.thread());

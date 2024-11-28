@@ -33,10 +33,6 @@ import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-	AddPostAttachmentUseCase,
-	AddPostAttachmentUseCaseProvider,
-} from 'src/post/application/ports/in/use-cases/add-post-attachment.use-case';
-import {
 	CreatePostUseCase,
 	CreatePostUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/create-post.use-case';
@@ -48,10 +44,6 @@ import {
 	GetPostUseCase,
 	GetPostUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/get-post.use-case';
-import {
-	RemovePostAttachmentUseCase,
-	RemovePostAttachmentUseCaseProvider,
-} from 'src/post/application/ports/in/use-cases/remove-post-attachment.use-case';
 import {
 	UpdatePostUseCase,
 	UpdatePostUseCaseProvider,
@@ -77,10 +69,6 @@ export class PostController {
 		protected updatePostUseCase: UpdatePostUseCase,
 		@Inject(DeletePostUseCaseProvider)
 		protected deletePostUseCase: DeletePostUseCase,
-		@Inject(AddPostAttachmentUseCaseProvider)
-		protected addPostAttachmentUseCase: AddPostAttachmentUseCase,
-		@Inject(RemovePostAttachmentUseCaseProvider)
-		protected removePostAttachmentUseCase: RemovePostAttachmentUseCase,
 	) {}
 
 	@ApiOperation({ summary: 'Get post by id' })
