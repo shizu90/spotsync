@@ -1,0 +1,48 @@
+import * as fs from "fs";
+import * as path from "path";
+import { FileStorage, Path } from "./file-storage";
+
+export class LocalFileStorage extends FileStorage {
+    public constructor() {
+        super();
+    }
+
+    public async save(file_path: string, file: Express.Multer.File): Promise<Path> {
+        try {
+            const dir = path.dirname(
+                path.join(this.basePath, file_path)
+            );
+            
+            await fs.promises.mkdir(dir, { recursive: true });
+
+            await fs.promises.writeFile(file_path, file.buffer);
+
+            return file_path;
+        } catch (error) {
+            console.error("Error saving file", error);
+            throw new Error("Error saving file");
+        }
+    }
+
+    public async delete(file_path: string): Promise<void> {
+        try {
+            const full_path = path.join(this.basePath, file_path);
+
+            await fs.promises.unlink(full_path);
+        } catch(error) {
+            console.error("Error deleting file", error);
+            throw new Error("Error deleting file");
+        }
+    }
+
+    public async get(file_path: string): Promise<Buffer> {
+        try {
+            const full_path = path.join(this.basePath, file_path);
+
+            return await fs.promises.readFile(full_path);
+        } catch (error) {
+            console.error("Error getting file", error);
+            throw new Error("Error getting file");
+        }
+    }
+}

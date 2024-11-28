@@ -7,6 +7,7 @@ export class UpdatePostCommand extends Command {
 		readonly title?: string,
 		readonly content?: string,
 		readonly visibility?: PostVisibility,
+		readonly attachments?: Express.Multer.File[],
 	) {
 		super();
 	}

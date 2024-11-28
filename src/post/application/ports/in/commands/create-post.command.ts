@@ -8,6 +8,7 @@ export class CreatePostCommand extends Command {
 		readonly visibility?: PostVisibility,
 		readonly parentId?: string,
 		readonly groupId?: string,
+		readonly attachments?: Express.Multer.File[],
 	) {
 		super();
 	}

@@ -6,6 +6,8 @@ import { GroupModule } from 'src/group/group.module';
 import { LikeModule } from 'src/like/like.module';
 import { NotificationModule } from 'src/notification/notification.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { FileStorageServices } from 'src/storage/file-storage-services.enum';
+import { StorageModule } from 'src/storage/storage.module';
 import { UserModule } from 'src/user/user.module';
 import { PostThreadController } from './infrastructure/adapters/in/web/post-thread.controller';
 import { PostController } from './infrastructure/adapters/in/web/post.controller';
@@ -21,6 +23,7 @@ import { Providers } from './post.provider';
 		forwardRef(() => LikeModule),
 		AuthModule,
 		NotificationModule,
+		StorageModule.forService(FileStorageServices.LOCAL),
 	],
 	providers: [...Providers],
 	exports: [...Providers],

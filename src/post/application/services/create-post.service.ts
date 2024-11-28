@@ -15,8 +15,10 @@ import { CreateNotificationCommand } from 'src/notification/application/ports/in
 import { CreateNotificationUseCase, CreateNotificationUseCaseProvider } from 'src/notification/application/ports/in/use-cases/create-notification.use-case';
 import { NotificationType } from 'src/notification/domain/notification-type.enum';
 import { NotificationPayload, NotificationPayloadSubject } from 'src/notification/domain/notification.model';
+import { PostAttachment } from 'src/post/domain/post-attachment.model';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import { Post } from 'src/post/domain/post.model';
+import { FileStorage, FileStorageProvider } from 'src/storage/file-storage';
 import { UserVisibility } from 'src/user/domain/user-visibility.enum';
 import { CreatePostCommand } from '../ports/in/commands/create-post.command';
 import { CreatePostUseCase } from '../ports/in/use-cases/create-post.use-case';
@@ -44,6 +46,8 @@ export class CreatePostService implements CreatePostUseCase {
 		protected groupRepository: GroupRepository,
 		@Inject(CreateNotificationUseCaseProvider)
 		protected createNotificationUseCase: CreateNotificationUseCase,
+		@Inject(FileStorageProvider)
+		protected fileStorage: FileStorage,
 	) {}
 
 	public async execute(command: CreatePostCommand): Promise<PostDto> {
@@ -115,6 +119,19 @@ export class CreatePostService implements CreatePostUseCase {
 			[],
 			group,
 		);
+
+		command.attachments.forEach(async (attachment) => {
+			const filePath = await this.fileStorage.save(
+				`posts/${newPost.id()}`,
+				attachment
+			);
+
+			newPost.addAttachment(PostAttachment.create(
+				randomUUID(),
+				filePath,
+				attachment.mimetype,
+			));
+		});
 
 		if (newPost.thread().maxDepthLevel() === 0) {
 			await this.postThreadRepository.store(newPost.thread());

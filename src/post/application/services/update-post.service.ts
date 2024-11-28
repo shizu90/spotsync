@@ -1,9 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { PostAttachment } from 'src/post/domain/post-attachment.model';
+import { FileStorage, FileStorageProvider } from 'src/storage/file-storage';
 import { UpdatePostCommand } from '../ports/in/commands/update-post.command';
 import { UpdatePostUseCase } from '../ports/in/use-cases/update-post.use-case';
 import {
@@ -19,6 +22,8 @@ export class UpdatePostService implements UpdatePostUseCase {
 		protected postRepository: PostRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+		@Inject(FileStorageProvider)
+		protected fileStorage: FileStorage,
 	) {}
 
 	public async execute(command: UpdatePostCommand): Promise<void> {
@@ -44,6 +49,23 @@ export class UpdatePostService implements UpdatePostUseCase {
 
 		if (command.visibility) {
 			post.changeVisibility(command.visibility);
+		}
+
+		if (command.attachments) {
+			post.removeAllAttachments();
+
+			command.attachments.forEach(async (attachment) => {
+				const filePath = await this.fileStorage.save(
+					`posts/${post.id()}/attachments`,
+					attachment
+				);
+
+				post.addAttachment(PostAttachment.create(
+					randomUUID(),
+					filePath,
+					attachment.mimetype,
+				));
+			});
 		}
 
 		this.postRepository.update(post);

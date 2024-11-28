@@ -10,11 +10,14 @@ import {
 	Put,
 	Req,
 	Res,
+	UploadedFiles,
 	UseFilters,
 	UseGuards,
+	UseInterceptors,
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -57,6 +60,7 @@ import { PostDto } from 'src/post/application/ports/out/dto/post.dto';
 import { PostErrorHandler } from './handlers/post-error.handler';
 import { PostRequestMapper } from './mappers/post-request.mapper';
 import { CreatePostRequest } from './requests/create-post.request';
+import { UpdatePostRequest } from './requests/update-post.request';
 
 @ApiTags('Posts')
 @ApiInternalServerErrorResponse({ type: ErrorResponse })
@@ -110,13 +114,21 @@ export class PostController {
 			forbidNonWhitelisted: true,
 		}),
 	)
+	@UseInterceptors(
+		FileFieldsInterceptor(
+			[
+				{ name: 'attachments', maxCount: 5 },
+			],
+		)
+	)
 	@Post()
 	public async create(
 		@Body() body: CreatePostRequest,
+		@UploadedFiles() files: { attachments?: Express.Multer.File[] },
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = PostRequestMapper.createPostCommand(body);
+		const command = PostRequestMapper.createPostCommand(body, files.attachments);
 
 		const post = await this.createPostUseCase.execute(command);
 
@@ -137,14 +149,22 @@ export class PostController {
 			forbidNonWhitelisted: true,
 		}),
 	)
+	@UseInterceptors(
+		FileFieldsInterceptor(
+			[
+				{ name: 'attachments', maxCount: 5 },
+			]
+		)
+	)
 	@Put(':id')
 	public async update(
 		@Param('id') id: string,
-		@Body() Body,
+		@Body() body: UpdatePostRequest,
+		@UploadedFiles() files: { attachments?: Express.Multer.File[] },
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = PostRequestMapper.updatePostCommand(id, Body);
+		const command = PostRequestMapper.updatePostCommand(id, body, files.attachments);
 
 		await this.updatePostUseCase.execute(command);
 

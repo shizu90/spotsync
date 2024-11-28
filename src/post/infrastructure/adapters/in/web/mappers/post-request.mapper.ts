@@ -28,6 +28,7 @@ export class PostRequestMapper {
 
 	public static createPostCommand(
 		body: CreatePostRequest,
+		files: Express.Multer.File[],
 	): CreatePostCommand {
 		return new CreatePostCommand(
 			body.title,
@@ -35,18 +36,21 @@ export class PostRequestMapper {
 			body.visibility,
 			body.parent_id,
 			body.group_id,
+			files
 		);
 	}
 
 	public static updatePostCommand(
 		id: string,
 		body: UpdatePostRequest,
+		files: Express.Multer.File[],
 	): UpdatePostCommand {
 		return new UpdatePostCommand(
 			id,
 			body.title,
 			body.content,
 			body.visibility,
+			files
 		);
 	}
 
