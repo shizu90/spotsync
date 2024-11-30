@@ -225,11 +225,12 @@ model Post {
 }
 
 model PostAttachment {
-  id        String @id @default(uuid())
-  post_id   String
-  file_path String @db.VarChar(400)
-  file_type String @db.VarChar(12)
-  post      Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  id            String @id @default(uuid())
+  post_id       String
+  file_path     String
+  file_content  String?
+  file_type     String @db.VarChar(20)
+  post          Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
   @@map("post_attachments")
 }
@@ -279,10 +280,12 @@ model Spot {
 }
 
 model SpotPhoto {
-  id        String @id @default(uuid())
-  spot_id   String
-  file_path String @db.VarChar(400)
-  spot      Spot   @relation(fields: [spot_id], references: [id], onDelete: Cascade)
+  id            String @id @default(uuid())
+  spot_id       String
+  file_path     String
+  file_content  String?
+  file_type     String @db.VarChar(20)
+  spot          Spot   @relation(fields: [spot_id], references: [id], onDelete: Cascade)
 
   @@map("spot_photos")
 }

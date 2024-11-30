@@ -311,6 +311,7 @@ export class PostRepositoryImpl implements PostRepository {
 				data: {
 					id: a.id(),
 					file_path: a.filePath(),
+					file_content: a.fileContent(),
 					file_type: a.fileType(),
 					post_id: model.id(),
 				},
@@ -343,6 +344,7 @@ export class PostRepositoryImpl implements PostRepository {
 				data: {
 					id: a.id(),
 					file_path: a.filePath(),
+					file_content: a.fileContent(),
 					file_type: a.fileType(),
 					post_id: model.id(),
 				},

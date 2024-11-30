@@ -359,6 +359,18 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
+		model.photos().forEach(async (photo) => {
+			await this.prismaService.spotPhoto.create({
+				data: {
+					id: photo.id(),
+					spot_id: model.id(),
+					file_path: photo.filePath(),
+					file_content: photo.fileContent(),
+					file_type: photo.fileType(),
+				}
+			});
+		});
+
 		return this._spotEntityMapper.toModel(spot);
 	}
 
@@ -412,6 +424,24 @@ export class SpotRepositoryImpl implements SpotRepository {
 					},
 				},
 			},
+		});
+
+		await this.prismaService.spotPhoto.deleteMany({
+			where: {
+				spot_id: model.id(),
+			},
+		});
+
+		model.photos().forEach(async (photo) => {
+			await this.prismaService.spotPhoto.create({
+				data: {
+					id: photo.id(),
+					spot_id: model.id(),
+					file_path: photo.filePath(),
+					file_content: photo.fileContent(),
+					file_type: photo.fileType(),
+				},
+			});
 		});
 	}
 

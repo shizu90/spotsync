@@ -120,17 +120,20 @@ export class CreatePostService implements CreatePostUseCase {
 			group,
 		);
 
-		for (const attachment of command.attachments) {
-			const filePath = await this.fileStorage.save(
-				`posts/${newPost.id()}`,
-				attachment
-			);
+		if (command.attachments) {
+			for (const attachment of command.attachments) {
+				const savedFile = await this.fileStorage.save(
+					`posts/${newPost.id()}/attachments`,
+					attachment
+				);
 
-			newPost.addAttachment(PostAttachment.create(
-				randomUUID(),
-				filePath,
-				attachment.mimetype,
-			));
+				newPost.addAttachment(PostAttachment.create(
+					randomUUID(),
+					savedFile.path,
+					savedFile.content,
+					attachment.mimetype,
+				));
+			}
 		}
 
 		if (newPost.thread().maxDepthLevel() === 0) {

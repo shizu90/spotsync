@@ -17,6 +17,7 @@ export class UpdateSpotCommand extends Command {
 			streetNumber?: string;
 			postalCode?: string;
 		},
+		readonly photos?: Express.Multer.File[],
 	) {
 		super();
 	}

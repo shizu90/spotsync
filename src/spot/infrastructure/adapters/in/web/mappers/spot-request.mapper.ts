@@ -33,6 +33,7 @@ export class SpotRequestMapper {
 
 	public static createSpotCommand(
 		body: CreateSpotRequest,
+		files: Express.Multer.File[],
 	): CreateSpotCommand {
 		return new CreateSpotCommand(
 			body.name,
@@ -46,12 +47,14 @@ export class SpotRequestMapper {
 				longitude: body.address.longitude,
 			},
 			body.description,
+			files,
 		);
 	}
 
 	public static updateSpotCommand(
 		id: string,
 		body: UpdateSpotRequest,
+		files: Express.Multer.File[],
 	): UpdateSpotCommand {
 		return new UpdateSpotCommand(
 			id,
@@ -68,6 +71,7 @@ export class SpotRequestMapper {
 						longitude: body.address.longitude,
 					}
 				: null,
+			files,
 		);
 	}
 

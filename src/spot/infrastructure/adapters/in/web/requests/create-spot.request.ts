@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
 	IsEnum,
 	IsNotEmptyObject,
@@ -101,5 +101,6 @@ export class CreateSpotRequest extends ApiRequest {
 	@IsObject()
 	@ValidateNested()
 	@Type(() => Address)
+	@Transform(({ value }) => JSON.parse(value))
 	public address: Address;
 }

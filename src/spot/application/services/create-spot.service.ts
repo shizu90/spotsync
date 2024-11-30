@@ -11,7 +11,9 @@ import {
 import { GeoLocatorService } from 'src/geolocation/geolocator.service';
 import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import { SpotAddress } from 'src/spot/domain/spot-address.model';
+import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
 import { Spot } from 'src/spot/domain/spot.model';
+import { FileStorage, FileStorageProvider } from 'src/storage/file-storage';
 import { UserAddressRepository, UserAddressRepositoryProvider } from 'src/user/application/ports/out/user-address.repository';
 import { CreateSpotCommand } from '../ports/in/commands/create-spot.command';
 import { CreateSpotUseCase } from '../ports/in/use-cases/create-spot.use-case';
@@ -33,6 +35,8 @@ export class CreateSpotService implements CreateSpotUseCase {
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 		@Inject(UserAddressRepositoryProvider)
 		protected userAddressRepository: UserAddressRepository,
+		@Inject(FileStorageProvider)
+		protected fileStorage: FileStorage,
 	) {}
 
 	public async execute(command: CreateSpotCommand): Promise<SpotDto> {
@@ -87,6 +91,22 @@ export class CreateSpotService implements CreateSpotUseCase {
 			[],
 			authenticatedUser,
 		);
+
+		if (command.photos) {
+			for (const photo of command.photos) {
+				const savedFile = await this.fileStorage.save(
+					`spots/${spotId}/photos`,
+					photo,
+				);
+
+				spot.addPhoto(SpotPhoto.create(
+					randomUUID(),
+					savedFile.path,
+					savedFile.content,
+					photo.mimetype
+				))
+			}
+		}
 
 		const mainAddress = (await this.userAddressRepository.findBy({
 			userId: authenticatedUser.id(),

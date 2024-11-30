@@ -1,13 +1,13 @@
 import * as fs from "fs";
 import * as path from "path";
-import { FileStorage, Path } from "./file-storage";
+import { FileStorage, SavedFile } from "./file-storage";
 
 export class LocalFileStorage extends FileStorage {
     public constructor() {
         super();
     }
 
-    public async save(file_path: string, file: Express.Multer.File): Promise<Path> {
+    public async save(file_path: string, file: Express.Multer.File): Promise<SavedFile> {
         try {
             const dir = path.dirname(
                 path.join(this.basePath, file_path, file.originalname)
@@ -19,7 +19,13 @@ export class LocalFileStorage extends FileStorage {
 
             await fs.promises.writeFile(fileToStore, file.buffer);
 
-            return fileToStore;
+            const base64 = file.buffer.toString("base64");
+
+            const contents = "data:" + file.mimetype + ";base64," + base64;
+
+            const savedFile = new SavedFile(fileToStore, contents);
+
+            return savedFile;
         } catch (error) {
             console.error("Error saving file", error);
             throw new Error("Error saving file");

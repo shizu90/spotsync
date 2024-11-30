@@ -51,6 +51,15 @@ export class SpotEntityMapper implements EntityMapper<Spot, SpotEntity> {
 			creator: model.creator()
 				? this._userEntityMapper.toEntity(model.creator())
 				: null,
+			photos: model.photos().map((photo) => {
+				return {
+					id: photo.id(),
+					spot_id: model.id(),
+					file_path: photo.filePath(),
+					file_content: photo.fileContent(),
+					file_type: photo.fileType(),
+				};
+			}),
 		};
 	}
 
@@ -76,7 +85,7 @@ export class SpotEntityMapper implements EntityMapper<Spot, SpotEntity> {
 					)
 				: null,
 			entity.photos ? entity.photos.map((photo) =>
-				SpotPhoto.create(photo.id, photo.file_path),
+				SpotPhoto.create(photo.id, photo.file_path, photo.file_content, photo.file_type),
 			) : [],
 			entity.creator
 				? this._userEntityMapper.toModel(entity.creator)

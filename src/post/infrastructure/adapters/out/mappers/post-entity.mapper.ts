@@ -54,6 +54,7 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
 				? model.attachments().map((attachment) => ({
 						id: attachment.id(),
 						file_path: attachment.filePath(),
+						file_content: attachment.fileContent(),
 						file_type: attachment.fileType(),
 						post_id: model.id(),
 					}))
@@ -90,6 +91,7 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
 						PostAttachment.create(
 							attachment.id,
 							attachment.file_path,
+							attachment.file_content,
 							attachment.file_type,
 						),
 					)

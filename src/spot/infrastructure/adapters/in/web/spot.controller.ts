@@ -1,62 +1,65 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpStatus,
-    Inject,
-    Param,
-    Post,
-    Put,
-    Query,
-    Req,
-    Res,
-    UseFilters,
-    UseGuards,
-    UsePipes,
-    ValidationPipe,
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Inject,
+	Param,
+	Post,
+	Put,
+	Query,
+	Req,
+	Res,
+	UploadedFiles,
+	UseFilters,
+	UseGuards,
+	UseInterceptors,
+	UsePipes,
+	ValidationPipe,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
-    ApiCreatedResponse,
-    ApiForbiddenResponse,
-    ApiNoContentResponse,
-    ApiNotFoundResponse,
-    ApiOkResponse,
-    ApiOperation,
-    ApiTags,
-    ApiUnauthorizedResponse,
+	ApiCreatedResponse,
+	ApiForbiddenResponse,
+	ApiNoContentResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-    CreateSpotUseCase,
-    CreateSpotUseCaseProvider,
+	CreateSpotUseCase,
+	CreateSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/create-spot.use-case';
 import {
-    DeleteSpotUseCase,
-    DeleteSpotUseCaseProvider,
+	DeleteSpotUseCase,
+	DeleteSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/delete-spot.use-case';
 import {
-    GetSpotUseCase,
-    GetSpotUseCaseProvider,
+	GetSpotUseCase,
+	GetSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/get-spot.use-case';
 import {
-    ListSpotsUseCase,
-    ListSpotsUseCaseProvider,
+	ListSpotsUseCase,
+	ListSpotsUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/list-spots.use-case';
 import {
-    UnvisitSpotUseCase,
-    UnvisitSpotUseCaseProvider,
+	UnvisitSpotUseCase,
+	UnvisitSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/unvisit-spot.use.case';
 import {
-    UpdateSpotUseCase,
-    UpdateSpotUseCaseProvider,
+	UpdateSpotUseCase,
+	UpdateSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/update-spot.use-case';
 import {
-    VisitSpotUseCase,
-    VisitSpotUseCaseProvider,
+	VisitSpotUseCase,
+	VisitSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/visit-spot.use.case';
 import { SpotDto } from 'src/spot/application/ports/out/dto/spot.dto';
 import { SpotErrorHandler } from './handlers/spot-error.handler';
@@ -144,13 +147,21 @@ export class SpotController extends ApiController {
 			forbidNonWhitelisted: true,
 		}),
 	)
+	@UseInterceptors(
+		FileFieldsInterceptor(
+			[
+				{ name: 'photos', maxCount: 5 },
+			],
+		)
+	)
 	@Post()
 	public async create(
 		@Body() body: CreateSpotRequest,
+		@UploadedFiles() files: { photos?: Express.Multer.File[] },
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = SpotRequestMapper.createSpotCommand(body);
+		const command = SpotRequestMapper.createSpotCommand(body, files.photos);
 
 		const data = await this.createSpotUseCase.execute(command);
 
@@ -162,7 +173,6 @@ export class SpotController extends ApiController {
 	@ApiOperation({ summary: 'Update spot' })
 	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
-	@UseGuards(AuthGuard)
 	@UsePipes(
 		new ValidationPipe({
 			transform: true,
@@ -170,14 +180,23 @@ export class SpotController extends ApiController {
 			forbidNonWhitelisted: true,
 		}),
 	)
+	@UseInterceptors(
+		FileFieldsInterceptor(
+			[
+				{ name: 'photos', maxCount: 5 },
+			],
+		)
+	)
+	@UseGuards(AuthGuard)
 	@Put(':id')
 	public async update(
 		@Param('id') id: string,
 		@Body() body: UpdateSpotRequest,
+		@UploadedFiles() files: { photos?: Express.Multer.File[] },
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = SpotRequestMapper.updateSpotCommand(id, body);
+		const command = SpotRequestMapper.updateSpotCommand(id, body, files.photos);
 
 		await this.updateSpotUseCase.execute(command);
 

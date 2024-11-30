@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import {
 	GetAuthenticatedUserUseCase,
 	GetAuthenticatedUserUseCaseProvider,
@@ -9,6 +10,8 @@ import {
 	GeoLocatorProvider,
 } from 'src/geolocation/geolocator';
 import { GeoLocatorService } from 'src/geolocation/geolocator.service';
+import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
+import { FileStorage, FileStorageProvider } from 'src/storage/file-storage';
 import { UpdateSpotCommand } from '../ports/in/commands/update-spot.command';
 import { UpdateSpotUseCase } from '../ports/in/use-cases/update-spot.use-case';
 import {
@@ -27,6 +30,8 @@ export class UpdateSpotService implements UpdateSpotUseCase {
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 		@Inject(GeoLocatorProvider)
 		protected geoLocatorService: GeoLocatorService,
+		@Inject(FileStorageProvider)
+		protected fileStorage: FileStorage,
 	) {}
 
 	public async execute(command: UpdateSpotCommand): Promise<void> {
@@ -142,6 +147,28 @@ export class UpdateSpotService implements UpdateSpotUseCase {
 
 				address.changeLatitude(coordinates.latitude);
 				address.changeLongitude(coordinates.longitude);
+			}
+		}
+
+		for (const photo of spot.photos()) {
+			await this.fileStorage.delete(photo.filePath());
+
+			spot.removePhoto(photo.id());
+		}
+
+		if (command.photos) {
+			for (const photo of command.photos) {
+				const savedFile = await this.fileStorage.save(
+					`spots/${spot.id()}/photos`,
+					photo,
+				);
+
+				spot.addPhoto(SpotPhoto.create(
+					randomUUID(),
+					savedFile.path,
+					savedFile.content,
+					photo.mimetype,
+				));
 			}
 		}
 

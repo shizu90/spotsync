@@ -12,12 +12,15 @@ class PostAttachmentDto extends Dto {
 	@ApiPropertyOptional()
 	public file_path: string = undefined;
 	@ApiPropertyOptional()
+	public file_content: string = undefined;
+	@ApiPropertyOptional()
 	public file_type: string = undefined;
 
-	private constructor(id?: string, file_path?: string, file_type?: string) {
+	private constructor(id?: string, file_path?: string, file_content?: string, file_type?: string) {
 		super();
 		this.id = id;
 		this.file_path = file_path;
+		this.file_content = file_content;
 		this.file_type = file_type;
 	}
 
@@ -27,6 +30,7 @@ class PostAttachmentDto extends Dto {
 		return new PostAttachmentDto(
 			model.id(),
 			model.filePath(),
+			model.fileContent(),
 			model.fileType(),
 		);
 	}

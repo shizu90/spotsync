@@ -51,18 +51,23 @@ export class UpdatePostService implements UpdatePostUseCase {
 			post.changeVisibility(command.visibility);
 		}
 
-		post.removeAllAttachments();
+		for (const attachment of post.attachments()) {
+			await this.fileStorage.delete(attachment.filePath());
+
+			post.removeAttachment(attachment.id());
+		}
 
 		if (command.attachments) {
 			command.attachments.forEach(async (attachment) => {
-				const filePath = await this.fileStorage.save(
+				const savedFile = await this.fileStorage.save(
 					`posts/${post.id()}/attachments`,
 					attachment
 				);
 	
 				post.addAttachment(PostAttachment.create(
 					randomUUID(),
-					filePath,
+					savedFile.path,
+					savedFile.content,
 					attachment.mimetype,
 				));
 			});
