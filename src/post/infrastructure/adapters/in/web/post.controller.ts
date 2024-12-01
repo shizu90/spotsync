@@ -116,7 +116,7 @@ export class PostController {
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = PostRequestMapper.createPostCommand(body, files.attachments);
+		const command = PostRequestMapper.createPostCommand(body, files?.attachments);
 
 		const post = await this.createPostUseCase.execute(command);
 
@@ -152,7 +152,7 @@ export class PostController {
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = PostRequestMapper.updatePostCommand(id, body, files.attachments);
+		const command = PostRequestMapper.updatePostCommand(id, body, files?.attachments);
 
 		await this.updatePostUseCase.execute(command);
 
