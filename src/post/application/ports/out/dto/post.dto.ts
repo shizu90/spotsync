@@ -134,4 +134,16 @@ export class PostDto extends Dto {
 
 		return this;
 	}
+
+	public setTotalLikes(totalLikes: number): PostDto {
+		this.total_likes = totalLikes;
+
+		return this;
+	}
+
+	public setTotalChildrens(totalChildrens: number): PostDto {
+		this.total_childrens = totalChildrens;
+
+		return this;
+	}
 }

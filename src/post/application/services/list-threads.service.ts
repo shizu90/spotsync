@@ -109,8 +109,20 @@ export class ListThreadsService implements ListThreadsUseCase {
 							userId: authenticatedUser.id(),
 						})
 					).length > 0;
+
+				const totalLikes = await this.likeRepository.countBy({
+					subject: LikableSubject.POST,
+					subjectId: i.id(),
+				});
+
+				const totalChildrens = await this.postRepository.countBy({
+					parentId: i.id(),
+				});
+
 				return PostDto.fromModel(i)
-					.setLiked(liked);
+					.setLiked(liked)
+					.setTotalChildrens(totalChildrens)
+					.setTotalLikes(totalLikes);
 			}),
 		);
 
