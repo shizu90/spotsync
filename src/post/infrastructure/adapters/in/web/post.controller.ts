@@ -40,6 +40,7 @@ import {
 	DeletePostUseCase,
 	DeletePostUseCaseProvider,
 } from 'src/post/application/ports/in/use-cases/delete-post.use-case';
+import { GetAttachmentUseCase, GetAttachmentUseCaseProvider } from 'src/post/application/ports/in/use-cases/get-attachment.use-case';
 import {
 	GetPostUseCase,
 	GetPostUseCaseProvider,
@@ -69,6 +70,8 @@ export class PostController {
 		protected updatePostUseCase: UpdatePostUseCase,
 		@Inject(DeletePostUseCaseProvider)
 		protected deletePostUseCase: DeletePostUseCase,
+		@Inject(GetAttachmentUseCaseProvider)
+		protected getAttachmentUseCase: GetAttachmentUseCase
 	) {}
 
 	@ApiOperation({ summary: 'Get post by id' })
@@ -175,5 +178,24 @@ export class PostController {
 		await this.deletePostUseCase.execute(command);
 
 		res.status(HttpStatus.NO_CONTENT).json();
+	}
+
+	@ApiOperation({ summary: 'Get post attachment' })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiUnauthorizedResponse({ type: ErrorResponse })
+	@ApiNoContentResponse()
+	@UseGuards(AuthGuard)
+	@Get(':id/attachments/:attachmentId')
+	public async getAttachment(
+		@Param('id') id: string,
+		@Param('attachmentId') attachmentId: string,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = PostRequestMapper.getAttachmentCommand(id, attachmentId);
+
+		const readStream = await this.getAttachmentUseCase.execute(command);
+
+		readStream.pipe(res);
 	}
 }

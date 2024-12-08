@@ -8,7 +8,6 @@ import {
 	FollowRepository,
 	FollowRepositoryProvider,
 } from 'src/follower/application/ports/out/follow.repository';
-import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import {
 	GroupMemberRepository,
 	GroupMemberRepositoryProvider,
@@ -17,13 +16,11 @@ import {
 	GroupRepository,
 	GroupRepositoryProvider,
 } from 'src/group/application/ports/out/group.repository';
-import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import {
 	LikeRepository,
 	LikeRepositoryProvider,
 } from 'src/like/application/ports/out/like.repository';
 import { LikableSubject } from 'src/like/domain/likable-subject.enum';
-import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import {
 	UserRepository,
 	UserRepositoryProvider,
@@ -60,7 +57,7 @@ export class ListThreadsService implements ListThreadsUseCase {
 	): Promise<Pagination<PostDto> | Array<PostDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
-		const pagination = await this.postRepository.paginate({
+		const pagination = await this.postRepository.paginateAuthorizedPosts(authenticatedUser.id(), {
 			filters: {
 				groupId: command.groupId,
 				userId: command.userId,
@@ -75,32 +72,6 @@ export class ListThreadsService implements ListThreadsUseCase {
 
 		const items = await Promise.all(
 			pagination.items.map(async (i) => {
-				switch(i.visibility()) {
-					case PostVisibility.PRIVATE:
-						if (i.group() !== null) {
-							const isMember = (await this.groupMemberRepository.findBy({
-								userId: authenticatedUser.id(),
-								groupId: i.group().id(),
-								status: GroupMemberStatus.ACTIVE,
-							})).length > 0;
-
-							if (!isMember) return undefined;
-						} else {
-							if (i.creator().id() !== authenticatedUser.id()) return undefined;
-						}
-						break;
-					case PostVisibility.FOLLOWERS:
-						const ifFollowing = (await this.followRepository.findBy({
-							fromUserId: authenticatedUser.id(),
-							toUserId: i.creator().id(),
-							status: FollowStatus.ACTIVE,
-						})).length > 0;
-
-						if (!ifFollowing) return undefined;
-						break;
-					default: break;
-				}
-
 				const liked =
 					(
 						await this.likeRepository.findBy({

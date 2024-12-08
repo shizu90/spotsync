@@ -11,7 +11,7 @@ import {
 import { GeoLocatorService } from 'src/geolocation/geolocator.service';
 import { calculateDistance } from 'src/spot/domain/calculate-distance.helper';
 import { SpotAddress } from 'src/spot/domain/spot-address.model';
-import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
+import { SpotAttachment } from 'src/spot/domain/spot-attachment.model';
 import { Spot } from 'src/spot/domain/spot.model';
 import { FileStorage, FileStorageProvider } from 'src/storage/file-storage';
 import { UserAddressRepository, UserAddressRepositoryProvider } from 'src/user/application/ports/out/user-address.repository';
@@ -92,18 +92,17 @@ export class CreateSpotService implements CreateSpotUseCase {
 			authenticatedUser,
 		);
 
-		if (command.photos) {
-			for (const photo of command.photos) {
+		if (command.attachments) {
+			for (const attachment of command.attachments) {
 				const savedFile = await this.fileStorage.save(
-					`spots/${spotId}/photos`,
-					photo,
+					`spots/${spotId}/attachments`,
+					attachment,
 				);
 
-				spot.addPhoto(SpotPhoto.create(
+				spot.addAttachment(SpotAttachment.create(
 					randomUUID(),
 					savedFile.path,
-					savedFile.content,
-					photo.mimetype
+					attachment.mimetype
 				))
 			}
 		}

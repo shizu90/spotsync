@@ -95,7 +95,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 	private _mountInclude(): Object {
 		return {
 			address: true,
-			photos: true,
+			attachments: true,
 			creator: {
 				include: {
 					credentials: true,
@@ -348,7 +348,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 			include: {
 				address: true,
-				photos: true,
+				attachments: true,
 				creator: {
 					include: {
 						credentials: true,
@@ -359,13 +359,12 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		model.photos().forEach(async (photo) => {
-			await this.prismaService.spotPhoto.create({
+		model.attachments().forEach(async (photo) => {
+			await this.prismaService.spotAttachment.create({
 				data: {
 					id: photo.id(),
 					spot_id: model.id(),
 					file_path: photo.filePath(),
-					file_content: photo.fileContent(),
 					file_type: photo.fileType(),
 				}
 			});
@@ -386,7 +385,7 @@ export class SpotRepositoryImpl implements SpotRepository {
 				spot: {
 					include: {
 						address: true,
-						photos: true,
+						attachments: true,
 					},
 				},
 				user: {
@@ -426,19 +425,18 @@ export class SpotRepositoryImpl implements SpotRepository {
 			},
 		});
 
-		await this.prismaService.spotPhoto.deleteMany({
+		await this.prismaService.spotAttachment.deleteMany({
 			where: {
 				spot_id: model.id(),
 			},
 		});
 
-		model.photos().forEach(async (photo) => {
-			await this.prismaService.spotPhoto.create({
+		model.attachments().forEach(async (photo) => {
+			await this.prismaService.spotAttachment.create({
 				data: {
 					id: photo.id(),
 					spot_id: model.id(),
 					file_path: photo.filePath(),
-					file_content: photo.fileContent(),
 					file_type: photo.fileType(),
 				},
 			});

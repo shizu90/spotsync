@@ -41,6 +41,7 @@ import {
 	DeleteSpotUseCase,
 	DeleteSpotUseCaseProvider,
 } from 'src/spot/application/ports/in/use-cases/delete-spot.use-case';
+import { GetSpotAttachmentUseCase, GetSpotAttachmentUseCaseProvider } from 'src/spot/application/ports/in/use-cases/get-spot-attachment.use-case';
 import {
 	GetSpotUseCase,
 	GetSpotUseCaseProvider,
@@ -89,6 +90,8 @@ export class SpotController extends ApiController {
 		protected visitSpotUseCase: VisitSpotUseCase,
 		@Inject(UnvisitSpotUseCaseProvider)
 		protected unvisitSpotUseCase: UnvisitSpotUseCase,
+		@Inject(GetSpotAttachmentUseCaseProvider)
+		protected getSpotAttachmentUseCase: GetSpotAttachmentUseCase,
 	) {
 		super();
 	}
@@ -150,18 +153,18 @@ export class SpotController extends ApiController {
 	@UseInterceptors(
 		FileFieldsInterceptor(
 			[
-				{ name: 'photos', maxCount: 5 },
-			],
+				{ name: 'attachments', maxCount: 5 },
+			]
 		)
 	)
 	@Post()
 	public async create(
 		@Body() body: CreateSpotRequest,
-		@UploadedFiles() files: { photos?: Express.Multer.File[] },
+		@UploadedFiles() files: { attachments?: Express.Multer.File[] },
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = SpotRequestMapper.createSpotCommand(body, files.photos);
+		const command = SpotRequestMapper.createSpotCommand(body, files.attachments);
 
 		const data = await this.createSpotUseCase.execute(command);
 
@@ -183,7 +186,7 @@ export class SpotController extends ApiController {
 	@UseInterceptors(
 		FileFieldsInterceptor(
 			[
-				{ name: 'photos', maxCount: 5 },
+				{ name: 'attachments', maxCount: 5 },
 			],
 		)
 	)
@@ -192,11 +195,11 @@ export class SpotController extends ApiController {
 	public async update(
 		@Param('id') id: string,
 		@Body() body: UpdateSpotRequest,
-		@UploadedFiles() files: { photos?: Express.Multer.File[] },
+		@UploadedFiles() files: { attachments?: Express.Multer.File[] },
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = SpotRequestMapper.updateSpotCommand(id, body, files.photos);
+		const command = SpotRequestMapper.updateSpotCommand(id, body, files.attachments);
 
 		await this.updateSpotUseCase.execute(command);
 
@@ -252,5 +255,23 @@ export class SpotController extends ApiController {
 		await this.unvisitSpotUseCase.execute(command);
 
 		res.status(HttpStatus.NO_CONTENT).json();
+	}
+
+	@ApiOperation({ summary: 'Get spot attachment'})
+	@Get(':id/attachments/:attachmentId')
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse()
+	@UseGuards(AuthGuard)
+	public async getAttachment(
+		@Param('id') id: string,
+		@Param('attachmentId') attachmentId: string,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = SpotRequestMapper.getSpotAttachmentCommand(id, attachmentId);
+
+		const file = await this.getSpotAttachmentUseCase.execute(command);
+
+		file.pipe(res);
 	}
 }

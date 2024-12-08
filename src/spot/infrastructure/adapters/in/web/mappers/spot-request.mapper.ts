@@ -1,5 +1,6 @@
 import { CreateSpotCommand } from 'src/spot/application/ports/in/commands/create-spot.command';
 import { DeleteSpotCommand } from 'src/spot/application/ports/in/commands/delete-spot.command';
+import { GetSpotAttachmentCommand } from 'src/spot/application/ports/in/commands/get-spot-attachment.command';
 import { GetSpotCommand } from 'src/spot/application/ports/in/commands/get-spot.command';
 import { ListSpotsCommand } from 'src/spot/application/ports/in/commands/list-spots.command';
 import { UnvisitSpotCommand } from 'src/spot/application/ports/in/commands/unvisit-spot.command';
@@ -85,5 +86,9 @@ export class SpotRequestMapper {
 
 	public static unvisitSpotCommand(id: string): UnvisitSpotCommand {
 		return new UnvisitSpotCommand(id);
+	}
+
+	public static getSpotAttachmentCommand(id: string, attachmentId: string): GetSpotAttachmentCommand {
+		return new GetSpotAttachmentCommand(id, attachmentId);
 	}
 }

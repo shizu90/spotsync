@@ -17,6 +17,7 @@ export class PostErrorHandler implements ExceptionFilter {
 		switch (error.constructor.name) {
 			case 'UserNotFoundError':
 			case 'GroupNotFoundError':
+			case 'PostAttachmentNotFoundError':
 			case 'PostNotFoundError':
 				response
 					.status(HttpStatus.NOT_FOUND)

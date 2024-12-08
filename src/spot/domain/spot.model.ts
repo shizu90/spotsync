@@ -10,7 +10,7 @@ import { Ratable } from 'src/rating/domain/ratable.interface';
 import { Rating } from 'src/rating/domain/rating.model';
 import { User } from 'src/user/domain/user.model';
 import { SpotAddress } from './spot-address.model';
-import { SpotPhoto } from './spot-photo.model';
+import { SpotAttachment } from './spot-attachment.model';
 import { SpotType } from './spot-type.enum';
 import { VisitedSpot } from './visited-spot.model';
 
@@ -20,7 +20,7 @@ export class Spot extends Model implements Favoritable, Commentable, Ratable {
 	private _description: string;
 	private _type: SpotType;
 	private _address: SpotAddress;
-	private _photos: SpotPhoto[];
+	private _attachments: SpotAttachment[];
 	private _creator: User;
 	private _createdAt: Date;
 	private _updatedAt: Date;
@@ -32,7 +32,7 @@ export class Spot extends Model implements Favoritable, Commentable, Ratable {
 		description: string,
 		type: SpotType,
 		address: SpotAddress,
-		photos: SpotPhoto[],
+		attachments: SpotAttachment[],
 		creator: User,
 		createdAt?: Date,
 		updatedAt?: Date,
@@ -44,7 +44,7 @@ export class Spot extends Model implements Favoritable, Commentable, Ratable {
 		this._description = description;
 		this._type = type;
 		this._address = address;
-		this._photos = photos;
+		this._attachments = attachments;
 		this._creator = creator;
 		this._createdAt = createdAt ?? new Date();
 		this._updatedAt = updatedAt ?? new Date();
@@ -57,7 +57,7 @@ export class Spot extends Model implements Favoritable, Commentable, Ratable {
 		description: string,
 		type: SpotType,
 		address: SpotAddress,
-		photos: SpotPhoto[],
+		attachments: SpotAttachment[],
 		creator: User,
 		createdAt?: Date,
 		updatedAt?: Date,
@@ -69,7 +69,7 @@ export class Spot extends Model implements Favoritable, Commentable, Ratable {
 			description,
 			type,
 			address,
-			photos,
+			attachments,
 			creator,
 			createdAt,
 			updatedAt,
@@ -97,8 +97,8 @@ export class Spot extends Model implements Favoritable, Commentable, Ratable {
 		return this._address;
 	}
 
-	public photos(): SpotPhoto[] {
-		return this._photos;
+	public attachments(): SpotAttachment[] {
+		return this._attachments;
 	}
 
 	public creator(): User {
@@ -137,17 +137,17 @@ export class Spot extends Model implements Favoritable, Commentable, Ratable {
 		this._updatedAt = new Date();
 	}
 
-	public findPhoto(id: string): SpotPhoto {
-		return this._photos.find((p) => p.id() === id);
+	public findAttachment(id: string): SpotAttachment {
+		return this._attachments.find((p) => p.id() === id);
 	}
 
-	public addPhoto(photo: SpotPhoto): void {
-		this._photos.push(photo);
+	public addAttachment(photo: SpotAttachment): void {
+		this._attachments.push(photo);
 		this._updatedAt = new Date();
 	}
 
-	public removePhoto(id: string): void {
-		this._photos = this._photos.filter((p) => p.id() !== id);
+	public removeAttachment(id: string): void {
+		this._attachments = this._attachments.filter((p) => p.id() !== id);
 		this._updatedAt = new Date();
 	}
 

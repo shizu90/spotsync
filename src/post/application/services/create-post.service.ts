@@ -130,7 +130,6 @@ export class CreatePostService implements CreatePostUseCase {
 				newPost.addAttachment(PostAttachment.create(
 					randomUUID(),
 					savedFile.path,
-					savedFile.content,
 					attachment.mimetype,
 				));
 			}

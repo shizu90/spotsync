@@ -67,7 +67,6 @@ export class UpdatePostService implements UpdatePostUseCase {
 				post.addAttachment(PostAttachment.create(
 					randomUUID(),
 					savedFile.path,
-					savedFile.content,
 					attachment.mimetype,
 				));
 			});

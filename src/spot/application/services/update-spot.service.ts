@@ -10,7 +10,7 @@ import {
 	GeoLocatorProvider,
 } from 'src/geolocation/geolocator';
 import { GeoLocatorService } from 'src/geolocation/geolocator.service';
-import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
+import { SpotAttachment } from 'src/spot/domain/spot-attachment.model';
 import { FileStorage, FileStorageProvider } from 'src/storage/file-storage';
 import { UpdateSpotCommand } from '../ports/in/commands/update-spot.command';
 import { UpdateSpotUseCase } from '../ports/in/use-cases/update-spot.use-case';
@@ -150,24 +150,23 @@ export class UpdateSpotService implements UpdateSpotUseCase {
 			}
 		}
 
-		for (const photo of spot.photos()) {
-			await this.fileStorage.delete(photo.filePath());
+		for (const attachment of spot.attachments()) {
+			await this.fileStorage.delete(attachment.filePath());
 
-			spot.removePhoto(photo.id());
+			spot.removeAttachment(attachment.id());
 		}
 
-		if (command.photos) {
-			for (const photo of command.photos) {
+		if (command.attachments) {
+			for (const attachment of command.attachments) {
 				const savedFile = await this.fileStorage.save(
-					`spots/${spot.id()}/photos`,
-					photo,
+					`spots/${spot.id()}/attachments`,
+					attachment,
 				);
 
-				spot.addPhoto(SpotPhoto.create(
+				spot.addAttachment(SpotAttachment.create(
 					randomUUID(),
 					savedFile.path,
-					savedFile.content,
-					photo.mimetype,
+					attachment.mimetype,
 				));
 			}
 		}

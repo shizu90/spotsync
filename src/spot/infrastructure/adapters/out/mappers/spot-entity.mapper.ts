@@ -1,12 +1,12 @@
 import {
 	SpotAddress as SpotAddressPrisma,
-	SpotPhoto as SpotPhotoPrisma,
+	SpotAttachment as SpotAttachmentPrisma,
 	Spot as SpotPrisma,
 } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { EntityMapper } from 'src/common/core/entity.mapper';
 import { SpotAddress } from 'src/spot/domain/spot-address.model';
-import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
+import { SpotAttachment } from 'src/spot/domain/spot-attachment.model';
 import { SpotType } from 'src/spot/domain/spot-type.enum';
 import { Spot } from 'src/spot/domain/spot.model';
 import {
@@ -17,7 +17,7 @@ import {
 export type SpotEntity = SpotPrisma & {
 	creator?: UserEntity;
 	address?: SpotAddressPrisma;
-	photos?: SpotPhotoPrisma[];
+	attachments?: SpotAttachmentPrisma[];
 };
 
 export class SpotEntityMapper implements EntityMapper<Spot, SpotEntity> {
@@ -51,13 +51,12 @@ export class SpotEntityMapper implements EntityMapper<Spot, SpotEntity> {
 			creator: model.creator()
 				? this._userEntityMapper.toEntity(model.creator())
 				: null,
-			photos: model.photos().map((photo) => {
+			attachments: model.attachments().map((attachment) => {
 				return {
-					id: photo.id(),
+					id: attachment.id(),
 					spot_id: model.id(),
-					file_path: photo.filePath(),
-					file_content: photo.fileContent(),
-					file_type: photo.fileType(),
+					file_path: attachment.filePath(),
+					file_type: attachment.fileType(),
 				};
 			}),
 		};
@@ -84,8 +83,8 @@ export class SpotEntityMapper implements EntityMapper<Spot, SpotEntity> {
 						entity.address.postal_code,
 					)
 				: null,
-			entity.photos ? entity.photos.map((photo) =>
-				SpotPhoto.create(photo.id, photo.file_path, photo.file_content, photo.file_type),
+			entity.attachments ? entity.attachments.map((attachment) =>
+				SpotAttachment.create(attachment.id, attachment.file_path, attachment.file_type),
 			) : [],
 			entity.creator
 				? this._userEntityMapper.toModel(entity.creator)

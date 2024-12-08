@@ -1,6 +1,6 @@
 import { Model } from 'src/common/core/common.model';
 
-export class PostAttachment extends Model {
+export class SpotAttachment extends Model {
 	private _id: string;
 	private _filePath: string;
 	private _fileType: string;
@@ -12,8 +12,8 @@ export class PostAttachment extends Model {
 		this._fileType = fileType;
 	}
 
-	public static create(id: string, filePath: string, fileType: string) {
-		return new PostAttachment(id, filePath, fileType);
+	public static create(id: string, filePath: string, fileType: string): SpotAttachment {
+		return new SpotAttachment(id, filePath, fileType);
 	}
 
 	public id(): string {

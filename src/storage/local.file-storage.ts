@@ -4,7 +4,7 @@ import { FileStorage, SavedFile } from "./file-storage";
 
 export class LocalFileStorage extends FileStorage {
     public constructor() {
-        super();
+        super(path.join(__dirname, "..", "..", "files"));
     }
 
     public async save(file_path: string, file: Express.Multer.File): Promise<SavedFile> {
@@ -19,11 +19,7 @@ export class LocalFileStorage extends FileStorage {
 
             await fs.promises.writeFile(fileToStore, file.buffer);
 
-            const base64 = file.buffer.toString("base64");
-
-            const contents = "data:" + file.mimetype + ";base64," + base64;
-
-            const savedFile = new SavedFile(fileToStore, contents);
+            const savedFile = new SavedFile(path.join(file_path, file.originalname));
 
             return savedFile;
         } catch (error) {
@@ -43,11 +39,11 @@ export class LocalFileStorage extends FileStorage {
         }
     }
 
-    public async get(file_path: string): Promise<Buffer> {
+    public async get(file_path: string): Promise<fs.ReadStream> {
         try {
             const full_path = path.join(this.basePath, file_path);
 
-            return await fs.promises.readFile(full_path);
+            return fs.createReadStream(full_path);
         } catch (error) {
             console.error("Error getting file", error);
             throw new Error("Error getting file");

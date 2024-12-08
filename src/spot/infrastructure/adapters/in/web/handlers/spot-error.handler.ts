@@ -15,6 +15,7 @@ export class SpotErrorHandler implements ExceptionFilter {
 
 		switch (error.constructor.name) {
 			case 'UserNotFoundError':
+			case 'SpotPhotoNotFoundError':
 			case 'SpotNotFoundError':
 				response
 					.status(HttpStatus.NOT_FOUND)

@@ -7,7 +7,9 @@ import {
 	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
+import { FollowStatus } from 'src/follower/domain/follow-status.enum';
 import { PostRepository } from 'src/post/application/ports/out/post.repository';
+import { PostVisibility } from 'src/post/domain/post-visibility.enum';
 import { Post } from 'src/post/domain/post.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PostEntityMapper } from './mappers/post-entity.mapper';
@@ -67,6 +69,75 @@ export class PostRepositoryImpl implements PostRepository {
 
 		if (depthLevel !== null) {
 			query['depth_level'] = depthLevel;
+		}
+
+		return query;
+	}
+
+	private _mountAuthorizedQuery(authenticatedUserId: string, values: Object): Object {
+		const groupId = values['groupId'] ?? null;
+		const parentId = values['parentId'] ?? null;
+		const threadId = values['threadId'] ?? null;
+		const depthLevel = values['depthLevel'] ?? null;
+		const creatorId = values['creatorId'] ?? null;
+
+		let query = {
+			OR: [
+				{
+					visibility: PostVisibility.PUBLIC.toString(),
+				},
+				{
+					user_id: authenticatedUserId,
+				},
+				{
+					group: {
+						OR: [
+							{
+								visibility_settings: {
+									posts: PostVisibility.PUBLIC.toString(),
+								}
+							},
+							{
+								members: {
+									some: {
+										user_id: authenticatedUserId,
+									}
+								}
+							}
+						]
+					}
+				},
+				{
+					creator: {
+						followers: {
+							some: {
+								from_user_id: authenticatedUserId,
+								status: FollowStatus.ACTIVE.toString(),
+							}
+						}
+					}
+				}
+			]
+		};
+
+		if (groupId !== null) {
+			query['group_id'] = groupId;
+		}
+
+		if (parentId !== null) {
+			query['parent_id'] = parentId;
+		}
+
+		if (threadId !== null) {
+			query['thread_id'] = threadId;
+		}
+
+		if (depthLevel !== null) {
+			query['depth_level'] = depthLevel;
+		}
+
+		if (creatorId !== null) {
+			query['user_id'] = creatorId;
 		}
 
 		return query;
@@ -209,6 +280,72 @@ export class PostRepositoryImpl implements PostRepository {
 		return new Pagination(items, total, page + 1, limit);
 	}
 
+	public async paginateAuthorizedPosts(userId: string, params: PaginateParameters): Promise<Pagination<Post>> {
+		const key = `post:paginateAuthorizedPosts:${userId}:${JSON.stringify(params)}`;
+
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return new Pagination(
+				cachedData.items.map((i) => this._postEntityMapper.toModel(i)),
+				cachedData.total,
+				cachedData.current_page,
+				cachedData.limit,
+			);
+		}
+
+		
+		const query = this._mountAuthorizedQuery(userId, params.filters);
+		const sort = params.sort ?? 'created_at';
+		const sortDirection = params.sortDirection ?? SortDirection.DESC;
+
+		let orderBy = {};
+
+		switch (sort) {
+			case 'title':
+				orderBy = { title: sortDirection };
+				break;
+			case 'updatedAt':
+			case 'updated_at':
+				orderBy = { updated_at: sortDirection };
+				break;
+			case 'createdAt':
+			case 'created_at':
+			default:
+				orderBy = { created_at: sortDirection };
+				break;
+		}
+
+		let items = [];
+
+		const paginate = params.paginate ?? false;
+		const page = (params.page ?? 1) - 1;
+		const limit = params.limit ?? 12;
+		const total = await this.countBy(params.filters);
+
+		if (paginate) {
+			items = await this.prismaService.post.findMany({
+				where: query,
+				orderBy: orderBy,
+				include: this._mountInclude(),
+				skip: limit * page,
+				take: limit,
+			});
+		} else {
+			items = await this.prismaService.post.findMany({
+				where: query,
+				orderBy: orderBy,
+				include: this._mountInclude(),
+			});
+		}
+
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
+
+		items = items.map((i) => this._postEntityMapper.toModel(i));
+
+		return new Pagination(items, total, page + 1, limit);
+	}
+
 	public async findBy(values: Object): Promise<Array<Post>> {
 		const key = `post:findBy:${JSON.stringify(values)}`;
 		const cachedData = await this._getCachedData(key);
@@ -287,6 +424,32 @@ export class PostRepositoryImpl implements PostRepository {
 		return this._postEntityMapper.toModel(post);
 	}
 
+	public async findAuthorizedPostById(userId: string, postId: string): Promise<Post> {
+		const key = `post:findAuthorizedPostById:${userId}:${postId}`;
+
+		const cachedData = await this._getCachedData(key);
+
+		if (cachedData) {
+			return this._postEntityMapper.toModel(cachedData);
+		}
+
+		const maxDepthLevel = await this._getThreadMaxDepthLevel(postId);
+
+		const include = this._mountIncludeTree(maxDepthLevel);
+
+		const post = await this.prismaService.post.findFirst({
+			where: {
+				id: postId,
+				AND: this._mountAuthorizedQuery(userId, {}),
+			},
+			include: include,
+		});
+
+		await this._setCachedData(key, post);
+
+		return this._postEntityMapper.toModel(post);
+	}
+
 	public async store(model: Post): Promise<Post> {
 		const post = await this.prismaService.post.create({
 			data: {
@@ -311,7 +474,6 @@ export class PostRepositoryImpl implements PostRepository {
 				data: {
 					id: a.id(),
 					file_path: a.filePath(),
-					file_content: a.fileContent(),
 					file_type: a.fileType(),
 					post_id: model.id(),
 				},
@@ -344,7 +506,6 @@ export class PostRepositoryImpl implements PostRepository {
 				data: {
 					id: a.id(),
 					file_path: a.filePath(),
-					file_content: a.fileContent(),
 					file_type: a.fileType(),
 					post_id: model.id(),
 				},

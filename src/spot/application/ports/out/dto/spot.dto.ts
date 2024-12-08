@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
 import { SpotAddress } from 'src/spot/domain/spot-address.model';
-import { SpotPhoto } from 'src/spot/domain/spot-photo.model';
+import { SpotAttachment } from 'src/spot/domain/spot-attachment.model';
 import { SpotType } from 'src/spot/domain/spot-type.enum';
 import { Spot } from 'src/spot/domain/spot.model';
 import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
@@ -61,28 +61,25 @@ class SpotAddressDto extends Dto {
 	}
 }
 
-class SpotPhotoDto extends Dto {
+class SpotAttachmentDto extends Dto {
 	@ApiPropertyOptional({ example: 'uuid' })
 	public id: string = undefined;
 	@ApiPropertyOptional()
 	public file_path: string = undefined;
 	@ApiPropertyOptional()
-	public file_content: string = undefined;
-	@ApiPropertyOptional()
 	public file_type: string = undefined;
 
-	private constructor(id?: string, file_path?: string, file_content?: string, file_type?: string) {
+	private constructor(id?: string, file_path?: string, file_type?: string) {
 		super();
 		this.id = id;
 		this.file_path = file_path;
-		this.file_content = file_content;
 		this.file_type = file_type;
 	}
 
-	public static fromModel(model: SpotPhoto): SpotPhotoDto {
+	public static fromModel(model: SpotAttachment): SpotAttachmentDto {
 		if (model === null || model === undefined) return null;
 
-		return new SpotPhotoDto(model.id(), model.filePath(), model.fileContent(), model.fileType());
+		return new SpotAttachmentDto(model.id(), model.filePath(), model.fileType());
 	}
 }
 
@@ -101,8 +98,8 @@ export class SpotDto extends Dto {
 	public updated_at: string = undefined;
 	@ApiPropertyOptional()
 	public address: SpotAddressDto = undefined;
-	@ApiPropertyOptional({ type: SpotPhotoDto, isArray: true })
-	public photos: SpotPhotoDto[] = undefined;
+	@ApiPropertyOptional({ type: SpotAttachmentDto, isArray: true })
+	public attachments: SpotAttachmentDto[] = undefined;
 	@ApiPropertyOptional()
 	public creator: UserDto = undefined;
 	@ApiPropertyOptional()
@@ -136,7 +133,7 @@ export class SpotDto extends Dto {
 		created_at?: string,
 		updated_at?: string,
 		address?: SpotAddressDto,
-		photos?: SpotPhotoDto[],
+		attachments?: SpotAttachmentDto[],
 		creator?: UserDto,
 		distance?: number,
 		visited?: boolean,
@@ -158,7 +155,7 @@ export class SpotDto extends Dto {
 		this.created_at = created_at;
 		this.updated_at = updated_at;
 		this.address = address;
-		this.photos = photos;
+		this.attachments = attachments;
 		this.creator = creator;
 		this.distance = distance;
 		this.visited = visited;
@@ -184,7 +181,7 @@ export class SpotDto extends Dto {
 			model.createdAt().toISOString(),
 			model.updatedAt().toISOString(),
 			model.address() ? SpotAddressDto.fromModel(model.address()) : undefined,
-			model.photos().map((photo) => SpotPhotoDto.fromModel(photo)),
+			model.attachments().map((attachment) => SpotAttachmentDto.fromModel(attachment)),
 			model.creator() ? UserDto.fromModel(model.creator()).removeSensitiveData() : undefined,
 			0,
 			false,

@@ -1,5 +1,6 @@
 import { CreatePostCommand } from 'src/post/application/ports/in/commands/create-post.command';
 import { DeletePostCommand } from 'src/post/application/ports/in/commands/delete-post.command';
+import { GetAttachmentCommand } from 'src/post/application/ports/in/commands/get-attachment.command';
 import { GetPostCommand } from 'src/post/application/ports/in/commands/get-post.command';
 import { ListThreadsCommand } from 'src/post/application/ports/in/commands/list-threads.command';
 import { UpdatePostCommand } from 'src/post/application/ports/in/commands/update-post.command';
@@ -56,5 +57,9 @@ export class PostRequestMapper {
 
 	public static deletePostCommand(id: string): DeletePostCommand {
 		return new DeletePostCommand(id);
+	}
+
+	public static getAttachmentCommand(id: string, attachmentId: string): GetAttachmentCommand {
+		return new GetAttachmentCommand(id, attachmentId);
 	}
 }

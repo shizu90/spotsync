@@ -228,7 +228,6 @@ model PostAttachment {
   id            String @id @default(uuid())
   post_id       String
   file_path     String
-  file_content  String?
   file_type     String @db.VarChar(20)
   post          Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
@@ -267,7 +266,7 @@ model Spot {
   created_at   DateTime        @default(now())
   updated_at   DateTime        @default(now())
   address      SpotAddress?
-  photos       SpotPhoto[]
+  attachments  SpotAttachment[]
   creator      User            @relation(fields: [creator_id], references: [id], onDelete: Cascade)
   visited_by   VisitedSpot[]
   spot_folders SpotFolderItem[]
@@ -279,15 +278,14 @@ model Spot {
   @@map("spots")
 }
 
-model SpotPhoto {
+model SpotAttachment {
   id            String @id @default(uuid())
   spot_id       String
   file_path     String
-  file_content  String?
   file_type     String @db.VarChar(20)
   spot          Spot   @relation(fields: [spot_id], references: [id], onDelete: Cascade)
 
-  @@map("spot_photos")
+  @@map("spot_attachments")
 }
 
 model SpotAddress {

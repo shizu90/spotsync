@@ -16,7 +16,7 @@ export class CreateSpotCommand extends Command {
 			postalCode?: string;
 		},
 		readonly description?: string,
-		readonly photos?: Express.Multer.File[],
+		readonly attachments?: Express.Multer.File[],
 	) {
 		super();
 	}

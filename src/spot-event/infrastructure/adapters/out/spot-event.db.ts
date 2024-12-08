@@ -79,7 +79,7 @@ export class SpotEventRepositoryImpl implements SpotEventRepository {
             spot: {
                 include: {
                     address: true,
-                    photos: true,
+                    attachments: true,
                     creator: {
                         include: {
                             profile: true,
