@@ -3,8 +3,8 @@ import * as moment from 'moment';
 import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
-	PaginateParameters,
-	Pagination,
+    PaginateParameters,
+    Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { FavoriteRepository } from 'src/favorite/application/ports/out/favorite.repository';
@@ -75,7 +75,7 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 							visibility_settings: true,
 						},
 					},
-					photos: true,
+					attachments: true,
 				},
 			},
 			spot_folder: {
@@ -91,7 +91,7 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 						include: {
 							spot: {
 								include: {
-									photos: true,
+									attachments: true,
 									creator: {
 										include: {
 											credentials: true,

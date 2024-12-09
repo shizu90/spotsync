@@ -3,8 +3,8 @@ import * as moment from 'moment';
 import { env } from 'process';
 import { RedisService } from 'src/cache/redis.service';
 import {
-	PaginateParameters,
-	Pagination,
+    PaginateParameters,
+    Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -56,7 +56,7 @@ export class SpotFolderRepositoryImpl implements SpotFolderRepository {
 					spot: {
 						include: {
 							address: true,
-							photos: true,
+							attachments: true,
 							creator: {
 								include: {
 									credentials: true,
