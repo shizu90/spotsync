@@ -132,6 +132,7 @@ export class CreateSpotService implements CreateSpotUseCase {
 			.setVisitedAt(null)
 			.setFavoritedAt(null)
 			.setDistance(distance)
-			.setAverageRating(0);
+			.setAverageRating(0)
+			.setAttachmentUrls();
 	}
 }

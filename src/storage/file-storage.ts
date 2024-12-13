@@ -22,4 +22,5 @@ export abstract class FileStorage {
     public abstract save(path: Path, file: Express.Multer.File): Promise<SavedFile>;
     public abstract delete(path: Path): Promise<void>;
     public abstract get(path: Path): Promise<ReadStream>;
+    public abstract exists(path: Path): Promise<boolean>;
 }

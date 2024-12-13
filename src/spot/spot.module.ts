@@ -1,6 +1,7 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
 import { CacheModule } from 'src/cache/cache.module';
+import { SignedUrlMiddleware } from 'src/common/web/middlewares/signed-url.middleware';
 import { FavoriteModule } from 'src/favorite/favorite.module';
 import { FollowerModule } from 'src/follower/follower.module';
 import { GeolocationModule } from 'src/geolocation/geolocation.module';
@@ -28,4 +29,12 @@ import { Providers } from './spot.provider';
 	],
 	controllers: [SpotController],
 })
-export class SpotModule {}
+export class SpotModule implements NestModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(
+			SignedUrlMiddleware
+		).forRoutes(
+			`spots/:id/attachments/:attachmentId`
+		);
+	}
+}

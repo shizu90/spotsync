@@ -184,7 +184,6 @@ export class PostController {
 	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiUnauthorizedResponse({ type: ErrorResponse })
 	@ApiNoContentResponse()
-	@UseGuards(AuthGuard)
 	@Get(':id/attachments/:attachmentId')
 	public async getAttachment(
 		@Param('id') id: string,

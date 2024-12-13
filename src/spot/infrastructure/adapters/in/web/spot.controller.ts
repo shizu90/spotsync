@@ -261,7 +261,6 @@ export class SpotController extends ApiController {
 	@Get(':id/attachments/:attachmentId')
 	@ApiNotFoundResponse({ type: ErrorResponse })
 	@ApiOkResponse()
-	@UseGuards(AuthGuard)
 	public async getAttachment(
 		@Param('id') id: string,
 		@Param('attachmentId') attachmentId: string,

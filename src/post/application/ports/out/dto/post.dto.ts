@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
+import { URLService } from 'src/common/web/url.service';
 import { GroupDto } from 'src/group/application/ports/out/dto/group.dto';
 import { PostAttachment } from 'src/post/domain/post-attachment.model';
 import { PostVisibility } from 'src/post/domain/post-visibility.enum';
@@ -13,12 +14,15 @@ class PostAttachmentDto extends Dto {
 	public file_path: string = undefined;
 	@ApiPropertyOptional()
 	public file_type: string = undefined;
+	@ApiPropertyOptional()
+	public url: string = undefined;
 
-	private constructor(id?: string, file_path?: string, file_type?: string) {
+	private constructor(id?: string, file_path?: string, file_type?: string, url?: string) {
 		super();
 		this.id = id;
 		this.file_path = file_path;
 		this.file_type = file_type;
+		this.url = url;
 	}
 
 	public static fromModel(model: PostAttachment): PostAttachmentDto {
@@ -29,6 +33,12 @@ class PostAttachmentDto extends Dto {
 			model.filePath(),
 			model.fileType(),
 		);
+	}
+
+	public setUrl(url: string): PostAttachmentDto {
+		this.url = url;
+
+		return this;
 	}
 }
 
@@ -139,6 +149,24 @@ export class PostDto extends Dto {
 
 	public setTotalChildrens(totalChildrens: number): PostDto {
 		this.total_childrens = totalChildrens;
+
+		return this;
+	}
+
+	public setAttachmentUrls(): PostDto {
+		const urlService = new URLService();
+		
+		this.attachments = this.attachments.map((a) => {
+			return a.setUrl(
+				urlService.generateSignedURL(
+					'posts/{postId}/attachments/{attachmentId}',
+					{
+						postId: this.id,
+						attachmentId: a.id,
+					}
+				)
+			);
+		});
 
 		return this;
 	}

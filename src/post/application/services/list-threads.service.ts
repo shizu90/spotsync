@@ -93,7 +93,8 @@ export class ListThreadsService implements ListThreadsUseCase {
 				return PostDto.fromModel(i)
 					.setLiked(liked)
 					.setTotalChildrens(totalChildrens)
-					.setTotalLikes(totalLikes);
+					.setTotalLikes(totalLikes)
+					.setAttachmentUrls();
 			}),
 		);
 

@@ -1,6 +1,7 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthModule } from 'src/auth/auth.module';
 import { CacheModule } from 'src/cache/cache.module';
+import { SignedUrlMiddleware } from 'src/common/web/middlewares/signed-url.middleware';
 import { FollowerModule } from 'src/follower/follower.module';
 import { GroupModule } from 'src/group/group.module';
 import { LikeModule } from 'src/like/like.module';
@@ -29,4 +30,12 @@ import { Providers } from './post.provider';
 	exports: [...Providers],
 	controllers: [PostController, PostThreadController],
 })
-export class PostModule {}
+export class PostModule implements NestModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(
+			SignedUrlMiddleware
+		).forRoutes(
+			'posts/:postId/attachments/:attachmentId'
+		);
+	}
+}

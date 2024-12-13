@@ -213,7 +213,8 @@ export class ListSpotsService implements ListSpotsUseCase {
 					.setTotalSpotVisits(totalSpotVisits)
 					.setDistance(distance)
 					.setAverageRating(avgRating)
-					.setTotalVisits(totalVisits);
+					.setTotalVisits(totalVisits)
+					.setAttachmentUrls();
 			}),
 		);
 

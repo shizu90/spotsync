@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
+import { URLService } from 'src/common/web/url.service';
 import { SpotAddress } from 'src/spot/domain/spot-address.model';
 import { SpotAttachment } from 'src/spot/domain/spot-attachment.model';
 import { SpotType } from 'src/spot/domain/spot-type.enum';
@@ -68,18 +69,27 @@ class SpotAttachmentDto extends Dto {
 	public file_path: string = undefined;
 	@ApiPropertyOptional()
 	public file_type: string = undefined;
+	@ApiPropertyOptional()
+	public url: string = undefined;
 
-	private constructor(id?: string, file_path?: string, file_type?: string) {
+	private constructor(id?: string, file_path?: string, file_type?: string, url?: string) {
 		super();
 		this.id = id;
 		this.file_path = file_path;
 		this.file_type = file_type;
+		this.url = url;
 	}
 
 	public static fromModel(model: SpotAttachment): SpotAttachmentDto {
 		if (model === null || model === undefined) return null;
 
 		return new SpotAttachmentDto(model.id(), model.filePath(), model.fileType());
+	}
+
+	public setUrl(url: string): SpotAttachmentDto {
+		this.url = url;
+
+		return this;
 	}
 }
 
@@ -249,6 +259,24 @@ export class SpotDto extends Dto {
 
 	public setTotalVisits(total_visits: number): SpotDto {
 		this.total_visits = total_visits;
+
+		return this;
+	}
+
+	public setAttachmentUrls(): SpotDto {
+		const urlService = new URLService();
+
+		this.attachments = this.attachments.map((a) => {
+			return a.setUrl(
+				urlService.generateSignedURL(
+					'spots/{spotId}/attachments/{attachmentId}',
+					{
+						spotId: this.id,
+						attachmentId: a.id,
+					}
+				)
+			);
+		});
 
 		return this;
 	}

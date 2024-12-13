@@ -41,12 +41,28 @@ export class LocalFileStorage extends FileStorage {
 
     public async get(file_path: string): Promise<fs.ReadStream> {
         try {
+            if (!await this.exists(file_path)) {
+                return null;
+            }
+
             const full_path = path.join(this.basePath, file_path);
 
             return fs.createReadStream(full_path);
         } catch (error) {
             console.error("Error getting file", error);
             throw new Error("Error getting file");
+        }
+    }
+
+    public async exists(file_path: string): Promise<boolean> {
+        try {
+            const full_path = path.join(this.basePath, file_path);
+
+            await fs.promises.access(full_path);
+
+            return true;
+        } catch (error) {
+            return false;
         }
     }
 }

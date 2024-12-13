@@ -107,6 +107,7 @@ export class GetSpotService implements GetSpotUseCase {
 			.setFavoritedAt(favorited?.createdAt())
 			.setDistance(distance)
 			.setAverageRating(avgRating)
-			.setTotalVisits(totalVisits);
+			.setTotalVisits(totalVisits)
+			.setAttachmentUrls();
 	}
 }

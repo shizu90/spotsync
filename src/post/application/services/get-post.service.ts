@@ -59,6 +59,7 @@ export class GetPostService implements GetPostUseCase {
 			).length > 0;
 
 		return PostDto.fromModel(post)
-			.setLiked(liked);
+			.setLiked(liked)
+			.setAttachmentUrls();
 	}
 }
