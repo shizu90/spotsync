@@ -3,6 +3,8 @@ import { ChangePasswordCommand } from 'src/user/application/ports/in/commands/ch
 import { CreateUserCommand } from 'src/user/application/ports/in/commands/create-user.command';
 import { DeleteUserCommand } from 'src/user/application/ports/in/commands/delete-user.command';
 import { ForgotPasswordCommand } from 'src/user/application/ports/in/commands/forgot-password.command';
+import { GetUserBannerPictureCommand } from 'src/user/application/ports/in/commands/get-user-banner-picture.command';
+import { GetUserProfilePictureCommand } from 'src/user/application/ports/in/commands/get-user-profile-picture.command';
 import { GetUserCommand } from 'src/user/application/ports/in/commands/get-user.command';
 import { ListUsersCommand } from 'src/user/application/ports/in/commands/list-users.command';
 import { UpdateUserCredentialsCommand } from 'src/user/application/ports/in/commands/update-user-credentials.command';
@@ -61,6 +63,8 @@ export class UserRequestMapper {
 	public static updateUserProfileCommand(
 		id: string,
 		request: UpdateUserProfileRequest,
+		profilePicture?: Express.Multer.File,
+		bannerPicture?: Express.Multer.File,
 	): UpdateUserProfileCommand {
 		return new UpdateUserProfileCommand(
 			id,
@@ -68,6 +72,8 @@ export class UserRequestMapper {
 			request.profile_theme_color,
 			request.biograph,
 			request.birth_date ? new Date(request.birth_date) : null,
+			profilePicture,
+			bannerPicture,
 		);
 	}
 
@@ -122,5 +128,17 @@ export class UserRequestMapper {
 		body: ActivateUserRequest,
 	): ActivateUserCommand {
 		return new ActivateUserCommand(id, body.code, body.auto_login ?? false);
+	}
+
+	public static getUserProfilePictureCommand(
+		id: string
+	): GetUserProfilePictureCommand {
+		return new GetUserProfilePictureCommand(id);
+	}
+
+	public static getUserBannerPictureCommand(
+		id: string
+	): GetUserBannerPictureCommand {
+		return new GetUserBannerPictureCommand(id);
 	}
 }

@@ -4,7 +4,9 @@ import { ChangeMemberRoleUseCaseProvider } from './application/ports/in/use-case
 import { CreateGroupRoleUseCaseProvider } from './application/ports/in/use-cases/create-group-role.use-case';
 import { CreateGroupUseCaseProvider } from './application/ports/in/use-cases/create-group.use-case';
 import { DeleteGroupUseCaseProvider } from './application/ports/in/use-cases/delete-group.use-case';
+import { GetGroupBannerPictureUseCaseProvider } from './application/ports/in/use-cases/get-group-banner-picture.use-case';
 import { GetGroupHistoryUseCaseProvider } from './application/ports/in/use-cases/get-group-history.use-case';
+import { GetGroupPictureUseCaseProvider } from './application/ports/in/use-cases/get-group-picture.use-case';
 import { GetGroupRoleUseCaseProvider } from './application/ports/in/use-cases/get-group-role.use-case';
 import { GetGroupUseCaseProvider } from './application/ports/in/use-cases/get-group.use-case';
 import { JoinGroupUseCaseProvider } from './application/ports/in/use-cases/join-group.use-case';
@@ -26,7 +28,9 @@ import { ChangeMemberRoleService } from './application/services/change-member-ro
 import { CreateGroupRoleService } from './application/services/create-group-role.service';
 import { CreateGroupService } from './application/services/create-group.service';
 import { DeleteGroupService } from './application/services/delete-group.service';
+import { GetGroupBannerPictureService } from './application/services/get-group-banner-picture.service';
 import { GetGroupHistoryService } from './application/services/get-group-history.service';
+import { GetGroupPictureService } from './application/services/get-group-picture.service';
 import { GetGroupRoleService } from './application/services/get-group-role.service';
 import { GetGroupService } from './application/services/get-group.service';
 import { JoinGroupService } from './application/services/join-group.service';
@@ -120,6 +124,14 @@ export const Providers: Provider[] = [
 	{
 		provide: RemoveGroupRoleUseCaseProvider,
 		useClass: RemoveGroupRoleService,
+	},
+	{
+		provide: GetGroupPictureUseCaseProvider,
+		useClass: GetGroupPictureService,
+	},
+	{
+		provide: GetGroupBannerPictureUseCaseProvider,
+		useClass: GetGroupBannerPictureService,
 	},
 	{
 		provide: GroupRepositoryProvider,

@@ -10,6 +10,7 @@ import { GroupMember } from 'src/group/domain/group-member.model';
 import { GroupVisibilitySettings } from 'src/group/domain/group-visibility-settings.model';
 import { GroupVisibility } from 'src/group/domain/group-visibility.enum';
 import { Group } from 'src/group/domain/group.model';
+import { FileStorage, FileStorageProvider } from 'src/storage/file-storage';
 import { CreateGroupCommand } from '../ports/in/commands/create-group.command';
 import { CreateGroupUseCase } from '../ports/in/use-cases/create-group.use-case';
 import { GroupDto } from '../ports/out/dto/group.dto';
@@ -38,6 +39,8 @@ export class CreateGroupService implements CreateGroupUseCase {
 		protected groupRoleRepository: GroupRoleRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+		@Inject(FileStorageProvider)
+		protected fileStorage: FileStorage,
 	) {}
 
 	public async execute(command: CreateGroupCommand): Promise<GroupDto> {
@@ -66,6 +69,36 @@ export class CreateGroupService implements CreateGroupUseCase {
 				GroupVisibility.PUBLIC,
 			),
 		);
+
+		if (command.groupPicture) {
+			const groupPic = command.groupPicture;
+
+			const ext = groupPic.mimetype.split('/')[1];
+
+			groupPic.filename = groupPic.originalname = `group-picture.${ext}`;
+
+			const savedFile = await this.fileStorage.save(
+				`groups/${group.id}`,
+				groupPic,
+			);
+
+			group.changeGroupPicture(savedFile.path);
+		}
+
+		if (command.bannerPicture) {
+			const bannerPic = command.bannerPicture;
+
+			const ext = bannerPic.mimetype.split('/')[1];
+
+			bannerPic.filename = bannerPic.originalname = `banner-picture.${ext}`;
+
+			const savedFile = await this.fileStorage.save(
+				`groups/${group.id}`,
+				bannerPic,
+			);
+
+			group.changeBannerPicture(savedFile.path);
+		}
 
 		const creatorGroupMember = GroupMember.create(
 			randomUUID(),

@@ -7,6 +7,8 @@ export class UpdateUserProfileCommand extends Command {
 		readonly themeColor?: string,
 		readonly biograph?: string,
 		readonly birthDate?: Date,
+		readonly profilePicture?: Express.Multer.File,
+		readonly bannerPicture?: Express.Multer.File,
 	) {
 		super();
 	}

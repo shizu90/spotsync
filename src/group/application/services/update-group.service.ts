@@ -6,6 +6,7 @@ import {
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
 import { GroupMemberStatus } from 'src/group/domain/group-member-status.enum';
 import { GroupPermissionName } from 'src/group/domain/group-permission-name.enum';
+import { FileStorage, FileStorageProvider } from 'src/storage/file-storage';
 import { UpdateGroupCommand } from '../ports/in/commands/update-group.command';
 import { UpdateGroupUseCase } from '../ports/in/use-cases/update-group.use-case';
 import {
@@ -27,6 +28,8 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
 		@Inject(GroupMemberRepositoryProvider)
 		protected groupMemberRepository: GroupMemberRepository,
+		@Inject(FileStorageProvider)
+		protected fileStorage: FileStorage,
 	) {}
 
 	public async execute(command: UpdateGroupCommand): Promise<void> {
@@ -71,6 +74,36 @@ export class UpdateGroupService implements UpdateGroupUseCase {
 			command.about.length > 0
 		) {
 			group.changeAbout(command.about);
+		}
+
+		if (command.groupPicture) {
+			const groupPic = command.groupPicture;
+
+			const ext = groupPic.mimetype.split('/')[1];
+
+			groupPic.filename = groupPic.originalname = `group-picture.${ext}`;
+
+			const savedFile = await this.fileStorage.save(
+				`groups/${group.id}`,
+				groupPic,
+			);
+
+			group.changeGroupPicture(savedFile.path);
+		}
+
+		if (command.bannerPicture) {
+			const bannerPic = command.bannerPicture;
+
+			const ext = bannerPic.mimetype.split('/')[1];
+
+			bannerPic.filename = `banner-picture.${ext}`;
+
+			const savedFile = await this.fileStorage.save(
+				`groups/${group.id}`,
+				bannerPic,
+			);
+
+			group.changeBannerPicture(savedFile.path);
 		}
 
 		this.groupRepository.update(group);

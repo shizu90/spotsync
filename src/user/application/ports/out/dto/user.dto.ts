@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Dto } from 'src/common/core/common.dto';
+import { URLService } from 'src/common/web/url.service';
 import { UserAddress } from 'src/user/domain/user-address.model';
 import { UserCredentials } from 'src/user/domain/user-credentials.model';
 import { UserProfile } from 'src/user/domain/user-profile.model';
@@ -26,19 +27,33 @@ class UserProfileDto extends Dto {
 	public visibility: string = undefined;
 
 	constructor(
+		id?: string,
 		display_name?: string,
 		biograph?: string,
-		profile_picture?: string,
-		banner_picture?: string,
 		birth_date?: string,
 		theme_color?: string,
 		visibility?: string,
+		profile_picture?: string,
+		banner_picture?: string,
 	) {
 		super();
+
+		const urlService = new URLService();
+
 		this.display_name = display_name;
 		this.biograph = biograph;
-		this.profile_picture = profile_picture;
-		this.banner_picture = banner_picture;
+		this.profile_picture = profile_picture ? urlService.generateSignedURL(
+			'users/{userId}/profile-picture',
+			{
+				userId: id,
+			}
+		) : null;
+		this.banner_picture = banner_picture ? urlService.generateSignedURL(
+			'users/{userId}/banner-picture',
+			{
+				userId: id,
+			}
+		) : null;
 		this.birth_date = birth_date;
 		this.theme_color = theme_color;
 		this.visibility = visibility;
@@ -46,13 +61,14 @@ class UserProfileDto extends Dto {
 
 	public static fromModel(model: UserProfile): UserProfileDto {
 		return new UserProfileDto(
+			model.id(),
 			model.displayName(),
 			model.biograph(),
-			model.profilePicture(),
-			model.bannerPicture(),
 			model.birthDate()?.toISOString().split('T')[0],
 			model.themeColor(),
 			model.visibility(),
+			model.profilePicture(),
+			model.bannerPicture(),
 		);
 	}
 }

@@ -1,6 +1,8 @@
 import { CreateGroupCommand } from 'src/group/application/ports/in/commands/create-group.command';
 import { DeleteGroupCommand } from 'src/group/application/ports/in/commands/delete-group.command';
+import { GetGroupBannerPictureCommand } from 'src/group/application/ports/in/commands/get-group-banner-picture.command';
 import { GetGroupHistoryCommand } from 'src/group/application/ports/in/commands/get-group-history.command';
+import { GetGroupPictureCommand } from 'src/group/application/ports/in/commands/get-group-picture.command';
 import { GetGroupCommand } from 'src/group/application/ports/in/commands/get-group.command';
 import { ListGroupsCommand } from 'src/group/application/ports/in/commands/list-groups.command';
 import { UpdateGroupVisibilityCommand } from 'src/group/application/ports/in/commands/update-group-visibility.command';
@@ -32,15 +34,19 @@ export class GroupRequestMapper {
 
 	public static createGroupCommand(
 		request: CreateGroupRequest,
+		groupPicture?: Express.Multer.File,
+		bannerPicture?: Express.Multer.File,
 	): CreateGroupCommand {
-		return new CreateGroupCommand(request.name, request.about);
+		return new CreateGroupCommand(request.name, request.about, groupPicture, bannerPicture);
 	}
 
 	public static updateGroupCommand(
 		id: string,
 		request: UpdateGroupRequest,
+		groupPicture?: Express.Multer.File,
+		bannerPicture?: Express.Multer.File,
 	): UpdateGroupCommand {
-		return new UpdateGroupCommand(id, request.name, request.about);
+		return new UpdateGroupCommand(id, request.name, request.about, groupPicture, bannerPicture);
 	}
 
 	public static updateGroupVisibilityCommand(
@@ -71,5 +77,13 @@ export class GroupRequestMapper {
 			query.page,
 			query.limit,
 		);
+	}
+
+	public static getGroupPictureCommand(id: string): GetGroupPictureCommand {
+		return new GetGroupPictureCommand(id);
+	}
+
+	public static getGroupBannerPictureCommand(id: string): GetGroupBannerPictureCommand {
+		return new GetGroupBannerPictureCommand(id);
 	}
 }

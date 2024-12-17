@@ -7,6 +7,8 @@ import { DeleteUserAddressUseCaseProvider } from './application/ports/in/use-cas
 import { DeleteUserUseCaseProvider } from './application/ports/in/use-cases/delete-user.use-case';
 import { ForgotPasswordUseCaseProvider } from './application/ports/in/use-cases/forgot-password.use-case';
 import { GetUserAddressUseCaseProvider } from './application/ports/in/use-cases/get-user-address.use-case';
+import { GetUserBannerPictureUseCaseProvider } from './application/ports/in/use-cases/get-user-banner-picture.use-case';
+import { GetUserProfilePictureUseCaseProvider } from './application/ports/in/use-cases/get-user-profile-picture.use-case';
 import { GetUserUseCaseProvider } from './application/ports/in/use-cases/get-user-profile.use-case';
 import { ListUserAddressesUseCaseProvider } from './application/ports/in/use-cases/list-user-addresses.use-case';
 import { ListUsersUseCaseProvider } from './application/ports/in/use-cases/list-users.use-case';
@@ -14,8 +16,6 @@ import { UpdateUserAddressUseCaseProvider } from './application/ports/in/use-cas
 import { UpdateUserCredentialsUseCaseProvider } from './application/ports/in/use-cases/update-user-credentials.use-case';
 import { UpdateUserProfileUseCaseProvider } from './application/ports/in/use-cases/update-user-profile.use-case';
 import { UpdateUserVisibilitySettingsUseCaseProvider } from './application/ports/in/use-cases/update-user-visibility-settings.use-case';
-import { UploadBannerPictureUseCaseProvider } from './application/ports/in/use-cases/upload-banner-picture.use-case';
-import { UploadProfilePictureUseCaseProvider } from './application/ports/in/use-cases/upload-profile-picture.use-case';
 import { ActivationRequestRepositoryProvider } from './application/ports/out/activation-request.repository';
 import { EncryptPasswordServiceProvider } from './application/ports/out/encrypt-password.service';
 import { PasswordRecoveryRepositoryProvider } from './application/ports/out/password-recovery.repository';
@@ -29,6 +29,8 @@ import { DeleteUserAddressService } from './application/services/delete-user-add
 import { DeleteUserService } from './application/services/delete-user.service';
 import { ForgotPasswordService } from './application/services/forgot-password.service';
 import { GetUserAddressService } from './application/services/get-user-address.service';
+import { GetUserBannerPictureService } from './application/services/get-user-banner-picture.service';
+import { GetUserProfilePictureService } from './application/services/get-user-profile-picture.service';
 import { GetUserService } from './application/services/get-user.service';
 import { ListUserAddressesService } from './application/services/list-user-addresses.service';
 import { ListUsersService } from './application/services/list-users.service';
@@ -36,8 +38,6 @@ import { UpdateUserAddressService } from './application/services/update-user-add
 import { UpdateUserCredentialsService } from './application/services/update-user-credentials.service';
 import { UpdateUserProfileService } from './application/services/update-user-profile.service';
 import { UpdateUserVisibilitySettingsService } from './application/services/update-user-visibility-settings.service';
-import { UploadBannerPictureService } from './application/services/upload-banner-picture.service';
-import { UploadProfilePictureService } from './application/services/upload-profile-picture.service';
 import { ActivationRequestRepositoryImpl } from './infrastructure/adapters/out/activation-request.db';
 import { EncryptPasswordServiceImpl } from './infrastructure/adapters/out/encrypt-password';
 import { PasswordRecoveryRepositoryImpl } from './infrastructure/adapters/out/password-recovery.db';
@@ -64,14 +64,6 @@ export const Providers: Provider[] = [
 	{
 		provide: DeleteUserUseCaseProvider,
 		useClass: DeleteUserService,
-	},
-	{
-		provide: UploadProfilePictureUseCaseProvider,
-		useClass: UploadProfilePictureService,
-	},
-	{
-		provide: UploadBannerPictureUseCaseProvider,
-		useClass: UploadBannerPictureService,
 	},
 	{
 		provide: GetUserUseCaseProvider,
@@ -112,6 +104,14 @@ export const Providers: Provider[] = [
 	{
 		provide: ActivateUserUseCaseProvider,
 		useClass: ActivateUserService,
+	},
+	{
+		provide: GetUserProfilePictureUseCaseProvider,
+		useClass: GetUserProfilePictureService,
+	},
+	{
+		provide: GetUserBannerPictureUseCaseProvider,
+		useClass: GetUserBannerPictureService,
 	},
 	{
 		provide: UserRepositoryProvider,

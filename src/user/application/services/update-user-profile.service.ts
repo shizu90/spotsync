@@ -4,6 +4,7 @@ import {
 	GetAuthenticatedUserUseCaseProvider,
 } from 'src/auth/application/ports/in/use-cases/get-authenticated-user.use-case';
 import { UnauthorizedAccessError } from 'src/auth/application/services/errors/unauthorized-access.error';
+import { FileStorage, FileStorageProvider } from 'src/storage/file-storage';
 import { UpdateUserProfileCommand } from '../ports/in/commands/update-user-profile.command';
 import { UpdateUserProfileUseCase } from '../ports/in/use-cases/update-user-profile.use-case';
 import {
@@ -18,6 +19,8 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase {
 		protected userRepository: UserRepository,
 		@Inject(GetAuthenticatedUserUseCaseProvider)
 		protected getAuthenticatedUser: GetAuthenticatedUserUseCase,
+		@Inject(FileStorageProvider)
+		protected fileStorage: FileStorage,
 	) {}
 
 	public async execute(command: UpdateUserProfileCommand): Promise<void> {
@@ -53,6 +56,36 @@ export class UpdateUserProfileService implements UpdateUserProfileUseCase {
 
 		if (command.birthDate && command.birthDate !== null) {
 			user.profile().changeBirthDate(command.birthDate);
+		}
+
+		if (command.profilePicture) {
+			const propic = command.profilePicture;
+
+			const ext = propic.mimetype.split('/')[1];
+
+			propic.filename = propic.originalname = `profile-picture.${ext}`;
+
+			const savedFile = await this.fileStorage.save(
+				`users/${user.id()}`,
+				propic,
+			);
+
+			user.profile().changeProfilePicture(savedFile.path);
+		}
+
+		if (command.bannerPicture) {
+			const bannerPic = command.bannerPicture;
+
+			const ext = bannerPic.mimetype.split('/')[1];
+
+			bannerPic.filename = bannerPic.filename = `banner-picture.${ext}`;
+
+			const savedFile = await this.fileStorage.save(
+				`users/${user.id()}`,
+				bannerPic,
+			);
+
+			user.profile().changeBannerPicture(savedFile.path);
 		}
 
 		this.userRepository.update(user);

@@ -1,64 +1,69 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpStatus,
-    Inject,
-    Param,
-    Post,
-    Put,
-    Query,
-    Req,
-    Res,
-    UseFilters,
-    UseGuards,
-    UsePipes,
-    ValidationPipe,
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Inject,
+	Param,
+	Post,
+	Put,
+	Query,
+	Req,
+	Res,
+	UploadedFiles,
+	UseFilters,
+	UseGuards,
+	UseInterceptors,
+	UsePipes,
+	ValidationPipe,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
-    ApiCreatedResponse,
-    ApiForbiddenResponse,
-    ApiInternalServerErrorResponse,
-    ApiNoContentResponse,
-    ApiNotFoundResponse,
-    ApiOkResponse,
-    ApiOperation,
-    ApiTags,
-    ApiUnauthorizedResponse,
-    ApiUnprocessableEntityResponse,
+	ApiCreatedResponse,
+	ApiForbiddenResponse,
+	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { ApiController } from 'src/common/web/common.controller';
 import { ErrorResponse } from 'src/common/web/common.error';
 import {
-    CreateGroupUseCase,
-    CreateGroupUseCaseProvider,
+	CreateGroupUseCase,
+	CreateGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/create-group.use-case';
 import {
-    DeleteGroupUseCase,
-    DeleteGroupUseCaseProvider,
+	DeleteGroupUseCase,
+	DeleteGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/delete-group.use-case';
+import { GetGroupBannerPictureUseCase, GetGroupBannerPictureUseCaseProvider } from 'src/group/application/ports/in/use-cases/get-group-banner-picture.use-case';
 import {
-    GetGroupHistoryUseCase,
-    GetGroupHistoryUseCaseProvider,
+	GetGroupHistoryUseCase,
+	GetGroupHistoryUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/get-group-history.use-case';
+import { GetGroupPictureUseCase, GetGroupPictureUseCaseProvider } from 'src/group/application/ports/in/use-cases/get-group-picture.use-case';
 import {
-    GetGroupUseCase,
-    GetGroupUseCaseProvider,
+	GetGroupUseCase,
+	GetGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/get-group.use-case';
 import {
-    ListGroupsUseCase,
-    ListGroupsUseCaseProvider,
+	ListGroupsUseCase,
+	ListGroupsUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/list-groups.use-case';
 import {
-    UpdateGroupVisibilityUseCase,
-    UpdateGroupVisibilityUseCaseProvider,
+	UpdateGroupVisibilityUseCase,
+	UpdateGroupVisibilityUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group-visibility.use-case';
 import {
-    UpdateGroupUseCase,
-    UpdateGroupUseCaseProvider,
+	UpdateGroupUseCase,
+	UpdateGroupUseCaseProvider,
 } from 'src/group/application/ports/in/use-cases/update-group.use-case';
 import { GroupLogDto } from 'src/group/application/ports/out/dto/group-log.dto';
 import { GroupDto } from 'src/group/application/ports/out/dto/group.dto';
@@ -91,6 +96,10 @@ export class GroupController extends ApiController {
 		protected getGroupUseCase: GetGroupUseCase,
 		@Inject(GetGroupHistoryUseCaseProvider)
 		protected getGroupHistoryUseCase: GetGroupHistoryUseCase,
+		@Inject(GetGroupPictureUseCaseProvider)
+		protected getGroupPictureUseCase: GetGroupPictureUseCase,
+		@Inject(GetGroupBannerPictureUseCaseProvider)
+		protected getGroupBannerPictureUseCase: GetGroupBannerPictureUseCase,
 	) {
 		super();
 	}
@@ -150,13 +159,20 @@ export class GroupController extends ApiController {
 			forbidNonWhitelisted: true,
 		}),
 	)
+	@UseInterceptors(
+		FileFieldsInterceptor([
+			{ name: 'picture', maxCount: 1 },
+			{ name: 'bannerPicture', maxCount: 1 },
+		])
+	)
 	@Post()
 	public async create(
 		@Body() request: CreateGroupRequest,
+		@UploadedFiles() files: { picture?: Express.Multer.File[], bannerPicture?: Express.Multer.File[] },
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = GroupRequestMapper.createGroupCommand(request);
+		const command = GroupRequestMapper.createGroupCommand(request, files.picture?.[0], files.bannerPicture?.[0]);
 
 		const data = await this.createGroupUseCase.execute(command);
 
@@ -177,14 +193,21 @@ export class GroupController extends ApiController {
 			forbidNonWhitelisted: true,
 		}),
 	)
+	@UseInterceptors(
+		FileFieldsInterceptor([
+			{ name: 'picture', maxCount: 1 },
+			{ name: 'bannerPicture', maxCount: 1 },
+		])
+	)
 	@Put(':id')
 	public async update(
 		@Param('id') id: string,
 		@Body() request: UpdateGroupRequest,
+		@UploadedFiles() files: { picture?: Express.Multer.File[], bannerPicture?: Express.Multer.File[] },
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = GroupRequestMapper.updateGroupCommand(id, request);
+		const command = GroupRequestMapper.updateGroupCommand(id, request, files.picture?.[0], files.bannerPicture?.[0]);
 
 		await this.updateGroupUseCase.execute(command);
 
@@ -255,5 +278,37 @@ export class GroupController extends ApiController {
 		res.status(HttpStatus.OK).json({
 			data: data,
 		});
+	}
+
+	@ApiOperation({ summary: 'Get group picture' })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse()
+	@Get(':id/picture')
+	public async getPicture(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = GroupRequestMapper.getGroupPictureCommand(id);
+
+		const file = await this.getGroupPictureUseCase.execute(command);
+
+		file.pipe(res);
+	}
+
+	@ApiOperation({ summary: 'Get group banner picture' })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse()
+	@Get(':id/banner-picture')
+	public async getBannerPicture(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = GroupRequestMapper.getGroupBannerPictureCommand(id);
+
+		const file = await this.getGroupBannerPictureUseCase.execute(command);
+
+		file.pipe(res);
 	}
 }

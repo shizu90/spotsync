@@ -11,11 +11,14 @@ import {
 	Query,
 	Req,
 	Res,
+	UploadedFiles,
 	UseFilters,
 	UseGuards,
+	UseInterceptors,
 	UsePipes,
-	ValidationPipe,
+	ValidationPipe
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
 	ApiConflictResponse,
 	ApiCreatedResponse,
@@ -29,7 +32,7 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse
 } from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { SignInDto } from 'src/auth/application/ports/out/dto/sign-in.dto';
 import { AuthGuard } from 'src/auth/infrastructure/adapters/in/web/handlers/auth.guard';
 import { ApiController } from 'src/common/web/common.controller';
@@ -46,6 +49,8 @@ import {
 	DeleteUserUseCase,
 	DeleteUserUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/delete-user.use-case';
+import { GetUserBannerPictureUseCase, GetUserBannerPictureUseCaseProvider } from 'src/user/application/ports/in/use-cases/get-user-banner-picture.use-case';
+import { GetUserProfilePictureUseCase, GetUserProfilePictureUseCaseProvider } from 'src/user/application/ports/in/use-cases/get-user-profile-picture.use-case';
 import {
 	GetUserUseCase,
 	GetUserUseCaseProvider,
@@ -66,14 +71,6 @@ import {
 	UpdateUserVisibilitySettingsUseCase,
 	UpdateUserVisibilitySettingsUseCaseProvider,
 } from 'src/user/application/ports/in/use-cases/update-user-visibility-settings.use-case';
-import {
-	UploadBannerPictureUseCase,
-	UploadBannerPictureUseCaseProvider,
-} from 'src/user/application/ports/in/use-cases/upload-banner-picture.use-case';
-import {
-	UploadProfilePictureUseCase,
-	UploadProfilePictureUseCaseProvider,
-} from 'src/user/application/ports/in/use-cases/upload-profile-picture.use-case';
 import { UserDto } from 'src/user/application/ports/out/dto/user.dto';
 import { UserErrorHandler } from './handlers/user-error.handler';
 import { UserRequestMapper } from './mappers/user-request.mapper';
@@ -102,10 +99,10 @@ export class UserController extends ApiController {
 		protected readonly updateUserCredentialsUseCase: UpdateUserCredentialsUseCase,
 		@Inject(UpdateUserVisibilitySettingsUseCaseProvider)
 		protected readonly updateUserVisibilitySettingsUseCase: UpdateUserVisibilitySettingsUseCase,
-		@Inject(UploadProfilePictureUseCaseProvider)
-		protected readonly uploadProfilePictureUseCase: UploadProfilePictureUseCase,
-		@Inject(UploadBannerPictureUseCaseProvider)
-		protected readonly uploadBannerPictureUseCase: UploadBannerPictureUseCase,
+		@Inject(GetUserProfilePictureUseCaseProvider)
+		protected readonly getUserProfilePictureUseCase: GetUserProfilePictureUseCase,
+		@Inject(GetUserBannerPictureUseCaseProvider)
+		protected readonly getUserBannerPictureUseCase: GetUserBannerPictureUseCase,
 		@Inject(DeleteUserUseCaseProvider)
 		protected readonly deleteUserUseCase: DeleteUserUseCase,
 		@Inject(ActivateUserUseCaseProvider)
@@ -202,14 +199,23 @@ export class UserController extends ApiController {
 			forbidNonWhitelisted: true,
 		}),
 	)
+	@UseInterceptors(
+		FileFieldsInterceptor(
+			[
+				{ name: 'profile_picture', maxCount: 1 },
+				{ name: 'banner_picture', maxCount: 1 },
+			]
+		)
+	)
 	@Put(':id/profile')
 	public async updateProfile(
 		@Param('id') id: string,
 		@Body() body: UpdateUserProfileRequest,
+		@UploadedFiles() files: { profile_picture?: Express.Multer.File[], banner_picture?: Express.Multer.File[] },
 		@Req() req: Request,
 		@Res() res: Response,
 	) {
-		const command = UserRequestMapper.updateUserProfileCommand(id, body);
+		const command = UserRequestMapper.updateUserProfileCommand(id, body, files.profile_picture?.[0], files.banner_picture?.[0]);
 
 		await this.updateUserProfileUseCase.execute(command);
 
@@ -330,5 +336,37 @@ export class UserController extends ApiController {
 		res.status(data != null && data != undefined ? HttpStatus.OK : HttpStatus.NO_CONTENT).json({
 			data: data,
 		});
+	}
+
+	@ApiOperation({ summary: 'Get user profile picture' })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse()
+	@Get(':id/profile-picture')
+	public async getProfilePicture(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = UserRequestMapper.getUserProfilePictureCommand(id);
+
+		const file = await this.getUserProfilePictureUseCase.execute(command);
+
+		file.pipe(res);
+	}
+
+	@ApiOperation({ summary: 'Get user banner picture' })
+	@ApiNotFoundResponse({ type: ErrorResponse })
+	@ApiOkResponse()
+	@Get(':id/banner-picture')
+	public async getBannerPicture(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Res() res: Response,
+	) {
+		const command = UserRequestMapper.getUserBannerPictureCommand(id);
+
+		const file = await this.getUserBannerPictureUseCase.execute(command);
+
+		file.pipe(res);
 	}
 }

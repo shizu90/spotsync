@@ -5,6 +5,8 @@ export class UpdateGroupCommand extends Command {
 		readonly id: string,
 		readonly name?: string,
 		readonly about?: string,
+		readonly groupPicture?: Express.Multer.File,
+		readonly bannerPicture?: Express.Multer.File,
 	) {
 		super();
 	}
