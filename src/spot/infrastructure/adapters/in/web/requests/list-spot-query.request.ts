@@ -1,5 +1,7 @@
 import { ApiProperty, ApiQuery } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
+	IsArray,
 	IsBoolean,
 	IsEnum,
 	IsNumber,
@@ -10,6 +12,7 @@ import {
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { ApiRequest } from 'src/common/web/common.request';
 import { SpotType } from 'src/spot/domain/spot-type.enum';
+import { SpotIncludeObjects } from '../../../out/spot.db';
 
 @ApiQuery({})
 export class ListSpotsQueryRequest extends ApiRequest {
@@ -24,8 +27,11 @@ export class ListSpotsQueryRequest extends ApiRequest {
 		required: false,
 	})
 	@IsOptional()
-	@IsEnum(SpotType)
-	public type?: SpotType;
+	@IsArray()
+	@IsEnum(SpotType, { each: true })
+	@Type(() => String)
+	@Transform(({ value }) => value.split(','))
+	public type?: SpotType[];
 
 	@ApiProperty({
 		required: false,
@@ -82,4 +88,14 @@ export class ListSpotsQueryRequest extends ApiRequest {
 	@IsOptional()
 	@IsBoolean()
 	public paginate?: boolean;
+
+	@ApiProperty({
+		required: false
+	})
+	@IsOptional()
+	@IsArray()
+	@IsEnum(SpotIncludeObjects, { each: true })
+	@Type(() => String)
+	@Transform(({ value }) => value.split(','))
+	public include?: string;
 }

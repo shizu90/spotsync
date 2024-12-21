@@ -20,7 +20,7 @@ import {
 } from './post-thread-entity.mapper';
 
 export type PostEntity = PostPrisma & {
-	parent?: PostEntity;
+	parent_post?: PostEntity;
 	attachments?: PostAttachmentPrisma[];
 	children_posts?: PostEntity[];
 	creator?: UserEntity;
@@ -67,7 +67,7 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
 			group: model.group()
 				? this._groupEntityMapper.toEntity(model.group())
 				: null,
-			parent: model.parent() ? this.toEntity(model.parent()) : null,
+			parent_post: model.parent() ? this.toEntity(model.parent()) : null,
 			thread: model.thread()
 				? this._postThreadEntityMapper.toEntity(model.thread())
 				: null,
@@ -94,7 +94,7 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
 						),
 					)
 				: [],
-			entity.parent ? this.toModel(entity.parent) : null,
+			entity.parent_post ? this.toModel(entity.parent_post) : null,
 			entity.children_posts
 				? entity.children_posts.map((child) => this.toModel(child))
 				: [],

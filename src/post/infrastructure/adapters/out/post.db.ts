@@ -167,7 +167,23 @@ export class PostRepositoryImpl implements PostRepository {
 					visibility_settings: true,
 				},
 			},
-			parent_post: true,
+			parent_post: {
+				include: {
+					creator: {
+						include: {
+							credentials: true,
+							visibility_settings: true,
+							profile: true,
+						},
+					},
+					group: {
+						include: {
+							visibility_settings: true,
+						},
+					},
+					attachments: true,
+				}
+			},
 			children_posts:
 				maxDepthLevel > 0
 					? { include: this._mountIncludeTree(maxDepthLevel - 1) }

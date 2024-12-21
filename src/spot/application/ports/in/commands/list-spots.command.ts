@@ -5,7 +5,7 @@ import { SpotType } from 'src/spot/domain/spot-type.enum';
 export class ListSpotsCommand extends Command {
 	constructor(
 		readonly name?: string,
-		readonly type?: SpotType,
+		readonly type?: SpotType[],
 		readonly creatorId?: string,
 		readonly favoritedById?: string,
 		readonly visitedById?: string,
@@ -14,6 +14,7 @@ export class ListSpotsCommand extends Command {
 		readonly page?: number,
 		readonly limit?: number,
 		readonly paginate?: boolean,
+		readonly include?: string[],
 	) {
 		super();
 	}

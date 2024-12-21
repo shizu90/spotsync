@@ -16,6 +16,10 @@ import { VisitedSpotEntityMapper } from './mappers/visited-spot-entity.mapper';
 
 const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
+export enum SpotIncludeObjects {
+	CREATOR = 'creator',
+}
+
 @Injectable()
 export class SpotRepositoryImpl implements SpotRepository {
 	private _spotEntityMapper: SpotEntityMapper = new SpotEntityMapper();
@@ -74,7 +78,9 @@ export class SpotRepositoryImpl implements SpotRepository {
 		}
 
 		if (type) {
-			query['type'] = type;
+			query['type'] = {
+				in: type,
+			};
 		}
 
 		if (creatorId) {

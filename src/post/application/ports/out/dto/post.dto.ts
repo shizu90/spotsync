@@ -63,6 +63,8 @@ export class PostDto extends Dto {
 	public created_at: string = undefined;
 	@ApiPropertyOptional({ example: new Date().toISOString() })
 	public updated_at: string = undefined;
+	@ApiPropertyOptional({ type: PostDto })
+	public parent: PostDto = undefined;
 	@ApiPropertyOptional({ example: 'uuid' })
 	public parent_id: string = undefined;
 	@ApiPropertyOptional()
@@ -87,6 +89,7 @@ export class PostDto extends Dto {
 		thread_id?: string,
 		created_at?: string,
 		updated_at?: string,
+		parent?: PostDto,
 		parent_id?: string,
 		group?: GroupDto,
 		children_posts?: PostDto[],
@@ -105,6 +108,7 @@ export class PostDto extends Dto {
 		this.thread_id = thread_id;
 		this.created_at = created_at;
 		this.updated_at = updated_at;
+		this.parent = parent;
 		this.parent_id = parent_id;
 		this.group = group;
 		this.children_posts = children_posts;
@@ -127,6 +131,7 @@ export class PostDto extends Dto {
 			model.thread().id(),
 			model.createdAt()?.toISOString(),
 			model.updatedAt()?.toISOString(),
+			model.parent() ? PostDto.fromModel(model.parent()) : null,
 			model.parent() ? model.parent().id() : null,
 			model.group() ? GroupDto.fromModel(model.group()) : null,
 			model.childrens().map((p) => PostDto.fromModel(p)),
