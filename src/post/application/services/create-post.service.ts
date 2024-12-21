@@ -161,7 +161,6 @@ export class CreatePostService implements CreatePostUseCase {
 			));
 		}
 
-		return PostDto.fromModel(newPost)
-			.setAttachmentUrls();
+		return PostDto.fromModel(newPost);
 	}
 }

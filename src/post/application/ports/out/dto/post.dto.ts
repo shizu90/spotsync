@@ -120,7 +120,7 @@ export class PostDto extends Dto {
 	public static fromModel(model: Post): PostDto {
 		if (model === null || model === undefined) return null;
 
-		return new PostDto(
+		const dto = new PostDto(
 			model.id(),
 			model.title(),
 			model.content(),
@@ -138,6 +138,10 @@ export class PostDto extends Dto {
 			model.childrens().length,
 			model.totalLikes(),
 		);
+
+		dto.setAttachmentUrls();
+
+		return dto;
 	}
 
 	public setLiked(liked: boolean): PostDto {
