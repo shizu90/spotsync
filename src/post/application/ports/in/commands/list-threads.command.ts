@@ -5,6 +5,8 @@ export class ListThreadsCommand extends Command {
 	constructor(
 		readonly userId?: string,
 		readonly groupId?: string,
+		readonly parentId?: string,
+		readonly depthLevel?: number,
 		readonly sort?: string,
 		readonly sortDirection?: SortDirection,
 		readonly paginate?: boolean,

@@ -59,31 +59,6 @@ export const mockPost = (parent?: Post): Post => {
 		mockUser(),
 		[],
 		null,
-		[
-			Post.create(
-				randomUUID(),
-				'Test Title',
-				'Test Content',
-				PostVisibility.PUBLIC,
-				mockUser(),
-				[],
-				null,
-				[
-					Post.create(
-						randomUUID(),
-						'Test Title',
-						'Test Content',
-						PostVisibility.PUBLIC,
-						mockUser(),
-						[],
-						null,
-						[],
-						null,
-					),
-				],
-				null,
-			),
-		],
 		null,
 	);
 };

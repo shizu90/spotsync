@@ -69,10 +69,8 @@ export class PostDto extends Dto {
 	public parent_id: string = undefined;
 	@ApiPropertyOptional()
 	public group: GroupDto = undefined;
-	@ApiPropertyOptional({ type: PostDto, isArray: true })
-	public children_posts: PostDto[] = undefined;
 	@ApiPropertyOptional()
-	public total_childrens: number = undefined;
+	public total_replies: number = undefined;
 	@ApiPropertyOptional()
 	public total_likes: number = undefined;
 	@ApiPropertyOptional()
@@ -92,8 +90,7 @@ export class PostDto extends Dto {
 		parent?: PostDto,
 		parent_id?: string,
 		group?: GroupDto,
-		children_posts?: PostDto[],
-		total_childrens?: number,
+		total_replies?: number,
 		total_likes?: number,
 		liked?: boolean,
 	) {
@@ -111,8 +108,7 @@ export class PostDto extends Dto {
 		this.parent = parent;
 		this.parent_id = parent_id;
 		this.group = group;
-		this.children_posts = children_posts;
-		this.total_childrens = total_childrens;
+		this.total_replies = total_replies;
 		this.total_likes = total_likes;
 		this.liked = liked;
 	}
@@ -134,9 +130,6 @@ export class PostDto extends Dto {
 			model.parent() ? PostDto.fromModel(model.parent()) : null,
 			model.parent() ? model.parent().id() : null,
 			model.group() ? GroupDto.fromModel(model.group()) : null,
-			model.childrens().map((p) => PostDto.fromModel(p)),
-			model.childrens().length,
-			model.totalLikes(),
 		);
 
 		dto.setAttachmentUrls();
@@ -156,8 +149,8 @@ export class PostDto extends Dto {
 		return this;
 	}
 
-	public setTotalChildrens(totalChildrens: number): PostDto {
-		this.total_childrens = totalChildrens;
+	public setTotalReplies(totalReplies: number): PostDto {
+		this.total_replies = totalReplies;
 
 		return this;
 	}

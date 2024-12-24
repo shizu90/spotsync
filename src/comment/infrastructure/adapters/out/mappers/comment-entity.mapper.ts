@@ -40,7 +40,6 @@ export class CommentEntityMapper
 			user_id: model.user().id(),
 			text: model.text(),
 			updated_at: model.updatedAt(),
-			total_likes: model.totalLikes(),
 		};
 	}
 
@@ -53,7 +52,6 @@ export class CommentEntityMapper
 			entity.user ? this._userEntityMapper.toModel(entity.user) : null,
 			entity.subject as CommentableSubject,
 			entity.spot ? this._spotEntityMapper.toModel(entity.spot) : null,
-			entity.total_likes,
 			entity.created_at,
 			entity.updated_at,
 		);

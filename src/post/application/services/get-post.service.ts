@@ -57,8 +57,19 @@ export class GetPostService implements GetPostUseCase {
 					userId: authenticatedUser.id(),
 				})
 			).length > 0;
+		
+		const totalLikes = await this.likeRepository.countBy({
+			subject: LikableSubject.POST,
+			subjectId: post.id(),
+		});
+
+		const totalReplies = await this.postRepository.countBy({
+			parentId: post.id(),
+		});
 
 		return PostDto.fromModel(post)
-			.setLiked(liked);
+			.setLiked(liked)
+			.setTotalLikes(totalLikes)
+			.setTotalReplies(totalReplies);
 	}
 }

@@ -57,11 +57,14 @@ export class ListThreadsService implements ListThreadsUseCase {
 	): Promise<Pagination<PostDto> | Array<PostDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
+		console.log(command);
+
 		const pagination = await this.postRepository.paginateAuthorizedPosts(authenticatedUser.id(), {
 			filters: {
 				groupId: command.groupId,
 				userId: command.userId,
-				depthLevel: 0,
+				parentId: command.parentId,
+				depthLevel: command.depthLevel,
 			},
 			sort: command.sort,
 			sortDirection: command.sortDirection,
@@ -92,7 +95,7 @@ export class ListThreadsService implements ListThreadsUseCase {
 
 				return PostDto.fromModel(i)
 					.setLiked(liked)
-					.setTotalChildrens(totalChildrens)
+					.setTotalReplies(totalChildrens)
 					.setTotalLikes(totalLikes);
 			}),
 		);

@@ -49,7 +49,6 @@ export class UnlikeService implements UnlikeUseCase {
 		}
 
 		const likable = like.likable();
-		likable.unlike();
 
 		if (likable instanceof Post) {
 			await this.postRepository.update(likable);

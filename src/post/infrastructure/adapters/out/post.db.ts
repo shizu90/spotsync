@@ -480,7 +480,6 @@ export class PostRepositoryImpl implements PostRepository {
 				thread_id: model.thread().id(),
 				depth_level: model.depthLevel(),
 				parent_id: model.parent() ? model.parent().id() : null,
-				total_likes: model.totalLikes(),
 			},
 			include: this._mountInclude(),
 		});
@@ -507,7 +506,6 @@ export class PostRepositoryImpl implements PostRepository {
 				content: model.content(),
 				depth_level: model.depthLevel(),
 				updated_at: model.updatedAt(),
-				total_likes: model.totalLikes(),
 			},
 		});
 

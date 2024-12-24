@@ -12,7 +12,6 @@ export class Comment extends Model implements Likable {
 	private _user: User;
 	private _subject: CommentableSubject;
 	private _commentable: Commentable;
-	private _totalLikes: number;
 	private _createdAt: Date;
 	private _updatedAt: Date;
 
@@ -22,7 +21,6 @@ export class Comment extends Model implements Likable {
 		user: User,
 		subject: CommentableSubject,
 		commentable: Commentable,
-		totalLikes?: number,
 		createdAt?: Date,
 		updatedAt?: Date,
 	) {
@@ -33,7 +31,6 @@ export class Comment extends Model implements Likable {
 		this._user = user;
 		this._subject = subject;
 		this._commentable = commentable;
-		this._totalLikes = totalLikes ?? 0;
 		this._createdAt = createdAt;
 		this._updatedAt = updatedAt;
 	}
@@ -44,7 +41,6 @@ export class Comment extends Model implements Likable {
 		user: User,
 		subject: CommentableSubject,
 		commentable: Commentable,
-		totalLikes?: number,
 		createdAt?: Date,
 		updatedAt?: Date,
 	) {
@@ -54,7 +50,6 @@ export class Comment extends Model implements Likable {
 			user,
 			subject,
 			commentable,
-			totalLikes,
 			createdAt,
 			updatedAt,
 		);
@@ -80,10 +75,6 @@ export class Comment extends Model implements Likable {
 		return this._commentable;
 	}
 
-	public totalLikes(): number {
-		return this._totalLikes;
-	}
-
 	public createdAt(): Date {
 		return this._createdAt;
 	}
@@ -98,16 +89,10 @@ export class Comment extends Model implements Likable {
 	}
 
 	public like(user: User) {
-		this._totalLikes++;
-
 		return Like.createForComment(
 			randomUUID(),
 			this,
 			user,
 		);
-	}
-
-	public unlike() {
-		this._totalLikes--;
 	}
 }

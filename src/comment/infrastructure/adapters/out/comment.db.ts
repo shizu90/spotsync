@@ -6,8 +6,8 @@ import { CommentRepository } from 'src/comment/application/ports/out/comment.rep
 import { Comment } from 'src/comment/domain/comment.model';
 import { CommentableSubject } from 'src/comment/domain/commentable-subject.enum';
 import {
-    PaginateParameters,
-    Pagination,
+	PaginateParameters,
+	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -250,7 +250,6 @@ export class CommentRepositoryImpl implements CommentRepository {
 						: null,
 				created_at: model.createdAt(),
 				updated_at: model.updatedAt(),
-				total_likes: model.totalLikes(),
 			},
 			include: this._mountInclude(),
 		});
@@ -266,7 +265,6 @@ export class CommentRepositoryImpl implements CommentRepository {
 			data: {
 				text: model.text(),
 				updated_at: model.updatedAt(),
-				total_likes: model.totalLikes(),
 			},
 		});
 	}

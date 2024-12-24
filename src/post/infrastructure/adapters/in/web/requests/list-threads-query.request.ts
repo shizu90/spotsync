@@ -24,6 +24,16 @@ export class ListThreadsQueryRequest extends ApiRequest {
 
 	@ApiProperty({ required: false })
 	@IsOptional()
+	@IsUUID(4)
+	public parent_id?: string;
+
+	@ApiProperty({ required: false })
+	@IsOptional()
+	@IsNumber()
+	public depth_level?: number;
+
+	@ApiProperty({ required: false })
+	@IsOptional()
 	@IsString()
 	public sort?: string;
 

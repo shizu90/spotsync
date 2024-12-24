@@ -29,7 +29,6 @@ export class CommentDto extends Dto {
 		text?: string,
 		user?: UserDto,
 		commentable?: CommentableDto,
-		total_likes?: number,
 		created_at?: string,
 		liked?: boolean,
 	) {
@@ -38,7 +37,6 @@ export class CommentDto extends Dto {
 		this.text = text;
 		this.user = user;
 		this.commentable = commentable;
-		this.total_likes = total_likes;
 		this.liked = liked;
 		this.created_at = created_at;
 	}
@@ -57,7 +55,6 @@ export class CommentDto extends Dto {
 			model.text(),
 			model.user() ? UserDto.fromModel(model.user()).removeSensitiveData() : undefined,
 			commentable,
-			model.totalLikes(),
 			model.createdAt()?.toISOString(),
 			undefined,
 		);
@@ -65,6 +62,11 @@ export class CommentDto extends Dto {
 
 	public setLiked(liked: boolean): CommentDto {
 		this.liked = liked;
+		return this;
+	}
+
+	public setTotalLikes(totalLikes: number): CommentDto {
+		this.total_likes = totalLikes;
 		return this;
 	}
 }

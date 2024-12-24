@@ -46,7 +46,6 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
 			updated_at: model.updatedAt(),
 			visibility: model.visibility(),
 			group_id: model.group() ? model.group().id() : null,
-			total_likes: model.totalLikes(),
 			parent_id: model.parent() ? model.parent().id() : null,
 			thread_id: model.thread() ? model.thread().id() : null,
 			user_id: model.creator() ? model.creator().id() : null,
@@ -57,9 +56,6 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
 						file_type: attachment.fileType(),
 						post_id: model.id(),
 					}))
-				: [],
-			children_posts: model.childrens()
-				? model.childrens().map((child) => this.toEntity(child))
 				: [],
 			creator: model.creator()
 				? this._userEntityMapper.toEntity(model.creator())
@@ -95,11 +91,7 @@ export class PostEntityMapper implements EntityMapper<Post, PostEntity> {
 					)
 				: [],
 			entity.parent_post ? this.toModel(entity.parent_post) : null,
-			entity.children_posts
-				? entity.children_posts.map((child) => this.toModel(child))
-				: [],
 			entity.group ? this._groupEntityMapper.toModel(entity.group) : null,
-			entity.total_likes,
 			entity.thread
 				? this._postThreadEntityMapper.toModel(entity.thread)
 				: null,

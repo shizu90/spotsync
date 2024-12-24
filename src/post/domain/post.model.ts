@@ -17,10 +17,8 @@ export class Post extends Model implements Likable {
 	private _thread: PostThread;
 	private _creator: User;
 	private _attachments: PostAttachment[];
-	private _totalLikes: number;
 	private _group: Group;
 	private _parent: Post;
-	private _childrens: Post[];
 	private _createdAt: Date;
 	private _updatedAt: Date;
 
@@ -32,9 +30,7 @@ export class Post extends Model implements Likable {
 		creator: User,
 		attachments?: PostAttachment[],
 		parent?: Post,
-		childrens?: Post[],
 		group?: Group,
-		totalLikes?: number,
 		thread?: PostThread,
 		depthLevel?: number,
 		createdAt?: Date,
@@ -54,9 +50,7 @@ export class Post extends Model implements Likable {
 				: PostThread.create(randomUUID(), 0);
 		this._depthLevel = parent ? parent.depthLevel() + 1 : depthLevel ?? 0;
 		this._parent = parent;
-		this._childrens = childrens ?? [];
 		this._group = group ?? null;
-		this._totalLikes = totalLikes ?? 0;
 		this._createdAt = createdAt ?? new Date();
 		this._updatedAt = updatedAt ?? new Date();
 
@@ -73,9 +67,7 @@ export class Post extends Model implements Likable {
 		creator: User,
 		attachment?: PostAttachment[],
 		parent?: Post,
-		childrens?: Post[],
 		group?: Group,
-		totalLikes?: number,
 		thread?: PostThread,
 		depthLevel?: number,
 		createdAt?: Date,
@@ -89,9 +81,7 @@ export class Post extends Model implements Likable {
 			creator,
 			attachment,
 			parent,
-			childrens,
 			group,
-			totalLikes,
 			thread,
 			depthLevel,
 			createdAt,
@@ -123,16 +113,8 @@ export class Post extends Model implements Likable {
 		return this._group;
 	}
 
-	public totalLikes(): number {
-		return this._totalLikes;
-	}
-
 	public parent(): Post {
 		return this._parent;
-	}
-
-	public childrens(): Post[] {
-		return this._childrens;
 	}
 
 	public attachments(): PostAttachment[] {
@@ -194,12 +176,6 @@ export class Post extends Model implements Likable {
 	}
 
 	public like(user: User): Like {
-		this._totalLikes++;
-
 		return Like.createForPost(randomUUID(), this, user);
-	}
-
-	public unlike(): void {
-		if (this._totalLikes > 0) this._totalLikes--;
 	}
 }

@@ -116,7 +116,6 @@ export class CreatePostService implements CreatePostUseCase {
 			authenticatedUser,
 			[],
 			parent,
-			[],
 			group,
 		);
 
