@@ -10,6 +10,9 @@ import { User } from "src/user/domain/user.model";
 
 @WebSocketGateway({
     namespace: 'ws/notifications',
+    cors: {
+        origin: [process.env.FRONTEND_URL]
+    }
 })
 export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
     @WebSocketServer() server: Server;
@@ -52,30 +55,36 @@ export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, 
     }
 
     async handleConnection(client: Socket) {
-        const user = await this.getAuthenticatedUserFromSocket(client);
+        try {
+            const user = await this.getAuthenticatedUserFromSocket(client);
 
-        if (!user) {
+            if (!user) {
+                client.disconnect();
+
+                return;
+            }
+
+            const subscriberClient = new RedisService();
+
+            const channel = `notifications:${user.id()}`;
+
+            await subscriberClient.subscribe(channel);
+
+            subscriberClient.on('message', async (ch, m) => {
+                if (ch == channel) {
+                    const notification = await this.notificationRepository.findById(m);
+
+                    client.emit('notification', NotificationDto.fromModel(notification));
+                }
+            });
+
+            this.logger.log(`Client listening to notifications: ${client.id}`);
+            this.logger.log(`Client connected: ${client.id}`);
+        } catch (error) {
             client.disconnect();
 
             return;
         }
-
-        const subscriberClient = new RedisService();
-
-        const channel = `notifications:${user.id()}`;
-
-        await subscriberClient.subscribe(channel);
-
-        subscriberClient.on('message', async (ch, m) => {
-            if (ch == channel) {
-                const notification = await this.notificationRepository.findById(m);
-
-                client.emit('notification', NotificationDto.fromModel(notification));
-            }
-        });
-
-        this.logger.log(`Client listening to notifications: ${client.id}`);
-        this.logger.log(`Client connected: ${client.id}`);
     }
 
     async handleDisconnect(client: Socket) {

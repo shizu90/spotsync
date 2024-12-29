@@ -49,7 +49,7 @@ export class NotificationRepositoryImpl implements NotificationRepository {
 
         if (type) query['type'] = type;
 
-        if (userId) query['userId'] = userId;
+        if (userId) query['user_id'] = userId;
 
         return query;
     }
@@ -106,7 +106,12 @@ export class NotificationRepositoryImpl implements NotificationRepository {
             items = await this.prismaService.notification.findMany({
                 where: query,
                 include: this._mountInclude(),
-                orderBy: orderBy,
+                orderBy: [
+                    {
+                        status: 'desc'
+                    },
+                    orderBy,
+                ],
                 skip: page * limit,
                 take: limit,
             });
@@ -114,7 +119,12 @@ export class NotificationRepositoryImpl implements NotificationRepository {
             items = await this.prismaService.notification.findMany({
                 where: query,
                 include: this._mountInclude(),
-                orderBy: orderBy,
+                orderBy: [
+                    {
+                        status: 'desc'
+                    },
+                    orderBy,
+                ],
             });
         }
 

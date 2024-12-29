@@ -57,8 +57,6 @@ export class ListThreadsService implements ListThreadsUseCase {
 	): Promise<Pagination<PostDto> | Array<PostDto>> {
 		const authenticatedUser = await this.getAuthenticatedUser.execute(null);
 
-		console.log(command);
-
 		const pagination = await this.postRepository.paginateAuthorizedPosts(authenticatedUser.id(), {
 			filters: {
 				groupId: command.groupId,
