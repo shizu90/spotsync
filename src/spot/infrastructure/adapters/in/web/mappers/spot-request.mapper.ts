@@ -17,6 +17,13 @@ export class SpotRequestMapper {
 		return new ListSpotsCommand(
 			query.name,
 			query.type,
+			query.min_rating,
+			query.max_rating,
+			query.min_distance,
+			query.max_distance,
+			query.country,
+			query.state,
+			query.city,
 			query.creator_id,
 			query.favorited_by_id,
 			query.visited_by_id,

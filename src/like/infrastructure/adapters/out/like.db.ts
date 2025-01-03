@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
-import * as moment from 'moment';
 import { env } from 'process';
+import { CacheableRepository } from 'src/cache/cacheable.repository';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -15,7 +15,7 @@ import { LikeEntityMapper } from './mappers/like-entity.mapper';
 
 const REDIS_DB_TTL = env.REDIS_DB_TTL;
 
-export class LikeRepositoryImpl implements LikeRepository {
+export class LikeRepositoryImpl extends CacheableRepository implements LikeRepository {
 	private _likeEntityMapper: LikeEntityMapper = new LikeEntityMapper();
 
 	constructor(
@@ -23,23 +23,7 @@ export class LikeRepositoryImpl implements LikeRepository {
 		protected prismaService: PrismaService,
 		@Inject(RedisService)
 		protected redisService: RedisService,
-	) {}
-
-	private async _getCachedData(key: string): Promise<any> {
-		const data = await this.redisService.get(key);
-		
-		if (data) return JSON.parse(data, (key, value) => {
-			const valid = moment(value, moment.ISO_8601, true).isValid();
-
-			if (valid) return moment(value);
-		});
-
-		return null;
-	}
-
-	private async _setCachedData(key: string, data: any): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
-	}
+	) {super(redisService)}
 
 	private _mapSubjectId(subject: LikableSubject): string {
 		switch (subject) {

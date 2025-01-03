@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import * as moment from 'moment';
-import { env } from 'process';
+import { CacheableRepository } from 'src/cache/cacheable.repository';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -14,14 +13,8 @@ import { VisitedSpot } from 'src/spot/domain/visited-spot.model';
 import { SpotEntityMapper } from './mappers/spot-entity.mapper';
 import { VisitedSpotEntityMapper } from './mappers/visited-spot-entity.mapper';
 
-const REDIS_DB_TTL = env.REDIS_DB_TTL;
-
-export enum SpotIncludeObjects {
-	CREATOR = 'creator',
-}
-
 @Injectable()
-export class SpotRepositoryImpl implements SpotRepository {
+export class SpotRepositoryImpl extends CacheableRepository implements SpotRepository {
 	private _spotEntityMapper: SpotEntityMapper = new SpotEntityMapper();
 	private _visitedSpotEntityMapper: VisitedSpotEntityMapper =
 		new VisitedSpotEntityMapper();
@@ -30,24 +23,8 @@ export class SpotRepositoryImpl implements SpotRepository {
 		@Inject(PrismaService)
 		protected prismaService: PrismaService,
 		@Inject(RedisService)
-		protected redisService: RedisService,
-	) {}
-
-	private async _getCachedData(key: string): Promise<any> {
-		const data = await this.redisService.get(key);
-		
-		if (data) return JSON.parse(data, (key, value) => {
-			const valid = moment(value, moment.ISO_8601, true).isValid();
-
-			if (valid) return moment(value);
-		});
-
-		return null;
-	}
-
-	private async _setCachedData(key: string, data: any): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
-	}
+		protected redisService: RedisService
+	) {super(redisService);}
 
 	private _mountQuery(values: Object): Object {
 		const name = values['name'] ?? null;

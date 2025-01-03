@@ -1,3 +1,4 @@
+import { GetTotalUnreadNotificationsCommand } from "src/notification/application/ports/in/commands/get-total-unread-notifications.command";
 import { ListNotificationsCommand } from "src/notification/application/ports/in/commands/list-notifications.command";
 import { ReadAllNotificationsCommand } from "src/notification/application/ports/in/commands/read-all-notifications.command";
 import { ReadNotificationCommand } from "src/notification/application/ports/in/commands/read-notification.command";
@@ -22,5 +23,9 @@ export class NotificationRequestMapper {
 
     public static readAllNotificationsCommand(): ReadAllNotificationsCommand {
         return new ReadAllNotificationsCommand();
+    }
+
+    public static getTotalUnreadNotificationsCommand(): GetTotalUnreadNotificationsCommand {
+        return new GetTotalUnreadNotificationsCommand();
     }
 }

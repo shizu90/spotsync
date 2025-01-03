@@ -1,6 +1,5 @@
 import { Inject } from '@nestjs/common';
-import * as moment from 'moment';
-import { env } from 'process';
+import { CacheableRepository } from 'src/cache/cacheable.repository';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -15,31 +14,13 @@ import { UserVisibilitySettings } from 'src/user/domain/user-visibility-settings
 import { User } from 'src/user/domain/user.model';
 import { UserEntityMapper } from './mappers/user-entity.mapper';
 
-const REDIS_DB_TTL = env.REDIS_DB_TTL;
-
-export class UserRepositoryImpl implements UserRepository {
+export class UserRepositoryImpl extends CacheableRepository implements UserRepository {
 	private _userEntityMapper: UserEntityMapper = new UserEntityMapper();
 
 	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
 		@Inject(RedisService) protected redisService: RedisService,
-	) {}
-
-	private async _getCachedData(key: string): Promise<any> {
-		const data = await this.redisService.get(key);
-		
-		if (data) return JSON.parse(data, (key, value) => {
-			const valid = moment(value, moment.ISO_8601, true).isValid();
-
-			if (valid) return moment(value);
-		});
-
-		return null;
-	}
-
-	private async _setCachedData(key: string, data: any): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
-	}
+	) {super(redisService)}
 
 	private _mountQuery(params: Object): Object {
 		const name = params['name'];

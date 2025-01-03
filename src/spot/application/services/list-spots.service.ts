@@ -142,6 +142,13 @@ export class ListSpotsService implements ListSpotsUseCase {
 		const spots = await this.spotRepository.paginate({
 			filters: {
 				name: command.name,
+				minRating: command.minRating,
+				maxRating: command.maxRating,
+				minDistance: command.minDistance,
+				maxDistance: command.maxDistance,
+				country: command.country,
+				state: command.state,
+				city: command.city,
 				type: command.type,
 				creatorId: command.creatorId,
 				favoritedById: command.favoritedById,
@@ -184,7 +191,7 @@ export class ListSpotsService implements ListSpotsUseCase {
 
 				let distance = 0;
 
-				if (mainAddress !== null && mainAddress !== undefined) {
+				if (mainAddress) {
 					distance = calculateDistance(
 						{
 							lat: mainAddress.latitude(),

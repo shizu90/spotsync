@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import * as moment from 'moment';
-import { env } from 'process';
+import { CacheableRepository } from 'src/cache/cacheable.repository';
 import { RedisService } from 'src/cache/redis.service';
 import {
-    PaginateParameters,
-    Pagination,
+	PaginateParameters,
+	Pagination,
 } from 'src/common/core/common.repository';
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { FavoriteRepository } from 'src/favorite/application/ports/out/favorite.repository';
@@ -13,10 +12,8 @@ import { Favorite } from 'src/favorite/domain/favorite.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FavoriteEntityMapper } from './mappers/favorite-entity.mapper';
 
-const REDIS_DB_TTL = env.REDIS_DB_TTL;
-
 @Injectable()
-export class FavoriteRepositoryImpl implements FavoriteRepository {
+export class FavoriteRepositoryImpl extends CacheableRepository implements FavoriteRepository {
 	private _favoriteEntityMapper: FavoriteEntityMapper =
 		new FavoriteEntityMapper();
 
@@ -25,23 +22,7 @@ export class FavoriteRepositoryImpl implements FavoriteRepository {
 		protected prismaService: PrismaService,
 		@Inject(RedisService)
 		protected redisService: RedisService,
-	) {}
-
-	private async _getCachedData(key: string): Promise<any> {
-		const data = await this.redisService.get(key);
-		
-		if (data) return JSON.parse(data, (key, value) => {
-			const valid = moment(value, moment.ISO_8601, true).isValid();
-
-			if (valid) return moment(value);
-		});
-
-		return null;
-	}
-
-	private async _setCachedData(key: string, data: any): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
-	}
+	) {super(redisService)}
 
 	private _mapSubjectId(subject: FavoritableSubject): string {
 		switch (subject) {

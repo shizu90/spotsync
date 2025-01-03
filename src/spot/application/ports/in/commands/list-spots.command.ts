@@ -6,6 +6,13 @@ export class ListSpotsCommand extends Command {
 	constructor(
 		readonly name?: string,
 		readonly type?: SpotType[],
+		readonly minRating?: number,
+		readonly maxRating?: number,
+		readonly minDistance?: number,
+		readonly maxDistance?: number,
+		readonly country?: string,
+		readonly state?: string,
+		readonly city?: string,
 		readonly creatorId?: string,
 		readonly favoritedById?: string,
 		readonly visitedById?: string,

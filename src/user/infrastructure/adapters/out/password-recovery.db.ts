@@ -1,6 +1,5 @@
 import { Inject } from '@nestjs/common';
-import * as moment from 'moment';
-import { env } from 'process';
+import { CacheableRepository } from 'src/cache/cacheable.repository';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -12,9 +11,7 @@ import { PasswordRecoveryRepository } from 'src/user/application/ports/out/passw
 import { PasswordRecovery } from 'src/user/domain/password-recovery.model';
 import { PasswordRecoveryEntityMapper } from './mappers/password-recovery-entity.mapper';
 
-const REDIS_DB_TTL = env.REDIS_DB_TTL;
-
-export class PasswordRecoveryRepositoryImpl
+export class PasswordRecoveryRepositoryImpl extends CacheableRepository
 	implements PasswordRecoveryRepository
 {
 	private _passwordRecoveryEntityMapper: PasswordRecoveryEntityMapper =
@@ -23,23 +20,7 @@ export class PasswordRecoveryRepositoryImpl
 	public constructor(
 		@Inject(PrismaService) protected prismaService: PrismaService,
 		@Inject(RedisService) protected redisService: RedisService,
-	) {}
-
-	private async _getCachedData(key: string): Promise<any> {
-		const data = await this.redisService.get(key);
-		
-		if (data) return JSON.parse(data, (key, value) => {
-			const valid = moment(value, moment.ISO_8601, true).isValid();
-
-			if (valid) return moment(value);
-		});
-
-		return null;
-	}
-
-	private async _setCachedData(key: string, data: any, ttl: number): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", ttl);
-	}
+	) {super(redisService)}
 
 	private _mountQuery(params: Object): Object {
 		const token = params['token'];
@@ -135,7 +116,7 @@ export class PasswordRecoveryRepositoryImpl
 			});
 		}
 
-		await this._setCachedData(key, new Pagination(items, total, page + 1, limit), 60);
+		await this._setCachedData(key, new Pagination(items, total, page + 1, limit));
 
 		items = items.map((i) => {
 			return this._passwordRecoveryEntityMapper.toModel(i);
@@ -166,7 +147,7 @@ export class PasswordRecoveryRepositoryImpl
 			},
 		});
 
-		await this._setCachedData(key, items, 60);
+		await this._setCachedData(key, items);
 
 		return items.map((i) => {
 			return this._passwordRecoveryEntityMapper.toModel(i);
@@ -217,7 +198,7 @@ export class PasswordRecoveryRepositoryImpl
 			where: { id: { in: ids.map((row) => row.id) } },
 		});
 
-		await this._setCachedData(key, count, 60);
+		await this._setCachedData(key, count);
 
 		return count;
 	}
@@ -244,7 +225,7 @@ export class PasswordRecoveryRepositoryImpl
 				},
 			});
 		
-		await this._setCachedData(key, passwordRecovery, 60);
+		await this._setCachedData(key, passwordRecovery);
 
 		return this._passwordRecoveryEntityMapper.toModel(passwordRecovery);
 	}
@@ -269,7 +250,7 @@ export class PasswordRecoveryRepositoryImpl
 				},
 			});
 
-		await this._setCachedData(key, passwordRecoveries, 60);
+		await this._setCachedData(key, passwordRecoveries);
 
 		return passwordRecoveries.map((i) => {
 			return this._passwordRecoveryEntityMapper.toModel(i);

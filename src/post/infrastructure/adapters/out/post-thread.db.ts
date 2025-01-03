@@ -1,6 +1,5 @@
 import { Inject } from '@nestjs/common';
-import * as moment from 'moment';
-import { env } from 'process';
+import { CacheableRepository } from 'src/cache/cacheable.repository';
 import { RedisService } from 'src/cache/redis.service';
 import {
 	PaginateParameters,
@@ -12,9 +11,7 @@ import { PostThread } from 'src/post/domain/post-thread.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PostThreadEntityMapper } from './mappers/post-thread-entity.mapper';
 
-const REDIS_DB_TTL = env.REDIS_DB_TTL;
-
-export class PostThreadRepositoryImpl implements PostThreadRepository {
+export class PostThreadRepositoryImpl extends CacheableRepository implements PostThreadRepository {
 	private _postThreadEntityMapper: PostThreadEntityMapper =
 		new PostThreadEntityMapper();
 
@@ -23,23 +20,7 @@ export class PostThreadRepositoryImpl implements PostThreadRepository {
 		protected prismaService: PrismaService,
 		@Inject(RedisService)
 		protected redisService: RedisService,
-	) {}
-
-	private async _getCachedData(key: string): Promise<any> {
-		const data = await this.redisService.get(key);
-		
-		if (data) return JSON.parse(data, (key, value) => {
-			const valid = moment(value, moment.ISO_8601, true).isValid();
-
-			if (valid) return moment(value);
-		});
-
-		return null;
-	}
-
-	private async _setCachedData(key: string, data: any): Promise<void> {
-		await this.redisService.set(key, JSON.stringify(data), "EX", REDIS_DB_TTL);
-	}
+	) {super(redisService)}
 
 	private _mountQuery(values: Object): Object {
 		const maxDepthLevel = values['maxDepthLevel'] ?? null;

@@ -5,6 +5,7 @@ import { AuthGuard } from "src/auth/infrastructure/adapters/in/web/handlers/auth
 import { ApiController } from "src/common/web/common.controller";
 import { ErrorResponse } from "src/common/web/common.error";
 import { LikeDto } from "src/like/application/ports/out/dto/like.dto";
+import { GetTotalUnreadNotificationsUseCase, GetTotalUnreadNotificationsUseCaseProvider } from "src/notification/application/ports/in/use-cases/get-total-unread-notifications.use-case";
 import { ListNotificationsUseCase, ListNotificationsUseCaseProvider } from "src/notification/application/ports/in/use-cases/list-notifications.use-case";
 import { ReadAllNotificationsUseCase, ReadAllNotificationsUseCaseProvider } from "src/notification/application/ports/in/use-cases/read-all-notifications.use-case";
 import { ReadNotificationUseCase, ReadNotificationUseCaseProvider } from "src/notification/application/ports/in/use-cases/read-notification.use-case";
@@ -25,6 +26,8 @@ export class NotificationController extends ApiController {
         protected readNotificationUseCase: ReadNotificationUseCase,
         @Inject(ReadAllNotificationsUseCaseProvider)
         protected readAllNotificationsUseCase: ReadAllNotificationsUseCase,
+        @Inject(GetTotalUnreadNotificationsUseCaseProvider)
+        protected getTotalUnreadNotificationsUseCase: GetTotalUnreadNotificationsUseCase,
     ) {super();}
 
 
@@ -80,5 +83,24 @@ export class NotificationController extends ApiController {
         await this.readAllNotificationsUseCase.execute(command);
 
         res.status(HttpStatus.NO_CONTENT).json();
+    }
+
+    @ApiOperation({ summary: 'Get total unread notifications' })
+    @ApiOkResponse({ example: {
+        data: 0
+    }})
+    @Get('total-unread')
+    @UseGuards(AuthGuard)
+    public async getTotalUnread(
+        @Req() req: Request,
+        @Res() res: Response
+    ) {
+        const command = NotificationRequestMapper.getTotalUnreadNotificationsCommand();
+
+        const total = await this.getTotalUnreadNotificationsUseCase.execute(command);
+
+        res.status(HttpStatus.OK).json({
+            data: total
+        });
     }
 }

@@ -12,7 +12,6 @@ import {
 import { SortDirection } from 'src/common/enums/sort-direction.enum';
 import { ApiRequest } from 'src/common/web/common.request';
 import { SpotType } from 'src/spot/domain/spot-type.enum';
-import { SpotIncludeObjects } from '../../../out/spot.db';
 
 @ApiQuery({})
 export class ListSpotsQueryRequest extends ApiRequest {
@@ -32,6 +31,55 @@ export class ListSpotsQueryRequest extends ApiRequest {
 	@Type(() => String)
 	@Transform(({ value }) => value.split(','))
 	public type?: SpotType[];
+
+	@ApiProperty({
+		required: false,
+	})
+	@IsOptional()
+	@IsNumber()
+	public min_rating?: number;
+
+	@ApiProperty({
+		required: false,
+	})
+	@IsOptional()
+	@IsNumber()
+	public max_rating?: number;
+
+	@ApiProperty({
+		required: false,
+	})
+	@IsOptional()
+	@IsNumber()
+	public min_distance?: number;
+	
+	@ApiProperty({
+		required: false
+	})
+	@IsOptional()
+	@IsNumber()
+	public max_distance?: number;
+
+	@ApiProperty({
+		required: false
+	})
+	@IsOptional()
+	@IsString()
+	public country?: string;
+
+	@ApiProperty({
+		required: false
+	})
+	@IsOptional()
+	@IsString()
+	public state?: string;
+
+	@ApiProperty({
+		required: false
+	})
+	@IsOptional()
+	@IsString()
+	public city?: string;
 
 	@ApiProperty({
 		required: false,
@@ -88,14 +136,4 @@ export class ListSpotsQueryRequest extends ApiRequest {
 	@IsOptional()
 	@IsBoolean()
 	public paginate?: boolean;
-
-	@ApiProperty({
-		required: false
-	})
-	@IsOptional()
-	@IsArray()
-	@IsEnum(SpotIncludeObjects, { each: true })
-	@Type(() => String)
-	@Transform(({ value }) => value.split(','))
-	public include?: string;
 }
